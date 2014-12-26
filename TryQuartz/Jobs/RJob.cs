@@ -1,4 +1,5 @@
 ﻿using System;
+using Quartz;
 using TryQuartz.Jobs;
 
 namespace TryQuartz
@@ -8,7 +9,7 @@ namespace TryQuartz
         public RJob()
         {}
 
-        public override void Execute(Quartz.IJobExecutionContext context)
+        public override void Execute(IJobExecutionContext context)
         {
             // Need to indicate which job to run
             MessageQueueClient.Publish("run job");

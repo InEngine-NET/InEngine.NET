@@ -44,12 +44,10 @@ namespace TryQuartz
             {
                 // Grab the Scheduler instance from the Factory 
                 IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
-
+                Container.Register<IScheduler>(scheduler);
                 // and start it off
                 scheduler.Start();
                 Console.WriteLine("Scheduler Started!");
-
-                #region Create and schedule jobs
                 // define the job and tie it to our HelloJob class
                 IJobDetail job = JobBuilder.Create<RJob>()
                     .WithIdentity("job1", "group1")
@@ -64,22 +62,6 @@ namespace TryQuartz
 
                 // Tell quartz to schedule the job using our trigger
                 scheduler.ScheduleJob(job, trigger);
-                #endregion
-
-                #region Setup Manager
-                QuartzAPI.Configure(builder => {
-                    //builder.UseScheduler(container.GetInstance<IScheduler>()); 
-                    //This is the scheduler you are using, in this case I'm pulling out the scheduler from my structuremap container
-                    builder.UseScheduler(scheduler);
-                    builder.EnableCors();
-                });
-                QuartzAPI.Start("http://localhost:9001/");
-                #endregion
-
-                // Some sleep to show what's happening
-                // This can be removed when run as a service.
-                //Thread.Sleep(TimeSpan.FromSeconds(6000));
-
                 // and last shut down the scheduler when you are ready to close your program
                 //scheduler.Shutdown();
             }
@@ -87,6 +69,15 @@ namespace TryQuartz
             {
                 Console.WriteLine(se);
             }
+        }
+
+        public void SetupSchedulerApi()
+        {
+            QuartzAPI.Configure(builder => {
+                builder.UseScheduler(Container.Resolve<IScheduler>());
+                builder.EnableCors();
+            });
+            QuartzAPI.Start("http://localhost:9001/");
         }
     }
 }

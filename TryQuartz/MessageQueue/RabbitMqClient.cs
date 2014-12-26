@@ -27,7 +27,6 @@ namespace TryQuartz.MessageQueue
             {
                 using (var channel = connection.CreateModel())
                 {
-                    //channel.QueueDeclare("hello", false, false, false, null);
                     channel.QueueBind("myqueue", "amq.fanout", "");
                     var body = Encoding.UTF8.GetBytes(message);
                     channel.BasicPublish("amq.fanout", "", null, body);
