@@ -101,12 +101,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\HelloJob.cs" />
-    <Compile Include="Jobs\RJob.cs" />
     <Compile Include="ProgramConfiguration.cs" />
-    <Compile Include="Clients\RabbitMqClient.cs" />
-    <Compile Include="Clients\IMessageQueueClientService.cs" />
-    <Compile Include="Clients\IMessageQueueClient.cs" />
     <Compile Include="ContainerSingleton.cs" />
+    <Compile Include="Jobs\AsyncJob.cs" />
+    <Compile Include="Jobs\RJob.cs" />
+    <Compile Include="MessageQueue\RabbitMqClient.cs" />
+    <Compile Include="MessageQueue\IMessageQueueClient.cs" />
+    <Compile Include="MessageQueue\RabbitMqListener.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -120,6 +121,6 @@
     <Folder Include="Jobs\" />
     <Folder Include="RScripts\" />
     <Folder Include="Data\" />
-    <Folder Include="Clients\" />
+    <Folder Include="MessageQueue\" />
   </ItemGroup>
 </Project>

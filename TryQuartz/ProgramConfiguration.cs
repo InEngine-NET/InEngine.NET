@@ -5,6 +5,10 @@ using Quartz;
 using Quartz.API;
 using Quartz.Impl;
 using TryQuartz.Jobs;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Text;
+using TryQuartz.MessageQueue;
 
 namespace TryQuartz
 {
@@ -19,9 +23,13 @@ namespace TryQuartz
         {
             Container = container;
             SetupMessageQueueClient();
-            var messageQueueClient = container.Resolve<IMessageQueueClient>();
-            messageQueueClient.Publish("blah");
             SetupScheduler();
+            SetupMessageQueueListener();
+        }
+
+        public void SetupMessageQueueListener()
+        {
+            RabbitMqListener.Listen();
         }
 
         public void SetupMessageQueueClient()
@@ -70,10 +78,10 @@ namespace TryQuartz
 
                 // Some sleep to show what's happening
                 // This can be removed when run as a service.
-                Thread.Sleep(TimeSpan.FromSeconds(6000));
+                //Thread.Sleep(TimeSpan.FromSeconds(6000));
 
                 // and last shut down the scheduler when you are ready to close your program
-                scheduler.Shutdown();
+                //scheduler.Shutdown();
             }
             catch (SchedulerException se)
             {

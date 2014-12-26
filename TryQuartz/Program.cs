@@ -7,6 +7,8 @@ using TryQuartz.Jobs;
 using RabbitMQ.Client;
 using System.Text;
 using Funq;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace TryQuartz
 {
