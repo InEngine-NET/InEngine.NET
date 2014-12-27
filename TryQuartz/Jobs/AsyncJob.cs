@@ -2,7 +2,6 @@
 using System.Text;
 using Funq;
 using Quartz;
-using RDotNet;
 using RabbitMQ.Client;
 using TryQuartz.MessageQueue;
 

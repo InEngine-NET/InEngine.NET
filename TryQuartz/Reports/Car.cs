@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TryQuartz.DataTransfer
+namespace TryQuartz.Reports
 {
-    public class Car
+    public class Car : IDatum
     {
         public string Name { get; set; }
         public int Age { get; set; }

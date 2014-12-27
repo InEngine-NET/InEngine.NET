@@ -4,6 +4,6 @@ namespace TryQuartz.MessageQueue
 {
     public interface IMessageQueueClient
     {
-        void Publish(string message);
+        void Publish<T>(T value);
     }
 }

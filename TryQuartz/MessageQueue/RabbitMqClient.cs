@@ -20,8 +20,10 @@ namespace TryQuartz.MessageQueue
             };
         }
 
-        public void Publish(string message)
+        public void Publish<T>(T value)
         {
+            var type = value.GetType();
+            var message = String.Join(".", type.Namespace, type.Name);
             using (var connection = ConnectionFactory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())

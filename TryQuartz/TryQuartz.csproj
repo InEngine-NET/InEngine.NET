@@ -62,18 +62,9 @@
     <Reference Include="DynamicInterop">
       <HintPath>..\packages\DynamicInterop.0.7.1.0\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet">
-      <HintPath>..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="RabbitMQ.Client">
       <HintPath>..\packages\RabbitMQ.Client.3.4.0\lib\net35\RabbitMQ.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener">
       <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
@@ -96,6 +87,7 @@
     <Reference Include="Funq">
       <HintPath>..\packages\Funq.1.0.0\lib\net40\Funq.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -104,19 +96,22 @@
     <Compile Include="ProgramConfiguration.cs" />
     <Compile Include="ContainerSingleton.cs" />
     <Compile Include="Jobs\AsyncJob.cs" />
-    <Compile Include="Jobs\RJob.cs" />
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqListener.cs" />
     <Compile Include="RScriptLauncher.cs" />
-    <Compile Include="DataTransfer\Car.cs" />
-    <Compile Include="DataTransfer\CarReport.cs" />
+    <Compile Include="Jobs\CarReportJob.cs" />
+    <Compile Include="Reports\Car.cs" />
+    <Compile Include="Reports\CarReport.cs" />
+    <Compile Include="Reports\IReport.cs" />
+    <Compile Include="Reports\IDatum.cs" />
+    <Compile Include="Jobs\IAnalysisJob.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="job_scheduling_data_2_0.xsd" />
-    <None Include="RScripts\sample.R">
+    <None Include="RScripts\CarReport.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -124,6 +119,6 @@
     <Folder Include="Jobs\" />
     <Folder Include="RScripts\" />
     <Folder Include="MessageQueue\" />
-    <Folder Include="DataTransfer\" />
+    <Folder Include="Reports\" />
   </ItemGroup>
 </Project>

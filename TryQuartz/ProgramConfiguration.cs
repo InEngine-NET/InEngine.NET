@@ -52,7 +52,7 @@ namespace TryQuartz
                 scheduler.Start();
                 Console.WriteLine("Scheduler Started!");
                 // define the job and tie it to our HelloJob class
-                IJobDetail job = JobBuilder.Create<RJob>()
+                IJobDetail job = JobBuilder.Create<CarReportJob>()
                     .WithIdentity("job1", "group1")
                     .Build();
 

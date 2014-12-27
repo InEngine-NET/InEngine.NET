@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
+using TryQuartz.Reports;
 
 namespace TryQuartz.MessageQueue
 {
@@ -31,12 +34,15 @@ namespace TryQuartz.MessageQueue
                         var body = eventArgs.Body;
                         var message = Encoding.UTF8.GetString(body);
                         Console.WriteLine(" [x] Received {0}", message);
-                        var rscriptLauncher = ContainerSingleton.GetContainer().Resolve<RScriptLauncher>();
-                        rscriptLauncher.Run();
+                        var assembly = Assembly.GetCallingAssembly();
+                        var t = assembly.GetType(message);
+                        var reportJob = (IAnalysisJob)Activator.CreateInstance(t);
+                        reportJob.RunAnalysis();
                     }
                 }
             }
         }
     }
 }
+
 
