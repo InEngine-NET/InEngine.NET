@@ -108,7 +108,9 @@
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqListener.cs" />
-    <Compile Include="Jobs\RAnalysisJob.cs" />
+    <Compile Include="RScriptLauncher.cs" />
+    <Compile Include="DataTransfer\Car.cs" />
+    <Compile Include="DataTransfer\CarReport.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -121,7 +123,7 @@
   <ItemGroup>
     <Folder Include="Jobs\" />
     <Folder Include="RScripts\" />
-    <Folder Include="Data\" />
     <Folder Include="MessageQueue\" />
+    <Folder Include="DataTransfer\" />
   </ItemGroup>
 </Project>

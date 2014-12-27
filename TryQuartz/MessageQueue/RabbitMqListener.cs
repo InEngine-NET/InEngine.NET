@@ -31,6 +31,8 @@ namespace TryQuartz.MessageQueue
                         var body = eventArgs.Body;
                         var message = Encoding.UTF8.GetString(body);
                         Console.WriteLine(" [x] Received {0}", message);
+                        var rscriptLauncher = ContainerSingleton.GetContainer().Resolve<RScriptLauncher>();
+                        rscriptLauncher.Run();
                     }
                 }
             }

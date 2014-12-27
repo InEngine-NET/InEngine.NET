@@ -9,7 +9,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using TryQuartz.MessageQueue;
-using RDotNet;
+using Nest;
 
 namespace TryQuartz
 {
@@ -23,7 +23,8 @@ namespace TryQuartz
         public void Configure(Container container)
         {
             Container = container;
-            SetupREngine();
+            SetupElasticClient();
+            SetupRScriptLauncher();
             SetupMessageQueueClient();
             SetupScheduler();
             SetupMessageQueueListener();
@@ -82,14 +83,32 @@ namespace TryQuartz
             QuartzAPI.Start("http://localhost:9001/");
         }
 
-        public void SetupREngine()
+        public void SetupRScriptLauncher()
         {
-            REngine.SetEnvironmentVariables();
-            var engine = REngine.GetInstance();
-            engine.Initialize();
-            Container.Register<REngine>(engine);
-            var result = engine.Evaluate("source('RScripts/sample.R')");
-            Console.WriteLine("result", result);
+            Container.Register<RScriptLauncher>(new RScriptLauncher());
+
+//            var schema = JsonSchema.Parse(@"{
+//              'type': 'object',
+//              'properties': {
+//                'name': {'type':'string'},
+//                'hobbies': {'type': 'array'}
+//              }
+//            }");
+//            var person = JObject.Parse(@"{
+//              'name': 'James',
+//              'hobbies': ['.NET', 'LOLCATS']
+//            }");
+//            var valid = person.IsValid(schema);
+        }
+
+        public void SetupElasticClient()
+        {
+            var node = new Uri("http://localhost:9200");
+            var settings = new ConnectionSettings(
+                node, 
+                defaultIndex: "my-application"
+            );
+            Container.Register<IElasticClient>(new ElasticClient(settings));
         }
     }
 }
