@@ -9,6 +9,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using TryQuartz.MessageQueue;
+using RDotNet;
 
 namespace TryQuartz
 {
@@ -22,6 +23,7 @@ namespace TryQuartz
         public void Configure(Container container)
         {
             Container = container;
+            SetupREngine();
             SetupMessageQueueClient();
             SetupScheduler();
             SetupMessageQueueListener();
@@ -78,6 +80,16 @@ namespace TryQuartz
                 builder.EnableCors();
             });
             QuartzAPI.Start("http://localhost:9001/");
+        }
+
+        public void SetupREngine()
+        {
+            REngine.SetEnvironmentVariables();
+            var engine = REngine.GetInstance();
+            engine.Initialize();
+            Container.Register<REngine>(engine);
+            var result = engine.Evaluate("source('RScripts/sample.R')");
+            Console.WriteLine("result", result);
         }
     }
 }

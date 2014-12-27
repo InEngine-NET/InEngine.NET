@@ -10,7 +10,6 @@ namespace TryQuartz.MessageQueue
 
         public RabbitMqClient()
         {
-            Console.WriteLine("About to create connection");
             ConnectionFactory = new ConnectionFactory() { 
                 HostName = "localhost",
                 UserName = "guest",

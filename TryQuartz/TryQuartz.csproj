@@ -108,6 +108,7 @@
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqListener.cs" />
+    <Compile Include="Jobs\RAnalysisJob.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

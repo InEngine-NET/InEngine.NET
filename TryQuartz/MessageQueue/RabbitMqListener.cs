@@ -9,8 +9,16 @@ namespace TryQuartz.MessageQueue
     {
         public static void Listen()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
+            var connectionFactory = new ConnectionFactory() { 
+                HostName = "localhost",
+                UserName = "guest",
+                Password = "guest",
+                VirtualHost = "/",
+                Protocol = Protocols.DefaultProtocol,
+                Port = AmqpTcpEndpoint.UseDefaultPort,
+            };
+
+            using (var connection = connectionFactory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())
                 {
