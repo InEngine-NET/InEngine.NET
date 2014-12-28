@@ -13,10 +13,10 @@ using Nest;
 
 namespace IntegrationEngine
 {
-    public class ProgramConfiguration
+    public class EngineConfiguration
     {
         public Container Container { get; set; }
-        public ProgramConfiguration()
+        public EngineConfiguration()
         {
         }
 

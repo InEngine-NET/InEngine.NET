@@ -1,9 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/ContainerSingleton.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/RScriptLauncher.cs">
     <Files>
-      <File FileName="IntegrationEngine/RScriptLauncher.cs" Line="41" Column="41" />
-      <File FileName="IntegrationEngine/ContainerSingleton.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine/RScriptLauncher.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>IntegrationEngine</RootNamespace>
     <AssemblyName>IntegrationEngine</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -85,10 +85,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContainerSingleton.cs" />
-    <Compile Include="ProgramConfiguration.cs" />
     <Compile Include="RScriptLauncher.cs" />
     <Compile Include="Jobs\AsyncJob.cs" />
     <Compile Include="Jobs\CarReportJob.cs" />
@@ -101,6 +99,8 @@
     <Compile Include="Reports\CarReport.cs" />
     <Compile Include="Reports\IDatum.cs" />
     <Compile Include="Reports\IReport.cs" />
+    <Compile Include="EngineHost.cs" />
+    <Compile Include="EngineConfiguration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -3,7 +3,7 @@ using Funq;
 
 namespace IntegrationEngine
 {
-    public class ContainerSingleton
+    internal class ContainerSingleton
     {
         private static Container _container;
         private ContainerSingleton() {}

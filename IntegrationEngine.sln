@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine", "IntegrationEngine\IntegrationEngine.csproj", "{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.ConsoleHost", "IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj", "{C273AE91-E13F-4443-8D01-9C97016AB4AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,8 +15,12 @@ Global
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|x86.Build.0 = Debug|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|x86.ActiveCfg = Release|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|x86.Build.0 = Release|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|x86.ActiveCfg = Debug|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|x86.Build.0 = Debug|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|x86.ActiveCfg = Release|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = IntegrationEngine\IntegrationEngine.csproj
+		StartupItem = IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj
 	EndGlobalSection
 EndGlobal

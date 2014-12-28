@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.ConsoleHost
 {
     class MainClass
     {
         public static void Main(string[] args)
         {
-            (new ProgramConfiguration()).Configure(ContainerSingleton.GetContainer());
+            new EngineHost();
         }
     }
 }
