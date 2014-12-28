@@ -87,7 +87,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContainerSingleton.cs" />
-    <Compile Include="RScriptLauncher.cs" />
     <Compile Include="Jobs\AsyncJob.cs" />
     <Compile Include="Jobs\CarReportJob.cs" />
     <Compile Include="Jobs\HelloJob.cs" />
@@ -101,6 +100,7 @@
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="EngineHost.cs" />
     <Compile Include="EngineConfiguration.cs" />
+    <Compile Include="RScriptRunner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

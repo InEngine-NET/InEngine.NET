@@ -6,7 +6,7 @@ namespace IntegrationEngine.ConsoleHost
     {
         public static void Main(string[] args)
         {
-            new EngineHost();
+            (new EngineHost()).Initialize();
         }
     }
 }

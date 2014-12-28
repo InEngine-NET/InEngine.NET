@@ -24,7 +24,7 @@ namespace IntegrationEngine
         {
             Container = container;
             SetupElasticClient();
-            SetupRScriptLauncher();
+            SetupRScriptRunner();
             SetupMessageQueueClient();
             SetupScheduler();
             SetupMessageQueueListener();
@@ -83,22 +83,9 @@ namespace IntegrationEngine
             QuartzAPI.Start("http://localhost:9001/");
         }
 
-        public void SetupRScriptLauncher()
+        public void SetupRScriptRunner()
         {
-            Container.Register<RScriptLauncher>(new RScriptLauncher());
-
-//            var schema = JsonSchema.Parse(@"{
-//              'type': 'object',
-//              'properties': {
-//                'name': {'type':'string'},
-//                'hobbies': {'type': 'array'}
-//              }
-//            }");
-//            var person = JObject.Parse(@"{
-//              'name': 'James',
-//              'hobbies': ['.NET', 'LOLCATS']
-//            }");
-//            var valid = person.IsValid(schema);
+            Container.Register<RScriptRunner>(new RScriptRunner());
         }
 
         public void SetupElasticClient()

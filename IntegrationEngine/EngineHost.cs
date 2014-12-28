@@ -6,6 +6,10 @@ namespace IntegrationEngine
     {
         public EngineHost()
         {
+        }
+
+        public void Initialize()
+        {
             (new EngineConfiguration()).Configure(ContainerSingleton.GetContainer());
         }
     }

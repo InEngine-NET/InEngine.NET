@@ -6,11 +6,11 @@ using IntegrationEngine.Reports;
 
 namespace IntegrationEngine
 {
-    public class RScriptLauncher
+    public class RScriptRunner
     {
         public IElasticClient ElasticClient { get; set; }
 
-        public RScriptLauncher()
+        public RScriptRunner()
         {
             ElasticClient = ContainerSingleton.GetContainer().Resolve<IElasticClient>();
         }
@@ -24,7 +24,6 @@ namespace IntegrationEngine
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.Arguments = string.Format("RScripts/{0}.R", report.GetType().Name);
             startInfo.RedirectStandardOutput = true;
-
             var scriptOutput = "";
             using (var process = System.Diagnostics.Process.Start(startInfo))
             {

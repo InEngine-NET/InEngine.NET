@@ -17,11 +17,11 @@ namespace IntegrationEngine
 
         public void RunAnalysis()
         {
-            var rscriptLauncher = ContainerSingleton.GetContainer().Resolve<RScriptLauncher>();
+            var rscriptRunner = ContainerSingleton.GetContainer().Resolve<RScriptRunner>();
             var report = new CarReport() {
                 Created = DateTime.UtcNow
             };
-            rscriptLauncher.Run(report);
+            rscriptRunner.Run(report);
         }
     }
 }
