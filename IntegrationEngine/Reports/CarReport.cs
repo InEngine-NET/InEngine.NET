@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TryQuartz.Reports
+namespace IntegrationEngine.Reports
 {
     public class CarReport : IReport<Car>
     {

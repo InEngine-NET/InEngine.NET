@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TryQuartz.MessageQueue
+namespace IntegrationEngine.MessageQueue
 {
     public interface IMessageQueueClient
     {

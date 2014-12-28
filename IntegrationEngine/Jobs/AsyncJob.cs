@@ -3,9 +3,9 @@ using System.Text;
 using Funq;
 using Quartz;
 using RabbitMQ.Client;
-using TryQuartz.MessageQueue;
+using IntegrationEngine.MessageQueue;
 
-namespace TryQuartz.Jobs
+namespace IntegrationEngine.Jobs
 {
     abstract public class AsyncJob : IJob
     {

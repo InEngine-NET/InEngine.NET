@@ -1,7 +1,7 @@
 ﻿using System;
 using Funq;
 
-namespace TryQuartz
+namespace IntegrationEngine
 {
     public class ContainerSingleton
     {

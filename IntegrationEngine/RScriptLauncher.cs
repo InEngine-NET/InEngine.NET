@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Nest;
-using TryQuartz.Reports;
+using IntegrationEngine.Reports;
 
-namespace TryQuartz
+namespace IntegrationEngine
 {
     public class RScriptLauncher
     {

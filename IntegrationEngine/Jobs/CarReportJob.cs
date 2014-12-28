@@ -1,9 +1,9 @@
 ﻿using System;
 using Quartz;
-using TryQuartz.Jobs;
-using TryQuartz.Reports;
+using IntegrationEngine.Jobs;
+using IntegrationEngine.Reports;
 
-namespace TryQuartz
+namespace IntegrationEngine
 {
     public class CarReportJob : AsyncJob, IAnalysisJob
     {

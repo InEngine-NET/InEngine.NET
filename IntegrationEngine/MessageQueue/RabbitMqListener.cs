@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using TryQuartz.Reports;
+using IntegrationEngine.Reports;
 
-namespace TryQuartz.MessageQueue
+namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMqListener
     {

@@ -4,14 +4,14 @@ using Funq;
 using Quartz;
 using Quartz.API;
 using Quartz.Impl;
-using TryQuartz.Jobs;
+using IntegrationEngine.Jobs;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
-using TryQuartz.MessageQueue;
+using IntegrationEngine.MessageQueue;
 using Nest;
 
-namespace TryQuartz
+namespace IntegrationEngine
 {
     public class ProgramConfiguration
     {

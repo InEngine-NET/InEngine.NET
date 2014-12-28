@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TryQuartz.Reports
+namespace IntegrationEngine.Reports
 {
     public interface IDatum
     {

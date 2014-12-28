@@ -2,7 +2,7 @@
 using RabbitMQ.Client;
 using System.Text;
 
-namespace TryQuartz.MessageQueue
+namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMqClient : IMessageQueueClient
     {

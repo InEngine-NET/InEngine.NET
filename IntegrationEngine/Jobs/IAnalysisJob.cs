@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TryQuartz
+namespace IntegrationEngine
 {
     public interface IAnalysisJob
     {

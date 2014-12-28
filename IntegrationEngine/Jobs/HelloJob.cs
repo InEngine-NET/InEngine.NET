@@ -1,7 +1,7 @@
 ﻿using System;
 using Quartz;
 
-namespace TryQuartz.Jobs
+namespace IntegrationEngine.Jobs
 {
     public class HelloJob : IJob
     {
