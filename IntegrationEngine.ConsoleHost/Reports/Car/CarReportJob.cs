@@ -16,9 +16,7 @@ namespace IntegrationEngine.ConsoleHost.Reports.Car
 
         public void Run()
         {
-//            return new CarReport() {
-//                Created = DateTime.UtcNow
-//            };
+            // Create a CarReport.
         }
     }
 }

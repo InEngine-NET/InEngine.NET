@@ -103,14 +103,17 @@
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="EngineHost.cs" />
     <Compile Include="EngineConfiguration.cs" />
-    <Compile Include="RScriptRunner.cs" />
     <Compile Include="LogExtensions.cs" />
     <Compile Include="Jobs\MessageQueueJob.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
+    <Compile Include="R\RScriptRunner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="job_scheduling_data_2_0.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="R\" />
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ using Nest;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using IntegrationEngine.R;
 
 namespace IntegrationEngine
 {
@@ -103,6 +104,12 @@ namespace IntegrationEngine
                 defaultIndex: "my-application"
             );
             Container.Register<IElasticClient>(new ElasticClient(settings));
+        }
+
+        public void Shutdown()
+        {
+            var scheduler = Container.Resolve<IScheduler>();
+            scheduler.Shutdown();
         }
     }
 }

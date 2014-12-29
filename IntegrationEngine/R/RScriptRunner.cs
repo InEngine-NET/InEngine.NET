@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Nest;
 using IntegrationEngine.Reports;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.R
 {
     public class RScriptRunner
     {
