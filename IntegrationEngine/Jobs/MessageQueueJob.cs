@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Text;
-using Funq;
 using Quartz;
-using RabbitMQ.Client;
 using IntegrationEngine.MessageQueue;
 
 namespace IntegrationEngine.Jobs
 {
-    abstract public class AsyncJob : IJob
+    public class MessageQueueJob : IJob
     {
         public IMessageQueueClient MessageQueueClient { get; set; }
 
-        public AsyncJob()
+        public MessageQueueJob()
         {
             MessageQueueClient = ContainerSingleton.GetContainer().Resolve<IMessageQueueClient>();
         }
 
         public virtual void Execute(IJobExecutionContext context)
         {
+            var contextDataMap = context.MergedJobDataMap;
+            if (contextDataMap.ContainsKey("IntegrationJob"))
+                MessageQueueClient.Publish(contextDataMap.Get("IntegrationJob"));
         }
     }
 }

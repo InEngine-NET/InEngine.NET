@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace IntegrationEngine.ConsoleHost
 {
@@ -6,7 +7,7 @@ namespace IntegrationEngine.ConsoleHost
     {
         public static void Main(string[] args)
         {
-            (new EngineHost()).Initialize();
+            (new EngineHost(typeof(MainClass).Assembly)).Initialize();
         }
     }
 }

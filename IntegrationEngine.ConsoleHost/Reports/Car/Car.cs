@@ -1,6 +1,7 @@
 ﻿using System;
+using IntegrationEngine.Reports;
 
-namespace IntegrationEngine.Reports
+namespace IntegrationEngine.ConsoleHost.Reports.Car
 {
     public class Car : IDatum
     {

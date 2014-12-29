@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using IntegrationEngine.Reports;
 
-namespace IntegrationEngine.Reports
+namespace IntegrationEngine.ConsoleHost.Reports.Car
 {
     public class CarReport : IReport<Car>
     {

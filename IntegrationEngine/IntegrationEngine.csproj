@@ -83,30 +83,33 @@
     <Reference Include="Funq">
       <HintPath>..\packages\Funq.1.0.0\lib\net40\Funq.dll</HintPath>
     </Reference>
+    <Reference Include="this.Log">
+      <HintPath>..\packages\this.Log.0.0.3.0\lib\net40\this.Log.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="this.Log-log4net">
+      <HintPath>..\packages\this.Log-log4net.0.0.3.0\lib\net40\this.Log-log4net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContainerSingleton.cs" />
-    <Compile Include="Jobs\AsyncJob.cs" />
-    <Compile Include="Jobs\CarReportJob.cs" />
-    <Compile Include="Jobs\HelloJob.cs" />
-    <Compile Include="Jobs\IAnalysisJob.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
     <Compile Include="MessageQueue\RabbitMqListener.cs" />
-    <Compile Include="Reports\Car.cs" />
-    <Compile Include="Reports\CarReport.cs" />
     <Compile Include="Reports\IDatum.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="EngineHost.cs" />
     <Compile Include="EngineConfiguration.cs" />
     <Compile Include="RScriptRunner.cs" />
+    <Compile Include="LogExtensions.cs" />
+    <Compile Include="Jobs\MessageQueueJob.cs" />
+    <Compile Include="Jobs\IIntegrationJob.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="RScripts\CarReport.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="job_scheduling_data_2_0.xsd" />
   </ItemGroup>

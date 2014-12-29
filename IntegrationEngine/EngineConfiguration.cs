@@ -10,6 +10,9 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using IntegrationEngine.MessageQueue;
 using Nest;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace IntegrationEngine
 {
@@ -20,19 +23,19 @@ namespace IntegrationEngine
         {
         }
 
-        public void Configure(Container container)
+        public void Configure(Container container, IList<Assembly> assembliesWithJobs)
         {
             Container = container;
             SetupElasticClient();
             SetupRScriptRunner();
             SetupMessageQueueClient();
-            SetupScheduler();
-            SetupMessageQueueListener();
+            SetupScheduler(assembliesWithJobs);
+            SetupMessageQueueListener(assembliesWithJobs);
         }
 
-        public void SetupMessageQueueListener()
+        public void SetupMessageQueueListener(IList<Assembly> assembliesWithJobs)
         {
-            RabbitMqListener.Listen();
+            RabbitMqListener.Listen(assembliesWithJobs);
         }
 
         public void SetupMessageQueueClient()
@@ -41,37 +44,41 @@ namespace IntegrationEngine
             Container.Register<IMessageQueueClient>(messageQueueClient);
         }
 
-        public void SetupScheduler()
+        public void SetupScheduler(IList<Assembly> assembliesWithJobs)
         {
-            try
+            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            Container.Register<IScheduler>(scheduler);
+            scheduler.Start();
+            Console.WriteLine("Scheduler Started!");
+
+            var jobTypes = assembliesWithJobs
+                .SelectMany(x => x.GetTypes())
+                .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
+
+            foreach(var jobType in jobTypes) 
             {
-                // Grab the Scheduler instance from the Factory 
-                IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
-                Container.Register<IScheduler>(scheduler);
-                // and start it off
-                scheduler.Start();
-                Console.WriteLine("Scheduler Started!");
-                // define the job and tie it to our HelloJob class
-                IJobDetail job = JobBuilder.Create<CarReportJob>()
-                    .WithIdentity("job1", "group1")
+                var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
+                var jobDetailsDataMap = new JobDataMap();
+                jobDetailsDataMap.Put("IntegrationJob", integrationJob);
+                var jobDetail = JobBuilder.Create<MessageQueueJob>()
+                    .SetJobData(jobDetailsDataMap)
+                    .WithIdentity(jobType.Name, jobType.Namespace)
                     .Build();
 
-                // Trigger the job to run now, and then repeat every 10 seconds
-                ITrigger trigger = TriggerBuilder.Create()
-                    .WithIdentity("trigger1")
-                    .StartNow()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(4).RepeatForever())
-                    .Build();
-
-                // Tell quartz to schedule the job using our trigger
-                scheduler.ScheduleJob(job, trigger);
-                // and last shut down the scheduler when you are ready to close your program
-                //scheduler.Shutdown();
+                var trigger = TriggerBuilder.Create()
+                    .WithIdentity("trigger-" + jobType.Name, jobType.Namespace);
+                if (!object.Equals(integrationJob.Interval, default(TimeSpan)))
+                    trigger.WithSimpleSchedule(x => x
+                        .WithInterval(integrationJob.Interval)
+                        .RepeatForever());
+                if (object.Equals(integrationJob.StartTimeUtc, default(DateTimeOffset)))
+                    trigger.StartNow();
+                else 
+                    trigger.StartAt(integrationJob.StartTimeUtc);
+                scheduler.ScheduleJob(jobDetail, trigger.Build());
             }
-            catch (SchedulerException se)
-            {
-                Console.WriteLine(se);
-            }
+            // Shutdown scheduler
+            //scheduler.Shutdown();
         }
 
         public void SetupSchedulerApi()

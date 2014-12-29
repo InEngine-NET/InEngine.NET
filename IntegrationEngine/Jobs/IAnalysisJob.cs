@@ -7,4 +7,3 @@ namespace IntegrationEngine
         void RunAnalysis();
     }
 }
-
