@@ -1,10 +1,10 @@
 ﻿{
     "MessageQueueConfiguration" : {
         "QueueName" : "myqueue",
-        "ExchangeName" : "amq.fanout",
+        "ExchangeName" : "amq.direct",
         "UserName" : "guest",
         "Password" : "guest",
         "HostName" : "localhost",
-        "VirtualHost" : "/",
+        "VirtualHost" : "/"
     }
 }

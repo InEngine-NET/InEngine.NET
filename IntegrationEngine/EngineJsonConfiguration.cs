@@ -5,6 +5,10 @@ namespace IntegrationEngine
 {
     public class EngineJsonConfiguration : JsonConfiguration
     {
+        public EngineJsonConfiguration() : base("IntegrationEngine.json")
+        {
+        }
+
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
     }
 

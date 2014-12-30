@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -119,11 +119,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="job_scheduling_data_2_0.xsd" />
-    <None Include="config.json">
+    <None Include="IntegrationEngine.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="R\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
