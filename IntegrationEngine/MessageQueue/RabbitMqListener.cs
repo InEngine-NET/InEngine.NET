@@ -11,50 +11,37 @@ namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMqListener
     {
-//        public IList<Assembly> AssembliesWithJobs { get; set; }
-//
-//        public RabbitMqListener()
-//        {}
-//
-//        public RabbitMqListener(IList<Assembly> assembliesWithJobs) : this()
-//        {
-//            AssembliesWithJobs = assembliesWithJobs;
-//        }
+        public IList<Assembly> AssembliesWithJobs { get; set; }
+        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public MessageQueueConnection MessageQueueConnection { get; set; }
 
-        public static void Listen(IList<Assembly> assembliesWithJobs)
+        public RabbitMqListener()
+        {}
+
+        public void Listen()
         {
-            var connectionFactory = new ConnectionFactory() { 
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
-                VirtualHost = "/",
-                Protocol = Protocols.DefaultProtocol,
-                Port = AmqpTcpEndpoint.UseDefaultPort,
-            };
-
-            using (var connection = connectionFactory.CreateConnection())
+            var connection = MessageQueueConnection.GetConnection();
+            using (var channel = connection.CreateModel())
             {
-                using (var channel = connection.CreateModel())
+                var consumer = new QueueingBasicConsumer(channel);
+                channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
+
+                Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
+                while (true)
                 {
-                    var consumer = new QueueingBasicConsumer(channel);
-                    channel.BasicConsume("myqueue", true, consumer);
-                    Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
-                    while (true)
-                    {
-                        var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
-                        var body = eventArgs.Body;
-                        var message = Encoding.UTF8.GetString(body);
-                        Console.WriteLine(" [x] Received {0}", message);
-                        var types = assembliesWithJobs
-                            .SelectMany(x => x.GetTypes())
-                            .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
-                        if (!types.Any())
-                            continue;
-                        var type = types.FirstOrDefault(t => t.FullName.Equals(message));
-                        var reportJob = Activator.CreateInstance(type) as IIntegrationJob;
-                        if (reportJob != null)
-                            reportJob.Run();
-                    }
+                    var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
+                    var body = eventArgs.Body;
+                    var message = Encoding.UTF8.GetString(body);
+                    Console.WriteLine(" [x] Received {0}", message);
+                    var types = AssembliesWithJobs
+                        .SelectMany(x => x.GetTypes())
+                        .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
+                    if (!types.Any())
+                        continue;
+                    var type = types.FirstOrDefault(t => t.FullName.Equals(message));
+                    var reportJob = Activator.CreateInstance(type) as IIntegrationJob;
+                    if (reportJob != null)
+                        reportJob.Run();
                 }
             }
         }

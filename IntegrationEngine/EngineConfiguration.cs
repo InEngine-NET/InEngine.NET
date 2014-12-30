@@ -14,12 +14,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using IntegrationEngine.R;
+using System.Configuration;
 
 namespace IntegrationEngine
 {
     public class EngineConfiguration
     {
         public Container Container { get; set; }
+        public EngineJsonConfiguration Configuration { get; set; }
         public EngineConfiguration()
         {
         }
@@ -27,6 +29,7 @@ namespace IntegrationEngine
         public void Configure(Container container, IList<Assembly> assembliesWithJobs)
         {
             Container = container;
+            LoadConfiguration();
             SetupElasticClient();
             SetupRScriptRunner();
             SetupMessageQueueClient();
@@ -34,14 +37,28 @@ namespace IntegrationEngine
             SetupMessageQueueListener(assembliesWithJobs);
         }
 
+        public void LoadConfiguration()
+        {
+            Configuration = new EngineJsonConfiguration();
+            Container.Register<EngineJsonConfiguration>(Configuration);
+        }
+
         public void SetupMessageQueueListener(IList<Assembly> assembliesWithJobs)
         {
-            RabbitMqListener.Listen(assembliesWithJobs);
+            var rabbitMqListener = new RabbitMqListener() {
+                AssembliesWithJobs = assembliesWithJobs,
+                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueueConfiguration),
+                MessageQueueConfiguration = Configuration.MessageQueueConfiguration,
+            };
+            rabbitMqListener.Listen();
         }
 
         public void SetupMessageQueueClient()
         {
-            var messageQueueClient = new RabbitMqClient();
+            var messageQueueClient = new RabbitMqClient() {
+                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueueConfiguration),
+                MessageQueueConfiguration = Configuration.MessageQueueConfiguration,
+            };
             Container.Register<IMessageQueueClient>(messageQueueClient);
         }
 

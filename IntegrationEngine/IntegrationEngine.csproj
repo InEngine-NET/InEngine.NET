@@ -92,6 +92,10 @@
     <Reference Include="this.Log-log4net">
       <HintPath>..\packages\this.Log-log4net.0.0.3.0\lib\net40\this.Log-log4net.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="fx.configuration">
+      <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,11 +111,17 @@
     <Compile Include="Jobs\MessageQueueJob.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="R\RScriptRunner.cs" />
+    <Compile Include="EngineJsonConfiguration.cs" />
+    <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
+    <Compile Include="MessageQueue\MessageQueueConnection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="job_scheduling_data_2_0.xsd" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="R\" />
