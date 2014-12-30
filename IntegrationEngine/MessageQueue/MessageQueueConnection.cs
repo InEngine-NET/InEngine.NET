@@ -7,6 +7,7 @@ namespace IntegrationEngine
     {
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public ConnectionFactory ConnectionFactory { get; set; }
+        IConnection _connection;
 
         public MessageQueueConnection()
         {
@@ -31,9 +32,11 @@ namespace IntegrationEngine
 
         public IConnection GetConnection()
         {
+            if (_connection != null)
+                return _connection;
             if (ConnectionFactory == null)
                 ConnectionFactory = GetConnectionFactory();
-            return ConnectionFactory.CreateConnection();
+            return _connection = ConnectionFactory.CreateConnection();
         }
     }
 }
