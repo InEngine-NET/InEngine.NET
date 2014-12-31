@@ -1,7 +1,7 @@
 ﻿using System;
 using RabbitMQ.Client;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.MessageQueue
 {
     public class MessageQueueConnection : IMessageQueueConnection
     {
