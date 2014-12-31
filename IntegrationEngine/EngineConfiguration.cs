@@ -16,21 +16,21 @@ using IntegrationEngine.R;
 using System.Configuration;
 using IntegrationEngine.Mail;
 using System.Net.Mail;
+using log4net;
 
 namespace IntegrationEngine
 {
     public class EngineConfiguration
     {
-        public Container Container { get; set; }
         public EngineJsonConfiguration Configuration { get; set; }
         public EngineConfiguration()
         {
         }
 
-        public void Configure(Container container, IList<Assembly> assembliesWithJobs)
+        public void Configure(IList<Assembly> assembliesWithJobs)
         {
-            Container = container;
             LoadConfiguration();
+            SetupLogging();
             SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
@@ -43,6 +43,12 @@ namespace IntegrationEngine
         {
             Configuration = new EngineJsonConfiguration();
             Container.Register<EngineJsonConfiguration>(Configuration);
+        }
+
+        public void SetupLogging()
+        {
+            var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            Container.Register<ILog>(log);
         }
 
         public void SetupMailClient()
@@ -77,7 +83,6 @@ namespace IntegrationEngine
             IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
             Container.Register<IScheduler>(scheduler);
             scheduler.Start();
-            Console.WriteLine("Scheduler Started!");
 
             var jobTypes = assembliesWithJobs
                 .SelectMany(x => x.GetTypes())

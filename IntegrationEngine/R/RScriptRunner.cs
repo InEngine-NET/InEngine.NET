@@ -12,7 +12,7 @@ namespace IntegrationEngine.R
 
         public RScriptRunner()
         {
-            ElasticClient = ContainerSingleton.GetContainer().Resolve<IElasticClient>();
+            ElasticClient = Container.Resolve<IElasticClient>();
         }
 
         public void Run<T>(IReport<T> report)

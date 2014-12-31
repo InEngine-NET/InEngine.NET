@@ -1,6 +1,7 @@
 ﻿using System;
 using RabbitMQ.Client;
 using System.Text;
+using log4net;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -8,9 +9,12 @@ namespace IntegrationEngine.MessageQueue
     {
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
+        public ILog Log { get; set; }
 
-        public RabbitMqClient()
-        {}
+        public RabbitMqClient() 
+        {
+            Log = Container.Resolve<ILog>();
+        }
 
         public void Publish<T>(T value)
         {
@@ -22,7 +26,7 @@ namespace IntegrationEngine.MessageQueue
                 channel.QueueBind(MessageQueueConfiguration.QueueName, MessageQueueConfiguration.ExchangeName, "");
                 var body = Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(MessageQueueConfiguration.ExchangeName, "", null, body);
-                Console.WriteLine(" [x] Sent {0}", message);
+                Log.Info(string.Format("Sent {0}", message));
             }
         }
     }

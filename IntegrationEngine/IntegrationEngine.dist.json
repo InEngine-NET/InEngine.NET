@@ -6,5 +6,9 @@
         "Password" : "guest",
         "HostName" : "localhost",
         "VirtualHost" : "/"
+    },
+    "MailConfiguration" : {
+        "Host" : "localhost",
+        "Port" : 25
     }
 }

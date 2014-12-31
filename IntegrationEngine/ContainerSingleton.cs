@@ -1,18 +1,19 @@
 ﻿using System;
-using Funq;
+using FunqContainer = Funq.Container;
 
 namespace IntegrationEngine
 {
-    internal class ContainerSingleton
+    public class ContainerSingleton
     {
-        private static Container _container;
+        private static FunqContainer _instance;
         private ContainerSingleton() {}
 
-        public static Container GetContainer()
+        public static FunqContainer GetContainer()
         {
-            if (_container == null)
-                _container = new Container();
-            return _container;
+            if (_instance == null)
+                _instance = new FunqContainer();
+            return _instance;
         }
     }
 }
+

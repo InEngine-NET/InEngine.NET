@@ -24,7 +24,7 @@ namespace IntegrationEngine
         public void Initialize()
         {
             _engineConfiguration = new EngineConfiguration();
-            _engineConfiguration.Configure(ContainerSingleton.GetContainer(), AssembliesWithJobs);
+            _engineConfiguration.Configure(AssembliesWithJobs);
         }
     }
 }

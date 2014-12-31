@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using log4net;
 
 namespace IntegrationEngine.Mail
 {
@@ -7,15 +8,22 @@ namespace IntegrationEngine.Mail
     {
         public SmtpClient SmtpClient { get; set; }
         public MailConfiguration MailConfiguration { get; set; }
+        public ILog Log { get; set; }
 
         public MailClient ()
         {
+            Log = Container.Resolve<ILog>();
         }
 
         public void Send(MailMessage mailMessage)
         {
             ConfigureSmtpClient();
-            SmtpClient.Send(mailMessage);
+            try {
+
+                SmtpClient.Send(mailMessage);
+            } catch (Exception exception) {
+                Log.Error("Cannot send mail message", exception);
+            }
         }
 
         void ConfigureSmtpClient()

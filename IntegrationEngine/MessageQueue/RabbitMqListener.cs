@@ -6,6 +6,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using IntegrationEngine.Reports;
 using System.Collections.Generic;
+using log4net;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -14,9 +15,12 @@ namespace IntegrationEngine.MessageQueue
         public IList<Assembly> AssembliesWithJobs { get; set; }
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
+        public ILog Log { get; set; }
 
         public RabbitMqListener()
-        {}
+        {
+            Log = Container.Resolve<ILog>();
+        }
 
         public void Listen()
         {
@@ -26,13 +30,13 @@ namespace IntegrationEngine.MessageQueue
                 var consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
 
-                Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
+                Log.Info("Waiting for messages. To exit press CTRL+C");
                 while (true)
                 {
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
                     var body = eventArgs.Body;
                     var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(" [x] Received {0}", message);
+                    Log.Info(string.Format("Received {0}", message));
                     var types = AssembliesWithJobs
                         .SelectMany(x => x.GetTypes())
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);

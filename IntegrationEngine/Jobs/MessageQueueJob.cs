@@ -10,7 +10,7 @@ namespace IntegrationEngine.Jobs
 
         public MessageQueueJob()
         {
-            MessageQueueClient = ContainerSingleton.GetContainer().Resolve<IMessageQueueClient>();
+            MessageQueueClient = Container.Resolve<IMessageQueueClient>();
         }
 
         public virtual void Execute(IJobExecutionContext context)

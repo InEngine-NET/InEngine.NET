@@ -13,16 +13,12 @@ namespace IntegrationEngine.Jobs
 
         public MailMessageJob()
         {
-            MailClient = ContainerSingleton.GetContainer().Resolve<IMailClient>();
+            MailClient = Container.Resolve<IMailClient>();
             MailMessage = new MailMessage();
         }
 
-        public void Run()
+        public virtual void Run()
         {
-            MailMessage.To.Add("ethanhann@gmail.com");
-            MailMessage.Subject = "This is the Subject line";
-            MailMessage.From = new System.Net.Mail.MailAddress("root@localhost");
-            MailMessage.Body = "This is the message body";
             MailClient.Send(MailMessage);
         }
     }
