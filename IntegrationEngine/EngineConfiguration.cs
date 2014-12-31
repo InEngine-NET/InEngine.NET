@@ -2,7 +2,6 @@
 using System.Threading;
 using Funq;
 using Quartz;
-using Quartz.API;
 using Quartz.Impl;
 using IntegrationEngine.Jobs;
 using RabbitMQ.Client;
@@ -15,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using IntegrationEngine.R;
 using System.Configuration;
+using IntegrationEngine.Mail;
+using System.Net.Mail;
 
 namespace IntegrationEngine
 {
@@ -30,6 +31,7 @@ namespace IntegrationEngine
         {
             Container = container;
             LoadConfiguration();
+            SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
             SetupMessageQueueClient();
@@ -41,6 +43,14 @@ namespace IntegrationEngine
         {
             Configuration = new EngineJsonConfiguration();
             Container.Register<EngineJsonConfiguration>(Configuration);
+        }
+
+        public void SetupMailClient()
+        {
+            var mailClient = new MailClient() {
+                MailConfiguration = Configuration.MailConfiguration,
+            };
+            Container.Register<IMailClient>(mailClient);
         }
 
         public void SetupMessageQueueListener(IList<Assembly> assembliesWithJobs)
@@ -95,19 +105,8 @@ namespace IntegrationEngine
                     trigger.StartAt(integrationJob.StartTimeUtc);
                 scheduler.ScheduleJob(jobDetail, trigger.Build());
             }
-            // Shutdown scheduler
-            //scheduler.Shutdown();
         }
-
-        public void SetupSchedulerApi()
-        {
-            QuartzAPI.Configure(builder => {
-                builder.UseScheduler(Container.Resolve<IScheduler>());
-                builder.EnableCors();
-            });
-            QuartzAPI.Start("http://localhost:9001/");
-        }
-
+            
         public void SetupRScriptRunner()
         {
             Container.Register<RScriptRunner>(new RScriptRunner());

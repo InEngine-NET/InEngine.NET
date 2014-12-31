@@ -10,6 +10,7 @@ namespace IntegrationEngine
         }
 
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public MailConfiguration MailConfiguration { get; set; }
     }
 
     public class MessageQueueConfiguration
@@ -20,6 +21,12 @@ namespace IntegrationEngine
         public string Password { get; set; }
         public string HostName { get; set; }
         public string VirtualHost { get; set; }
+    }
+
+    public class MailConfiguration
+    {
+        public string Host { get; set; }
+        public int Port { get; set; }
     }
 }
 
