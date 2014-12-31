@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using IntegrationEngine.Reports;
-using System.Collections.Generic;
 using log4net;
+using IntegrationEngine.Jobs;
+using IntegrationEngine.Reports;
 
 namespace IntegrationEngine.MessageQueue
 {

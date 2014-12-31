@@ -2,7 +2,7 @@
 using System.Net.Mail;
 using IntegrationEngine.Mail;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.Jobs
 {
     public interface IMailMessageJob : IIntegrationJob
     {
