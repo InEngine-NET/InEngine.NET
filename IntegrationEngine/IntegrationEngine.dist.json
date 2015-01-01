@@ -11,11 +11,12 @@
         "Host" : "localhost",
         "Port" : 25
     },
-	"DatabaseConfiguration" : { 
-		"HostName" : "localhost",
+    "DatabaseConfiguration" : { 
+        "ServerType" : "MySQL",
+        "HostName" : "localhost",
         "Port" : 3306,
-		"DatabaseName" : "IntegrationEngine",
-		"UserName": "inengine",
-		"Password": "secret",
-	}
+        "DatabaseName" : "IntegrationEngine",
+        "UserName": "inengine",
+        "Password": "secret",
+    }
 }

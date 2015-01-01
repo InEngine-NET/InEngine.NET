@@ -32,6 +32,7 @@ namespace IntegrationEngine
 
     public class DatabaseConfiguration
     {
+        public string ServerType { get; set; }
         public string HostName { get; set; }
         public uint Port { get; set; }
         public string DatabaseName { get; set; }

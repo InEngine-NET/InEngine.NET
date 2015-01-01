@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 
@@ -51,16 +52,7 @@ namespace IntegrationEngine
         }
         public void SetupDatabaseRepository()
         {
-            DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
-            var dbConfig = Configuration.DatabaseConfiguration;
-            var connectionStringBuilder = new MySqlConnectionStringBuilder() {
-                Server = dbConfig.HostName,
-                Port = dbConfig.Port,
-                Database = dbConfig.DatabaseName,
-                UserID = dbConfig.UserName,
-                Password = dbConfig.Password,
-            };
-            var dbContext = new IntegrationEngineContext(connectionStringBuilder.ConnectionString);
+            var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
             dbContext.Database.CreateIfNotExists();
             var repository = new Repository<IntegrationEngine.Models.MailMessage>(dbContext);
         }
