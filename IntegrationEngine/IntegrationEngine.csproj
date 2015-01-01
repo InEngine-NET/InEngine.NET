@@ -144,6 +144,7 @@
     <Compile Include="Storage\IntegrationEngineContext.cs" />
     <Compile Include="Storage\IRepository.cs" />
     <Compile Include="Storage\Repository.cs" />
+    <Compile Include="Storage\SqlServerDbConfiguration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

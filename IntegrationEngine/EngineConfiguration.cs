@@ -50,6 +50,7 @@ namespace IntegrationEngine
             var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             Container.Register<ILog>(log);
         }
+
         public void SetupDatabaseRepository()
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();

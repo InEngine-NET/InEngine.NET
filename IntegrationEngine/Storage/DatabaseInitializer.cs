@@ -43,6 +43,7 @@ namespace IntegrationEngine.Storage
             }
             if (DatabaseConfiguration.ServerType == "SQLServer")
             {
+                DbConfiguration.SetConfiguration(new SqlServerDbConfiguration());
                 connectionString = (new SqlConnectionStringBuilder() {
                     DataSource = string.Join(",", DatabaseConfiguration.HostName, DatabaseConfiguration.Port),
                     InitialCatalog = DatabaseConfiguration.DatabaseName,
