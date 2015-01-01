@@ -1,5 +1,4 @@
 ﻿using IntegrationEngine.Models;
-using MySql.Data.Entity;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;

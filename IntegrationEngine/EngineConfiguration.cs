@@ -4,16 +4,12 @@ using IntegrationEngine.MessageQueue;
 using IntegrationEngine.R;
 using IntegrationEngine.Storage;
 using log4net;
-using MySql.Data.Entity;
-using MySql.Data.MySqlClient;
 using Nest;
 using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 
