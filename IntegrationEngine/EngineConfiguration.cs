@@ -1,22 +1,20 @@
-﻿using System;
-using System.Threading;
-using Funq;
+﻿using IntegrationEngine.Jobs;
+using IntegrationEngine.Mail;
+using IntegrationEngine.MessageQueue;
+using IntegrationEngine.R;
+using IntegrationEngine.Storage;
+using log4net;
+using MySql.Data.Entity;
+using MySql.Data.MySqlClient;
+using Nest;
 using Quartz;
 using Quartz.Impl;
-using IntegrationEngine.Jobs;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
-using IntegrationEngine.MessageQueue;
-using Nest;
-using System.Reflection;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using IntegrationEngine.R;
 using System.Configuration;
-using IntegrationEngine.Mail;
-using System.Net.Mail;
-using log4net;
+using System.Data.Entity;
+using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine
 {
@@ -31,6 +29,7 @@ namespace IntegrationEngine
         {
             LoadConfiguration();
             SetupLogging();
+            SetupDatabaseRepository();
             SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
@@ -49,6 +48,21 @@ namespace IntegrationEngine
         {
             var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             Container.Register<ILog>(log);
+        }
+        public void SetupDatabaseRepository()
+        {
+            DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
+            var dbConfig = Configuration.DatabaseConfiguration;
+            var connectionStringBuilder = new MySqlConnectionStringBuilder() {
+                Server = dbConfig.HostName,
+                Port = dbConfig.Port,
+                Database = dbConfig.DatabaseName,
+                UserID = dbConfig.UserName,
+                Password = dbConfig.Password,
+            };
+            var dbContext = new IntegrationEngineContext(connectionStringBuilder.ConnectionString);
+            dbContext.Database.CreateIfNotExists();
+            var repository = new Repository<IntegrationEngine.Models.MailMessage>(dbContext);
         }
 
         public void SetupMailClient()
