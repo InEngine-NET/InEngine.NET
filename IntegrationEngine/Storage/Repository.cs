@@ -26,7 +26,7 @@ namespace IntegrationEngine.Storage
             return table.ToList();
         }
 
-        public T SelectByID(object id)
+        public T SelectById(object id)
         {
             return table.Find(id);
         }
@@ -51,6 +51,11 @@ namespace IntegrationEngine.Storage
         public void Save()
         {
             db.SaveChanges();
+        }
+
+        public bool Exists(object id)
+        {
+            return table.Find(id) != null;
         }
     }
 }

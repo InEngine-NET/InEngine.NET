@@ -23,31 +23,37 @@ namespace IntegrationEngine.Storage
 
         public IntegrationEngineContext GetDbContext()
         {
-            var connectionString = "";
+            DbConfiguration.SetConfiguration(new IntegrationEngineDbConfiguration(DatabaseConfiguration.ServerType));
             if (DatabaseConfiguration.ServerType == "MySQL")
-            {
-                DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
-                connectionString = (new MySqlConnectionStringBuilder()
-                {
-                    Server = DatabaseConfiguration.HostName,
-                    Port = DatabaseConfiguration.Port,
-                    Database = DatabaseConfiguration.DatabaseName,
-                    UserID = DatabaseConfiguration.UserName,
-                    Password = DatabaseConfiguration.Password,
-                }).ConnectionString;
-            }
+                _connectionString = GetMySqlConnectionString();
             if (DatabaseConfiguration.ServerType == "SQLServer")
+                _connectionString = GetSqlServerConnectionString();
+            var dbContext = new IntegrationEngineContext(_connectionString);
+            dbContext.Database.CreateIfNotExists();
+            return dbContext;
+        }
+
+        string GetMySqlConnectionString()
+        {
+            return (new MySqlConnectionStringBuilder()
             {
-                DbConfiguration.SetConfiguration(new SqlServerDbConfiguration());
-                connectionString = (new SqlConnectionStringBuilder() {
-                    DataSource = string.Join(",", DatabaseConfiguration.HostName, DatabaseConfiguration.Port),
-                    InitialCatalog = DatabaseConfiguration.DatabaseName,
-                    UserID = DatabaseConfiguration.UserName,
-                    Password = DatabaseConfiguration.Password,
-                }).ConnectionString;
-            }
-            _connectionString = connectionString;
-            return new IntegrationEngineContext(connectionString);
+                Server = DatabaseConfiguration.HostName,
+                Port = DatabaseConfiguration.Port,
+                Database = DatabaseConfiguration.DatabaseName,
+                UserID = DatabaseConfiguration.UserName,
+                Password = DatabaseConfiguration.Password,
+            }).ConnectionString;
+        }
+
+        string GetSqlServerConnectionString()
+        {
+            return (new SqlConnectionStringBuilder()
+            {
+                DataSource = string.Join(",", DatabaseConfiguration.HostName, DatabaseConfiguration.Port),
+                InitialCatalog = DatabaseConfiguration.DatabaseName,
+                UserID = DatabaseConfiguration.UserName,
+                Password = DatabaseConfiguration.Password,
+            }).ConnectionString;
         }
     }
 }

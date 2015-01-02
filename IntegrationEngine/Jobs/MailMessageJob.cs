@@ -4,10 +4,8 @@ using IntegrationEngine.Mail;
 
 namespace IntegrationEngine.Jobs
 {
-    public class MailMessageJob : IMailMessageJob
+    public partial class MailMessageJob
     {
-        public TimeSpan Interval { get; set; }
-        public DateTimeOffset StartTimeUtc { get; set; }
         public MailMessage MailMessage { get; set; }
         public IMailClient MailClient { get; set; }
 

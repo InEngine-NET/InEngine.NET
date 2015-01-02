@@ -25,6 +25,6 @@ namespace IntegrationEngine.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<MailMessage> MailMessages { get; set; }
+        public virtual DbSet<MailMessageJob> MailMessageJobs { get; set; }
     }
 }

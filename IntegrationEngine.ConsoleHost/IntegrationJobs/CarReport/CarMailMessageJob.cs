@@ -8,7 +8,6 @@ namespace IntegrationEngine.ConsoleHost.Car
     {
         public CarMailMessageJob() : base()
         {
-            Interval = TimeSpan.FromSeconds(1);
         }
 
         public override void Run()

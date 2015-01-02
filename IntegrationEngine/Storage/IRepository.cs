@@ -9,10 +9,11 @@ namespace IntegrationEngine.Storage
     interface IRepository<T> where T : class
     {
         IEnumerable<T> SelectAll();
-        T SelectByID(object id);
+        T SelectById(object id);
         void Insert(T value);
         void Update(T value);
         void Delete(object id);
         void Save();
+        bool Exists(object id);
     }
 }

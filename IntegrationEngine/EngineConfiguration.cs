@@ -1,4 +1,5 @@
-﻿using IntegrationEngine.Jobs;
+﻿using IntegrationEngine.Api;
+using IntegrationEngine.Jobs;
 using IntegrationEngine.Mail;
 using IntegrationEngine.MessageQueue;
 using IntegrationEngine.R;
@@ -27,6 +28,7 @@ namespace IntegrationEngine
             LoadConfiguration();
             SetupLogging();
             SetupDatabaseRepository();
+            SetupApi();
             SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
@@ -50,8 +52,12 @@ namespace IntegrationEngine
         public void SetupDatabaseRepository()
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
-            dbContext.Database.CreateIfNotExists();
-            var repository = new Repository<IntegrationEngine.Models.MailMessage>(dbContext);
+            var repository = new Repository<MailMessageJob>(dbContext);
+        }
+
+        public void SetupApi()
+        {
+            //IntegrationEngineApi.Start("");
         }
 
         public void SetupMailClient()

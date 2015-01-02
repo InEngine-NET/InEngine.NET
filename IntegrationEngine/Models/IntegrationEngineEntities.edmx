@@ -13,9 +13,9 @@
     <edmx:ConceptualModels>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="IntegrationEngineEntities" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
         <EntityContainer Name="IntegrationEngineEntitiesContainer" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="MailMessages" EntityType="IntegrationEngineEntities.MailMessage" />
+          <EntitySet Name="MailMessageJobs" EntityType="IntegrationEngineEntities.MailMessageJob" />
         </EntityContainer>
-        <EntityType Name="MailMessage">
+        <EntityType Name="MailMessageJob">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
