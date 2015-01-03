@@ -15,10 +15,10 @@ namespace IntegrationEngine.Api.Controllers
 {
     public class MailMessageJobController : ApiController
     {
-        public Repository<MailMessageJob> Repository { get; set; } 
+        public IRepository<MailMessageJob> Repository { get; set; }
         public MailMessageJobController()
         {
-            Repository = Container.Resolve<Repository<MailMessageJob>>();
+            Repository = Container.Resolve<IRepository<MailMessageJob>>();
         }
 
         // GET api/MailMessageJob
@@ -46,7 +46,7 @@ namespace IntegrationEngine.Api.Controllers
             if (id != mailMessageJob.Id)
                 return BadRequest();
 
-            Repository.db.Entry(mailMessageJob).State = EntityState.Modified;
+            Repository.SetState(mailMessageJob, EntityState.Modified);
 
             try
             {
@@ -86,13 +86,6 @@ namespace IntegrationEngine.Api.Controllers
             Repository.Delete(mailMessageJob);
             Repository.Save();
             return Ok(mailMessageJob);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                Repository.db.Dispose();
-            base.Dispose(disposing);
         }
 
         private bool MailMessageJobExists(int id)

@@ -21,6 +21,7 @@ namespace IntegrationEngine.Storage
             this.db = db;
             table = db.Set<T>();
         }
+
         public IEnumerable<T> SelectAll()
         {
             return table.ToList();
@@ -56,6 +57,16 @@ namespace IntegrationEngine.Storage
         public bool Exists(object id)
         {
             return table.Find(id) != null;
+        }
+
+        public void SetState(T value, EntityState entityState)
+        {
+            db.Entry(value).State = entityState;
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

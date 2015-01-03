@@ -28,12 +28,12 @@ namespace IntegrationEngine
             LoadConfiguration();
             SetupLogging();
             SetupDatabaseRepository();
-            SetupApi();
             SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
             SetupMessageQueueClient();
             SetupScheduler(assembliesWithJobs);
+            SetupApi();
             SetupMessageQueueListener(assembliesWithJobs);
         }
 
@@ -52,12 +52,13 @@ namespace IntegrationEngine
         public void SetupDatabaseRepository()
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
-            var repository = new Repository<MailMessageJob>(dbContext);
+            var repository = new Repository<IntegrationEngine.Models.MailMessageJob>(dbContext);
+            Container.Register<IRepository<IntegrationEngine.Models.MailMessageJob>>(repository);
         }
 
         public void SetupApi()
         {
-            //IntegrationEngineApi.Start("");
+            IntegrationEngineApi.Start("http://localhost:9001/");
         }
 
         public void SetupMailClient()

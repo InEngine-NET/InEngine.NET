@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin.Hosting;
+using Microsoft.Owin.Host.HttpListener;
 
 namespace IntegrationEngine.Api
 {
@@ -9,7 +10,7 @@ namespace IntegrationEngine.Api
 
         public static void Start(string baseAddress)
         {
-            WebApp.Start<Startup>(url: baseAddress);
+            WebApp.Start<Startup>(baseAddress);
         }
     }
 }
