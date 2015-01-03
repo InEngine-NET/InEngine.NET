@@ -23,7 +23,7 @@ namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
             Razor.Compile<SampleReport>(template, "template-01");
             var html = Razor.Run("template-01", report);
             //Console.WriteLine(result.ToString());
-
+             
             // Write result to Elasticsearch
             // Send Mail
             // How to get recipients?

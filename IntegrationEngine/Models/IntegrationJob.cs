@@ -12,13 +12,10 @@ namespace IntegrationEngine.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class MailMessageJob
+    public partial class IntegrationJob
     {
         public int Id { get; set; }
-        public string To { get; set; }
-        public string From { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
-        public bool IsBodyHtml { get; set; }
+        public long Interval { get; set; }
+        public System.DateTimeOffset StartTimeUtc { get; set; }
     }
 }

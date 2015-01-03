@@ -53,8 +53,8 @@ namespace IntegrationEngine
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
             Container.Register<IntegrationEngineContext>(dbContext);
-            var repository = new Repository<IntegrationEngine.Models.MailMessageJob>(dbContext);
-            Container.Register<IRepository<IntegrationEngine.Models.MailMessageJob>>(repository);
+            var repository = new Repository<IntegrationEngine.Models.IntegrationJob>(dbContext);
+            Container.Register<IRepository<IntegrationEngine.Models.IntegrationJob>>(repository);
         }
 
         public void SetupApi()

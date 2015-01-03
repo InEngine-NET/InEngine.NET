@@ -28,7 +28,7 @@ namespace IntegrationEngine.Storage
                 _connectionString = GetMySqlConnectionString();
             if (DatabaseConfiguration.ServerType == "SQLServer")
                 _connectionString = GetSqlServerConnectionString();
-            var dbContext = new IntegrationEngineContext(_connectionString);
+            var dbContext = new IntegrationEngineContext(_connectionString);           
             dbContext.Database.CreateIfNotExists();
             return dbContext;
         }
@@ -51,6 +51,7 @@ namespace IntegrationEngine.Storage
             {
                 DataSource = string.Join(",", DatabaseConfiguration.HostName, DatabaseConfiguration.Port),
                 InitialCatalog = DatabaseConfiguration.DatabaseName,
+                IntegratedSecurity = false,
                 UserID = DatabaseConfiguration.UserName,
                 Password = DatabaseConfiguration.Password,
             }).ConnectionString;

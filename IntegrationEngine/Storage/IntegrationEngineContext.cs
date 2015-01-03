@@ -6,23 +6,19 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace IntegrationEngine.Storage
 {
-    //[DbConfigurationType("IntegrationEngine.Storage.IntegrationEngineDbConfiguration, IntegrationEngine")]
     public class IntegrationEngineContext : DbContext
     {
-        //public IntegrationEngineContext()
-        //{ }
         public IntegrationEngineContext(string connectionString)
             : base(connectionString)
         { }
-        //public IntegrationEngineContext(DbConnection dbConnection, bool contextOwnsConnection = true)
-        //    : base(dbConnection, contextOwnsConnection) 
-        //{}
 
-        public DbSet<MailMessageJob> MailMessageJobs { get; set; }
+        //public DbSet<MailMessageJob> MailMessageJobs { get; set; }
+        public DbSet<IntegrationJob> IntegrationJobs { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Add<PluralizingTableNameConvention>();
+            //modelBuilder.Entity<IntegrationJob>().Property(p => p.StartTimeUtc).HasColumnType("DateTimeOffset");
             base.OnModelCreating(modelBuilder);
         }
     }
