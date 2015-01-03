@@ -104,7 +104,7 @@ namespace IntegrationEngine
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
                 var jobDetailsDataMap = new JobDataMap();
                 jobDetailsDataMap.Put("IntegrationJob", integrationJob);
-                var jobDetail = JobBuilder.Create<MessageQueueJob>()
+                var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
                     .SetJobData(jobDetailsDataMap)
                     .WithIdentity(jobType.Name, jobType.Namespace)
                     .Build();

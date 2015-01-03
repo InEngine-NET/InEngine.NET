@@ -158,7 +158,7 @@
     <Compile Include="EngineHost.cs" />
     <Compile Include="EngineConfiguration.cs" />
     <Compile Include="LogExtensions.cs" />
-    <Compile Include="Jobs\MessageQueueJob.cs" />
+    <Compile Include="MessageQueue\IntegrationJobDispatcherJob.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="R\RScriptRunner.cs" />
     <Compile Include="EngineJsonConfiguration.cs" />
