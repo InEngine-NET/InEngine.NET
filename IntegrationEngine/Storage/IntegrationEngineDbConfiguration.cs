@@ -21,6 +21,8 @@ namespace IntegrationEngine.Storage
             if (serverType == "MySQL")
             {
                 SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
+                SetProviderFactory(MySqlProviderInvariantName.ProviderName, new MySqlClientFactory()); 
+                SetProviderServices(MySqlProviderInvariantName.ProviderName, new MySqlProviderServices());
                 SetDefaultConnectionFactory(new MySqlConnectionFactory());
             }
             else if (serverType == "SQLServer")
