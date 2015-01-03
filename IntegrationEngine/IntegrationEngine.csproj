@@ -127,6 +127,10 @@
     <Compile Include="Api\Controllers\MailMessageJobController.cs" />
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
+    <Compile Include="Jobs\IElasticsearchJob.cs" />
+    <Compile Include="Jobs\ILogJob.cs" />
+    <Compile Include="Jobs\ISqlJob.cs" />
+    <Compile Include="Jobs\SqlJob.cs" />
     <Compile Include="Models\IntegrationEngineEntities.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -160,10 +164,9 @@
     <Compile Include="EngineJsonConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
-    <Compile Include="Jobs\MailMessageJob.cs" />
     <Compile Include="Mail\MailClient.cs" />
     <Compile Include="Mail\IMailClient.cs" />
-    <Compile Include="Jobs\IMailMessageJob.cs" />
+    <Compile Include="Jobs\IMailJob.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />

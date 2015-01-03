@@ -4,9 +4,8 @@ using IntegrationEngine.Mail;
 
 namespace IntegrationEngine.Jobs
 {
-    public interface IMailMessageJob : IIntegrationJob
+    public interface IMailJob : IIntegrationJob
     {
-        MailMessage MailMessage { get; set; }
         IMailClient MailClient { get; set; }
     }
 }

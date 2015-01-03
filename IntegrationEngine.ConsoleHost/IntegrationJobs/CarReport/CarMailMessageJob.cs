@@ -1,22 +1,24 @@
 ﻿using System;
 using IntegrationEngine.Jobs;
 using System.Net.Mail;
+using IntegrationEngine.Mail;
 
 namespace IntegrationEngine.ConsoleHost.Car
 {
-    public class CarMailMessageJob : MailMessageJob
+    public class CarMailMessageJob : IMailJob
     {
-        public CarMailMessageJob() : base()
-        {
-        }
+        public IMailClient MailClient { get; set; }
+        public TimeSpan Interval { get; set; }
+        public DateTimeOffset StartTimeUtc { get; set; }
 
-        public override void Run()
+        public void Run()
         {
-            MailMessage.To.Add("ethanhann@gmail.com");
-            MailMessage.Subject = "Your car report is ready.";
-            MailMessage.From = new MailAddress("root@localhost");
-            MailMessage.Body = "Body content about cars.";
-            MailClient.Send(MailMessage);
+            var mailMessage = new MailMessage();
+            mailMessage.To.Add("ethanhann@gmail.com");
+            mailMessage.Subject = "Your car report is ready.";
+            mailMessage.From = new MailAddress("root@localhost");
+            mailMessage.Body = "Body content about cars.";
+            MailClient.Send(mailMessage);
         }
     }
 }

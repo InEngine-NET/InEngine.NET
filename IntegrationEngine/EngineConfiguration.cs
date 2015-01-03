@@ -52,6 +52,7 @@ namespace IntegrationEngine
         public void SetupDatabaseRepository()
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
+            Container.Register<IntegrationEngineContext>(dbContext);
             var repository = new Repository<IntegrationEngine.Models.MailMessageJob>(dbContext);
             Container.Register<IRepository<IntegrationEngine.Models.MailMessageJob>>(repository);
         }
@@ -98,7 +99,7 @@ namespace IntegrationEngine
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
 
-            foreach(var jobType in jobTypes) 
+            foreach (var jobType in jobTypes)
             {
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
                 var jobDetailsDataMap = new JobDataMap();
@@ -116,7 +117,7 @@ namespace IntegrationEngine
                         .RepeatForever());
                 if (object.Equals(integrationJob.StartTimeUtc, default(DateTimeOffset)))
                     trigger.StartNow();
-                else 
+                else
                     trigger.StartAt(integrationJob.StartTimeUtc);
                 scheduler.ScheduleJob(jobDetail, trigger.Build());
             }
