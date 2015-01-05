@@ -6,7 +6,7 @@ namespace IntegrationEngine.Models
     {
         public Int16 Id { get; set; }
         public long IntervalTicks { get; set; }
-        public System.DateTimeOffset StartTimeUtc { get; set; }
+        public DateTimeOffset StartTimeUtc { get; set; }
         public string JobType { get; set; }
     }
 }

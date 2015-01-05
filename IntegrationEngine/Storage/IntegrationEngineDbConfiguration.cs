@@ -16,12 +16,11 @@ namespace IntegrationEngine.Storage
     public class IntegrationEngineDbConfiguration : DbConfiguration
     {
         public IntegrationEngineDbConfiguration()
-            : base()
+            : this((new EngineJsonConfiguration()).DatabaseConfiguration.ServerType)
         {
         }
 
         public IntegrationEngineDbConfiguration(string serverType)
-            : this()
         {
             if (serverType == "MySQL")
             {
@@ -44,6 +43,6 @@ namespace IntegrationEngine.Storage
                 SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
                 SetDefaultConnectionFactory(new LocalDbConnectionFactory("v11.0"));
             }
-        } 
+        }
     }
 }

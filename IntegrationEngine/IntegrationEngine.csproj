@@ -129,6 +129,7 @@
     <Compile Include="Jobs\ILogJob.cs" />
     <Compile Include="Jobs\ISqlJob.cs" />
     <Compile Include="Jobs\SqlJob.cs" />
+    <Compile Include="Storage\MigrationsContextFactory.cs" />
     <Compile Include="Models\IntegrationJob.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

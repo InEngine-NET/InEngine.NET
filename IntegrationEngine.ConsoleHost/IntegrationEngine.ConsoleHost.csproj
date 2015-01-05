@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationEngine.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="RScripts\CarReport.R">

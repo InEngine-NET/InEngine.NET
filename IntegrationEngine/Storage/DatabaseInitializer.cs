@@ -15,6 +15,7 @@ namespace IntegrationEngine.Storage
         public DatabaseInitializer()
         {
             _connectionString = "";
+            Initialize();
         }
 
         public DatabaseInitializer(DatabaseConfiguration databaseConfiguration) : this()
@@ -24,16 +25,27 @@ namespace IntegrationEngine.Storage
 
         public IntegrationEngineContext GetDbContext()
         {
+            Initialize();
+            var dbContext = new IntegrationEngineContext(_connectionString);
+            dbContext.Database.CreateIfNotExists();
+            return dbContext;
+        }
+
+        public void Initialize()
+        {
+            if (DatabaseConfiguration == null)
+                return;
             DbConfiguration.SetConfiguration(new IntegrationEngineDbConfiguration(DatabaseConfiguration.ServerType));
             if (DatabaseConfiguration.ServerType == "MySQL")
                 _connectionString = GetMySqlConnectionString();
             if (DatabaseConfiguration.ServerType == "SQLite")
+            {
                 _connectionString = GetSqliteConnectionString();
+                if (DatabaseConfiguration.DatabaseName != ":memory:")
+                    SQLiteConnection.CreateFile(DatabaseConfiguration.DatabaseName);
+            }
             if (DatabaseConfiguration.ServerType == "SQLServer")
                 _connectionString = GetSqlServerConnectionString();
-            var dbContext = new IntegrationEngineContext(_connectionString);
-            dbContext.Database.CreateIfNotExists();
-            return dbContext;
         }
 
         string GetMySqlConnectionString()
@@ -66,7 +78,6 @@ namespace IntegrationEngine.Storage
             {
                 DataSource = DatabaseConfiguration.DatabaseName,
                 Version = 3,
-                UseUTF16Encoding = true,
             }).ConnectionString;
         }
     }

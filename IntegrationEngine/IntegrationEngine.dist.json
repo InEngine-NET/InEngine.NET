@@ -1,23 +1,23 @@
 ﻿{
-    "MessageQueueConfiguration" : {
-        "QueueName" : "myqueue",
-        "ExchangeName" : "amq.direct",
-        "UserName" : "guest",
-        "Password" : "guest",
-        "HostName" : "localhost",
-        "VirtualHost" : "/",
-        "DefaultIndex" : "my-application"
+    "MessageQueueConfiguration": {
+        "QueueName": "myqueue",
+        "ExchangeName": "amq.direct",
+        "UserName": "guest",
+        "Password": "guest",
+        "HostName": "localhost",
+        "VirtualHost": "/",
+        "DefaultIndex": "my-application"
     },
-    "MailConfiguration" : {
-        "Host" : "localhost",
-        "Port" : 25
+    "MailConfiguration": {
+        "Host": "localhost",
+        "Port": 25
     },
-    "DatabaseConfiguration" : { 
-        "ServerType" : "MySQL",
-        "HostName" : "localhost",
-        "Port" : 3306,
-        "DatabaseName" : "IntegrationEngine",
+    "DatabaseConfiguration": {
+        "ServerType": "SQLServer",
+        "HostName": "localhost",
+        "Port": 1433,
+        "DatabaseName": "IntegrationEngine",
         "UserName": "inengine",
-        "Password": "secret",
+        "Password":  "secret"
     }
 }

@@ -2,6 +2,7 @@
 using IntegrationEngine.Jobs;
 using IntegrationEngine.Mail;
 using IntegrationEngine.MessageQueue;
+using IntegrationEngine.Models;
 using IntegrationEngine.R;
 using IntegrationEngine.Storage;
 using log4net;
@@ -55,6 +56,8 @@ namespace IntegrationEngine
             Container.Register<IntegrationEngineContext>(dbContext);
             var repository = new Repository<IntegrationEngine.Models.IntegrationJob>(dbContext);
             Container.Register<IRepository<IntegrationEngine.Models.IntegrationJob>>(repository);
+            repository.Save();
+            Console.WriteLine(repository.SelectAll().Count());
         }
 
         public void SetupApi()
@@ -94,34 +97,33 @@ namespace IntegrationEngine
             IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
             Container.Register<IScheduler>(scheduler);
             scheduler.Start();
-
             var jobTypes = assembliesWithJobs
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
-
-            // Get jobs from database
-
+            var integrationJobs = Container.Resolve<IRepository<IntegrationJob>>().SelectAll();
             foreach (var jobType in jobTypes)
             {
-                var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
-                var jobDetailsDataMap = new JobDataMap();
-                jobDetailsDataMap.Put("IntegrationJob", integrationJob);
-                var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
-                    .SetJobData(jobDetailsDataMap)
-                    .WithIdentity(jobType.Name, jobType.Namespace)
-                    .Build();
-
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity("trigger-" + jobType.Name, jobType.Namespace);
-                if (!object.Equals(integrationJob.Interval, default(TimeSpan)))
-                    trigger.WithSimpleSchedule(x => x
-                        .WithInterval(integrationJob.Interval)
-                        .RepeatForever());
-                if (object.Equals(integrationJob.StartTimeUtc, default(DateTimeOffset)))
-                    trigger.StartNow();
-                else
-                    trigger.StartAt(integrationJob.StartTimeUtc);
-                scheduler.ScheduleJob(jobDetail, trigger.Build());
+                foreach (var schedule in integrationJobs.Where(x => x.JobType == jobType.FullName))
+                {
+                    var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
+                    var jobDetailsDataMap = new JobDataMap();
+                    jobDetailsDataMap.Put("IntegrationJob", integrationJob);
+                    var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
+                        .SetJobData(jobDetailsDataMap)
+                        .WithIdentity(jobType.Name, jobType.Namespace)
+                        .Build();
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity("trigger-" + jobType.Name, jobType.Namespace);
+                    if (schedule.IntervalTicks > 0)
+                        trigger.WithSimpleSchedule(x => x
+                            .WithInterval(new TimeSpan(schedule.IntervalTicks))
+                            .RepeatForever());
+                    if (!object.Equals(schedule.StartTimeUtc, default(DateTimeOffset)))
+                        trigger.StartAt(schedule.StartTimeUtc);
+                    else
+                        trigger.StartNow();
+                    scheduler.ScheduleJob(jobDetail, trigger.Build());
+                }
             }
         }
             

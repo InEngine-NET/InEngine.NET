@@ -13,8 +13,6 @@ namespace IntegrationEngine.Jobs
     public class SqlJob : ISqlJob, IMailJob, ILogJob
     {
         public string Query { get; set; }
-        public TimeSpan Interval { get; set; }
-        public DateTimeOffset StartTimeUtc { get; set; }
         public IntegrationEngineContext DbContext { get; set; }
         public ILog Log { get; set; }
         public IMailClient MailClient { get; set; }
