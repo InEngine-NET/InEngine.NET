@@ -1,8 +1,10 @@
-﻿using IntegrationEngine.Models;
-using MySql.Data.Entity;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Migrations.History;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using MySql.Data.Entity;
+using IntegrationEngine.Models;
+using System.Data.Entity.ModelConfiguration.Configuration;
 
 namespace IntegrationEngine.Storage
 {
@@ -12,14 +14,12 @@ namespace IntegrationEngine.Storage
             : base(connectionString)
         { }
 
-        //public DbSet<MailMessageJob> MailMessageJobs { get; set; }
         public DbSet<IntegrationJob> IntegrationJobs { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Conventions.Add<PluralizingTableNameConvention>();
-            //modelBuilder.Entity<IntegrationJob>().Property(p => p.StartTimeUtc).HasColumnType("DateTimeOffset");
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Conventions.Add<PluralizingTableNameConvention>();
         }
     }
 }
