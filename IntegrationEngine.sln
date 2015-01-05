@@ -1,24 +1,51 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine", "IntegrationEngine\IntegrationEngine.csproj", "{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.ConsoleHost", "IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj", "{C273AE91-E13F-4443-8D01-9C97016AB4AC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DB65240B-C161-4B58-9EA8-3B490A36921E}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|x86.ActiveCfg = Debug|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Debug|x86.Build.0 = Debug|x86
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|Any CPU.ActiveCfg = Release|x86
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|Mixed Platforms.Build.0 = Release|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|x86.ActiveCfg = Release|x86
 		{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}.Release|x86.Build.0 = Release|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|x86.ActiveCfg = Debug|x86
 		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Debug|x86.Build.0 = Debug|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|Any CPU.ActiveCfg = Release|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|x86.ActiveCfg = Release|x86
 		{C273AE91-E13F-4443-8D01-9C97016AB4AC}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj

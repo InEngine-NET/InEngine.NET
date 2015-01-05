@@ -4,7 +4,7 @@ using IntegrationEngine.Reports;
 
 namespace IntegrationEngine.ConsoleHost.IntegrationJobs.CarReport
 {
-    public class CarReportJob : IIntegrationJob
+    public class CarReportJob
     {
         public TimeSpan Interval { get; set; }
         public DateTimeOffset StartTimeUtc { get; set; }

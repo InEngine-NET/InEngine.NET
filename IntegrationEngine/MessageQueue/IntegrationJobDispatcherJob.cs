@@ -1,14 +1,13 @@
 ﻿using System;
 using Quartz;
-using IntegrationEngine.MessageQueue;
 
-namespace IntegrationEngine.Jobs
+namespace IntegrationEngine.MessageQueue
 {
-    public class MessageQueueJob : IJob
+    public class IntegrationJobDispatcherJob : IJob
     {
         public IMessageQueueClient MessageQueueClient { get; set; }
 
-        public MessageQueueJob()
+        public IntegrationJobDispatcherJob()
         {
             MessageQueueClient = Container.Resolve<IMessageQueueClient>();
         }

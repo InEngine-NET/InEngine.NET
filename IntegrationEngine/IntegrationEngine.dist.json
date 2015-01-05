@@ -11,5 +11,13 @@
     "MailConfiguration" : {
         "Host" : "localhost",
         "Port" : 25
+    },
+    "DatabaseConfiguration" : { 
+        "ServerType" : "MySQL",
+        "HostName" : "localhost",
+        "Port" : 3306,
+        "DatabaseName" : "IntegrationEngine",
+        "UserName": "inengine",
+        "Password": "secret",
     }
 }

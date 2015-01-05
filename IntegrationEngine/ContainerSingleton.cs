@@ -3,7 +3,7 @@ using FunqContainer = Funq.Container;
 
 namespace IntegrationEngine
 {
-    public class ContainerSingleton
+    internal class ContainerSingleton
     {
         private static FunqContainer _instance;
         private ContainerSingleton() {}

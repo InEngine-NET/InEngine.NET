@@ -1,22 +1,18 @@
-﻿using System;
-using System.Threading;
-using Funq;
+﻿using IntegrationEngine.Api;
+using IntegrationEngine.Jobs;
+using IntegrationEngine.Mail;
+using IntegrationEngine.MessageQueue;
+using IntegrationEngine.R;
+using IntegrationEngine.Storage;
+using log4net;
+using Nest;
 using Quartz;
 using Quartz.Impl;
-using IntegrationEngine.Jobs;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
-using IntegrationEngine.MessageQueue;
-using Nest;
-using System.Reflection;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using IntegrationEngine.R;
 using System.Configuration;
-using IntegrationEngine.Mail;
-using System.Net.Mail;
-using log4net;
+using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine
 {
@@ -31,11 +27,13 @@ namespace IntegrationEngine
         {
             LoadConfiguration();
             SetupLogging();
+            SetupDatabaseRepository();
             SetupMailClient();
             SetupElasticClient();
             SetupRScriptRunner();
             SetupMessageQueueClient();
             SetupScheduler(assembliesWithJobs);
+            SetupApi();
             SetupMessageQueueListener(assembliesWithJobs);
         }
 
@@ -49,6 +47,19 @@ namespace IntegrationEngine
         {
             var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             Container.Register<ILog>(log);
+        }
+
+        public void SetupDatabaseRepository()
+        {
+            var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
+            Container.Register<IntegrationEngineContext>(dbContext);
+            var repository = new Repository<IntegrationEngine.Models.IntegrationJob>(dbContext);
+            Container.Register<IRepository<IntegrationEngine.Models.IntegrationJob>>(repository);
+        }
+
+        public void SetupApi()
+        {
+            IntegrationEngineApi.Start("http://localhost:9001/");
         }
 
         public void SetupMailClient()
@@ -88,12 +99,12 @@ namespace IntegrationEngine
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
 
-            foreach(var jobType in jobTypes) 
+            foreach (var jobType in jobTypes)
             {
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
                 var jobDetailsDataMap = new JobDataMap();
                 jobDetailsDataMap.Put("IntegrationJob", integrationJob);
-                var jobDetail = JobBuilder.Create<MessageQueueJob>()
+                var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
                     .SetJobData(jobDetailsDataMap)
                     .WithIdentity(jobType.Name, jobType.Namespace)
                     .Build();
@@ -106,7 +117,7 @@ namespace IntegrationEngine
                         .RepeatForever());
                 if (object.Equals(integrationJob.StartTimeUtc, default(DateTimeOffset)))
                     trigger.StartNow();
-                else 
+                else
                     trigger.StartAt(integrationJob.StartTimeUtc);
                 scheduler.ScheduleJob(jobDetail, trigger.Build());
             }

@@ -8,6 +8,9 @@ using RabbitMQ.Client.Events;
 using log4net;
 using IntegrationEngine.Jobs;
 using IntegrationEngine.Reports;
+using IntegrationEngine.Mail;
+using IntegrationEngine.Storage;
+using Nest;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -31,7 +34,7 @@ namespace IntegrationEngine.MessageQueue
                 var consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
 
-                Log.Info("Waiting for messages. To exit press CTRL+C");
+                Log.Info("Waiting for messages...");
                 while (true)
                 {
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
@@ -44,11 +47,25 @@ namespace IntegrationEngine.MessageQueue
                     if (!types.Any())
                         continue;
                     var type = types.FirstOrDefault(t => t.FullName.Equals(message));
-                    var reportJob = Activator.CreateInstance(type) as IIntegrationJob;
-                    if (reportJob != null)
-                        reportJob.Run();
+                    var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
+                    integrationJob = AutoWireJob(integrationJob, type);
+                    if (integrationJob != null)
+                        integrationJob.Run();
                 }
             }
+        }
+
+        T AutoWireJob<T>(T job, Type type)
+        {
+            if (type.GetInterface(typeof(IMailJob).Name) != null)
+                (job as IMailJob).MailClient = Container.Resolve<IMailClient>();
+            if (type.GetInterface(typeof(ISqlJob).Name) != null)
+                (job as ISqlJob).DbContext = Container.Resolve<IntegrationEngineContext>();
+            if (type.GetInterface(typeof(ILogJob).Name) != null)
+                (job as ILogJob).Log = Container.Resolve<ILog>();
+            if (type.GetInterface(typeof(IElasticsearchJob).Name) != null)
+                (job as IElasticsearchJob).ElasticClient = Container.Resolve<IElasticClient>();
+            return job;
         }
     }
 }
