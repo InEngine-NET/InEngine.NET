@@ -56,8 +56,6 @@ namespace IntegrationEngine
             Container.Register<IntegrationEngineContext>(dbContext);
             var repository = new Repository<IntegrationEngine.Models.IntegrationJob>(dbContext);
             Container.Register<IRepository<IntegrationEngine.Models.IntegrationJob>>(repository);
-            repository.Save();
-            Console.WriteLine(repository.SelectAll().Count());
         }
 
         public void SetupApi()
