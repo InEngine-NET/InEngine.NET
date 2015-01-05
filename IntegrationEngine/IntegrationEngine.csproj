@@ -18,7 +18,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -62,6 +62,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.94.0\lib\net45\System.Data.SQLite.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System.Data.SQLite.EF6">
       <HintPath>..\packages\System.Data.SQLite.EF6.1.0.94.0\lib\net45\System.Data.SQLite.EF6.dll</HintPath>
@@ -157,11 +158,14 @@
     <Compile Include="Storage\IRepository.cs" />
     <Compile Include="Storage\Repository.cs" />
     <Compile Include="Storage\IntegrationEngineDbConfiguration.cs" />
+    <Compile Include="Storage\SqliteConnectionFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="App.Config" />
     <None Include="IntegrationEngine.dist.json" />
+    <None Include="NuGet\IntegrationEngine_0.0.0.nuspec" />
+    <None Include="NuGet\IntegrationEngine_1.0.0.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

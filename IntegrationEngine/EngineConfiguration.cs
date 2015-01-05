@@ -99,6 +99,8 @@ namespace IntegrationEngine
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
 
+            // Get jobs from database
+
             foreach (var jobType in jobTypes)
             {
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
