@@ -119,10 +119,11 @@ namespace IntegrationEngine
 
         public void SetupElasticClient()
         {
-            var node = new Uri("http://localhost:9200");
+            var config = Configuration.MessageQueueConfiguration;
+            var node = new UriBuilder("http", "localhost", 9200);
             var settings = new ConnectionSettings(
-                node, 
-                defaultIndex: "my-application"
+                node.Uri, 
+                defaultIndex: config.DefaultIndex
             );
             Container.Register<IElasticClient>(new ElasticClient(settings));
         }

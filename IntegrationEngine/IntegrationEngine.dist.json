@@ -5,7 +5,8 @@
         "UserName" : "guest",
         "Password" : "guest",
         "HostName" : "localhost",
-        "VirtualHost" : "/"
+        "VirtualHost" : "/",
+        "DefaultIndex" : "my-application"
     },
     "MailConfiguration" : {
         "Host" : "localhost",

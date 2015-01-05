@@ -6,8 +6,7 @@ namespace IntegrationEngine
     public class EngineJsonConfiguration : JsonConfiguration
     {
         public EngineJsonConfiguration() : base("IntegrationEngine.json")
-        {
-        }
+        {}
 
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MailConfiguration MailConfiguration { get; set; }
@@ -21,6 +20,7 @@ namespace IntegrationEngine
         public string Password { get; set; }
         public string HostName { get; set; }
         public string VirtualHost { get; set; }
+        public string DefaultIndex { get; set; }
     }
 
     public class MailConfiguration
@@ -29,4 +29,3 @@ namespace IntegrationEngine
         public int Port { get; set; }
     }
 }
-
