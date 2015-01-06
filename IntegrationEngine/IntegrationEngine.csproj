@@ -160,6 +160,8 @@
     <Compile Include="Storage\Repository.cs" />
     <Compile Include="Storage\IntegrationEngineDbConfiguration.cs" />
     <Compile Include="Storage\SqliteConnectionFactory.cs" />
+    <Compile Include="Storage\ESRepository.cs" />
+    <Compile Include="Storage\IHasStringId.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

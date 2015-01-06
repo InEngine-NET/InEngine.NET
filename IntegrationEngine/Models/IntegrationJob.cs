@@ -1,10 +1,11 @@
 ﻿using System;
+using IntegrationEngine.Storage;
 
 namespace IntegrationEngine.Models
 {
-    public class IntegrationJob
+    public class IntegrationJob : IHasStringId
     {
-        public Int16 Id { get; set; }
+        public string Id { get; set; }
         public long IntervalTicks { get; set; }
         public DateTimeOffset StartTimeUtc { get; set; }
         public string JobType { get; set; }

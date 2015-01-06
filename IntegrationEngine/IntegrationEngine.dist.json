@@ -6,7 +6,7 @@
         "Password": "guest",
         "HostName": "localhost",
         "VirtualHost": "/",
-        "DefaultIndex": "my-application"
+        "DefaultIndex": "integration-engine"
     },
     "MailConfiguration": {
         "Host": "localhost",

@@ -18,7 +18,7 @@ namespace IntegrationEngine.Api.Controllers
         public IRepository<IntegrationJob> Repository { get; set; }
         public IntegrationJobController()
         {
-            Repository = Container.Resolve<IRepository<IntegrationJob>>();
+            Repository = Container.Resolve<ESRepository<IntegrationJob>>();
         }
 
         // GET api/IntegrationJob
@@ -38,7 +38,7 @@ namespace IntegrationEngine.Api.Controllers
         }
 
         // PUT api/IntegrationJob/5
-        public IHttpActionResult PutIntegrationJob(int id, IntegrationJob IntegrationJob)
+        public IHttpActionResult PutIntegrationJob(string id, IntegrationJob IntegrationJob)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -54,7 +54,7 @@ namespace IntegrationEngine.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!IntegrationJobExists(id))
+                if (!Repository.Exists(id))
                     return NotFound();
                 else
                     throw;
@@ -86,11 +86,6 @@ namespace IntegrationEngine.Api.Controllers
             Repository.Delete(IntegrationJob);
             Repository.Save();
             return Ok(IntegrationJob);
-        }
-
-        private bool IntegrationJobExists(int id)
-        {
-            return Repository.Exists(id);
         }
     }
 }

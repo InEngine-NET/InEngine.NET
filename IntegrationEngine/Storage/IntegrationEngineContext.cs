@@ -14,8 +14,6 @@ namespace IntegrationEngine.Storage
             : base(connectionString)
         { }
 
-        public DbSet<IntegrationJob> IntegrationJobs { get; set; }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

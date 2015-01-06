@@ -26,9 +26,7 @@ namespace IntegrationEngine.Storage
         public IntegrationEngineContext GetDbContext()
         {
             Initialize();
-            var dbContext = new IntegrationEngineContext(_connectionString);
-            dbContext.Database.CreateIfNotExists();
-            return dbContext;
+            return new IntegrationEngineContext(_connectionString);
         }
 
         public void Initialize()

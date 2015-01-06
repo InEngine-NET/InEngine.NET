@@ -54,8 +54,6 @@ namespace IntegrationEngine
         {
             var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
             Container.Register<IntegrationEngineContext>(dbContext);
-            var repository = new Repository<IntegrationEngine.Models.IntegrationJob>(dbContext);
-            Container.Register<IRepository<IntegrationEngine.Models.IntegrationJob>>(repository);
         }
 
         public void SetupApi()
@@ -98,20 +96,21 @@ namespace IntegrationEngine
             var jobTypes = assembliesWithJobs
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
-            var integrationJobs = Container.Resolve<IRepository<IntegrationJob>>().SelectAll();
+            var integrationJobs = Container.Resolve<IElasticClient>().Search<IntegrationJob>(x => x).Documents;
             foreach (var jobType in jobTypes)
             {
                 foreach (var schedule in integrationJobs.Where(x => x.JobType == jobType.FullName))
                 {
+                    var scheduleId = string.Format("{0}-{1}", jobType.Name, schedule.Id);
                     var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
                     var jobDetailsDataMap = new JobDataMap();
                     jobDetailsDataMap.Put("IntegrationJob", integrationJob);
                     var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
                         .SetJobData(jobDetailsDataMap)
-                        .WithIdentity(jobType.Name, jobType.Namespace)
+                        .WithIdentity(scheduleId, jobType.Namespace)
                         .Build();
                     var trigger = TriggerBuilder.Create()
-                        .WithIdentity("trigger-" + jobType.Name, jobType.Namespace);
+                        .WithIdentity("trigger-" + scheduleId, jobType.Namespace);
                     if (schedule.IntervalTicks > 0)
                         trigger.WithSimpleSchedule(x => x
                             .WithInterval(new TimeSpan(schedule.IntervalTicks))
@@ -138,7 +137,12 @@ namespace IntegrationEngine
                 node.Uri, 
                 defaultIndex: config.DefaultIndex
             );
-            Container.Register<IElasticClient>(new ElasticClient(settings));
+            var elasticClient = new ElasticClient(settings);
+            Container.Register<IElasticClient>(elasticClient);
+            var repository = new ESRepository<IntegrationJob>() {
+                ElasticClient = elasticClient
+            };
+            Container.Register<ESRepository<IntegrationJob>>(repository);
         }
 
         public void Shutdown()
