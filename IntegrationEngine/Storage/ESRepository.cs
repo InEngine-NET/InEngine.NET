@@ -19,7 +19,7 @@ namespace IntegrationEngine.Storage
 
         public T SelectById(object id)
         {
-            return ElasticClient.Get<T>(id.ToString()) as T;
+            return ElasticClient.Get<T>(x => x.Id(id.ToString())).Source;
         }
 
         public void Insert(T value)
