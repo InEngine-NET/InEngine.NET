@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IntegrationEngine.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace IntegrationEngine.Storage
     {
         public IntegrationEngineContext Create()
         {
-            var databaseConfiguration = (new EngineJsonConfiguration()).DatabaseConfiguration;
+            var databaseConfiguration = (new EngineJsonConfiguration()).Database;
             var databaseInitializer = new DatabaseInitializer(databaseConfiguration);
             return databaseInitializer.GetDbContext();
         }

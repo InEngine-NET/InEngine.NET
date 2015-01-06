@@ -1,4 +1,4 @@
-﻿using System;
+﻿using IntegrationEngine.Configuration;
 using RabbitMQ.Client;
 
 namespace IntegrationEngine.MessageQueue

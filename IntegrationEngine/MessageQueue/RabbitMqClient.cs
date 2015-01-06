@@ -1,7 +1,7 @@
-﻿using System;
-using RabbitMQ.Client;
-using System.Text;
+﻿using IntegrationEngine.Configuration;
 using log4net;
+using System;
+using System.Text;
 
 namespace IntegrationEngine.MessageQueue
 {

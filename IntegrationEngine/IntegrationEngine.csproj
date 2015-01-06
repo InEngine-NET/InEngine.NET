@@ -125,6 +125,10 @@
     <Compile Include="Api\Controllers\IntegrationJobController.cs" />
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
+    <Compile Include="Configuration\Database.cs" />
+    <Compile Include="Configuration\Mail.cs" />
+    <Compile Include="Configuration\MessageQueue.cs" />
+    <Compile Include="Configuration\WebApi.cs" />
     <Compile Include="Jobs\IElasticsearchJob.cs" />
     <Compile Include="Jobs\ILogJob.cs" />
     <Compile Include="Jobs\ISqlJob.cs" />
@@ -145,7 +149,7 @@
     <Compile Include="MessageQueue\IntegrationJobDispatcherJob.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="R\RScriptRunner.cs" />
-    <Compile Include="EngineJsonConfiguration.cs" />
+    <Compile Include="Configuration\EngineJsonConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
     <Compile Include="Mail\MailClient.cs" />
@@ -166,7 +170,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="App.Config" />
-    <None Include="IntegrationEngine.dist.json" />
+    <None Include="Configuration\IntegrationEngine.dist.json" />
     <None Include="NuGet\IntegrationEngine_0.0.0.nuspec" />
     <None Include="NuGet\IntegrationEngine_1.0.0.nuspec" />
     <None Include="packages.config">
@@ -177,5 +181,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.94.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.94.0\build\net45\System.Data.SQLite.Core.targets')" />
 </Project>

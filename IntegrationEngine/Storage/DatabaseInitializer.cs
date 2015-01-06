@@ -1,4 +1,4 @@
-﻿using MySql.Data.Entity;
+﻿using IntegrationEngine.Configuration;
 using MySql.Data.MySqlClient;
 using System.Data.Entity;
 using System.Data.SqlClient;
