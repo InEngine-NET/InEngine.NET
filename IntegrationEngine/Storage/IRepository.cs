@@ -11,8 +11,8 @@ namespace IntegrationEngine.Storage
     {
         IEnumerable<T> SelectAll();
         T SelectById(object id);
-        void Insert(T value);
-        void Update(T value);
+        T Insert(T value);
+        T Update(T value);
         void Delete(object id);
         void Save();
         bool Exists(object id);

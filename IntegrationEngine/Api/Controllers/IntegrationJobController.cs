@@ -29,7 +29,7 @@ namespace IntegrationEngine.Api.Controllers
 
         // GET api/IntegrationJob/5
         [ResponseType(typeof(IntegrationJob))]
-        public IHttpActionResult GetIntegrationJob(int id)
+        public IHttpActionResult GetIntegrationJob(string id)
         {
             var IntegrationJob = Repository.SelectById(id);
             if (IntegrationJob == null)
@@ -43,7 +43,6 @@ namespace IntegrationEngine.Api.Controllers
             if (id != IntegrationJob.Id)
                 return BadRequest();
             Repository.Update(IntegrationJob);
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -51,18 +50,18 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(IntegrationJob))]
         public IHttpActionResult PostIntegrationJob(IntegrationJob IntegrationJob)
         {
-            Repository.Insert(IntegrationJob);
-            return CreatedAtRoute("DefaultApi", new { id = IntegrationJob.Id }, IntegrationJob);
+            var integrationJobWithId = Repository.Insert(IntegrationJob);
+            return CreatedAtRoute("DefaultApi", new { id = integrationJobWithId.Id }, integrationJobWithId);
         }
 
         // DELETE api/IntegrationJob/5
         [ResponseType(typeof(IntegrationJob))]
-        public IHttpActionResult DeleteIntegrationJob(int id)
+        public IHttpActionResult DeleteIntegrationJob(string id)
         {
             var IntegrationJob = Repository.SelectById(id);
             if (IntegrationJob == null)
                 return NotFound();
-            Repository.Delete(IntegrationJob);
+            Repository.Delete(IntegrationJob.Id);
             return Ok(IntegrationJob);
         }
     }

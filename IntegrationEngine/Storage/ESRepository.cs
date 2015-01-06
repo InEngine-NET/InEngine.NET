@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Nest;
 using System.Collections.Generic;
 
@@ -14,25 +15,37 @@ namespace IntegrationEngine.Storage
 
         public IEnumerable<T> SelectAll()
         {
-            return ElasticClient.Search<T>(x => x).Documents;
+            var response = ElasticClient.Search<T>(x => x);
+            var documents = response.Hits.Select(h => {
+                h.Source.Id = h.Id;
+                return h.Source;
+            }).ToList();
+            return documents;
         }
 
         public T SelectById(object id)
         {
-            return ElasticClient.Get<T>(x => x.Id(id.ToString())).Source;
+            var response = ElasticClient.Get<T>(x => x.Id(id.ToString()));
+            if (response.Source == null)
+                return null;
+            var item = response.Source;
+            item.Id = response.Id;
+            return item;
         }
 
-        public void Insert(T value)
+        public T Insert(T value)
         {
-            ElasticClient.Index<T>(value);
+            var document = SelectById(ElasticClient.Index<T>(value).Id);
+            return document;
         }
 
-        public void Update(T value)
+        public T Update(T value)
         {
-            ElasticClient.Update<T, object>(x => x
+            var response = ElasticClient.Update<T, object>(x => x
                 .Id(value.Id)
                 .Doc(value)
             );
+            return response as T;
         }
 
         public void Delete(object id)
