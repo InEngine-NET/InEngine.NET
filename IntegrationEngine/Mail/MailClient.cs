@@ -1,6 +1,7 @@
-﻿using System;
-using System.Net.Mail;
+﻿using IntegrationEngine.Configuration;
 using log4net;
+using System;
+using System.Net.Mail;
 
 namespace IntegrationEngine.Mail
 {
@@ -30,7 +31,7 @@ namespace IntegrationEngine.Mail
         {
             if (SmtpClient == null)
                 SmtpClient = new SmtpClient();
-            SmtpClient.Host = MailConfiguration.Host;
+            SmtpClient.Host = MailConfiguration.HostName;
             SmtpClient.Port = MailConfiguration.Port;
         }
     }

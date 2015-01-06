@@ -1,4 +1,5 @@
 ﻿using IntegrationEngine.Api;
+using IntegrationEngine.Configuration;
 using IntegrationEngine.Jobs;
 using IntegrationEngine.Mail;
 using IntegrationEngine.MessageQueue;
@@ -11,7 +12,6 @@ using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
 
@@ -52,19 +52,20 @@ namespace IntegrationEngine
 
         public void SetupDatabaseRepository()
         {
-            var dbContext = new DatabaseInitializer(Configuration.DatabaseConfiguration).GetDbContext();
+            var dbContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
             Container.Register<IntegrationEngineContext>(dbContext);
         }
 
         public void SetupApi()
         {
-            IntegrationEngineApi.Start("http://localhost:9001/");
+            var config = Configuration.WebApi;
+            IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
         }
 
         public void SetupMailClient()
         {
             var mailClient = new MailClient() {
-                MailConfiguration = Configuration.MailConfiguration,
+                MailConfiguration = Configuration.Mail,
             };
             Container.Register<IMailClient>(mailClient);
         }
@@ -73,8 +74,8 @@ namespace IntegrationEngine
         {
             var rabbitMqListener = new RabbitMqListener() {
                 AssembliesWithJobs = assembliesWithJobs,
-                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueueConfiguration),
-                MessageQueueConfiguration = Configuration.MessageQueueConfiguration,
+                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
+                MessageQueueConfiguration = Configuration.MessageQueue,
             };
             rabbitMqListener.Listen();
         }
@@ -82,8 +83,8 @@ namespace IntegrationEngine
         public void SetupMessageQueueClient()
         {
             var messageQueueClient = new RabbitMqClient() {
-                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueueConfiguration),
-                MessageQueueConfiguration = Configuration.MessageQueueConfiguration,
+                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
+                MessageQueueConfiguration = Configuration.MessageQueue,
             };
             Container.Register<IMessageQueueClient>(messageQueueClient);
         }
@@ -131,10 +132,10 @@ namespace IntegrationEngine
 
         public void SetupElasticClient()
         {
-            var config = Configuration.MessageQueueConfiguration;
-            var node = new UriBuilder("http", "localhost", 9200);
+            var config = Configuration.MessageQueue;
+            var uriBuilder = new UriBuilder("http", "localhost", 9200);
             var settings = new ConnectionSettings(
-                node.Uri, 
+                uriBuilder.Uri, 
                 defaultIndex: config.DefaultIndex
             );
             var elasticClient = new ElasticClient(settings);

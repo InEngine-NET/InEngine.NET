@@ -32,15 +32,16 @@ namespace IntegrationEngine.Storage
             return table.Find(id);
         }
 
-        public void Insert(T value)
+        public T Insert(T value)
         {
-            table.Add(value);
+            return table.Add(value);
         }
 
-        public void Update(T value)
+        public T Update(T value)
         {
             table.Attach(value);
             db.Entry(value).State = EntityState.Modified;
+            return db.Entry(value).Entity;
         }
 
         public void Delete(object id)

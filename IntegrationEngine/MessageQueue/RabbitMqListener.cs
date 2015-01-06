@@ -1,16 +1,16 @@
-﻿using System;
+﻿using IntegrationEngine.Configuration;
+using IntegrationEngine.Jobs;
+using IntegrationEngine.Mail;
+using IntegrationEngine.Storage;
+using log4net;
+using Nest;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using log4net;
-using IntegrationEngine.Jobs;
-using IntegrationEngine.Reports;
-using IntegrationEngine.Mail;
-using IntegrationEngine.Storage;
-using Nest;
 
 namespace IntegrationEngine.MessageQueue
 {

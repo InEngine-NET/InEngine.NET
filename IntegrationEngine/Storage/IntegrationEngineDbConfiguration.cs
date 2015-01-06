@@ -1,4 +1,5 @@
-﻿using MySql.Data.Entity;
+﻿using IntegrationEngine.Configuration;
+using MySql.Data.Entity;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data.Common;
@@ -16,9 +17,8 @@ namespace IntegrationEngine.Storage
     public class IntegrationEngineDbConfiguration : DbConfiguration
     {
         public IntegrationEngineDbConfiguration()
-            : this((new EngineJsonConfiguration()).DatabaseConfiguration.ServerType)
-        {
-        }
+            : this((new EngineJsonConfiguration()).Database.ServerType)
+        {}
 
         public IntegrationEngineDbConfiguration(string serverType)
         {

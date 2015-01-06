@@ -1,5 +1,6 @@
 ﻿using System;
 using RabbitMQ.Client;
+using IntegrationEngine.Configuration;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -13,7 +14,8 @@ namespace IntegrationEngine.MessageQueue
         {
         }
 
-        public MessageQueueConnection(MessageQueueConfiguration messageQueueConfiguration) : this()
+        public MessageQueueConnection(MessageQueueConfiguration messageQueueConfiguration)
+            : this()
         {
             MessageQueueConfiguration = messageQueueConfiguration;
         }

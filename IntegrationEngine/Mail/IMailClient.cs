@@ -1,4 +1,4 @@
-﻿using System;
+﻿using IntegrationEngine.Configuration;
 using System.Net.Mail;
 
 namespace IntegrationEngine.Mail

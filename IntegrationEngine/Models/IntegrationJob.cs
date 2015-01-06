@@ -1,5 +1,6 @@
-﻿using System;
-using IntegrationEngine.Storage;
+﻿using IntegrationEngine.Storage;
+using Nest;
+using System;
 
 namespace IntegrationEngine.Models
 {
