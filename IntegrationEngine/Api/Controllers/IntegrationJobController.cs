@@ -40,25 +40,9 @@ namespace IntegrationEngine.Api.Controllers
         // PUT api/IntegrationJob/5
         public IHttpActionResult PutIntegrationJob(string id, IntegrationJob IntegrationJob)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             if (id != IntegrationJob.Id)
                 return BadRequest();
-
-            Repository.SetState(IntegrationJob, EntityState.Modified);
-
-            try
-            {
-                Repository.Save();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!Repository.Exists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+            Repository.Update(IntegrationJob);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -67,12 +51,7 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(IntegrationJob))]
         public IHttpActionResult PostIntegrationJob(IntegrationJob IntegrationJob)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             Repository.Insert(IntegrationJob);
-            Repository.Save();
             return CreatedAtRoute("DefaultApi", new { id = IntegrationJob.Id }, IntegrationJob);
         }
 
@@ -84,7 +63,6 @@ namespace IntegrationEngine.Api.Controllers
             if (IntegrationJob == null)
                 return NotFound();
             Repository.Delete(IntegrationJob);
-            Repository.Save();
             return Ok(IntegrationJob);
         }
     }
