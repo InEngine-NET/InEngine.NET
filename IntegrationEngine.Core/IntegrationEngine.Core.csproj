@@ -7,8 +7,8 @@
     <ProjectGuid>{3F3794D7-4078-4D26-954C-7864173EDD86}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IntegrationEngine.Api</RootNamespace>
-    <AssemblyName>IntegrationEngine.Api</AssemblyName>
+    <RootNamespace>IntegrationEngine.Core</RootNamespace>
+    <AssemblyName>IntegrationEngine.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,9 +38,6 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Funq">
-      <HintPath>..\packages\Funq.1.0.0\lib\net40\Funq.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -96,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="NuGet\IntegrationEngine.Core_1.2.1.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
