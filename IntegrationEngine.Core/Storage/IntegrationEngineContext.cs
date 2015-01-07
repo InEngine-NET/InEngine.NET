@@ -1,10 +1,5 @@
-﻿using System.Data.Common;
-using System.Data.Entity;
-using System.Data.Entity.Migrations.History;
+﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using MySql.Data.Entity;
-using IntegrationEngine.Core.Models;
-using System.Data.Entity.ModelConfiguration.Configuration;
 
 namespace IntegrationEngine.Core.Storage
 {

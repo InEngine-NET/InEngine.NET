@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Core.Models;
+﻿using IntegrationEngine.Model;
 using IntegrationEngine.Core.Storage;
 using System;
 using System.Collections.Generic;

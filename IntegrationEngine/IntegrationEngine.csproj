@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>lib\net45\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -129,13 +129,9 @@
   <ItemGroup>
     <None Include="App.Config" />
     <None Include="Configuration\IntegrationEngine.dist.json" />
-    <None Include="NuGet\IntegrationEngine_0.0.0.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.2.2.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.2.1.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.2.0.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.1.1.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.1.0.nuspec" />
-    <None Include="NuGet\IntegrationEngine_1.0.0.nuspec" />
+    <None Include="package.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -148,6 +144,10 @@
     <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
       <Project>{3f3794d7-4078-4d26-954c-7864173edd86}</Project>
       <Name>IntegrationEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
+      <Project>{0b499fe4-0bdb-4080-bcb7-f8d4ce54a4ff}</Project>
+      <Name>IntegrationEngine.Model</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

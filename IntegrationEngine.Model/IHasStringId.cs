@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace IntegrationEngine.Core.Storage
+namespace IntegrationEngine.Model
 {
     public interface IHasStringId
     {
         string Id { get; set; }
     }
 }
-
