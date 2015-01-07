@@ -1,7 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using IntegrationEngine.Model;
 using Nest;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IntegrationEngine.Core.Storage
 {

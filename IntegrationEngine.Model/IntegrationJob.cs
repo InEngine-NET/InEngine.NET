@@ -1,8 +1,6 @@
-﻿using IntegrationEngine.Core.Storage;
-using Nest;
-using System;
+﻿using System;
 
-namespace IntegrationEngine.Core.Models
+namespace IntegrationEngine.Model
 {
     public class IntegrationJob : IHasStringId
     {

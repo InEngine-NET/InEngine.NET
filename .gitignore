@@ -17,6 +17,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+[Ll]ib/
 
 # Roslyn cache directories
 *.ide/
@@ -185,3 +186,5 @@ FakesAssemblies/
 # Config file
 IntegrationEngine.json
 
+# NuGet
+*.nupkg
