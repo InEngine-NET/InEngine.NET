@@ -3,7 +3,7 @@ using System.Linq;
 using Nest;
 using System.Collections.Generic;
 
-namespace IntegrationEngine.Storage
+namespace IntegrationEngine.Core.Storage
 {
     public class ESRepository<T> : IRepository<T> where T : class, IHasStringId
     {

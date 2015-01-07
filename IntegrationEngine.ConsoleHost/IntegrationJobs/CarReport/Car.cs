@@ -1,5 +1,5 @@
 ﻿using System;
-using IntegrationEngine.Reports;
+using IntegrationEngine.Core.Reports;
 
 namespace IntegrationEngine.ConsoleHost.IntegrationJobs.CarReport
 {

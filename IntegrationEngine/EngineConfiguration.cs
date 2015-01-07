@@ -1,11 +1,11 @@
 ﻿using IntegrationEngine.Api;
 using IntegrationEngine.Configuration;
-using IntegrationEngine.Jobs;
-using IntegrationEngine.Mail;
+using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.Models;
+using IntegrationEngine.Core.R;
+using IntegrationEngine.Core.Storage;
 using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Models;
-using IntegrationEngine.R;
-using IntegrationEngine.Storage;
 using log4net;
 using Nest;
 using Quartz;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.Storage
+namespace IntegrationEngine.Core.Storage
 {
     public interface IRepository<T> where T : class
     {

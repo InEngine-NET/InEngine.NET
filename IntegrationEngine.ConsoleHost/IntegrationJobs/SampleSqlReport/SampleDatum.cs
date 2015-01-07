@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Reports;
+﻿using IntegrationEngine.Core.Reports;
 using System;
 using System.Collections.Generic;
 using System.Linq;

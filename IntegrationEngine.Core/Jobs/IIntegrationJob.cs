@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IntegrationEngine.Jobs
+namespace IntegrationEngine.Core.Jobs
 {
     public interface IIntegrationJob
     {

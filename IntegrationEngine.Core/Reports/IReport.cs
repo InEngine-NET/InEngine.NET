@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IntegrationEngine.Reports
+namespace IntegrationEngine.Core.Reports
 {
     public interface IReport<T>
     {

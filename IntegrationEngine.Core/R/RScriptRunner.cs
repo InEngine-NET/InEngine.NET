@@ -2,17 +2,20 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Nest;
-using IntegrationEngine.Reports;
+using IntegrationEngine.Core.Reports;
 
-namespace IntegrationEngine.R
+namespace IntegrationEngine.Core.R
 {
     public class RScriptRunner
     {
         public IElasticClient ElasticClient { get; set; }
 
         public RScriptRunner()
+        {}
+
+        public RScriptRunner(IElasticClient elasticClient) : this()
         {
-            ElasticClient = Container.Resolve<IElasticClient>();
+            ElasticClient = elasticClient;
         }
 
         public void Run<T>(IReport<T> report)

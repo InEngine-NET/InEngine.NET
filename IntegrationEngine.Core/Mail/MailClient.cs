@@ -1,9 +1,9 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using log4net;
 using System;
 using System.Net.Mail;
 
-namespace IntegrationEngine.Mail
+namespace IntegrationEngine.Core.Mail
 {
     public class MailClient : IMailClient
     {
@@ -11,9 +11,12 @@ namespace IntegrationEngine.Mail
         public MailConfiguration MailConfiguration { get; set; }
         public ILog Log { get; set; }
 
-        public MailClient ()
+        public MailClient()
+        {}
+
+        public MailClient (ILog log) : this()
         {
-            Log = Container.Resolve<ILog>();
+            Log = log;
         }
 
         public void Send(MailMessage mailMessage)

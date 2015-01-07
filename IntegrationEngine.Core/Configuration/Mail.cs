@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.Configuration
+namespace IntegrationEngine.Core.Configuration
 {
     public class MailConfiguration
     {

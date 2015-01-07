@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net.Mail;
-using IntegrationEngine.Mail;
+using IntegrationEngine.Core.Mail;
 
-namespace IntegrationEngine.Jobs
+namespace IntegrationEngine.Core.Jobs
 {
     public interface IMailJob : IIntegrationJob
     {

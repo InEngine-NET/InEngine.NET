@@ -1,5 +1,5 @@
-﻿using System;
-using FX.Configuration;
+﻿using FX.Configuration;
+using IntegrationEngine.Core.Configuration;
 
 namespace IntegrationEngine.Configuration
 {

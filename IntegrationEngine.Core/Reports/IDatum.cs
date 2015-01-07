@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IntegrationEngine.Reports
+namespace IntegrationEngine.Core.Reports
 {
     public interface IDatum
     {

@@ -3,10 +3,10 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations.History;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using MySql.Data.Entity;
-using IntegrationEngine.Models;
+using IntegrationEngine.Core.Models;
 using System.Data.Entity.ModelConfiguration.Configuration;
 
-namespace IntegrationEngine.Storage
+namespace IntegrationEngine.Core.Storage
 {
     public class IntegrationEngineContext : DbContext
     {

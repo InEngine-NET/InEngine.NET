@@ -1,6 +1,6 @@
-﻿using IntegrationEngine.Mail;
-using IntegrationEngine.Reports;
-using IntegrationEngine.Storage;
+﻿using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.Reports;
+using IntegrationEngine.Core.Storage;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.Jobs
+namespace IntegrationEngine.Core.Jobs
 {
     public class SqlJob : ISqlJob, IMailJob, ILogJob
     {

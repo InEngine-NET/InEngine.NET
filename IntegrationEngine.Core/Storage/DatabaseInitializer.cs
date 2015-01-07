@@ -1,12 +1,11 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using MySql.Data.MySqlClient;
 using System.Data.Entity;
 using System.Data.SqlClient;
-using System.Data.SQLite;
 
-namespace IntegrationEngine.Storage
+namespace IntegrationEngine.Core.Storage
 {
-    class DatabaseInitializer
+    public class DatabaseInitializer
     {
         string _connectionString;
         public string ConnectionString { get { return _connectionString; } }
@@ -36,12 +35,6 @@ namespace IntegrationEngine.Storage
             DbConfiguration.SetConfiguration(new IntegrationEngineDbConfiguration(DatabaseConfiguration.ServerType));
             if (DatabaseConfiguration.ServerType == "MySQL")
                 _connectionString = GetMySqlConnectionString();
-            if (DatabaseConfiguration.ServerType == "SQLite")
-            {
-                _connectionString = GetSqliteConnectionString();
-                if (DatabaseConfiguration.DatabaseName != ":memory:")
-                    SQLiteConnection.CreateFile(DatabaseConfiguration.DatabaseName);
-            }
             if (DatabaseConfiguration.ServerType == "SQLServer")
                 _connectionString = GetSqlServerConnectionString();
         }
@@ -67,15 +60,6 @@ namespace IntegrationEngine.Storage
                 IntegratedSecurity = false,
                 UserID = DatabaseConfiguration.UserName,
                 Password = DatabaseConfiguration.Password,
-            }).ConnectionString;
-        }
-
-        string GetSqliteConnectionString()
-        {
-            return (new SQLiteConnectionStringBuilder()
-            {
-                DataSource = DatabaseConfiguration.DatabaseName,
-                Version = 3,
             }).ConnectionString;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IntegrationEngine.Storage
+namespace IntegrationEngine.Core.Storage
 {
     public interface IHasStringId
     {

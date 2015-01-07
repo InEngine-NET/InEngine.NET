@@ -1,7 +1,7 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using System.Net.Mail;
 
-namespace IntegrationEngine.Mail
+namespace IntegrationEngine.Core.Mail
 {
     public interface IMailClient
     {
