@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="NuGet\IntegrationEngine.Core_1.2.2.nuspec" />
     <None Include="NuGet\IntegrationEngine.Core_1.2.1.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
