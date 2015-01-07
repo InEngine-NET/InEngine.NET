@@ -1,5 +1,5 @@
-﻿using IntegrationEngine.Jobs;
-using IntegrationEngine.Mail;
+﻿using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.Mail;
 using RazorEngine;
 using System;
 using System.Net.Mail;

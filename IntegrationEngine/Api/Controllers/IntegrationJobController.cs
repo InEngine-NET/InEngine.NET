@@ -1,5 +1,5 @@
-﻿using IntegrationEngine.Models;
-using IntegrationEngine.Storage;
+﻿using IntegrationEngine.Core.Models;
+using IntegrationEngine.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

@@ -1,6 +1,6 @@
 ﻿using System;
-using IntegrationEngine.Jobs;
-using IntegrationEngine.Reports;
+using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.Reports;
 
 namespace IntegrationEngine.ConsoleHost.IntegrationJobs.CarReport
 {

@@ -1,7 +1,7 @@
-﻿using System;
-using IntegrationEngine.Jobs;
+﻿using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.Mail;
+using System;
 using System.Net.Mail;
-using IntegrationEngine.Mail;
 
 namespace IntegrationEngine.ConsoleHost.Car
 {

@@ -72,6 +72,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
+      <Project>{3f3794d7-4078-4d26-954c-7864173edd86}</Project>
+      <Name>IntegrationEngine.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine\IntegrationEngine.csproj">
       <Project>{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}</Project>
       <Name>IntegrationEngine</Name>

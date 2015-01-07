@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("IntegrationEngine")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Ethan Hann")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("ethanhann")]
+[assembly: AssemblyCopyright("Copyright © Ethan Hann 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
