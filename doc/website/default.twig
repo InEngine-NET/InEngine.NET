@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My project!</title>
+</head>
+<body>
+<h1>asdasdsd</h1>
+{% block content %}
+    <ul>
+        <li>
+            <a class="btn btn-link" href="https://github.com/ethanhann/IntegrationEngine">Code</a>
+        </li>
+        <li>
+            <a class="btn btn-link" href="https://www.nuget.org/packages/IntegrationEngine">NuGet</a>
+        </li>
+    </ul>
+    {{ content|raw }}
+
+{% endblock %}
+</body>
+</html>
