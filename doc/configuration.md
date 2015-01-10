@@ -44,7 +44,12 @@ This is a sample configuration.
         "UserName": "guest",
         "Password": "guest",
         "HostName": "localhost",
-        "VirtualHost": "/",
+        "VirtualHost": "/"
+    },
+    "Elasticsearch": {
+        "Protocol": "http",
+        "HostName": "localhost",
+        "Port": 9200,
         "DefaultIndex": "integration-engine"
     },
     "Mail": {

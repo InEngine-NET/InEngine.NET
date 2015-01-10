@@ -7,7 +7,10 @@ currentMenu: home
 
 __IntegrationEngine__ is a set of .NET packages, created by [Ethan Hann](http://ethanhann.com), that allows for the 
 creation of a code-centric data integration and asynchronous job scheduling server.
- 
+
+- [NuGet Package](https://www.nuget.org/packages/IntegrationEngine)
+- [GitHub Project](https://github.com/ethanhann/IntegrationEngine)
+
 ##Why should you care?
 
 Data integration is a common task when working in a large or medium enterprise environment.
