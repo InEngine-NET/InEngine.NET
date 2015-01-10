@@ -31,14 +31,14 @@ __IntegrationEngine__ provides this.
 
 ##How does it work?
  
-1. __IntegrationEngine__ is a library. In order to use the library a developer must create a .NET console or service project.
-When the engine is initialized, in a host application, integration jobs that implement 
-_IntegrationEngine.Model.IIntegrationJob_ are scheduled. 
-The assembly the integration jobs are located in must be provided to the engine when the engine is instantiated.
-1. Integration jobs are scheduled by posting a request to the __IntegrationEngine__ web API, 
-by default located at http://localhost:9001.
+1. __IntegrationEngine__ is a library. In order to use the library a developer must create a .NET console or service 
+project that instantiates and initializes an instance of _IntegrationEngine.EngineHost_. 
+1. Integration jobs that implement _IntegrationEngine.Model.IIntegrationJob_, located an assembly passed to _EngineHost_, are loaded.
+1. Integration jobs are scheduled by posting a request to the [__IntegrationEngine__ web API](web-api.html).
 1. When a job is triggered a message is added to the RabbitMQ message queue defined in [IntegrationEngine.json](configuration.html) that indicates which job to run.
-1. When a message is detected, a RabbitMQ message listener plucks the message from the queue and runs the job encoded within it.
+1. When a message is detected, a the __IntegrationEngine__ job runner plucks the message from the queue and runs the job encoded within it.
+
+![IntegrationEngine Job Processing Diagram](https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;h=720 "IntegrationEngine Job Processing Diagram")
 
 ##How is this software licensed?
 [MIT](https://github.com/ethanhann/IntegrationEngine/blob/master/LICENSE)
