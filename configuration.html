@@ -32,7 +32,7 @@
                     <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
 
                         <ul class="nav nav-pills nav-stacked">
-                                                            <li class="active">
+                                                            <li class="">
                                     <a href="http://ethanhann.github.io/IntegrationEngine/index.html">
                                         <span class="fa fa-fw fa-home"></span> Welcome
                                     </a>
@@ -42,7 +42,7 @@
                                         <span class="fa fa-fw fa-power-off"></span> Getting Started
                                     </a>
                                 </li>
-                                                            <li class="">
+                                                            <li class="active">
                                     <a href="http://ethanhann.github.io/IntegrationEngine/configuration.html">
                                         <span class="fa fa-fw fa-gear"></span> Configuration
                                     </a>
@@ -63,39 +63,55 @@
 
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1>Welcome</h1>
-<p><strong>IntegrationEngine</strong> is a set of .NET packages, created by <a href="http://ethanhann.com">Ethan Hann</a>, that allows for the 
-creation of a code-centric data integration and asynchronous job scheduling server.</p>
-<ul>
-<li><a href="https://www.nuget.org/packages/IntegrationEngine">NuGet Package</a></li>
-<li><a href="https://github.com/ethanhann/IntegrationEngine">GitHub Project</a></li>
-</ul>
-<h2>Why should you care?</h2>
-<p>Data integration is a common task when working in a large or medium enterprise environment.
-Data integration servers take data from a data source, transform it (or not), and put it somewhere. 
-<strong>IntegrationEngine</strong> can allow you to do that and more in a programmatic manner.</p>
-<p>There are several existing full-featured data integration server products on the market.
-These products do not work in a way software developers are comfortable with.
-They provide a drag-and-drop GUI application for implementing a data integration.
-This sounds appealing at the surface, but the GUIs are often clunky and slow.
-Also, data integrations are fragile by nature. 
-Existing products do not provide a testable way to build integrations and detect when they stop functioning.</p>
-<p>A developer would often prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
-A developer would also like to be able to test their integration.</p>
-<p><strong>IntegrationEngine</strong> provides this.</p>
-<h2>How does it work?</h2>
-<ol>
-<li><strong>IntegrationEngine</strong> is a library. In order to use the library a developer must create a .NET console or service project.
-When the engine is initialized, in a host application, integration jobs that implement 
-<em>IntegrationEngine.Model.IIntegrationJob</em> are scheduled. 
-The assembly the integration jobs are located in must be provided to the engine when the engine is instantiated.</li>
-<li>Integration jobs are scheduled by posting a request to the <strong>IntegrationEngine</strong> web API, 
-by default located at <a href="http://localhost:9001">http://localhost:9001</a>.</li>
-<li>When a job is triggered a message is added to the RabbitMQ message queue defined in <a href="configuration.html">IntegrationEngine.json</a> that indicates which job to run.</li>
-<li>When a message is detected, a RabbitMQ message listener plucks the message from the queue and runs the job encoded within it.</li>
-</ol>
-<h2>How is this software licensed?</h2>
-<p><a href="https://github.com/ethanhann/IntegrationEngine/blob/master/LICENSE">MIT</a></p>
+                    <h1>Configuration</h1>
+<p>IntegrationEngine is configured with a JSON file called IntegrationEngine.json.
+The configuration file has four sections: <em>WebApi</em>, <em>MessageQueue</em>, <em>Mail</em>, and <em>Database</em>.</p>
+<h3>WebApi</h3>
+<p>The <em>WebApi</em> section contains settings for the IntegrationEngine's WebApi. 
+Namely, the hostname and port of the web API. </p>
+<h3>MessageQueue</h3>
+<p>The <em>MessageQueue</em> section contains settings for connecting to a RabbitMQ server. 
+If these settings are not correct, then a connection exception will be thrown when a job is scheduled. </p>
+<h3>Mail</h3>
+<p>The <em>Mail</em> section contains settings for connecting to an SMTP server.
+If these settings are not correct, then a connection exception will be thrown when sending an email.</p>
+<h3>Database</h3>
+<p>The <em>Database</em> section contains settings for connecting to a either a SQL Server or MySQL server via <a href="http://msdn.microsoft.com/en-us/data/ef.aspx">Entity Framework</a>.
+If these settings are not correct, then a connection exception will be thrown when a SQL job runs.</p>
+<h2>Sample Configuration</h2>
+<p>This is a sample configuration.</p>
+<pre><code>{
+    "WebApi": {
+        "HostName": "localhost",
+        "Port": 9001
+    },
+    "MessageQueue": {
+        "QueueName": "myqueue",
+        "ExchangeName": "amq.direct",
+        "UserName": "guest",
+        "Password": "guest",
+        "HostName": "localhost",
+        "VirtualHost": "/"
+    },
+    "Elasticsearch": {
+        "Protocol": "http",
+        "HostName": "localhost",
+        "Port": 9200,
+        "DefaultIndex": "integration-engine"
+    },
+    "Mail": {
+        "HostName": "localhost",
+        "Port": 25
+    },
+    "Database": {
+        "ServerType": "SQLServer",
+        "HostName": "localhost",
+        "Port": 1433,
+        "DatabaseName": "IntegrationEngine",
+        "UserName": "inengine",
+        "Password": "secret"
+    }
+}</code></pre>
                 </section>
 
             </div>

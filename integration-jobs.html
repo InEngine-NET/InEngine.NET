@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>IntegrationEngine</title>
+
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/highlight.dark.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="http://ethanhann.github.io/IntegrationEngine/">
+                IntegrationEngine
+                <small class="hidden-xs hidden-sm">
+                    An asynchronous job scheduling server.
+                </small>
+            </a>
+
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/index.html">
+                                        <span class="fa fa-fw fa-home"></span> Welcome
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/getting-started.html">
+                                        <span class="fa fa-fw fa-power-off"></span> Getting Started
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/configuration.html">
+                                        <span class="fa fa-fw fa-gear"></span> Configuration
+                                    </a>
+                                </li>
+                                                            <li class="active">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/integration-jobs.html">
+                                        <span class="fa fa-fw fa-exchange"></span> Integration Jobs
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/change-log.html">
+                                        <span class="fa fa-fw fa-refresh"></span> Change Log
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1>Integration Jobs</h1>
+<p>Integration jobs can do anything, not just retrieve, transform, and persist data.
+They can also be made to send an email, run a console command, call some third party library, or anything else that can 
+be done in a .NET application.</p>
+<h2>Built-in Job Types</h2>
+<p><strong>IntegrationEngine</strong> comes with a few built-in integration jobs defined in <em>IntegrationEngine.Core.Jobs</em>.
+They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>Elasticsearch Job</strong>, <strong>Log Job</strong>, and <strong>SQL Job</strong>.</p>
+<h3>Integration Job</h3>
+<ul>
+<li>Implement the <em>IIntegrationJob</em> interface to create a basic integration job.</li>
+<li>An integration job is a C# class that implements the <em>IIntegrationJob</em> interface.</li>
+<li>The interface has one argumentless method called <em>Run</em> which is executed when the job is triggered.</li>
+<li>All other jobs must implement <em>IIntegrationJob</em> directly or indirectly.</li>
+</ul>
+<h3>Mail Job</h3>
+<ul>
+<li>Implement the <em>IMailJob</em> interface to create a mail job.</li>
+<li>The <em>MailClient</em> property of the <em>IMailJob</em> is automatically instantiated and configured with the mail settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
+<li>The <em>MailClient</em>'s send method can be used to send an <em>System.Net.Mail.MailMessage</em>.</li>
+</ul>
+<h3>Elasticsearch Job</h3>
+<ul>
+<li>Implement the <em>IElasticsearchJob</em> interface to create an Elasticsearch Job.</li>
+<li>The <em>ElasticClient</em> property of the <em>IElasticsearchJob</em> is automatically instantiated and configured with the Elasticsearch settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
+<li>The <em>ElasticClient</em> is an instance of <em>Nest.ElasticClient</em>. </li>
+<li>See the NEST <a href="http://nest.azurewebsites.net/nest/quick-start.html">quick start</a> for information on how to use it.</li>
+</ul>
+<h3>Log Job</h3>
+<ul>
+<li>Implement the <em>ILogJob</em> interface to create a log job.</li>
+<li>The <em>Log</em> property of the <em>ILogJob</em> is automatically instantiated and configured with the 
+<a href="http://logging.apache.org/log4net/">log4net</a> settings in the host applications App.config file.</li>
+<li>The <em>Log</em> instance can be configured to log to a variety of <a href="logging.apache.org/log4net/release/features.html#appenders">logging targets</a>.</li>
+<li>Messages and exception can be logged according to their <a href="http://logging.apache.org/log4net/release/manual/introduction.html#hierarchy">severity</a>.</li>
+</ul>
+<h3>SQL Job</h3>
+<ul>
+<li>Implement the <em>ISqlJob</em> interface to create a sql job.</li>
+<li>The <em>DbContext</em> property of the <em>ISqlJob</em> is automatically instantiated and configured with the Database settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
+<li>The <em>Query</em> property of the <em>ISqlJob</em> must be populated with a valid SQL command before the <em>RunQuery<T></em> method is called.</li>
+<li>The generic parameter in the <em>RunQuery<T></em> method is a class that represents a record returned from the database.</li>
+<li>The <em>RunQuery<T></em> method returns a <em>IList<T></em> collection of records from the database.</li>
+</ul>
+<h4>Concrete SQL Job Class</h4>
+<p>There is also concrete class defined in <em>IntegrationEngine.Core.Jobs</em> called <em>SqlJob</em>. 
+It implements <em>ISqlJob</em>, <em>IMailJob</em>, amd <em>ILogJob</em>.
+A class derived from <em>SqlJob</em> will run whatever query is assigned to its <em>Query</em> property by default.
+However, both the <em>RunQuery<T></em> and <em>Run</em> methods are marked as virtual and thus can be overridden.
+A common practice is to override the <em>Run</em> method, call <em>RunQuery<T></em>, examine the results, then send a notification email.</p>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <div class="container-fluid">
+                <p class="text-muted">
+                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="http://yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>
