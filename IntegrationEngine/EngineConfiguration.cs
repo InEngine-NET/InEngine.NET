@@ -133,10 +133,8 @@ namespace IntegrationEngine
         public void SetupElasticClient()
         {
             var config = Configuration.Elasticsearch;
-            var settings = new ConnectionSettings(
-                new UriBuilder(config.Protocol, config.HostName, config.Port).Uri, 
-                defaultIndex: config.DefaultIndex,
-            );
+            var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
+            var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
             var elasticClient = new ElasticClient(settings);
             Container.Register<IElasticClient>(elasticClient);
             var repository = new ESRepository<IntegrationJob>() {
