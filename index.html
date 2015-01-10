@@ -92,7 +92,7 @@ A developer would also like to be able to test their integrations to ensure thei
 <ol>
 <li><strong>IntegrationEngine</strong> is a library. In order to use the library a developer must create a .NET console or service 
 project that instantiates and initializes an instance of <em>IntegrationEngine.EngineHost</em>. </li>
-<li>Integration jobs that implement <em>IntegrationEngine.Model.IIntegrationJob</em>, located an assembly passed to <em>EngineHost</em>, are loaded.</li>
+<li>Integration jobs that implement <em>IntegrationEngine.Model.IIntegrationJob</em> (located in an assembly passed to <em>EngineHost</em>) are loaded.</li>
 <li>Integration jobs are scheduled by posting a request to the <a href="web-api.html">IntegrationEngine Web API</a>.</li>
 <li>When a job is triggered a message is added to the RabbitMQ message queue defined in <a href="configuration.html">IntegrationEngine.json</a> that indicates which job to run.</li>
 <li>When a message is detected, a the <strong>IntegrationEngine</strong> job runner plucks the message from the queue and runs the job encoded within it.</li>
