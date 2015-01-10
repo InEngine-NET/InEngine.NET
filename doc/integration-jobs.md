@@ -53,8 +53,9 @@ They are __Integration Job__, __Mail Job__, __Elasticsearch Job__, __Log Job__, 
 #### Concrete SQL Job Class
 
 There is also concrete class defined in _IntegrationEngine.Core.Jobs_ called _SqlJob_. 
-It implements _ISqlJob_, _IMailJob_, amd _ILogJob_.
-A class derived from _SqlJob_ will run whatever query is assigned to its _Query_ property by default.
-However, both the _RunQuery<T>_ and _Run_ methods are marked as virtual and thus can be overridden.
-A common practice is to override the _Run_ method, call _RunQuery<T>_, examine the results, then send a notification email.
 
+* It implements _ISqlJob_, _IMailJob_, amd _ILogJob_.
+* A class derived from _SqlJob_ will run whatever query is assigned to its _Query_ property by default.
+* However, both the _RunQuery<T>_ and _Run_ methods are marked as virtual and thus can be overridden.
+* A common practice is to override the _Run_ method, call _RunQuery<T>_, examine the results, then send a notification email.
+* The _Log_ property can be used to log when the query fails.
