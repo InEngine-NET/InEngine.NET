@@ -71,7 +71,10 @@ The configuration file has four sections: <em>WebApi</em>, <em>MessageQueue</em>
 Namely, the hostname and port of the web API. </p>
 <h3>MessageQueue</h3>
 <p>The <em>MessageQueue</em> section contains settings for connecting to a RabbitMQ server. 
-If these settings are not correct, then a connection exception will be thrown when a job is scheduled. </p>
+If these settings are not correct, then a connection exception will be thrown when a job is triggered. </p>
+<h3>Elasticsearch</h3>
+<p>The <em>Elasticsearch</em> section contains settings for connecting to a Elasticsearch server. 
+If these settings are not correct, then a connection exception will be thrown when a job is scheduled.</p>
 <h3>Mail</h3>
 <p>The <em>Mail</em> section contains settings for connecting to an SMTP server.
 If these settings are not correct, then a connection exception will be thrown when sending an email.</p>
