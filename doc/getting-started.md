@@ -3,21 +3,29 @@ layout: default
 currentMenu: getting-started
 ---
 
-#Getting Started
+# Getting Started
 
-## Required Software
+## Install Required Software
 
 * [RabbitMQ](http://www.rabbitmq.com/download.html)
 * [Elasticsearch](http://www.elasticsearch.org/overview/elkdownloads/)
 
-##Install
+## Create a Console Application
 
-To install IntegrationEngine, run the following command in the Package Manager Console.
+[Create a console application](http://msdn.microsoft.com/en-us/library/k1sx6ed2.aspx) called "MyProject" in Visual Studio or Xamarin Studio. 
+
+## Add the IntegrationEngine Package 
+
+### Visual Studio
+Run the following command in the Package Manager Console.
 ```
 PM> Install-Package IntegrationEngine
 ```
 
-##Initialize
+### Xamarin Studio
+Navigate to _Project_&#8594;_Add Packages_, then search for "IntegrationEngine" in the _Add Packages_ GUI.
+
+## Initialize IntegrationEngine
 __IntegrationEngine__ requires a host application. 
 It can be a console or service application.
 The following code snippet demonstrates how to instantiate and initialize __IntegrationEngine__ in a console app called _MyProject_.
