@@ -4,32 +4,70 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title></title>
+        <title>IntegrationEngine</title>
 
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/highlight.dark.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/highlight.dark.css">
+        <link rel="stylesheet" href="http://ethanhann.github.io/IntegrationEngine/css/main.css">
     </head>
     <body>
 
         <header class="navbar navbar-default navbar-fixed-top">
 
-            <a class="navbar-brand" href="/">
-                The title
+            <a class="navbar-brand" href="http://ethanhann.github.io/IntegrationEngine/">
+                IntegrationEngine
                 <small class="hidden-xs hidden-sm">
-                    This is the default subtitle!
+                    An asynchronous job scheduling server.
                 </small>
             </a>
 
             
         </header>
 
-        <main class="container">
+        <main class="container-fluid">
             <div class="row">
 
                 
-                <section id="content" class="col-sm-12">
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/index.html">
+                                        <span class="fa fa-fw fa-home"></span> Welcome
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/getting-started.html">
+                                        <span class="fa fa-fw fa-power-off"></span> Getting Started
+                                    </a>
+                                </li>
+                                                            <li class="active">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/configuration.html">
+                                        <span class="fa fa-fw fa-gear"></span> Configuration
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/integration-jobs.html">
+                                        <span class="fa fa-fw fa-exchange"></span> Integration Jobs
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/web-api.html">
+                                        <span class="fa fa-fw fa-cloud"></span> Web API
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/change-log.html">
+                                        <span class="fa fa-fw fa-refresh"></span> Change Log
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1>Configuration</h1>
 <p>IntegrationEngine is configured with a JSON file called IntegrationEngine.json.
 The configuration file has four sections: <em>WebApi</em>, <em>MessageQueue</em>, <em>Mail</em>, and <em>Database</em>.</p>
@@ -140,7 +178,7 @@ If these settings are not correct, then a connection exception will be thrown wh
         </main>
 
         <footer>
-            <div class="container">
+            <div class="container-fluid">
                 <p class="text-muted">
                     website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
                 </p>

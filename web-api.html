@@ -32,7 +32,7 @@
                     <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
 
                         <ul class="nav nav-pills nav-stacked">
-                                                            <li class="active">
+                                                            <li class="">
                                     <a href="http://ethanhann.github.io/IntegrationEngine/index.html">
                                         <span class="fa fa-fw fa-home"></span> Welcome
                                     </a>
@@ -52,7 +52,7 @@
                                         <span class="fa fa-fw fa-exchange"></span> Integration Jobs
                                     </a>
                                 </li>
-                                                            <li class="">
+                                                            <li class="active">
                                     <a href="http://ethanhann.github.io/IntegrationEngine/web-api.html">
                                         <span class="fa fa-fw fa-cloud"></span> Web API
                                     </a>
@@ -68,38 +68,24 @@
 
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1>Welcome</h1>
-<p><strong>IntegrationEngine</strong> is a set of .NET packages, created by <a href="http://ethanhann.com">Ethan Hann</a>, that allows for the 
-creation of a code-centric data integration and asynchronous job scheduling server.</p>
-<ul>
-<li><a href="https://www.nuget.org/packages/IntegrationEngine">NuGet Package</a></li>
-<li><a href="https://github.com/ethanhann/IntegrationEngine">GitHub Project</a></li>
-</ul>
-<h2>Why should you care?</h2>
-<p>Data integration is a common task when working in a large or medium enterprise environment.
-Data integration servers take data from a data source, transform it (or not), and put it somewhere. 
-<strong>IntegrationEngine</strong> can allow you to do that and more in a programmatic manner.</p>
-<p>There are several existing full-featured data integration server products on the market.
-These products do not work in a way software developers are comfortable with.
-They provide a drag-and-drop GUI application for implementing a data integration.
-This sounds appealing at the surface, but the GUIs are often clunky and slow.
-Also, data integrations are fragile by nature. 
-Existing products do not provide a testable way to build integrations and detect when they stop functioning.</p>
-<p>A developer would often prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
-A developer would also like to be able to test their integration.</p>
-<p><strong>IntegrationEngine</strong> provides this.</p>
-<h2>How does it work?</h2>
-<ol>
-<li><strong>IntegrationEngine</strong> is a library. In order to use the library a developer must create a .NET console or service 
-project that instantiates and initializes an instance of <em>IntegrationEngine.EngineHost</em>. </li>
-<li>Integration jobs that implement <em>IntegrationEngine.Model.IIntegrationJob</em>, located an assembly passed to <em>EngineHost</em>, are loaded.</li>
-<li>Integration jobs are scheduled by posting a request to the <a href="web-api.html"><strong>IntegrationEngine</strong> web API</a>.</li>
-<li>When a job is triggered a message is added to the RabbitMQ message queue defined in <a href="configuration.html">IntegrationEngine.json</a> that indicates which job to run.</li>
-<li>When a message is detected, a the <strong>IntegrationEngine</strong> job runner plucks the message from the queue and runs the job encoded within it.</li>
-</ol>
-<p><img alt="IntegrationEngine Job Processing Diagram" src="https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;amp;h=720" title="IntegrationEngine Job Processing Diagram" /></p>
-<h2>How is this software licensed?</h2>
-<p><a href="https://github.com/ethanhann/IntegrationEngine/blob/master/LICENSE">MIT</a></p>
+                    <h1>Web API</h1>
+<h2>IntegrationJob Endpoint</h2>
+<p>The IntegrationJob endpoint allows for an integration job to be scheduled, updated, and viewed.</p>
+<h3>Get a List of Jobs</h3>
+<p>GET api/IntegrationJob</p>
+<pre><code>curl http://localhost:9001/api/IntegrationJob</code></pre>
+<h3>Get a Specific Job by ID</h3>
+<p>GET api/IntegrationJob/ID</p>
+<pre><code>curl http://localhost:9001/api/IntegrationJob/ID</code></pre>
+<h3>Create a New Job</h3>
+<p>POST api/IntegrationJob</p>
+<pre><code>curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/IntegrationJob</code></pre>
+<h3>Update a Specific Job by ID</h3>
+<p>PUT api/IntegrationJob/ID</p>
+<pre><code>curl -XPUT "JobType=MyProject.ADifferentIntegrationJob" http://localhost:9001/api/IntegrationJob/ID</code></pre>
+<h3>Delete a Job by ID</h3>
+<p>DELETE api/IntegrationJob/ID</p>
+<pre><code>curl -XDELETE http://localhost:9001/api/IntegrationJob/ID</code></pre>
                 </section>
 
             </div>
