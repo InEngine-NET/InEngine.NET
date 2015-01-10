@@ -1,65 +1,41 @@
 ---
 layout: default
+currentMenu: home
 ---
 
-#Getting Started
+#Welcome
 
-In general, integration servers take data from a data source, transform it (or not), and put it somewhere. 
-IntegrationEngine can allow you to do that and more.
+__IntegrationEngine__ is a set of .NET packages, created by [Ethan Hann](http://ethanhann.com), that allows for the 
+creation of a code-centric data integration and asynchronous job scheduling server.
+ 
+##Why should you care?
 
-## Required Software
+Data integration is a common task when working in a large or medium enterprise environment.
+Data integration servers take data from a data source, transform it (or not), and put it somewhere. 
+__IntegrationEngine__ can allow you to do that and more in a programmatic manner.
 
-* [RabbitMQ](http://www.rabbitmq.com/download.html)
-* [Elasticsearch](http://www.elasticsearch.org/overview/elkdownloads/)
+There are several existing full-featured data integration server products on the market.
+These products do not work in a way software developers are comfortable with.
+They provide a drag-and-drop GUI application for implementing a data integration.
+This sounds appealing at the surface, but the GUIs are often clunky and slow.
+Also, data integrations are fragile by nature. 
+Existing products do not provide a testable way to build integrations and detect when they stop functioning.
 
-##Install
+A developer would often prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
+A developer would also like to be able to test their integration.
 
-To install IntegrationEngine, run the following command in the Package Manager Console.
-```
-PM> Install-Package IntegrationEngine
-```
+__IntegrationEngine__ provides this.
 
-##Initialize
+##How does it work?
+ 
+1. __IntegrationEngine__ is a library. In order to use the library a developer must create a .NET console or service project.
+When the engine is initialized, in a host application, integration jobs that implement 
+_IntegrationEngine.Model.IIntegrationJob_ are scheduled. 
+The assembly the integration jobs are located in must be provided to the engine when the engine is instantiated.
+1. Integration jobs are scheduled by posting a request to the __IntegrationEngine__ web API, 
+by default located at http://localhost:9001.
+1. When a job is triggered a message is added to the RabbitMQ message queue defined in [IntegrationEngine.json](configuration.html) that indicates which job to run.
+1. When a message is detected, a RabbitMQ message listener plucks the message from the queue and runs the job encoded within it.
 
-```
-// Program.cs
-using System;
-using System.Reflection;
-
-namespace MyProject
-{
-    class MainClass
-    {
-        public static void Main(string[] args)
-        {
-            (new EngineHost(typeof(MainClass).Assembly)).Initialize();
-        }
-    }
-}
-```
-
-## Create an Integration Job
-
-```
-// MyIntegrationJob.cs
-using IntegrationEngine.Core.Jobs;
-
-namespace MyProject
-{
-    public class MyIntegrationJob : IIntegrationJob
-    {
-        public override void Run()
-        {
-            // Do some work
-        }
-    }
-}
-```
-
-## Schedule a Job
-Post an HTTP request to the IntegrationServer API's IntegrationJob resource with a "JobType" of 
-"MyProject.MyIntegrationJob", the full name of the job.  
-
-```
-curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob
-```
+##How is this software licensed?
+[MIT](https://github.com/ethanhann/IntegrationEngine/blob/master/LICENSE)

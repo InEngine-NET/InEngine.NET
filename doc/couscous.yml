@@ -1,13 +1,20 @@
 template:
     url: https://github.com/CouscousPHP/Template-Light
 
+
 baseUrl: http://ethanhann.github.io/IntegrationEngine
 
 title: IntegrationEngine
 subTitle: An asynchronous job scheduling server.
 
-#menu:
-#    items:
-#        getting-started:
-#            text: Getting Started
-#            relativeUrl: index.html
+menu:
+    items:
+        home:
+            text: '<i class="fa fa-fw fa-home"></i> Welcome'
+            relativeUrl: index.html
+        getting-started:
+            text: '<i class="fa fa-fw fa-power-off"></i> Getting Started'
+            relativeUrl: getting-started.html
+        configuration:
+            text: '<i class="fa fa-fw fa-gear"></i> Configuration'
+            relativeUrl: configuration.html
