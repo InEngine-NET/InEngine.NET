@@ -37,6 +37,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -45,6 +47,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
@@ -141,6 +144,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />
+    <Compile Include="Configuration\Elasticsearch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -159,11 +163,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
-      <Project>{3f3794d7-4078-4d26-954c-7864173edd86}</Project>
+      <Project>{3F3794D7-4078-4D26-954C-7864173EDD86}</Project>
       <Name>IntegrationEngine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
-      <Project>{0b499fe4-0bdb-4080-bcb7-f8d4ce54a4ff}</Project>
+      <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
       <Name>IntegrationEngine.Model</Name>
     </ProjectReference>
   </ItemGroup>

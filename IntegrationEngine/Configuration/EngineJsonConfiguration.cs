@@ -12,5 +12,6 @@ namespace IntegrationEngine.Configuration
         public MessageQueueConfiguration MessageQueue { get; set; }
         public MailConfiguration Mail { get; set; }
         public DatabaseConfiguration Database { get; set; }
+        public ElasticsearchConfiguration Elasticsearch { get; set; }
     }
 }

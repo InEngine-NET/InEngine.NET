@@ -124,7 +124,7 @@ namespace IntegrationEngine
                 }
             }
         }
-            
+
         public void SetupRScriptRunner()
         {
             Container.Register<RScriptRunner>(new RScriptRunner());
@@ -132,11 +132,10 @@ namespace IntegrationEngine
 
         public void SetupElasticClient()
         {
-            var config = Configuration.MessageQueue;
-            var uriBuilder = new UriBuilder("http", "localhost", 9200);
+            var config = Configuration.Elasticsearch;
             var settings = new ConnectionSettings(
-                uriBuilder.Uri, 
-                defaultIndex: config.DefaultIndex
+                new UriBuilder(config.Protocol, config.HostName, config.Port).Uri, 
+                defaultIndex: config.DefaultIndex,
             );
             var elasticClient = new ElasticClient(settings);
             Container.Register<IElasticClient>(elasticClient);
