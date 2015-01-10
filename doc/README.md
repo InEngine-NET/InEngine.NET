@@ -32,7 +32,7 @@ __IntegrationEngine__ provides this.
  
 1. __IntegrationEngine__ is a library. In order to use the library a developer must create a .NET console or service 
 project that instantiates and initializes an instance of _IntegrationEngine.EngineHost_. 
-1. Integration jobs that implement _IntegrationEngine.Model.IIntegrationJob_, located an assembly passed to _EngineHost_, are loaded.
+1. Integration jobs that implement _IntegrationEngine.Model.IIntegrationJob_ (located in an assembly passed to _EngineHost_) are loaded.
 1. Integration jobs are scheduled by posting a request to the [IntegrationEngine Web API](web-api.html).
 1. When a job is triggered a message is added to the RabbitMQ message queue defined in [IntegrationEngine.json](configuration.html) that indicates which job to run.
 1. When a message is detected, a the __IntegrationEngine__ job runner plucks the message from the queue and runs the job encoded within it.
