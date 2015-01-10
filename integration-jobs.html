@@ -107,11 +107,14 @@ They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>El
 <li>The <em>RunQuery<T></em> method returns a <em>IList<T></em> collection of records from the database.</li>
 </ul>
 <h4>Concrete SQL Job Class</h4>
-<p>There is also concrete class defined in <em>IntegrationEngine.Core.Jobs</em> called <em>SqlJob</em>. 
-It implements <em>ISqlJob</em>, <em>IMailJob</em>, amd <em>ILogJob</em>.
-A class derived from <em>SqlJob</em> will run whatever query is assigned to its <em>Query</em> property by default.
-However, both the <em>RunQuery<T></em> and <em>Run</em> methods are marked as virtual and thus can be overridden.
-A common practice is to override the <em>Run</em> method, call <em>RunQuery<T></em>, examine the results, then send a notification email.</p>
+<p>There is also concrete class defined in <em>IntegrationEngine.Core.Jobs</em> called <em>SqlJob</em>. </p>
+<ul>
+<li>It implements <em>ISqlJob</em>, <em>IMailJob</em>, amd <em>ILogJob</em>.</li>
+<li>A class derived from <em>SqlJob</em> will run whatever query is assigned to its <em>Query</em> property by default.</li>
+<li>However, both the <em>RunQuery<T></em> and <em>Run</em> methods are marked as virtual and thus can be overridden.</li>
+<li>A common practice is to override the <em>Run</em> method, call <em>RunQuery<T></em>, examine the results, then send a notification email.</li>
+<li>The <em>Log</em> property can be used to log when the query fails.</li>
+</ul>
                 </section>
 
             </div>
