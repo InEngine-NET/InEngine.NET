@@ -1,7 +1,7 @@
 template:
     url: https://github.com/CouscousPHP/Template-Light
 
-baseUrl: http://ethanhann.github.io/IntegrationEngine
+baseUrl: http://inengine.net
 
 title: IntegrationEngine
 subTitle: An asynchronous job scheduling server.
