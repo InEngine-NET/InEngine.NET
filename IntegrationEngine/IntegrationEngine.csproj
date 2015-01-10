@@ -109,9 +109,6 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="fx.configuration">
-      <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener">
       <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
     </Reference>
@@ -123,6 +120,9 @@
     </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="fx.configuration">
+      <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

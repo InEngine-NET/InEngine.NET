@@ -1,6 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/EngineConfiguration.cs">
+    <Files>
+      <File FileName="IntegrationEngine.ConsoleHost/IntegrationEngine.json" Line="1" Column="1" />
+      <File FileName="IntegrationEngine/Configuration/EngineJsonConfiguration.cs" Line="11" Column="11" />
+      <File FileName="IntegrationEngine/EngineConfiguration.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine/packages.config" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.Core/Mail/MailClient.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
