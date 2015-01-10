@@ -66,6 +66,7 @@ namespace IntegrationEngine
         {
             var mailClient = new MailClient() {
                 MailConfiguration = Configuration.Mail,
+                Log = Container.Resolve<ILog>(),
             };
             Container.Register<IMailClient>(mailClient);
         }
