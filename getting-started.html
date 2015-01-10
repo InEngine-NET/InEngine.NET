@@ -53,6 +53,11 @@
                                     </a>
                                 </li>
                                                             <li class="">
+                                    <a href="http://ethanhann.github.io/IntegrationEngine/web-api.html">
+                                        <span class="fa fa-fw fa-cloud"></span> Web API
+                                    </a>
+                                </li>
+                                                            <li class="">
                                     <a href="http://ethanhann.github.io/IntegrationEngine/change-log.html">
                                         <span class="fa fa-fw fa-refresh"></span> Change Log
                                     </a>
@@ -64,15 +69,20 @@
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1>Getting Started</h1>
-<h2>Required Software</h2>
+<h2>Install Required Software</h2>
 <ul>
 <li><a href="http://www.rabbitmq.com/download.html">RabbitMQ</a></li>
 <li><a href="http://www.elasticsearch.org/overview/elkdownloads/">Elasticsearch</a></li>
 </ul>
-<h2>Install</h2>
-<p>To install IntegrationEngine, run the following command in the Package Manager Console.</p>
+<h2>Create a Console Application</h2>
+<p><a href="http://msdn.microsoft.com/en-us/library/k1sx6ed2.aspx">Create a console application</a> called "MyProject" in Visual Studio or Xamarin Studio. </p>
+<h2>Add the IntegrationEngine Package</h2>
+<h3>Visual Studio</h3>
+<p>Run the following command in the Package Manager Console.</p>
 <pre><code>PM&gt; Install-Package IntegrationEngine</code></pre>
-<h2>Initialize</h2>
+<h3>Xamarin Studio</h3>
+<p>Navigate to <em>Project</em>&#8594;<em>Add Packages</em>, then search for "IntegrationEngine" in the <em>Add Packages</em> GUI.</p>
+<h2>Initialize IntegrationEngine</h2>
 <p><strong>IntegrationEngine</strong> requires a host application. 
 It can be a console or service application.
 The following code snippet demonstrates how to instantiate and initialize <strong>IntegrationEngine</strong> in a console app called <em>MyProject</em>.
