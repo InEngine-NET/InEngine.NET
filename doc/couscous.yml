@@ -1,9 +1,10 @@
 template:
-    url: https://github.com/CouscousPHP/Template-Light
+
+    directory: website
 
 baseUrl: http://inengine.net
 
-title: IntegrationEngine
+title: InEngine.NET
 subTitle: An asynchronous job scheduling server.
 
 menu:
