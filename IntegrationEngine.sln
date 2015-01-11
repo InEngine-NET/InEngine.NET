@@ -10,7 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DB65240B-C161-4B58-9EA8-3B490A36921E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		package.cmd = package.cmd
 		README.md = README.md
+		release.cmd = release.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Core", "IntegrationEngine.Core\IntegrationEngine.Core.csproj", "{3F3794D7-4078-4D26-954C-7864173EDD86}"
@@ -18,6 +20,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Model", "IntegrationEngine.Model\IntegrationEngine.Model.csproj", "{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Model.net40", "IntegrationEngine.Model.net40\IntegrationEngine.Model.net40.csproj", "{DFCD19CE-A96A-4B19-8CF1-9CAC560E7F42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A9C5DD3E-D1C3-4E35-80EC-206185A335AE}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +93,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj
