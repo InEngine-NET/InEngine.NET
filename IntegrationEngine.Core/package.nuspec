@@ -2,12 +2,13 @@
 <package >
   <metadata>
     <id>IntegrationEngine.Core</id>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <title>InEngine.NET Core</title>
     <authors>Ethan Hann</authors>
     <owners>Ethan Hann</owners>
     <licenseUrl>https://github.com/ethanhann/InEngine.NET/blob/master/IntegrationEngine/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ethanhann/InEngine.NET</projectUrl>
+    <releaseNotes>http://inengine.net/change-log.html</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Core of IntegrationServer, an asynchronous job scheduling server.</description>
     <copyright>Copyright 2015</copyright>
@@ -18,7 +19,7 @@
     <dependencies>
       <dependency id="Elasticsearch.Net" version="1.3.1"/>
       <dependency id="EntityFramework" version="6.1.2" />
-      <dependency id="IntegrationEngine.Model" version="1.3.1" />
+      <dependency id="IntegrationEngine.Model" version="1.4.1" />
       <dependency id="log4net" version="2.0.3" />
       <dependency id="MySql.Data" version="6.9.5" />
       <dependency id="MySql.Data.Entity" version="6.9.5" />
