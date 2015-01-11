@@ -11,7 +11,7 @@ be done in a .NET application.
 
 ## Built-in Job Types
 
-__IntegrationEngine__ comes with a few built-in integration jobs defined in _IntegrationEngine.Core.Jobs_.
+__InEngine.NET__ comes with a few built-in integration jobs defined in _IntegrationEngine.Core.Jobs_.
 They are __Integration Job__, __Mail Job__, __Elasticsearch Job__, __Log Job__, and __SQL Job__.
 
 ### Integration Job

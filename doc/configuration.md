@@ -5,12 +5,12 @@ currentMenu: configuration
 
 # Configuration
 
-IntegrationEngine is configured with a JSON file called IntegrationEngine.json.
+__InEngine.NET__ is configured with a JSON file called IntegrationEngine.json.
 The configuration file has four sections: _WebApi_, _MessageQueue_, _Mail_, and _Database_.
 
 ### WebApi
 
-The _WebApi_ section contains settings for the IntegrationEngine's WebApi. 
+The _WebApi_ section contains settings for the InEngine.NET's WebApi. 
 Namely, the hostname and port of the web API. 
 
 ```
