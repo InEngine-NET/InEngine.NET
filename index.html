@@ -69,16 +69,16 @@
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1>Welcome</h1>
-<p><strong>IntegrationEngine</strong> is a set of .NET packages, created by <a href="http://ethanhann.com">Ethan Hann</a>, that allows for the 
+<p><strong>InEngine.NET</strong> is a set of .NET packages, created by <a href="http://ethanhann.com">Ethan Hann</a>, that allows for the 
 creation of a code-centric data integration and asynchronous job scheduling server.</p>
 <ul>
 <li><a href="https://www.nuget.org/packages/IntegrationEngine">NuGet Package</a></li>
-<li><a href="https://github.com/ethanhann/IntegrationEngine">GitHub Project</a></li>
+<li><a href="https://github.com/ethanhann/InEngine.NET">GitHub Project</a></li>
 </ul>
 <h3>Why should you care?</h3>
 <p>Data integration is a common task when working in a large or medium enterprise environment.
 Data integration servers take data from a data source, transform it (or not), and put it somewhere. 
-<strong>IntegrationEngine</strong> can allow you to do that and more in a programmatic manner.</p>
+<strong>InEngine.NET</strong> can allow you to do that and more in a programmatic manner.</p>
 <p>There are several existing full-featured data integration server products on the market.
 These products do not work in a way software developers are comfortable with.
 They provide a drag-and-drop GUI application for implementing a data integration.
@@ -87,19 +87,19 @@ Also, by their nature data integrations are fragile.
 Existing products do not provide a testable way to build integrations and detect when they stop functioning.</p>
 <p>In contrast, a developer would prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
 A developer would also like to be able to test their integrations to ensure their continued function. 
-<strong>IntegrationEngine</strong> provides this.</p>
+<strong>InEngine.NET</strong> provides this.</p>
 <h3>How does it work?</h3>
 <ol>
-<li><strong>IntegrationEngine</strong> is a library. In order to use the library a developer must create a .NET console or service 
+<li><strong>InEngine.NET</strong> is a library. In order to use the library a developer must create a .NET console or service 
 project that instantiates and initializes an instance of <em>IntegrationEngine.EngineHost</em>. </li>
 <li>Integration jobs that implement <em>IntegrationEngine.Model.IIntegrationJob</em> (located in an assembly passed to <em>EngineHost</em>) are loaded.</li>
-<li>Integration jobs are scheduled by posting a request to the <a href="web-api.html">IntegrationEngine Web API</a>.</li>
+<li>Integration jobs are scheduled by posting a request to the <a href="web-api.html">InEngine.NET Web API</a>.</li>
 <li>When a job is triggered a message is added to the RabbitMQ message queue defined in <a href="configuration.html">IntegrationEngine.json</a> that indicates which job to run.</li>
-<li>When a message is detected, a the <strong>IntegrationEngine</strong> job runner plucks the message from the queue and runs the job encoded within it.</li>
+<li>When a message is detected, a the <strong>InEngine.NET</strong> job runner plucks the message from the queue and runs the job encoded within it.</li>
 </ol>
 <p><img alt="IntegrationEngine Job Processing Diagram" src="https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;amp;h=720" title="IntegrationEngine Job Processing Diagram" /></p>
 <h3>How is this software licensed?</h3>
-<p><a href="https://github.com/ethanhann/IntegrationEngine/blob/master/LICENSE">MIT</a></p>
+<p><a href="https://github.com/ethanhann/InEngine.NET/blob/master/LICENSE">MIT</a></p>
                 </section>
 
             </div>
