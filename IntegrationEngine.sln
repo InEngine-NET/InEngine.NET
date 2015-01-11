@@ -10,7 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DB65240B-C161-4B58-9EA8-3B490A36921E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		package.cmd = package.cmd
 		README.md = README.md
+		release.cmd = release.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Core", "IntegrationEngine.Core\IntegrationEngine.Core.csproj", "{3F3794D7-4078-4D26-954C-7864173EDD86}"
@@ -84,6 +86,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj

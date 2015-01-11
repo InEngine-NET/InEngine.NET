@@ -6,8 +6,8 @@
     <title>InEngine.NET Core</title>
     <authors>Ethan Hann</authors>
     <owners>Ethan Hann</owners>
-    <licenseUrl>https://github.com/ethanhann/IntegrationEngine/blob/master/IntegrationEngine/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/ethanhann/IntegrationEngine</projectUrl>
+    <licenseUrl>https://github.com/ethanhann/InEngine.NET/blob/master/IntegrationEngine/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ethanhann/InEngine.NET</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Core of IntegrationServer, an asynchronous job scheduling server.</description>
     <copyright>Copyright 2015</copyright>
