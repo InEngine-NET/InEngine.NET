@@ -126,7 +126,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Controllers\IntegrationJobController.cs" />
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
     <Compile Include="Configuration\MessageQueue.cs" />
@@ -145,6 +144,8 @@
     <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />
     <Compile Include="Configuration\Elasticsearch.cs" />
+    <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
+    <Compile Include="Api\Controllers\CronTriggerController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
