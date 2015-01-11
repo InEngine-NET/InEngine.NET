@@ -2,8 +2,8 @@
 <package >
   <metadata>
     <id>IntegrationEngine.Core</id>
-    <version>1.3.2</version>
-    <title>IntegrationEngine.Core</title>
+    <version>1.4.0</version>
+    <title>InEngine.NET Core</title>
     <authors>Ethan Hann</authors>
     <owners>Ethan Hann</owners>
     <licenseUrl>https://github.com/ethanhann/IntegrationEngine/blob/master/IntegrationEngine/LICENSE</licenseUrl>
