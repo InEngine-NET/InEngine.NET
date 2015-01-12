@@ -16,7 +16,7 @@ namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMqListener
     {
-        public IList<Assembly> AssembliesWithJobs { get; set; }
+        public IList<Type> IntegrationJobTypes { get; set; }
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
@@ -41,12 +41,9 @@ namespace IntegrationEngine.MessageQueue
                     var body = eventArgs.Body;
                     var message = Encoding.UTF8.GetString(body);
                     Log.Info(string.Format("Received {0}", message));
-                    var types = AssembliesWithJobs
-                        .SelectMany(x => x.GetTypes())
-                        .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
-                    if (!types.Any())
+                    if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                         continue;
-                    var type = types.FirstOrDefault(t => t.FullName.Equals(message));
+                    var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));
                     var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
                     integrationJob = AutoWireJob(integrationJob, type);
                     if (integrationJob != null)
