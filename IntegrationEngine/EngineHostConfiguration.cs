@@ -17,25 +17,44 @@ using System.Reflection;
 
 namespace IntegrationEngine
 {
-    public class EngineConfiguration
+    public class EngineHostConfiguration
     {
         public EngineJsonConfiguration Configuration { get; set; }
-        public EngineConfiguration()
+        public IList<Type> IntegrationJobTypes { get; set; }
+
+        public EngineHostConfiguration()
         {
         }
 
         public void Configure(IList<Assembly> assembliesWithJobs)
         {
-            LoadConfiguration();
-            SetupLogging();
-            SetupDatabaseRepository();
-            SetupMailClient();
-            SetupElasticClient();
-            SetupRScriptRunner();
-            SetupMessageQueueClient();
-            SetupScheduler(assembliesWithJobs);
-            SetupApi();
-            SetupMessageQueueListener(assembliesWithJobs);
+            IntegrationJobTypes = assembliesWithJobs
+                        .SelectMany(x => x.GetTypes())
+                        .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
+                        .ToList();
+            TryAndLogFailure("Loading Configuration", LoadConfiguration);
+            TryAndLogFailure("Setup Logging", SetupLogging);
+            TryAndLogFailure("Setup Database Repository", SetupDatabaseRepository);
+            TryAndLogFailure("Setup Mail Client", SetupMailClient);
+            TryAndLogFailure("Setup Elastic Client", SetupElasticClient);
+            TryAndLogFailure("Setup RScript Runner", SetupRScriptRunner);
+            TryAndLogFailure("Setup Message Queue Client", SetupMessageQueueClient);
+            TryAndLogFailure("Setup Scheduler", SetupScheduler);
+            TryAndLogFailure("Setup Web Api", SetupApi);
+            TryAndLogFailure("Setup Message Queue Listener", SetupMessageQueueListener);
+        }
+
+        static void TryAndLogFailure(string description, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                var log = LogManager.GetLogger(typeof(EngineHost));
+                log.Error(description, ex);
+            }
         }
 
         public void LoadConfiguration()
@@ -71,10 +90,10 @@ namespace IntegrationEngine
             Container.Register<IMailClient>(mailClient);
         }
 
-        public void SetupMessageQueueListener(IList<Assembly> assembliesWithJobs)
+        public void SetupMessageQueueListener()
         {
             var rabbitMqListener = new RabbitMqListener() {
-                AssembliesWithJobs = assembliesWithJobs,
+                IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
             };
@@ -90,18 +109,14 @@ namespace IntegrationEngine
             Container.Register<IMessageQueueClient>(messageQueueClient);
         }
 
-        public void SetupScheduler(IList<Assembly> assembliesWithJobs)
+        public void SetupScheduler()
         {
             IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
             Container.Register<IScheduler>(scheduler);
             scheduler.Start();
-            var jobTypes = assembliesWithJobs
-                .SelectMany(x => x.GetTypes())
-                .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass);
-
             var simpleTriggers = Container.Resolve<IElasticClient>().Search<SimpleTrigger>(x => x).Documents;
             var cronTriggers = Container.Resolve<IElasticClient>().Search<CronTrigger>(x => x).Documents;
-            foreach (var jobType in jobTypes)
+            foreach (var jobType in IntegrationJobTypes)
             {
                 // Register job
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;

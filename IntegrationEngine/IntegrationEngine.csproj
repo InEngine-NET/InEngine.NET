@@ -137,7 +137,7 @@
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
     <Compile Include="MessageQueue\RabbitMqListener.cs" />
     <Compile Include="EngineHost.cs" />
-    <Compile Include="EngineConfiguration.cs" />
+    <Compile Include="EngineHostConfiguration.cs" />
     <Compile Include="MessageQueue\IntegrationJobDispatcherJob.cs" />
     <Compile Include="Configuration\EngineJsonConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
@@ -152,7 +152,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="App.Config" />
-    <None Include="Configuration\IntegrationEngine.dist.json" />
+    <None Include="Configuration\IntegrationEngine.json" />
     <None Include="package.nuspec">
       <SubType>Designer</SubType>
     </None>
