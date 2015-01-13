@@ -8,6 +8,7 @@
     <RootNamespace>IntegrationEngine</RootNamespace>
     <AssemblyName>IntegrationEngine</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -67,9 +68,6 @@
     <Reference Include="Microsoft.Owin.Hosting">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data.Entity.EF6">
-      <HintPath>..\packages\MySql.Data.Entity.EF6.6.8.3\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -120,9 +118,6 @@
     <Reference Include="System.Web.Http">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="fx.configuration">
       <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
     </Reference>
@@ -142,7 +137,6 @@
     <Compile Include="Configuration\EngineJsonConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />
     <Compile Include="Configuration\Elasticsearch.cs" />
