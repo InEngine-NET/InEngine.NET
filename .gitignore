@@ -183,8 +183,5 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-# Config file
-IntegrationEngine.json
-
 # NuGet
 *.nupkg

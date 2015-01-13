@@ -64,7 +64,7 @@
     <Compile Include="EngineHostConfigurationTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\IntegrationEngine\Configuration\IntegrationEngine.json">
+    <None Include="..\configuration\IntegrationEngine.json">
       <Link>IntegrationEngine.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

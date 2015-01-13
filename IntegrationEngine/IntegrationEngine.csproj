@@ -146,7 +146,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="App.Config" />
-    <None Include="Configuration\IntegrationEngine.json" />
     <None Include="package.nuspec">
       <SubType>Designer</SubType>
     </None>

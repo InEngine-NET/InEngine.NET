@@ -10,9 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DB65240B-C161-4B58-9EA8-3B490A36921E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		package.cmd = package.cmd
 		README.md = README.md
-		release.cmd = release.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Core", "IntegrationEngine.Core\IntegrationEngine.Core.csproj", "{3F3794D7-4078-4D26-954C-7864173EDD86}"
@@ -29,6 +27,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A9C5DD
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Tests", "IntegrationEngine.Tests\IntegrationEngine.Tests.csproj", "{820C4703-46CF-4C65-AB32-961170D96E46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E54079EA-35EE-4F75-9FF9-99A97EC0A831}"
+	ProjectSection(SolutionItems) = preProject
+		build\package.cmd = build\package.cmd
+		build\release.cmd = build\release.cmd
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configuration", "configuration", "{71DC7D2A-17FC-4B14-9D1E-19E4BC8A8190}"
+	ProjectSection(SolutionItems) = preProject
+		configuration\IntegrationEngine.json = configuration\IntegrationEngine.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +114,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E54079EA-35EE-4F75-9FF9-99A97EC0A831} = {DB65240B-C161-4B58-9EA8-3B490A36921E}
+		{71DC7D2A-17FC-4B14-9D1E-19E4BC8A8190} = {DB65240B-C161-4B58-9EA8-3B490A36921E}
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
