@@ -28,11 +28,9 @@
             </div>
             {% if menu is defined %}
                 <div id="menu-navbar" class="collapse navbar-collapse">
-                    <nav role="navigation">
-                        <ul class="nav">
-                            {{ include('menu-items.twig') }}
-                        </ul>
-                    </nav>
+                    <ul class="nav navbar-nav">
+                        {{ include('menu-items.twig') }}
+                    </ul>
                 </div>
             {% endif %}
         </header>
@@ -49,6 +47,13 @@
                 {% endif %}
 
                 <section id="content" class="{{ menu ? 'col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10' : 'col-sm-12' }}">
+                    <ul class="status-badges pull-right list-unstyled list-inline">
+                        <li>
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true">
+                            </a>
+                        </li>
+                    </ul>
                     {{ content|raw }}
                 </section>
 
@@ -58,7 +63,7 @@
         <footer>
             <div class="{{ menu ? 'container-fluid' : 'container' }}">
                 <p class="text-muted">
-                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                    author <a href="http://www.ethanhann.com" title="Author">Ethan Hann</a>
                 </p>
             </div>
         </footer>

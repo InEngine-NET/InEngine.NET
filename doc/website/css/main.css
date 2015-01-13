@@ -56,7 +56,7 @@ li {
     margin-bottom: 3px;
 }
 
-#content img {
+#content img .img-bordered {
     max-width: 100%;
     padding: 4px;
     background-color: #fff;
@@ -77,6 +77,10 @@ header.navbar {
     font-size: 18px;
     font-weight: 300;
     margin-left: 10px;
+}
+
+.status-badges {
+    margin-top: 16px;
 }
 
 @media (min-width: 768px) {
