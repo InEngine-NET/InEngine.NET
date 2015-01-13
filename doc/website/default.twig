@@ -14,35 +14,38 @@
     <body>
 
         <header class="navbar navbar-default navbar-fixed-top">
-
-            <a class="navbar-brand" href="{{ baseUrl }}/">
-                {{ title|default('The title') }}
-                <small class="hidden-xs hidden-sm">
-                    {{ subTitle|default('This is the default subtitle!') }}
-                </small>
-            </a>
-
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="fa fa-fw fa-bars"></span>
+                </button>
+                <a class="navbar-brand" href="{{ baseUrl }}/">
+                    {{ title|default('The title') }}
+                    <small class="hidden-xs hidden-sm">
+                        {{ subTitle|default('This is the default subtitle!') }}
+                    </small>
+                </a>
+            </div>
+            {% if menu is defined %}
+                <div id="menu-navbar" class="collapse navbar-collapse">
+                    <nav role="navigation">
+                        <ul class="nav">
+                            {{ include('menu.twig') }}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
         </header>
 
         <main class="{{ menu ? 'container-fluid' : 'container' }}">
             <div class="row">
 
                 {% if menu is defined %}
-
                     <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
-
                         <ul class="nav nav-pills nav-stacked">
-                            {% for itemId, item in menu.items %}
-                                <li class="{{ itemId == currentMenu ? 'active' }}">
-                                    <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
-                                        {{ item.text|raw }}
-                                    </a>
-                                </li>
-                            {% endfor %}
+                            {{ include('menu.twig') }}
                         </ul>
-
                     </nav>
-
                 {% endif %}
 
                 <section id="content" class="{{ menu ? 'col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10' : 'col-sm-12' }}">
@@ -61,8 +64,9 @@
         </footer>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-        <script src="http://yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/highlightjs/highlight.pack.js"></script>
 
         <script>
             $(function() {

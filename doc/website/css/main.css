@@ -84,7 +84,17 @@ header.navbar {
         position:fixed;
         margin-top: 30px;
     }
+    #menu-navbar {
+        display: none !important;
+    }
 }
+
+@media (max-width: 767px) {
+    #sidebar {
+        display: none !important;
+    }
+}
+
 @media (max-width: 960px) {
     body {
         font-size: 17px;

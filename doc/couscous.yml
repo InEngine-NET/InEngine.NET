@@ -9,20 +9,26 @@ subTitle: An asynchronous job scheduling server.
 menu:
     items:
         home:
-            text: '<span class="fa fa-fw fa-home"></span> Welcome'
+            text: Welcome
+            iconClass: 'fa fa-fw fa-home'
             relativeUrl: index.html
         getting-started:
-            text: '<span class="fa fa-fw fa-power-off"></span> Getting Started'
+            text: Getting Started
+            iconClass: 'fa fa-fw fa-power-off'
             relativeUrl: getting-started.html
         configuration:
-            text: '<span class="fa fa-fw fa-gear"></span> Configuration'
+            text: Configuration
+            iconClass: 'fa fa-fw fa-gear'
             relativeUrl: configuration.html
         integration-jobs:
-            text: '<span class="fa fa-fw fa-exchange"></span> Integration Jobs'
+            text: Integration Jobs
+            iconClass: 'fa fa-fw fa-exchange'
             relativeUrl: integration-jobs.html
         web-api:
-            text: '<span class="fa fa-fw fa-cloud"></span> Web API'
+            text: Web API
+            iconClass: 'fa fa-fw fa-cloud'
             relativeUrl: web-api.html
         change-log:
-            text: '<span class="fa fa-fw fa-refresh"></span> Change Log'
+            text: Change Log
+            iconClass: 'fa fa-fw fa-refresh'
             relativeUrl: change-log.html

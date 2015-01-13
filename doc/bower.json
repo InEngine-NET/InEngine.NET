@@ -16,6 +16,10 @@
   "dependencies": {
     "font-awesome": "~4.2.0",
     "bootswatch": "~3.3.1+2",
-    "highlightjs": "~8.4.0"
+    "highlightjs": "~8.4.0",
+    "jquery": "~2.1.3"
+  },
+  "resolutions": {
+    "jquery": "~1.11.0"
   }
 }
