@@ -5,6 +5,11 @@ currentMenu: change-log
 
 # Change Log
 
+## 1.4.1
+
+* Chores
+    * Add link to change log in NuGet package release notes.
+
 ## 1.4.0
 
 * Features
