@@ -119,9 +119,6 @@ Global
 		{E54079EA-35EE-4F75-9FF9-99A97EC0A831} = {DB65240B-C161-4B58-9EA8-3B490A36921E}
 		{71DC7D2A-17FC-4B14-9D1E-19E4BC8A8190} = {DB65240B-C161-4B58-9EA8-3B490A36921E}
 	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = IntegrationEngine.ConsoleHost\IntegrationEngine.ConsoleHost.csproj
 	EndGlobalSection

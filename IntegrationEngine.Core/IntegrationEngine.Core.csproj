@@ -72,8 +72,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Database.cs" />
-    <Compile Include="Configuration\Mail.cs" />
+    <Compile Include="Configuration\DatabaseConfiguration.cs" />
+    <Compile Include="Configuration\MailConfiguration.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="Jobs\ILogJob.cs" />
     <Compile Include="Jobs\IMailJob.cs" />

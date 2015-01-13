@@ -3,9 +3,9 @@ using IntegrationEngine.Core.Configuration;
 
 namespace IntegrationEngine.Configuration
 {
-    public class EngineJsonConfiguration : JsonConfiguration
+    public class EngineConfiguration : JsonConfiguration
     {
-        public EngineJsonConfiguration() : base("IntegrationEngine.json")
+        public EngineConfiguration() : base("IntegrationEngine.json")
         {}
 
         public WebApiConfiguration WebApi { get; set; }

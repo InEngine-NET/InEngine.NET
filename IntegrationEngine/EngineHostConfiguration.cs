@@ -19,7 +19,7 @@ namespace IntegrationEngine
 {
     public class EngineHostConfiguration
     {
-        public EngineJsonConfiguration Configuration { get; set; }
+        public EngineConfiguration Configuration { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
 
         public EngineHostConfiguration()
@@ -59,8 +59,8 @@ namespace IntegrationEngine
 
         public void LoadConfiguration()
         {
-            Configuration = new EngineJsonConfiguration();
-            Container.Register<EngineJsonConfiguration>(Configuration);
+            Configuration = new EngineConfiguration();
+            Container.Register<EngineConfiguration>(Configuration);
         }
 
         public void SetupLogging()

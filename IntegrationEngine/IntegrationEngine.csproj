@@ -125,8 +125,8 @@
   <ItemGroup>
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
-    <Compile Include="Configuration\MessageQueue.cs" />
-    <Compile Include="Configuration\WebApi.cs" />
+    <Compile Include="Configuration\MessageQueueConfiguration.cs" />
+    <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
@@ -134,12 +134,12 @@
     <Compile Include="EngineHost.cs" />
     <Compile Include="EngineHostConfiguration.cs" />
     <Compile Include="MessageQueue\IntegrationJobDispatcherJob.cs" />
-    <Compile Include="Configuration\EngineJsonConfiguration.cs" />
+    <Compile Include="Configuration\EngineConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />
-    <Compile Include="Configuration\Elasticsearch.cs" />
+    <Compile Include="Configuration\ElasticsearchConfiguration.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
   </ItemGroup>
