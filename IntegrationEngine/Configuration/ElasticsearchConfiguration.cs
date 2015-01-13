@@ -7,7 +7,7 @@ using FX.Configuration;
 
 namespace IntegrationEngine.Configuration
 {
-    public class ElasticsearchConfiguration : JsonConfiguration
+    public class ElasticsearchConfiguration
     {
         public string Protocol { get; set; }
         public string HostName { get; set; }
