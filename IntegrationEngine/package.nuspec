@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>IntegrationEngine</id>
-    <version>1.4.1</version>
+    <version>2.0.0-alpha.1</version>
     <title>InEngine.NET</title>
     <authors>Ethan Hann</authors>
     <owners>Ethan Hann</owners>
@@ -22,8 +22,8 @@
       <dependency id="EntityFramework" version="6.1.2" />
       <dependency id="Funq" version="1.0.0" />
       <dependency id="fx.configuration" version="0.4.0" />
-      <dependency id="IntegrationEngine.Core" version="1.4.1" />
-      <dependency id="IntegrationEngine.Model" version="1.4.1" />
+      <dependency id="IntegrationEngine.Core" version="2.0.0-alpha.1" />
+      <dependency id="IntegrationEngine.Model" version="2.0.0-alpha.1" />
       <dependency id="log4net" version="2.0.3" />
       <dependency id="Microsoft.AspNet.Cors" version="5.2.2" />
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.2" />
