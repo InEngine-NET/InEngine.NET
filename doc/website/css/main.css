@@ -3,7 +3,7 @@ html {
     min-height: 100%;
 }
 body {
-    font-size: 19px;
+    font-size: 16px;
 }
 
 @media (min-width: 1200px) {
@@ -13,7 +13,7 @@ body {
 }
 
 main {
-    margin-top: 90px;
+    margin-top: 80px;
 }
 
 section {
@@ -38,6 +38,14 @@ footer:hover {
 }
 footer p {
     margin: 0;
+}
+
+h1 {
+    font-size: 46px;
+}
+
+h2 {
+    font-size: 35px;
 }
 
 h3 {
