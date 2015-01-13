@@ -30,7 +30,7 @@
                 <div id="menu-navbar" class="collapse navbar-collapse">
                     <nav role="navigation">
                         <ul class="nav">
-                            {{ include('menu.twig') }}
+                            {{ include('menu-items.twig') }}
                         </ul>
                     </nav>
                 </div>
@@ -43,7 +43,7 @@
                 {% if menu is defined %}
                     <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
                         <ul class="nav nav-pills nav-stacked">
-                            {{ include('menu.twig') }}
+                            {{ include('menu-items.twig') }}
                         </ul>
                     </nav>
                 {% endif %}
