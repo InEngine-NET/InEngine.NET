@@ -5,6 +5,17 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-alpha1
+
+* Features
+    * Add SimpleTrigger to Model and Web API.
+    * Add CronTrigger to Model and Web API.
+    * Remove IntegrationJob from Model and Web API (replaced by SimpleTrigger and CronTrigger).
+* Chores
+    * Setup CI with AppVeyor.
+* Bugs
+    * Config loader no longer mistakenly looks for config.json instead of IntegrationEngine.json.
+
 ## 1.4.1
 
 * Chores
@@ -26,7 +37,7 @@ currentMenu: change-log
 ## 1.3.2
 
 * Features
-    * Load jobs from an external assembly that implement IIntegrationJob.
+    * Schedule jobs from an external assembly that implement IIntegrationJob.
     * Develop EngineHost, start engine and load jobs from an external assembly.
     * Add repository layer for persisting jobs to a data store.
     * Create REST API for creating standard jobs.
