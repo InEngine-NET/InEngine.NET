@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
+using System;
 
 namespace IntegrationEngine.Tests
 {
-    [TestClass]
     public class EngineHostConfigurationTest
     {
-        [TestMethod]
+        [Test]
         public void CanLoadConfiguration()
         {
             var subject = new EngineHostConfiguration();

@@ -111,61 +111,21 @@ namespace IntegrationEngine
 
         public void SetupScheduler()
         {
-            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
-            Container.Register<IScheduler>(scheduler);
-            scheduler.Start();
+            var engineScheduler = new EngineScheduler() {
+                Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
+                IntegrationJobTypes = IntegrationJobTypes,
+            };
+            Container.Register<IEngineScheduler>(engineScheduler);
+            engineScheduler.Start();
             var simpleTriggers = Container.Resolve<IElasticClient>().Search<SimpleTrigger>(x => x).Documents;
             var cronTriggers = Container.Resolve<IElasticClient>().Search<CronTrigger>(x => x).Documents;
             foreach (var jobType in IntegrationJobTypes)
             {
                 // Register job
-                var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
-                var jobDetailsDataMap = new JobDataMap();
-                jobDetailsDataMap.Put("IntegrationJob", integrationJob);
-                var jobDetail = JobBuilder.Create<IntegrationJobDispatcherJob>()
-                    .SetJobData(jobDetailsDataMap)
-                    .WithIdentity(jobType.Name, jobType.Namespace)
-                    .Build();
+                var jobDetail = engineScheduler.CreateJobDetail(jobType);                
                 // Schedule the job with applicable triggers
-                ScheduleJobsWithSimpleTriggers(scheduler, jobType, jobDetail, simpleTriggers);
-                ScheduleJobsWithCronTriggers(scheduler, jobType, jobDetail, cronTriggers);
-            }
-        }
-
-        string GenerateTriggerId(Type jobType, IHasStringId triggerDefinition)
-        {
-            return string.Format("{0}-{1}", jobType.Name, triggerDefinition.Id);
-        }
-
-        void ScheduleJobsWithCronTriggers(IScheduler scheduler, Type jobType, IJobDetail jobDetail, IEnumerable<CronTrigger> triggers)
-        {
-            foreach (var triggerDefinition in triggers.Where(x => x.JobType == jobType.FullName))
-            {
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity(GenerateTriggerId(jobType, triggerDefinition), jobType.Namespace);
-                if (triggerDefinition.CronExpressionString != null)
-                    trigger.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
-                scheduler.ScheduleJob(jobDetail, trigger.Build());
-            }
-        }
-
-        void ScheduleJobsWithSimpleTriggers(IScheduler scheduler, Type jobType, IJobDetail jobDetail, IEnumerable<SimpleTrigger> triggers)
-        {
-            foreach (var triggerDefinition in triggers.Where(x => x.JobType == jobType.FullName))
-            {
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity(GenerateTriggerId(jobType, triggerDefinition), jobType.Namespace);
-                Action<SimpleScheduleBuilder> simpleScheduleBuilderAction;
-                if (triggerDefinition.RepeatCount > 0)
-                    simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval).WithRepeatCount(triggerDefinition.RepeatCount);
-                else 
-                    simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval);
-                trigger.WithSimpleSchedule(simpleScheduleBuilderAction);
-                if (!object.Equals(triggerDefinition.StartTimeUtc, default(DateTimeOffset)))
-                    trigger.StartAt(triggerDefinition.StartTimeUtc);
-                else
-                    trigger.StartNow();
-                scheduler.ScheduleJob(jobDetail, trigger.Build());
+                engineScheduler.ScheduleJobsWithSimpleTriggers(simpleTriggers, jobType, jobDetail);
+                engineScheduler.ScheduleJobsWithCronTriggers(cronTriggers, jobType, jobDetail);
             }
         }
 

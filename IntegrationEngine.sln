@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A9C5DD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Tests", "IntegrationEngine.Tests\IntegrationEngine.Tests.csproj", "{820C4703-46CF-4C65-AB32-961170D96E46}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E54079EA-35EE-4F75-9FF9-99A97EC0A831}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E54079EA-35EE-4F75-9FF9-99A97EC0A831}"
 	ProjectSection(SolutionItems) = preProject
 		build\package.cmd = build\package.cmd
 		build\release.cmd = build\release.cmd

@@ -1,13 +1,7 @@
-﻿using IntegrationEngine.Model;
-using IntegrationEngine.Core.Storage;
-using System;
+﻿using IntegrationEngine.Core.Storage;
+using IntegrationEngine.Model;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -16,9 +10,12 @@ namespace IntegrationEngine.Api.Controllers
     public class CronTriggerController : ApiController
     {
         public IRepository<CronTrigger> Repository { get; set; }
+        public IEngineScheduler EngineScheduler { get; set; }
+
         public CronTriggerController()
         {
             Repository = Container.Resolve<ESRepository<CronTrigger>>();
+            EngineScheduler = Container.Resolve<IEngineScheduler>();
         }
 
         // GET api/IntegrationJob
@@ -51,6 +48,7 @@ namespace IntegrationEngine.Api.Controllers
         public IHttpActionResult PostIntegrationJob(CronTrigger trigger)
         {
             var triggerWithId = Repository.Insert(trigger);
+            EngineScheduler.ScheduleJobWithCronTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
         }
 
