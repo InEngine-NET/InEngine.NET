@@ -6,8 +6,8 @@
     "MessageQueue": {
         "QueueName": "myqueue",
         "ExchangeName": "amq.direct",
-        "UserName": "guest",
-        "Password": "guest",
+        "UserName": "inengine",
+        "Password": "secret",
         "HostName": "localhost",
         "VirtualHost": "/"
     },

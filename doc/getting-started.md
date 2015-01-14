@@ -18,7 +18,7 @@ currentMenu: getting-started
 
 ### Visual Studio
 Run the following command in the Package Manager Console.
-```
+```sh
 PM> Install-Package IntegrationEngine
 ```
 
@@ -69,8 +69,8 @@ namespace MyProject
 
 ## Schedule a Job
 Post an HTTP request to the IntegrationServer API's IntegrationJob resource with a _JobType_ of 
-"MyProject.MyIntegrationJob", the full name of the job.  
+"MyProject.MyIntegrationJob" - the full name of the job.  
 
-```
+```sh
 curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob
 ```
