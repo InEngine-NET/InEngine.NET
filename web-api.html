@@ -6,68 +6,122 @@
 
         <title>InEngine.NET</title>
 
-        <link rel="stylesheet" href="http://inengine.net/css/bootstrap.min.css">
-        <link rel="stylesheet" href="http://inengine.net/css/font-awesome.min.css">
-        <link rel="stylesheet" href="http://inengine.net/css/highlight.dark.css">
+        <link rel="stylesheet" href="http://inengine.net/bower_components/bootswatch\paper/bootstrap.min.css">
+        <link rel="stylesheet" href="http://inengine.net/bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://inengine.net/bower_components/highlightjs/styles/dark.css">
         <link rel="stylesheet" href="http://inengine.net/css/main.css">
     </head>
     <body>
 
         <header class="navbar navbar-default navbar-fixed-top">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="fa fa-fw fa-bars"></span>
+                </button>
+                <a class="navbar-brand" href="http://inengine.net/">
+                    InEngine.NET
+                    <small class="hidden-xs hidden-sm">
+                        An asynchronous job scheduling server.
+                    </small>
+                </a>
+            </div>
+                            <div id="menu-navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                            <li class="">
+        <a href="http://inengine.net/index.html">
+            <span class="fa fa-fw fa-home"></span>
+            <span>Welcome</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/getting-started.html">
+            <span class="fa fa-fw fa-power-off"></span>
+            <span>Getting Started</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/configuration.html">
+            <span class="fa fa-fw fa-gear"></span>
+            <span>Configuration</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/integration-jobs.html">
+            <span class="fa fa-fw fa-exchange"></span>
+            <span>Integration Jobs</span>
+        </a>
+    </li>
+    <li class="active">
+        <a href="http://inengine.net/web-api.html">
+            <span class="fa fa-fw fa-cloud"></span>
+            <span>Web API</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/change-log.html">
+            <span class="fa fa-fw fa-refresh"></span>
+            <span>Change Log</span>
+        </a>
+    </li>
 
-            <a class="navbar-brand" href="http://inengine.net/">
-                InEngine.NET
-                <small class="hidden-xs hidden-sm">
-                    An asynchronous job scheduling server.
-                </small>
-            </a>
-
-            
-        </header>
+                    </ul>
+                </div>
+                    </header>
 
         <main class="container-fluid">
             <div class="row">
 
-                
-                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
-
+                                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
                         <ul class="nav nav-pills nav-stacked">
-                                                            <li class="">
-                                    <a href="http://inengine.net/index.html">
-                                        <span class="fa fa-fw fa-home"></span> Welcome
-                                    </a>
-                                </li>
-                                                            <li class="">
-                                    <a href="http://inengine.net/getting-started.html">
-                                        <span class="fa fa-fw fa-power-off"></span> Getting Started
-                                    </a>
-                                </li>
-                                                            <li class="">
-                                    <a href="http://inengine.net/configuration.html">
-                                        <span class="fa fa-fw fa-gear"></span> Configuration
-                                    </a>
-                                </li>
-                                                            <li class="">
-                                    <a href="http://inengine.net/integration-jobs.html">
-                                        <span class="fa fa-fw fa-exchange"></span> Integration Jobs
-                                    </a>
-                                </li>
-                                                            <li class="active">
-                                    <a href="http://inengine.net/web-api.html">
-                                        <span class="fa fa-fw fa-cloud"></span> Web API
-                                    </a>
-                                </li>
-                                                            <li class="">
-                                    <a href="http://inengine.net/change-log.html">
-                                        <span class="fa fa-fw fa-refresh"></span> Change Log
-                                    </a>
-                                </li>
-                                                    </ul>
+                                <li class="">
+        <a href="http://inengine.net/index.html">
+            <span class="fa fa-fw fa-home"></span>
+            <span>Welcome</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/getting-started.html">
+            <span class="fa fa-fw fa-power-off"></span>
+            <span>Getting Started</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/configuration.html">
+            <span class="fa fa-fw fa-gear"></span>
+            <span>Configuration</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/integration-jobs.html">
+            <span class="fa fa-fw fa-exchange"></span>
+            <span>Integration Jobs</span>
+        </a>
+    </li>
+    <li class="active">
+        <a href="http://inengine.net/web-api.html">
+            <span class="fa fa-fw fa-cloud"></span>
+            <span>Web API</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/change-log.html">
+            <span class="fa fa-fw fa-refresh"></span>
+            <span>Change Log</span>
+        </a>
+    </li>
 
+                        </ul>
                     </nav>
-
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <ul class="status-badges pull-right list-unstyled list-inline">
+                        <li>
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true">
+                            </a>
+                        </li>
+                    </ul>
                     <h1>Web API</h1>
 <h2>IntegrationJob Endpoint</h2>
 <p>The IntegrationJob endpoint allows for an integration job to be scheduled, updated, and viewed.</p>
@@ -94,14 +148,15 @@
         <footer>
             <div class="container-fluid">
                 <p class="text-muted">
-                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                    author <a href="http://www.ethanhann.com" title="Author">Ethan Hann</a>
                 </p>
             </div>
         </footer>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-        <script src="http://yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/highlightjs/highlight.pack.js"></script>
 
         <script>
             $(function() {
