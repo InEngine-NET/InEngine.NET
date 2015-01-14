@@ -14,8 +14,8 @@ namespace IntegrationEngine.Api.Controllers
 
         public CronTriggerController()
         {
-            Repository = Container.Resolve<ESRepository<CronTrigger>>();
-            EngineScheduler = Container.Resolve<IEngineScheduler>();
+            Repository = Container.TryResolve<ESRepository<CronTrigger>>();
+            EngineScheduler = Container.TryResolve<IEngineScheduler>();
         }
 
         // GET api/IntegrationJob

@@ -8,6 +8,10 @@ namespace IntegrationEngine
         {
             return ContainerSingleton.GetContainer().Resolve<T>();
         }
+        public static T TryResolve<T>()
+        {
+            return ContainerSingleton.GetContainer().TryResolve<T>();
+        }
 
         public static void Register<T>(T service)
         {

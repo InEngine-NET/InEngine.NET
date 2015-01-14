@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -95,6 +96,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
+      <Project>{3f3794d7-4078-4d26-954c-7864173edd86}</Project>
+      <Name>IntegrationEngine.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
       <Project>{0b499fe4-0bdb-4080-bcb7-f8d4ce54a4ff}</Project>
       <Name>IntegrationEngine.Model</Name>

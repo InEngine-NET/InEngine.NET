@@ -1,8 +1,10 @@
 ﻿using IntegrationEngine;
 using IntegrationEngine.Api.Controllers;
+using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Model;
 using Moq;
 using NUnit.Framework;
+
 
 namespace IntegrationEngine.Tests.Api.Controllers
 {
@@ -21,6 +23,9 @@ namespace IntegrationEngine.Tests.Api.Controllers
             var engineScheduler = new Mock<IEngineScheduler>();
             engineScheduler.Setup(x => x.ScheduleJobWithCronTrigger(expected));
             subject.EngineScheduler = engineScheduler.Object;
+            var esRepository = new Mock<ESRepository<CronTrigger>>();
+            esRepository.Setup(x => x.Insert(expected)).Returns(expected);
+            subject.Repository = esRepository.Object;
 
             subject.PostIntegrationJob(expected);
 
