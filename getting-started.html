@@ -133,7 +133,7 @@
 <h2>Add the InEngine.NET Package</h2>
 <h3>Visual Studio</h3>
 <p>Run the following command in the Package Manager Console.</p>
-<pre><code>PM&gt; Install-Package IntegrationEngine</code></pre>
+<pre><code class="language-sh">PM&gt; Install-Package IntegrationEngine</code></pre>
 <h3>Xamarin Studio</h3>
 <p>Navigate to <em>Project</em>&#8594;<em>Add Packages</em>, then search for "InEngine.NET" in the <em>Add Packages</em> GUI.</p>
 <h2>Initialize InEngine.NET</h2>
@@ -172,8 +172,8 @@ namespace MyProject
 }</code></pre>
 <h2>Schedule a Job</h2>
 <p>Post an HTTP request to the IntegrationServer API's IntegrationJob resource with a <em>JobType</em> of 
-"MyProject.MyIntegrationJob", the full name of the job.  </p>
-<pre><code>curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob</code></pre>
+"MyProject.MyIntegrationJob" - the full name of the job.  </p>
+<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob</code></pre>
                 </section>
 
             </div>
