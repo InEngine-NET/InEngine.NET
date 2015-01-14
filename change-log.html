@@ -123,6 +123,23 @@
                         </li>
                     </ul>
                     <h1>Change Log</h1>
+<h2>2.0.0-alpha1</h2>
+<ul>
+<li>Features
+<ul>
+<li>Add SimpleTrigger to Model and Web API.</li>
+<li>Add CronTrigger to Model and Web API.</li>
+<li>Remove IntegrationJob from Model and Web API (replaced by SimpleTrigger and CronTrigger).</li>
+</ul></li>
+<li>Chores
+<ul>
+<li>Setup CI with AppVeyor.</li>
+</ul></li>
+<li>Bugs
+<ul>
+<li>Config loader no longer mistakenly looks for config.json instead of IntegrationEngine.json.</li>
+</ul></li>
+</ul>
 <h2>1.4.1</h2>
 <ul>
 <li>Chores
@@ -153,7 +170,7 @@
 <ul>
 <li>Features
 <ul>
-<li>Load jobs from an external assembly that implement IIntegrationJob.</li>
+<li>Schedule jobs from an external assembly that implement IIntegrationJob.</li>
 <li>Develop EngineHost, start engine and load jobs from an external assembly.</li>
 <li>Add repository layer for persisting jobs to a data store.</li>
 <li>Create REST API for creating standard jobs.</li>
