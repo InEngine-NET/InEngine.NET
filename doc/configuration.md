@@ -13,7 +13,7 @@ The configuration file has four sections: _WebApi_, _MessageQueue_, _Mail_, and 
 The _WebApi_ section contains settings for the InEngine.NET's WebApi. 
 Namely, the hostname and port of the web API. 
 
-```
+```js
 {
     // ...
     "WebApi": {
@@ -32,14 +32,14 @@ If these settings are not correct, then a connection exception will be thrown wh
 A queue called "myqueue" will not exist on a freshly installed RabbitMQ server. 
 It will need to be created.
 
-```
+```js
 {
     // ...
     "MessageQueue": {
         "QueueName": "myqueue",
         "ExchangeName": "amq.direct",
-        "UserName": "guest",
-        "Password": "guest",
+        "UserName": "inengine",
+        "Password": "secret",
         "HostName": "localhost",
         "VirtualHost": "/"
     },
@@ -52,7 +52,7 @@ It will need to be created.
 The _Elasticsearch_ section contains settings for connecting to a Elasticsearch server. 
 If these settings are not correct, then a connection exception will be thrown when a job is scheduled.
 
-```
+```js
 {
     // ...
     "Elasticsearch": {
@@ -70,7 +70,7 @@ If these settings are not correct, then a connection exception will be thrown wh
 The _Mail_ section contains settings for connecting to an SMTP server.
 If these settings are not correct, then a connection exception will be thrown when sending an email.
 
-```
+```js
 {
     // ...
     "Mail": {
@@ -86,7 +86,7 @@ If these settings are not correct, then a connection exception will be thrown wh
 The _Database_ section contains settings for connecting to a either a SQL Server or MySQL server via [Entity Framework](http://msdn.microsoft.com/en-us/data/ef.aspx).
 If these settings are not correct, then a connection exception will be thrown when a SQL job runs.
 
-```
+```js
 {
     // ...
     "Database": {
@@ -104,7 +104,7 @@ If these settings are not correct, then a connection exception will be thrown wh
 ## Sample Configuration
 This is a sample configuration.
 
-```
+```js
 {
     "WebApi": {
         "HostName": "localhost",
@@ -113,8 +113,8 @@ This is a sample configuration.
     "MessageQueue": {
         "QueueName": "myqueue",
         "ExchangeName": "amq.direct",
-        "UserName": "guest",
-        "Password": "guest",
+        "UserName": "inengine",
+        "Password": "secret",
         "HostName": "localhost",
         "VirtualHost": "/"
     },
