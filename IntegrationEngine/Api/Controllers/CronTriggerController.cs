@@ -9,13 +9,18 @@ namespace IntegrationEngine.Api.Controllers
 {
     public class CronTriggerController : ApiController
     {
-        public IRepository<CronTrigger> Repository { get; set; }
+        public ESRepository<CronTrigger> Repository { get; set; }
         public IEngineScheduler EngineScheduler { get; set; }
 
         public CronTriggerController()
         {
-            Repository = Container.TryResolve<ESRepository<CronTrigger>>();
-            EngineScheduler = Container.TryResolve<IEngineScheduler>();
+        }
+
+        public CronTriggerController(ESRepository<CronTrigger> repository, IEngineScheduler engineScheduler)
+            : this()
+        {
+            Repository = repository;
+            EngineScheduler = engineScheduler;
         }
 
         // GET api/IntegrationJob

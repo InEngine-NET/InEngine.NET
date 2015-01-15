@@ -20,11 +20,12 @@ namespace IntegrationEngine.MessageQueue
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
+        public IMailClient MailClient { get; set; }
+        public IntegrationEngineContext IntegrationEngineContext { get; set; }
+        public IElasticClient ElasticClient { get; set; }
 
         public RabbitMqListener()
-        {
-            Log = Container.Resolve<ILog>();
-        }
+        {}
 
         public void Listen()
         {
@@ -55,13 +56,13 @@ namespace IntegrationEngine.MessageQueue
         T AutoWireJob<T>(T job, Type type)
         {
             if (type.GetInterface(typeof(IMailJob).Name) != null)
-                (job as IMailJob).MailClient = Container.Resolve<IMailClient>();
+                (job as IMailJob).MailClient = MailClient;
             if (type.GetInterface(typeof(ISqlJob).Name) != null)
-                (job as ISqlJob).DbContext = Container.Resolve<IntegrationEngineContext>();
+                (job as ISqlJob).DbContext = IntegrationEngineContext;
             if (type.GetInterface(typeof(ILogJob).Name) != null)
-                (job as ILogJob).Log = Container.Resolve<ILog>();
+                (job as ILogJob).Log = Log;
             if (type.GetInterface(typeof(IElasticsearchJob).Name) != null)
-                (job as IElasticsearchJob).ElasticClient = Container.Resolve<IElasticClient>();
+                (job as IElasticsearchJob).ElasticClient = ElasticClient;
             return job;
         }
     }

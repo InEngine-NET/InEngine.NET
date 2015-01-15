@@ -93,9 +93,6 @@
     <Reference Include="Quartz">
       <HintPath>..\packages\Quartz.2.3\lib\net40\Quartz.dll</HintPath>
     </Reference>
-    <Reference Include="Funq">
-      <HintPath>..\packages\Funq.1.0.0\lib\net40\Funq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.Cors">
@@ -121,6 +118,15 @@
     <Reference Include="fx.configuration">
       <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\IntegrationEngineApi.cs" />
@@ -138,12 +144,12 @@
     <Compile Include="Configuration\EngineConfiguration.cs" />
     <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
-    <Compile Include="Container.cs" />
     <Compile Include="ContainerSingleton.cs" />
     <Compile Include="Configuration\ElasticsearchConfiguration.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
     <Compile Include="EngineScheduler.cs" />
+    <Compile Include="ContainerResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

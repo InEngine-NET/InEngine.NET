@@ -16,9 +16,14 @@ namespace IntegrationEngine.Api.Controllers
     public class SimpleTriggerController : ApiController
     {
         public IRepository<SimpleTrigger> Repository { get; set; }
+
         public SimpleTriggerController()
+        {}
+
+        public SimpleTriggerController(ESRepository<SimpleTrigger> repository)
+            : this()
         {
-            Repository = Container.Resolve<ESRepository<SimpleTrigger>>();
+            Repository = repository;
         }
 
         // GET api/IntegrationJob

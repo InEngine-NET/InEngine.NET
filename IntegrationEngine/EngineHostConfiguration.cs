@@ -14,11 +14,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net.Core;
+using Microsoft.Practices.Unity;
+using System.Data.Entity.Core.Metadata.Edm;
 
 namespace IntegrationEngine
 {
     public class EngineHostConfiguration
     {
+        public IUnityContainer Container { get; set; }
         public EngineConfiguration Configuration { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
 
@@ -28,6 +32,7 @@ namespace IntegrationEngine
 
         public void Configure(IList<Assembly> assembliesWithJobs)
         {
+            Container = ContainerSingleton.GetContainer();
             IntegrationJobTypes = assembliesWithJobs
                         .SelectMany(x => x.GetTypes())
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
@@ -60,19 +65,18 @@ namespace IntegrationEngine
         public void LoadConfiguration()
         {
             Configuration = new EngineConfiguration();
-            Container.Register<EngineConfiguration>(Configuration);
+            Container.RegisterInstance<EngineConfiguration>(Configuration);
         }
 
         public void SetupLogging()
         {
             var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            Container.Register<ILog>(log);
+            Container.RegisterInstance<ILog>(log);
         }
 
         public void SetupDatabaseRepository()
         {
-            var dbContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
-            Container.Register<IntegrationEngineContext>(dbContext);
+            Container.RegisterInstance<IntegrationEngineContext>(new DatabaseInitializer(Configuration.Database).GetDbContext());
         }
 
         public void SetupApi()
@@ -87,7 +91,8 @@ namespace IntegrationEngine
                 MailConfiguration = Configuration.Mail,
                 Log = Container.Resolve<ILog>(),
             };
-            Container.Register<IMailClient>(mailClient);
+
+            Container.RegisterInstance<IMailClient>(mailClient);
         }
 
         public void SetupMessageQueueListener()
@@ -96,6 +101,10 @@ namespace IntegrationEngine
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
+                Log = Container.Resolve<ILog>(),
+                MailClient = Container.Resolve<IMailClient>(),
+                IntegrationEngineContext = Container.Resolve<IntegrationEngineContext>(),
+                ElasticClient = Container.Resolve<IElasticClient>(),
             };
             rabbitMqListener.Listen();
         }
@@ -105,8 +114,9 @@ namespace IntegrationEngine
             var messageQueueClient = new RabbitMqClient() {
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
+                Log = Container.Resolve<ILog>(),
             };
-            Container.Register<IMessageQueueClient>(messageQueueClient);
+            Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
         }
 
         public void SetupScheduler()
@@ -114,8 +124,9 @@ namespace IntegrationEngine
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
+                MessageQueueClient = Container.Resolve<IMessageQueueClient>(),
             };
-            Container.Register<IEngineScheduler>(engineScheduler);
+            Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();
             var simpleTriggers = Container.Resolve<IElasticClient>().Search<SimpleTrigger>(x => x).Documents;
             var cronTriggers = Container.Resolve<IElasticClient>().Search<CronTrigger>(x => x).Documents;
@@ -131,7 +142,7 @@ namespace IntegrationEngine
 
         public void SetupRScriptRunner()
         {
-            Container.Register<RScriptRunner>(new RScriptRunner());
+            Container.RegisterInstance<RScriptRunner>(new RScriptRunner());
         }
 
         public void SetupElasticClient()
@@ -140,11 +151,12 @@ namespace IntegrationEngine
             var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
             var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
             var elasticClient = new ElasticClient(settings);
-            Container.Register<IElasticClient>(elasticClient);
-            Container.Register<ESRepository<SimpleTrigger>>(new ESRepository<SimpleTrigger>() {
+
+            Container.RegisterInstance<IElasticClient>(elasticClient);
+            Container.RegisterInstance<ESRepository<SimpleTrigger>>(new ESRepository<SimpleTrigger>() {
                 ElasticClient = elasticClient
             });
-            Container.Register<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
+            Container.RegisterInstance<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
                 ElasticClient = elasticClient
             });
         }

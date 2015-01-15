@@ -1,17 +1,17 @@
 ﻿using System;
-using FunqContainer = Funq.Container;
+using Microsoft.Practices.Unity;
 
 namespace IntegrationEngine
 {
     internal class ContainerSingleton
     {
-        private static FunqContainer _instance;
+        private static IUnityContainer _instance;
         private ContainerSingleton() {}
 
-        public static FunqContainer GetContainer()
+        public static IUnityContainer GetContainer()
         {
             if (_instance == null)
-                _instance = new FunqContainer();
+                _instance = new UnityContainer();
             return _instance;
         }
     }

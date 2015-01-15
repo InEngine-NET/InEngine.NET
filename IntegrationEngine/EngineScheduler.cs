@@ -12,6 +12,7 @@ namespace IntegrationEngine
     {
         public IScheduler Scheduler { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
+        public IMessageQueueClient MessageQueueClient { get; set; }
 
         public EngineScheduler()
         {}
@@ -25,6 +26,7 @@ namespace IntegrationEngine
         {
             var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
             var jobDetailsDataMap = new JobDataMap();
+            jobDetailsDataMap.Put("MessageQueueClient", MessageQueueClient);
             jobDetailsDataMap.Put("IntegrationJob", integrationJob);
             return JobBuilder.Create<IntegrationJobDispatcherJob>()
                 .SetJobData(jobDetailsDataMap)

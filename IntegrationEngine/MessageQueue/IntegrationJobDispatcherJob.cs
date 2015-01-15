@@ -1,22 +1,24 @@
 ﻿using System;
+using Microsoft.Practices.Unity;
 using Quartz;
 
 namespace IntegrationEngine.MessageQueue
 {
     public class IntegrationJobDispatcherJob : IJob
     {
-        public IMessageQueueClient MessageQueueClient { get; set; }
 
         public IntegrationJobDispatcherJob()
         {
-            MessageQueueClient = Container.Resolve<IMessageQueueClient>();
         }
 
         public virtual void Execute(IJobExecutionContext context)
         {
-            var contextDataMap = context.MergedJobDataMap;
-            if (contextDataMap.ContainsKey("IntegrationJob"))
-                MessageQueueClient.Publish(contextDataMap.Get("IntegrationJob"));
+            var map = context.MergedJobDataMap;
+            if (map.ContainsKey("MessageQueueClient") && map.ContainsKey("IntegrationJob"))
+            {
+                var messageQueueClient = map.Get("MessageQueueClient") as IMessageQueueClient;
+                messageQueueClient.Publish(map.Get("IntegrationJob"));
+            }
         }
     }
 }

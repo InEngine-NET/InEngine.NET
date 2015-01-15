@@ -12,9 +12,7 @@ namespace IntegrationEngine.MessageQueue
         public ILog Log { get; set; }
 
         public RabbitMqClient() 
-        {
-            Log = Container.Resolve<ILog>();
-        }
+        {}
 
         public void Publish<T>(T value)
         {
