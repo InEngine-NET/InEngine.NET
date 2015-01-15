@@ -29,9 +29,8 @@ namespace IntegrationEngine.Tests.Api.Controllers
             subject.PostIntegrationJob(expected);
 
             engineScheduler.Verify(x => x
-                .ScheduleJobWithCronTrigger(It.Is<CronTrigger>(y => y.JobType == jobType && 
-                                                                    y.CronExpressionString == cronExpression)), 
-                Times.Once);
+                .ScheduleJobWithCronTrigger(It.Is<CronTrigger>(y => y.JobType == jobType &&
+                                                                    y.CronExpressionString == cronExpression)), Times.Once);
         }
     }
 }

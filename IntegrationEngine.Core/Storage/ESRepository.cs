@@ -34,7 +34,7 @@ namespace IntegrationEngine.Core.Storage
             return item;
         }
 
-        public T Insert(T value)
+        public virtual T Insert(T value)
         {
             var document = SelectById(ElasticClient.Index<T>(value).Id);
             return document;

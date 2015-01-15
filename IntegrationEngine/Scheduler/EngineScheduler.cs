@@ -34,7 +34,7 @@ namespace IntegrationEngine.Scheduler
                 .Build();
         }
 
-        public void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
+        public virtual void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
         {
             var jobType = IntegrationJobTypes.Where(x => x.FullName == triggerDefinition.JobType).First();
             var jobDetail = CreateJobDetail(jobType);
