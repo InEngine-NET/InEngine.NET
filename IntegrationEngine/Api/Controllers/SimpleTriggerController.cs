@@ -16,14 +16,16 @@ namespace IntegrationEngine.Api.Controllers
     public class SimpleTriggerController : ApiController
     {
         public IRepository<SimpleTrigger> Repository { get; set; }
+        public IEngineScheduler EngineScheduler { get; set; }
 
         public SimpleTriggerController()
         {}
 
-        public SimpleTriggerController(ESRepository<SimpleTrigger> repository)
+        public SimpleTriggerController(ESRepository<SimpleTrigger> repository, IEngineScheduler engineScheduler)
             : this()
         {
             Repository = repository;
+            EngineScheduler = engineScheduler;
         }
 
         // GET api/IntegrationJob
@@ -48,6 +50,7 @@ namespace IntegrationEngine.Api.Controllers
             if (id != trigger.Id)
                 return BadRequest();
             Repository.Update(trigger);
+            EngineScheduler.ScheduleJobWithSimpleTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -56,6 +59,7 @@ namespace IntegrationEngine.Api.Controllers
         public IHttpActionResult PostIntegrationJob(SimpleTrigger trigger)
         {
             var triggerWithId = Repository.Insert(trigger);
+            EngineScheduler.ScheduleJobWithSimpleTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
         }
 

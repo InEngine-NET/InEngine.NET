@@ -45,6 +45,7 @@ namespace IntegrationEngine.Api.Controllers
             if (id != trigger.Id)
                 return BadRequest();
             Repository.Update(trigger);
+            EngineScheduler.ScheduleJobWithCronTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
         }
 
