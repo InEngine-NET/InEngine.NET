@@ -1,10 +1,9 @@
-﻿using IntegrationEngine;
-using IntegrationEngine.Api.Controllers;
+﻿using IntegrationEngine.Api.Controllers;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Model;
+using IntegrationEngine.Scheduler;
 using Moq;
 using NUnit.Framework;
-
 
 namespace IntegrationEngine.Tests.Api.Controllers
 {
