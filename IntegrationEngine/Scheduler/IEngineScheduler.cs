@@ -1,8 +1,8 @@
-﻿using IntegrationEngine.Model;
+﻿using System;
+using IntegrationEngine.Model;
 using Quartz;
-using System;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.Scheduler
 {
     public interface IEngineScheduler
     {

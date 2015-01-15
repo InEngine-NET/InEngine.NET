@@ -1,9 +1,10 @@
-﻿using IntegrationEngine.Core.Storage;
-using IntegrationEngine.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using IntegrationEngine.Core.Storage;
+using IntegrationEngine.Model;
+using IntegrationEngine.Scheduler;
 
 namespace IntegrationEngine.Api.Controllers
 {
@@ -53,6 +54,8 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(CronTrigger))]
         public IHttpActionResult PostIntegrationJob(CronTrigger trigger)
         {
+            if (trigger.CronExpressionString.IsValidCronExpression())
+                return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);

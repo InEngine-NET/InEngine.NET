@@ -1,12 +1,12 @@
-﻿using IntegrationEngine.Core.Jobs;
-using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Model;
-using Quartz;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Model;
+using Quartz;
+using IntegrationEngine.MessageQueue;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.Scheduler
 {
     public class EngineScheduler : IEngineScheduler
     {
@@ -45,8 +45,9 @@ namespace IntegrationEngine
         {
             var trigger = TriggerBuilder.Create()
                 .WithIdentity(GenerateTriggerId(jobType, triggerDefinition), jobType.Namespace);
-            if (triggerDefinition.CronExpressionString != null)
+            if (triggerDefinition.CronExpressionString != null) {
                 trigger.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
+            }
             Scheduler.ScheduleJob(jobDetail, trigger.Build());
         }
 

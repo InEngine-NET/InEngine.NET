@@ -133,7 +133,6 @@
     <Compile Include="Api\Startup.cs" />
     <Compile Include="Configuration\MessageQueueConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfiguration.cs" />
-    <Compile Include="IEngineScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
     <Compile Include="MessageQueue\RabbitMqClient.cs" />
@@ -148,8 +147,10 @@
     <Compile Include="Configuration\ElasticsearchConfiguration.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
-    <Compile Include="EngineScheduler.cs" />
     <Compile Include="ContainerResolver.cs" />
+    <Compile Include="Scheduler\EngineScheduler.cs" />
+    <Compile Include="Scheduler\IEngineScheduler.cs" />
+    <Compile Include="Scheduler\TriggerStringExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -176,4 +177,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ItemGroup>
+    <Folder Include="Scheduler\" />
+  </ItemGroup>
 </Project>
