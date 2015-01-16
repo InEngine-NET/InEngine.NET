@@ -22,7 +22,7 @@ namespace IntegrationEngine.Scheduler
             Scheduler.Start();
         }
 
-        public IJobDetail CreateJobDetail(Type jobType)
+        public IJobDetail JobDetailFactory(Type jobType)
         {
             var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
             var jobDetailsDataMap = new JobDataMap();
@@ -37,59 +37,68 @@ namespace IntegrationEngine.Scheduler
         public virtual void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
         {
             var jobType = IntegrationJobTypes.Where(x => x.FullName == triggerDefinition.JobType).First();
-            var jobDetail = CreateJobDetail(jobType);
-            ScheduleJobWithCronTrigger(triggerDefinition, jobType, jobDetail);
-        }
-
-        public void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
-        {
-            var trigger = TriggerBuilder.Create()
-                .WithIdentity(GenerateTriggerId(jobType, triggerDefinition), jobType.Namespace);
-            if (triggerDefinition.CronExpressionString != null) {
-                trigger.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
-            }
-            Scheduler.ScheduleJob(jobDetail, trigger.Build());
+            var jobDetail = JobDetailFactory(jobType);
+            var trigger = CronTriggerFactory(triggerDefinition, jobType, jobDetail);
+            TryScheduleJobWithTrigger(trigger, jobType, jobDetail);
         }
 
         public void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition)
         {
             var jobType = IntegrationJobTypes.Where(x => x.FullName == triggerDefinition.JobType).First();
-            var jobDetail = CreateJobDetail(jobType);
-            ScheduleJobWithSimpleTrigger(triggerDefinition, jobType, jobDetail);;
+            var jobDetail = JobDetailFactory(jobType);
+            var trigger = SimpleTriggerFactory(triggerDefinition, jobType, jobDetail);
+            TryScheduleJobWithTrigger(trigger, jobType, jobDetail);
         }
 
-        public void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
+        public void TryScheduleJobWithTrigger(ITrigger trigger, Type jobType, IJobDetail jobDetail)
         {
-            var trigger = TriggerBuilder.Create()
-                .WithIdentity(GenerateTriggerId(jobType, triggerDefinition), jobType.Namespace);
+            if (Scheduler.CheckExists(jobDetail.Key))
+                Scheduler.RescheduleJob(trigger.Key, trigger);
+            else
+                Scheduler.ScheduleJob(jobDetail, trigger);
+        }
+
+        public void ScheduleJobsWithTriggers(IEnumerable<IIntegrationJobTrigger> triggerDefs, Type jobType, IJobDetail jobDetail)
+        {
+            if (!triggerDefs.Any())
+                return;
+            var triggersForJobs = new Quartz.Collection.HashSet<ITrigger>();
+            foreach (var triggerDef in triggerDefs)
+            {
+                if (triggerDef is CronTrigger)
+                    triggersForJobs.Add(CronTriggerFactory(triggerDef as CronTrigger, jobType, jobDetail));
+                else if (triggerDef is SimpleTrigger)
+                    triggersForJobs.Add(SimpleTriggerFactory(triggerDef as SimpleTrigger, jobType, jobDetail));
+            }
+            Scheduler.ScheduleJob(jobDetail, triggersForJobs, true);
+        }
+
+        TriggerBuilder TriggerBuilderFactory(string triggerName, string triggerGroup)
+        {
+            return TriggerBuilder.Create().WithIdentity(new TriggerKey(triggerName, triggerGroup));
+        }
+
+        public ITrigger SimpleTriggerFactory(SimpleTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
+        {
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType.FullName);
             Action<SimpleScheduleBuilder> simpleScheduleBuilderAction;
             if (triggerDefinition.RepeatCount > 0)
                 simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval).WithRepeatCount(triggerDefinition.RepeatCount);
             else
                 simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval);
-            trigger.WithSimpleSchedule(simpleScheduleBuilderAction);
+            triggerBuilder.WithSimpleSchedule(simpleScheduleBuilderAction);
             if (!object.Equals(triggerDefinition.StartTimeUtc, default(DateTimeOffset)))
-                trigger.StartAt(triggerDefinition.StartTimeUtc);
+                triggerBuilder.StartAt(triggerDefinition.StartTimeUtc);
             else
-                trigger.StartNow();
-            Scheduler.ScheduleJob(jobDetail, trigger.Build());
+                triggerBuilder.StartNow();
+            return triggerBuilder.Build();
         }
 
-        public void ScheduleJobsWithCronTriggers(IEnumerable<CronTrigger> triggers, Type jobType, IJobDetail jobDetail)
+        public ITrigger CronTriggerFactory(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            foreach (var triggerDefinition in triggers.Where(x => x.JobType == jobType.FullName))
-                ScheduleJobWithCronTrigger(triggerDefinition, jobType, jobDetail);
-        }
-
-        public void ScheduleJobsWithSimpleTriggers(IEnumerable<SimpleTrigger> triggers, Type jobType, IJobDetail jobDetail)
-        {
-            foreach (var triggerDefinition in triggers.Where(x => x.JobType == jobType.FullName))
-                ScheduleJobWithSimpleTrigger(triggerDefinition, jobType, jobDetail);
-        }
-
-        string GenerateTriggerId(Type jobType, IHasStringId triggerDefinition)
-        {
-            return string.Format("{0}-{1}", jobType.Name, triggerDefinition.Id);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType.FullName);
+            triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
+            return triggerBuilder.Build();
         }
     }
 }
