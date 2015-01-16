@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>IntegrationEngine.Model</id>
-    <version>2.0.0-alpha2</version>
+    <id>$id$</id>
+    <version>$version$</version>
     <title>InEngine.NET Model</title>
-    <authors>Ethan Hann</authors>
+    <authors>$author$</authors>
     <owners>Ethan Hann</owners>
     <licenseUrl>https://github.com/ethanhann/InEngine.NET/blob/master/IntegrationEngine/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ethanhann/InEngine.NET</projectUrl>

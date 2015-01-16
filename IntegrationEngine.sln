@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine", "IntegrationEngine\IntegrationEngine.csproj", "{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}"
 EndProject
@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		package.cmd = package.cmd
 		README.md = README.md
 		release.cmd = release.cmd
+		configuration\SharedAssemblyInfo.cs = configuration\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Core", "IntegrationEngine.Core\IntegrationEngine.Core.csproj", "{3F3794D7-4078-4D26-954C-7864173EDD86}"
