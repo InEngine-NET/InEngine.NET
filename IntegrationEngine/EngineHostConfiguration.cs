@@ -129,15 +129,13 @@ namespace IntegrationEngine
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();
-            var simpleTriggers = Container.Resolve<IElasticClient>().Search<SimpleTrigger>(x => x).Documents;
-            var cronTriggers = Container.Resolve<IElasticClient>().Search<CronTrigger>(x => x).Documents;
+            var simpleTriggers = Container.Resolve<ESRepository<SimpleTrigger>>().SelectAll();
+            var cronTriggers = Container.Resolve<ESRepository<CronTrigger>>().SelectAll();
             foreach (var jobType in IntegrationJobTypes)
             {
-                // Register job
-                var jobDetail = engineScheduler.CreateJobDetail(jobType);                
-                // Schedule the job with applicable triggers
-                engineScheduler.ScheduleJobsWithSimpleTriggers(simpleTriggers, jobType, jobDetail);
-                engineScheduler.ScheduleJobsWithCronTriggers(cronTriggers, jobType, jobDetail);
+                var jobDetail = engineScheduler.JobDetailFactory(jobType);
+                engineScheduler.ScheduleJobsWithTriggers(simpleTriggers, jobType, jobDetail);
+                engineScheduler.ScheduleJobsWithTriggers(cronTriggers, jobType, jobDetail);
             }
         }
 
