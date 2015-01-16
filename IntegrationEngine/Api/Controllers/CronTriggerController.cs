@@ -44,6 +44,8 @@ namespace IntegrationEngine.Api.Controllers
         {
             if (id != trigger.Id)
                 return BadRequest();
+            if (!trigger.CronExpressionString.IsValidCronExpression())
+                return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
