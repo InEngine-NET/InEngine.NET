@@ -24,10 +24,11 @@ namespace IntegrationEngine.Api.Controllers
             EngineScheduler = engineScheduler;
         }
 
-        public IHttpActionResult GetJobs()
+        public IHttpActionResult GetJobKeys()
         {
-            return Ok(EngineScheduler.Scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).ToList());
+            return Ok(EngineScheduler.Scheduler
+                .GetJobKeys(GroupMatcher<JobKey>.AnyGroup())
+                .Select(x => x.ToString()).ToList());
         }
-
     }
 }
