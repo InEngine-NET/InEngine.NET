@@ -53,7 +53,7 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(CronTrigger))]
         public IHttpActionResult PostCronTrigger(CronTrigger trigger)
         {
-            if (trigger.CronExpressionString.IsValidCronExpression())
+            if (!trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(triggerWithId);
