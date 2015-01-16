@@ -16,8 +16,7 @@ namespace IntegrationEngine.Api.Controllers
         public IEngineScheduler EngineScheduler { get; set; }
 
         public JobController()
-        {
-        }
+        {}
 
         public JobController(IEngineScheduler engineScheduler)
             : this()

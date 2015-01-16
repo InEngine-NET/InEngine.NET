@@ -29,15 +29,15 @@ namespace IntegrationEngine.Api.Controllers
             EngineScheduler = engineScheduler;
         }
 
-        // GET api/IntegrationJob
-        public IEnumerable<SimpleTrigger> GetIntegrationJobs()
+        // GET api/SimpleTrigger
+        public IEnumerable<SimpleTrigger> GetSimpleTriggers()
         {
             return Repository.SelectAll();
         }
 
-        // GET api/IntegrationJob/5
+        // GET api/SimpleTrigger/5
         [ResponseType(typeof(SimpleTrigger))]
-        public IHttpActionResult GetIntegrationJob(string id)
+        public IHttpActionResult GetSimpleTrigger(string id)
         {
             var trigger = Repository.SelectById(id);
             if (trigger == null)
@@ -45,8 +45,8 @@ namespace IntegrationEngine.Api.Controllers
             return Ok(trigger);
         }
 
-        // PUT api/IntegrationJob/5
-        public IHttpActionResult PutIntegrationJob(string id, SimpleTrigger trigger)
+        // PUT api/SimpleTrigger/5
+        public IHttpActionResult PutSimpleTrigger(string id, SimpleTrigger trigger)
         {
             if (id != trigger.Id)
                 return BadRequest();
@@ -55,18 +55,18 @@ namespace IntegrationEngine.Api.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST api/IntegrationJob
+        // POST api/SimpleTrigger
         [ResponseType(typeof(SimpleTrigger))]
-        public IHttpActionResult PostIntegrationJob(SimpleTrigger trigger)
+        public IHttpActionResult PostSimpleTrigger(SimpleTrigger trigger)
         {
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
         }
 
-        // DELETE api/IntegrationJob/5
+        // DELETE api/SimpleTrigger/5
         [ResponseType(typeof(SimpleTrigger))]
-        public IHttpActionResult DeleteIntegrationJob(string id)
+        public IHttpActionResult DeleteSimpleTrigger(string id)
         {
             var trigger = Repository.SelectById(id);
             if (trigger == null)

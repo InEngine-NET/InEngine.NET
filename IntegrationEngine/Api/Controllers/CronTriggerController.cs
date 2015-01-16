@@ -14,8 +14,7 @@ namespace IntegrationEngine.Api.Controllers
         public IEngineScheduler EngineScheduler { get; set; }
 
         public CronTriggerController()
-        {
-        }
+        {}
 
         public CronTriggerController(ESRepository<CronTrigger> repository, IEngineScheduler engineScheduler)
             : this()
@@ -24,15 +23,15 @@ namespace IntegrationEngine.Api.Controllers
             EngineScheduler = engineScheduler;
         }
 
-        // GET api/IntegrationJob
-        public IEnumerable<CronTrigger> GetIntegrationJobs()
+        // GET api/CronTrigger
+        public IEnumerable<CronTrigger> GetCronTriggers()
         {
             return Repository.SelectAll();
         }
 
-        // GET api/IntegrationJob/5
+        // GET api/CronTrigger/5
         [ResponseType(typeof(CronTrigger))]
-        public IHttpActionResult GetIntegrationJob(string id)
+        public IHttpActionResult GetCronTrigger(string id)
         {
             var trigger = Repository.SelectById(id);
             if (trigger == null)
@@ -40,8 +39,8 @@ namespace IntegrationEngine.Api.Controllers
             return Ok(trigger);
         }
 
-        // PUT api/IntegrationJob/5
-        public IHttpActionResult PutIntegrationJob(string id, CronTrigger trigger)
+        // PUT api/CronTrigger/5
+        public IHttpActionResult PutCronTrigger(string id, CronTrigger trigger)
         {
             if (id != trigger.Id)
                 return BadRequest();
@@ -50,9 +49,9 @@ namespace IntegrationEngine.Api.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST api/IntegrationJob
+        // POST api/CronTrigger
         [ResponseType(typeof(CronTrigger))]
-        public IHttpActionResult PostIntegrationJob(CronTrigger trigger)
+        public IHttpActionResult PostCronTrigger(CronTrigger trigger)
         {
             if (trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
@@ -61,9 +60,9 @@ namespace IntegrationEngine.Api.Controllers
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
         }
 
-        // DELETE api/IntegrationJob/5
+        // DELETE api/CronTrigger/5
         [ResponseType(typeof(CronTrigger))]
-        public IHttpActionResult DeleteIntegrationJob(string id)
+        public IHttpActionResult DeleteCronTrigger(string id)
         {
             var trigger = Repository.SelectById(id);
             if (trigger == null)

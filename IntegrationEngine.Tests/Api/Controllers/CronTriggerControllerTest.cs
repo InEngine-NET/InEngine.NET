@@ -26,7 +26,7 @@ namespace IntegrationEngine.Tests.Api.Controllers
             esRepository.Setup(x => x.Insert(expected)).Returns(expected);
             subject.Repository = esRepository.Object;
 
-            subject.PostIntegrationJob(expected);
+            subject.PostCronTrigger(expected);
 
             engineScheduler.Verify(x => x
                 .ScheduleJobWithCronTrigger(It.Is<CronTrigger>(y => y.JobType == jobType &&
