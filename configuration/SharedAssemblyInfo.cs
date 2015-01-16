@@ -3,7 +3,7 @@
 // Assembly Info that is shared across the product
 [assembly: AssemblyProduct("InEngine.NET")]
 [assembly: AssemblyVersion("2.0.0.*")]
-[assembly: AssemblyInformationalVersion("2.0.0-alpha3")]
+[assembly: AssemblyInformationalVersion("2.0.0-alpha4")]
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ethan Hann")]
