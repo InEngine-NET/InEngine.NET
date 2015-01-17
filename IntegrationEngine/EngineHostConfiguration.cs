@@ -38,8 +38,8 @@ namespace IntegrationEngine
                         .SelectMany(x => x.GetTypes())
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
                         .ToList();
-            TryAndLogFailure("Loading Configuration", LoadConfiguration);
-            TryAndLogFailure("Setup Logging", SetupLogging);
+            LoadConfiguration();
+            SetupLogging();
             TryAndLogFailure("Setup Database Repository", SetupDatabaseRepository);
             TryAndLogFailure("Setup Mail Client", SetupMailClient);
             TryAndLogFailure("Setup Elastic Client", SetupElasticClient);
@@ -56,10 +56,10 @@ namespace IntegrationEngine
             {
                 action();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 var log = Common.Logging.LogManager.GetLogger(typeof(EngineHost));
-                log.Error(description, ex);
+                log.Error(description, exception);
             }
         }
 
@@ -97,7 +97,6 @@ namespace IntegrationEngine
                 MailConfiguration = Configuration.Mail,
                 Log = Container.Resolve<ILog>(),
             };
-
             Container.RegisterInstance<IMailClient>(mailClient);
         }
 

@@ -5,10 +5,12 @@
   <targets>
     <target name="logfile" xsi:type="File" fileName="IntegrationEngine.log.txt" />
     <target name="console" xsi:type="Console" />
+    <target name="mailServer" xsi:type="Mail" to="ethanhann@gmail.com" from="ethanhann@gmail.com" />
   </targets>
 
   <rules>
     <logger name="*" minlevel="Trace" writeTo="logfile" />
     <logger name="*" minlevel="Info" writeTo="console" />
+    <logger name="*" minlevel="Error" writeTo="mailServer" />
   </rules>
 </nlog>

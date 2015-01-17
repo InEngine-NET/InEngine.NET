@@ -29,7 +29,7 @@ namespace IntegrationEngine.Core.Jobs
             } 
             catch(ArgumentException exception)
             {
-                Log.Error(exception.Message, exception);
+                Log.Error(exception);
             }
             return new List<T>();
         }

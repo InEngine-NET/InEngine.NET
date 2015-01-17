@@ -35,13 +35,13 @@ namespace IntegrationEngine.MessageQueue
                 var consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
 
-                Log.Info("Waiting for messages...");
+                Log.Info(x => x("Waiting for messages..."));
                 while (true)
                 {
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
                     var body = eventArgs.Body;
                     var message = Encoding.UTF8.GetString(body);
-                    Log.Info(string.Format("Received {0}", message));
+                    Log.Debug(x => x("Message queue listener received {0}", message));
                     if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                         continue;
                     var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));

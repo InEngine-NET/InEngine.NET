@@ -22,11 +22,13 @@ namespace IntegrationEngine.Core.Mail
         public void Send(MailMessage mailMessage)
         {
             ConfigureSmtpClient();
-            try {
-
+            try 
+            {
                 SmtpClient.Send(mailMessage);
-            } catch (Exception exception) {
-                Log.Error("Cannot send mail message", exception);
+            } 
+            catch (Exception exception) 
+            {
+                Log.Error(exception);
             }
         }
 
