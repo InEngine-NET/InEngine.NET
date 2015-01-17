@@ -1,5 +1,5 @@
-﻿using IntegrationEngine.Configuration;
-using log4net;
+﻿using Common.Logging;
+using IntegrationEngine.Configuration;
 using System;
 using System.Text;
 

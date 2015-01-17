@@ -1,7 +1,7 @@
-﻿using IntegrationEngine.Core.Mail;
+﻿using Common.Logging;
+using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Reports;
 using IntegrationEngine.Core.Storage;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;

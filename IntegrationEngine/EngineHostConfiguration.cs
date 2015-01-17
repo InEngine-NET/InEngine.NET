@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Linq;
-using System.Reflection;
+﻿using Common.Logging;
+using Common.Logging.Configuration;
+using Common.Logging.NLog;
+using IntegrationEngine.Api;
+using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
+using IntegrationEngine.MessageQueue;
 using IntegrationEngine.Model;
+using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 using Nest;
 using Quartz;
 using Quartz.Impl;
-using log4net;
-using log4net.Core;
-using IntegrationEngine.Api;
-using IntegrationEngine.Configuration;
-using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Scheduler;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine
 {
@@ -58,7 +58,7 @@ namespace IntegrationEngine
             }
             catch (Exception ex)
             {
-                var log = LogManager.GetLogger(typeof(EngineHost));
+                var log = Common.Logging.LogManager.GetLogger(typeof(EngineHost));
                 log.Error(description, ex);
             }
         }
@@ -71,7 +71,12 @@ namespace IntegrationEngine
 
         public void SetupLogging()
         {
-            var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            var config = Configuration.NLogAdapter;
+            var properties = new NameValueCollection();
+            properties["configType"] = config.ConfigType;
+            properties["configFile"] = config.ConfigFile;
+            Common.Logging.LogManager.Adapter = new NLogLoggerFactoryAdapter(properties);  
+            var log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             Container.RegisterInstance<ILog>(log);
         }
 

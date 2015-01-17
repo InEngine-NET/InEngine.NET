@@ -1,8 +1,8 @@
-﻿using IntegrationEngine.Configuration;
+﻿using Common.Logging;
+using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
-using log4net;
 using Nest;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

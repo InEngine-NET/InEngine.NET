@@ -28,5 +28,9 @@
         "DatabaseName": "IntegrationEngine",
         "UserName": "inengine",
         "Password": "secret"
-    }
+    },
+	"NLogAdapter": {
+		"ConfigType": "File",
+		"ConfigFile": "IntegrationEngine.nlog.xml"
+	}
 }

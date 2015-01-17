@@ -17,7 +17,7 @@ namespace IntegrationEngine
 
         ~EngineHost()
         {
-            if (_engineConfiguration != null)
+            if (_engineConfiguration == null)
                 _engineConfiguration.Shutdown();
         }
 

@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Common.Logging;
 
 namespace IntegrationEngine.Core.Jobs
 {

@@ -1,5 +1,5 @@
-﻿using IntegrationEngine.Core.Configuration;
-using log4net;
+﻿using Common.Logging;
+using IntegrationEngine.Core.Configuration;
 using System;
 using System.Net.Mail;
 
