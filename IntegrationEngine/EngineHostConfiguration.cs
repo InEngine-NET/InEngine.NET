@@ -102,7 +102,7 @@ namespace IntegrationEngine
 
         public void SetupMessageQueueListener()
         {
-            var rabbitMqListener = new RabbitMqListener() {
+            var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
@@ -116,7 +116,7 @@ namespace IntegrationEngine
 
         public void SetupMessageQueueClient()
         {
-            var messageQueueClient = new RabbitMqClient() {
+            var messageQueueClient = new RabbitMQClient() {
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
                 Log = Container.Resolve<ILog>(),

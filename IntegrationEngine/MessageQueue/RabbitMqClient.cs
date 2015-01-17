@@ -5,13 +5,13 @@ using System.Text;
 
 namespace IntegrationEngine.MessageQueue
 {
-    public class RabbitMqClient : IMessageQueueClient
+    public class RabbitMQClient : IMessageQueueClient
     {
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
 
-        public RabbitMqClient() 
+        public RabbitMQClient() 
         {}
 
         public void Publish<T>(T value)

@@ -14,7 +14,7 @@ using System.Text;
 
 namespace IntegrationEngine.MessageQueue
 {
-    public class RabbitMqListener
+    public class RabbitMQListener
     {
         public IList<Type> IntegrationJobTypes { get; set; }
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
@@ -24,7 +24,7 @@ namespace IntegrationEngine.MessageQueue
         public IntegrationEngineContext IntegrationEngineContext { get; set; }
         public IElasticClient ElasticClient { get; set; }
 
-        public RabbitMqListener()
+        public RabbitMQListener()
         {}
 
         public void Listen()
