@@ -44,6 +44,8 @@ namespace IntegrationEngine.Api.Controllers
         {
             if (id != trigger.Id)
                 return BadRequest();
+            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
+                return BadRequest("Job type is invalid: " + trigger.JobType);
             if (!trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
             Repository.Update(trigger);
@@ -55,6 +57,8 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(CronTrigger))]
         public IHttpActionResult PostCronTrigger(CronTrigger trigger)
         {
+            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
+                return BadRequest("Job type is invalid: " + trigger.JobType);
             if (!trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
             var triggerWithId = Repository.Insert(trigger);
