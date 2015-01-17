@@ -47,8 +47,15 @@ namespace IntegrationEngine.MessageQueue
                     var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));
                     var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
                     integrationJob = AutoWireJob(integrationJob, type);
-                    if (integrationJob != null)
-                        integrationJob.Run();
+                    try
+                    {
+                        if (integrationJob != null)
+                            integrationJob.Run();
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(x => x("Integration job did not run successfully ({0})}", message), exception);
+                    }
                 }
             }
         }
