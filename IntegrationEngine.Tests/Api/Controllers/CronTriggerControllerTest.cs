@@ -10,10 +10,10 @@ namespace IntegrationEngine.Tests.Api.Controllers
     public class CronTriggerControllerTest
     {
         [Test]
-        public void ShouldScheduleJobWhenCronTriggerIsCreated()
+        public void ShouldScheduleJobWhenCronTriggerIsCreatedWithValidCronExpression()
         {
             var subject = new CronTriggerController();
-            var cronExpression = "0 6 * * 1-5";
+            var cronExpression = "0 6 * * 1-5 ?";
             var jobType = "MyProject.MyIntegrationJob";
             var expected = new CronTrigger() {
                 JobType = jobType,
