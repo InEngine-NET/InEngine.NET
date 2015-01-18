@@ -1,7 +1,8 @@
 ﻿{
     "WebApi": {
         "HostName": "localhost",
-        "Port": 9001
+        "Port": 9001,
+        "Origins": ["*"]
     },
     "MessageQueue": {
         "QueueName": "myqueue",

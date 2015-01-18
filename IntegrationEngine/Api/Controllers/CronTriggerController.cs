@@ -5,6 +5,7 @@ using System.Web.Http.Description;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
+using System.Web.Http.Cors;
 
 namespace IntegrationEngine.Api.Controllers
 {
