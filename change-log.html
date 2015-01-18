@@ -117,12 +117,57 @@
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <ul class="status-badges pull-right list-unstyled list-inline">
                         <li>
-                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net">
-                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true">
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/master">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true&passingText=master%20-%20OK">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/develop">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=develop&svg=true&passingText=develop%20-%20OK">
                             </a>
                         </li>
                     </ul>
                     <h1>Change Log</h1>
+<h2>2.0.0-alpha5</h2>
+<ul>
+<li>Features
+<ul>
+<li>Create Read-Only web app client called <a href="https://github.com/ethanhann/InEngine.NET-Dashboard">InEngine.NET Dashboard</a>.</li>
+<li>Enable Cors, add "Origins" Option to Web API configuration.</li>
+<li>Use Common.Logging with NLog instead of log4net.</li>
+<li>Make Common.Logging NLog adapter configurable via IntegrationEngine.json.</li>
+<li>Validate JobType classes as integration jobs before scheduling them.</li>
+</ul></li>
+</ul>
+<h2>2.0.0-alpha4</h2>
+<ul>
+<li>Bug
+<ul>
+<li>Use correct MySql.Data.Entity dependency in Core package.</li>
+</ul></li>
+</ul>
+<h2>2.0.0-alpha3</h2>
+<ul>
+<li>Chores
+<ul>
+<li>Use shared assembly to streamline package creation</li>
+<li>Remove stale NuGet dependencies</li>
+</ul></li>
+</ul>
+<h2>2.0.0-alpha2</h2>
+<ul>
+<li>Features
+<ul>
+<li>Return list of job keys at /api/Job.</li>
+<li>Schedule a Job with a Trigger, when the Trigger is created via the Web API.</li>
+<li>Reschedule a Job with a Trigger, when the Trigger is updated via the Web API.</li>
+<li>Validate cron expression when creating/updating a CronTrigger.</li>
+</ul></li>
+<li>Chores
+<ul>
+<li>Use Unity IoC instead of Funq.</li>
+</ul></li>
+</ul>
 <h2>2.0.0-alpha1</h2>
 <ul>
 <li>Features

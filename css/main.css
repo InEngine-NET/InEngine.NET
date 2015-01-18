@@ -80,7 +80,11 @@ header.navbar {
 }
 
 .status-badges {
-    margin-top: 16px;
+    margin-top: 35px;
+}
+
+.status-badges img {
+    width: 110px;
 }
 
 @media (min-width: 768px) {
@@ -95,6 +99,10 @@ header.navbar {
 
 @media (max-width: 767px) {
     #sidebar {
+        display: none !important;
+    }
+
+    .status-badges {
         display: none !important;
     }
 }

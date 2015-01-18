@@ -117,8 +117,13 @@
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <ul class="status-badges pull-right list-unstyled list-inline">
                         <li>
-                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net">
-                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true">
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/master">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true&passingText=master%20-%20OK">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/develop">
+                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=develop&svg=true&passingText=develop%20-%20OK">
                             </a>
                         </li>
                     </ul>
@@ -127,12 +132,16 @@
 The configuration file has four sections: <em>WebApi</em>, <em>MessageQueue</em>, <em>Mail</em>, and <em>Database</em>.</p>
 <h3>WebApi</h3>
 <p>The <em>WebApi</em> section contains settings for the InEngine.NET's WebApi. 
-Namely, the hostname and port of the web API. </p>
+Namely, the hostname and port of the web API.
+A list of CORS origins can also be specified.
+This is useful when accessing the API via the browser with the <a href="https://github.com/ethanhann/InEngine.NET-Dashboard">InEngine.NET Dashboard</a>.
+Note that it is not recommended to use "*" wildcard, but a list of specific domains is preferred instead.</p>
 <pre><code class="language-js">{
     // ...
     "WebApi": {
         "HostName": "localhost",
-        "Port": 9001
+        "Port": 9001,
+        "Origins": ["*"]
     },
     // ...
 }</code></pre>
@@ -192,12 +201,23 @@ If these settings are not correct, then a connection exception will be thrown wh
     }
     // ..
 }</code></pre>
+<h3>NLogAdapter</h3>
+<p>The <em>NLogAdapter</em> section contains settings for configuring the <a href="http://netcommon.sourceforge.net/docs/2.1.0/reference/html/ch01.html#logging-adapters-nlog">NLog Common.Logging adapter</a>.</p>
+<pre><code class="language-js">{
+    // ...
+    "NLogAdapter": {
+        "ConfigType": "File",
+        "ConfigFile": "IntegrationEngine.nlog.xml"
+    }
+    // ..
+}</code></pre>
 <h2>Sample Configuration</h2>
 <p>This is a sample configuration.</p>
 <pre><code class="language-js">{
     "WebApi": {
         "HostName": "localhost",
-        "Port": 9001
+        "Port": 9001,
+        "Origins": ["*"]
     },
     "MessageQueue": {
         "QueueName": "myqueue",
@@ -224,6 +244,10 @@ If these settings are not correct, then a connection exception will be thrown wh
         "DatabaseName": "IntegrationEngine",
         "UserName": "inengine",
         "Password": "secret"
+    },
+    "NLogAdapter": {
+        "ConfigType": "File",
+        "ConfigFile": "IntegrationEngine.nlog.xml"
     }
 }</code></pre>
                 </section>
