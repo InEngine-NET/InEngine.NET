@@ -11,14 +11,18 @@ The configuration file has four sections: _WebApi_, _MessageQueue_, _Mail_, and 
 ### WebApi
 
 The _WebApi_ section contains settings for the InEngine.NET's WebApi. 
-Namely, the hostname and port of the web API. 
+Namely, the hostname and port of the web API.
+A list of CORS origins can also be specified.
+This is useful when accessing the API via the browser with the [InEngine.NET Dashboard](https://github.com/ethanhann/InEngine.NET-Dashboard).
+Note that it is not recommended to use "*" wildcard, but a list of specific domains is preferred instead.
 
 ```js
 {
     // ...
     "WebApi": {
         "HostName": "localhost",
-        "Port": 9001
+        "Port": 9001,
+        "Origins": ["*"]
     },
     // ...
 }
@@ -101,6 +105,21 @@ If these settings are not correct, then a connection exception will be thrown wh
 }
 ```
 
+### NLogAdapter
+
+The _NLogAdapter_ section contains settings for configuring the [NLog Common.Logging adapter](http://netcommon.sourceforge.net/docs/2.1.0/reference/html/ch01.html#logging-adapters-nlog).
+
+```js
+{
+    // ...
+    "NLogAdapter": {
+		"ConfigType": "File",
+		"ConfigFile": "IntegrationEngine.nlog.xml"
+    }
+    // ..
+}
+```
+
 ## Sample Configuration
 This is a sample configuration.
 
@@ -108,7 +127,8 @@ This is a sample configuration.
 {
     "WebApi": {
         "HostName": "localhost",
-        "Port": 9001
+        "Port": 9001,
+        "Origins": ["*"]
     },
     "MessageQueue": {
         "QueueName": "myqueue",
@@ -135,6 +155,10 @@ This is a sample configuration.
         "DatabaseName": "IntegrationEngine",
         "UserName": "inengine",
         "Password": "secret"
-    }
+    },
+	"NLogAdapter": {
+		"ConfigType": "File",
+		"ConfigFile": "IntegrationEngine.nlog.xml"
+	}
 }
 ```

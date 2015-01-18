@@ -10,5 +10,7 @@ namespace IntegrationEngine.Scheduler
         void Start();
         void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition);
         void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition);
+        bool IsJobTypeRegistered(string jobTypeName);
+        Type GetRegisteredJobTypeByName(string jobTypeName);
     }
 }

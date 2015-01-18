@@ -13,5 +13,6 @@ namespace IntegrationEngine.Configuration
         public MailConfiguration Mail { get; set; }
         public DatabaseConfiguration Database { get; set; }
         public ElasticsearchConfiguration Elasticsearch { get; set; }
+        public NLogAdapterConfiguration NLogAdapter { get; set; }
     }
 }

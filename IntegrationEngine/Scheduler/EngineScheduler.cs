@@ -22,6 +22,17 @@ namespace IntegrationEngine.Scheduler
             Scheduler.Start();
         }
 
+        public Type GetRegisteredJobTypeByName(string jobTypeName)
+        {
+            var jobTypes = IntegrationJobTypes.Where(x => x.FullName == jobTypeName);
+            return jobTypes.Any() ? jobTypes.Single() : null;
+        }
+
+        public bool IsJobTypeRegistered(string jobTypeName)
+        {
+            return GetRegisteredJobTypeByName(jobTypeName) != null;
+        }
+
         public IJobDetail JobDetailFactory(Type jobType)
         {
             var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
@@ -36,7 +47,7 @@ namespace IntegrationEngine.Scheduler
 
         public virtual void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
         {
-            var jobType = IntegrationJobTypes.Where(x => x.FullName == triggerDefinition.JobType).First();
+            var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
             var jobDetail = JobDetailFactory(jobType);
             var trigger = CronTriggerFactory(triggerDefinition, jobType, jobDetail);
             TryScheduleJobWithTrigger(trigger, jobType, jobDetail);
@@ -44,7 +55,7 @@ namespace IntegrationEngine.Scheduler
 
         public void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition)
         {
-            var jobType = IntegrationJobTypes.Where(x => x.FullName == triggerDefinition.JobType).First();
+            var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
             var jobDetail = JobDetailFactory(jobType);
             var trigger = SimpleTriggerFactory(triggerDefinition, jobType, jobDetail);
             TryScheduleJobWithTrigger(trigger, jobType, jobDetail);

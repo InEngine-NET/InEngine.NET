@@ -1,7 +1,7 @@
-﻿using IntegrationEngine.Core.Mail;
+﻿using Common.Logging;
+using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Reports;
 using IntegrationEngine.Core.Storage;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace IntegrationEngine.Core.Jobs
             } 
             catch(ArgumentException exception)
             {
-                Log.Error(exception.Message, exception);
+                Log.Error(exception);
             }
             return new List<T>();
         }

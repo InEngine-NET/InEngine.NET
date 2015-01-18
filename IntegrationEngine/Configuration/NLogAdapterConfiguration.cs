@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Configuration
 {
-    public class WebApiConfiguration
+    public class NLogAdapterConfiguration
     {
-        public string HostName { get; set; }
-        public int Port { get; set; }
-        public IList<string> Origins { get; set; }
+        public string ConfigType { get; set; }
+        public string ConfigFile { get; set; }
     }
 }

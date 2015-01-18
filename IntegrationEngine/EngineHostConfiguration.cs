@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Linq;
-using System.Reflection;
+﻿using Common.Logging;
+using Common.Logging.Configuration;
+using Common.Logging.NLog;
+using IntegrationEngine.Api;
+using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
+using IntegrationEngine.MessageQueue;
 using IntegrationEngine.Model;
+using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 using Nest;
 using Quartz;
 using Quartz.Impl;
-using log4net;
-using log4net.Core;
-using IntegrationEngine.Api;
-using IntegrationEngine.Configuration;
-using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Scheduler;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine
 {
@@ -38,8 +38,8 @@ namespace IntegrationEngine
                         .SelectMany(x => x.GetTypes())
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
                         .ToList();
-            TryAndLogFailure("Loading Configuration", LoadConfiguration);
-            TryAndLogFailure("Setup Logging", SetupLogging);
+            LoadConfiguration();
+            SetupLogging();
             TryAndLogFailure("Setup Database Repository", SetupDatabaseRepository);
             TryAndLogFailure("Setup Mail Client", SetupMailClient);
             TryAndLogFailure("Setup Elastic Client", SetupElasticClient);
@@ -56,10 +56,10 @@ namespace IntegrationEngine
             {
                 action();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                var log = LogManager.GetLogger(typeof(EngineHost));
-                log.Error(description, ex);
+                var log = Common.Logging.LogManager.GetLogger(typeof(EngineHost));
+                log.Error(description, exception);
             }
         }
 
@@ -71,7 +71,12 @@ namespace IntegrationEngine
 
         public void SetupLogging()
         {
-            var log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            var config = Configuration.NLogAdapter;
+            var properties = new NameValueCollection();
+            properties["configType"] = config.ConfigType;
+            properties["configFile"] = config.ConfigFile;
+            Common.Logging.LogManager.Adapter = new NLogLoggerFactoryAdapter(properties);  
+            var log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             Container.RegisterInstance<ILog>(log);
         }
 
@@ -92,13 +97,12 @@ namespace IntegrationEngine
                 MailConfiguration = Configuration.Mail,
                 Log = Container.Resolve<ILog>(),
             };
-
             Container.RegisterInstance<IMailClient>(mailClient);
         }
 
         public void SetupMessageQueueListener()
         {
-            var rabbitMqListener = new RabbitMqListener() {
+            var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
@@ -112,7 +116,7 @@ namespace IntegrationEngine
 
         public void SetupMessageQueueClient()
         {
-            var messageQueueClient = new RabbitMqClient() {
+            var messageQueueClient = new RabbitMQClient() {
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
                 Log = Container.Resolve<ILog>(),

@@ -1,8 +1,8 @@
-﻿using IntegrationEngine.Configuration;
+﻿using Common.Logging;
+using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
-using log4net;
 using Nest;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -14,7 +14,7 @@ using System.Text;
 
 namespace IntegrationEngine.MessageQueue
 {
-    public class RabbitMqListener
+    public class RabbitMQListener
     {
         public IList<Type> IntegrationJobTypes { get; set; }
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
@@ -24,7 +24,7 @@ namespace IntegrationEngine.MessageQueue
         public IntegrationEngineContext IntegrationEngineContext { get; set; }
         public IElasticClient ElasticClient { get; set; }
 
-        public RabbitMqListener()
+        public RabbitMQListener()
         {}
 
         public void Listen()
@@ -35,20 +35,27 @@ namespace IntegrationEngine.MessageQueue
                 var consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
 
-                Log.Info("Waiting for messages...");
+                Log.Info(x => x("Waiting for messages..."));
                 while (true)
                 {
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
                     var body = eventArgs.Body;
                     var message = Encoding.UTF8.GetString(body);
-                    Log.Info(string.Format("Received {0}", message));
+                    Log.Debug(x => x("Message queue listener received {0}", message));
                     if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                         continue;
                     var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));
                     var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
                     integrationJob = AutoWireJob(integrationJob, type);
-                    if (integrationJob != null)
-                        integrationJob.Run();
+                    try
+                    {
+                        if (integrationJob != null)
+                            integrationJob.Run();
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(x => x("Integration job did not run successfully ({0})}", message), exception);
+                    }
                 }
             }
         }
