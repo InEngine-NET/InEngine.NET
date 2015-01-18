@@ -1,8 +1,14 @@
-﻿using SimpleTriggerModel = IntegrationEngine.Model.SimpleTrigger;
+﻿using IntegrationEngine.Model;
+using System;
 
 namespace IntegrationEngine.Scheduler
 {
-    public class SimpleTrigger : SimpleTriggerModel
+    public class SimpleTrigger : ISimpleTrigger
     {
+        public string Id { get; set; }
+        public string JobType { get; set; }
+        public int RepeatCount { get; set; }
+        public TimeSpan RepeatInterval { get; set; }
+        public DateTimeOffset StartTimeUtc { get; set; }
     }
 }

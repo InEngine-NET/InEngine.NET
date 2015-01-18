@@ -45,7 +45,9 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ICronTrigger.cs" />
     <Compile Include="IHasStringId.cs" />
+    <Compile Include="ISimpleTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CronTrigger.cs" />
     <Compile Include="SimpleTrigger.cs" />

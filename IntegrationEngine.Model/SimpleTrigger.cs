@@ -2,7 +2,7 @@
 
 namespace IntegrationEngine.Model
 {
-    public class SimpleTrigger : IHasStringId, IIntegrationJobTrigger
+    public class SimpleTrigger : ISimpleTrigger
     {
         public string Id { get; set; }
         public string JobType { get; set; }

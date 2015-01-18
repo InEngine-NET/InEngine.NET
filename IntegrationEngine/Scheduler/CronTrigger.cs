@@ -1,12 +1,19 @@
 ﻿using CronExpressionDescriptor;
+using IntegrationEngine.Model;
 using Nest;
-using CronTriggerModel = IntegrationEngine.Model.CronTrigger;
+using System;
 
 namespace IntegrationEngine.Scheduler
 {
-    public class CronTrigger : CronTriggerModel
+    public class CronTrigger : ICronTrigger, ICronTriggerReadOnly
     {
-         [ElasticProperty(OptOut = true)]
+        public string Id { get; set; }
+        public string JobType { get; set; }
+        public string CronExpressionString { get; set; }
+        public string TimeZoneId { get; set; }
+        public TimeZoneInfo TimeZone { get; set; }
+
+        [ElasticProperty(OptOut = true)]
         public string CronExpressionDescription { get { return ExpressionDescriptor.GetDescription(CronExpressionString); } }
     }
 }

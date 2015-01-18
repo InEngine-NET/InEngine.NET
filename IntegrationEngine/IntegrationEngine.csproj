@@ -168,6 +168,7 @@
     <Compile Include="ContainerResolver.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\EngineScheduler.cs" />
+    <Compile Include="Scheduler\ICronTriggerReadOnly.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TriggerStringExtension.cs" />
