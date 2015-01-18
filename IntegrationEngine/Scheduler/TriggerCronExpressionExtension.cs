@@ -2,7 +2,7 @@
 
 namespace IntegrationEngine.Scheduler
 {
-    public static class TriggerStringExtension
+    public static class TriggerCronExpressionExtension
     {
         public static bool IsValidCronExpression(this string value)
         {

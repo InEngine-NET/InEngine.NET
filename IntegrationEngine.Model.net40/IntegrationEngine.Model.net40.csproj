@@ -52,6 +52,7 @@
     <Compile Include="..\IntegrationEngine.Model\ISimpleTrigger.cs">
       <Link>ISimpleTrigger.cs</Link>
     </Compile>
+    <Compile Include="IHasStateId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\IntegrationEngine.Model\SimpleTrigger.cs">
       <Link>SimpleTrigger.cs</Link>

@@ -9,5 +9,6 @@ namespace IntegrationEngine.Model
         public int RepeatCount { get; set; }
         public TimeSpan RepeatInterval { get; set; }
         public DateTimeOffset StartTimeUtc { get; set; }
+        public int StateId { get; set; }
     }
 }

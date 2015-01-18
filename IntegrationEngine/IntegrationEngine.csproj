@@ -171,10 +171,12 @@
     <Compile Include="Scheduler\EngineScheduler.cs" />
     <Compile Include="Scheduler\ICronTriggerReadOnly.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
+    <Compile Include="Scheduler\IHasStateDescription.cs" />
     <Compile Include="Scheduler\ITimeZone.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TimeZone.cs" />
-    <Compile Include="Scheduler\TriggerStringExtension.cs" />
+    <Compile Include="Scheduler\TriggerCronExpressionExtension.cs" />
+    <Compile Include="Scheduler\TriggerStateIdExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
