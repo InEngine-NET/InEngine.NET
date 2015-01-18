@@ -108,7 +108,7 @@ namespace IntegrationEngine.Scheduler
         public ITrigger CronTriggerFactory(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
             var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType.FullName);
-            triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
+            triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
             return triggerBuilder.Build();
         }
     }

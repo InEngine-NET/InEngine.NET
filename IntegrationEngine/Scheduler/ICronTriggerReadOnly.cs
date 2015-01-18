@@ -10,5 +10,6 @@ namespace IntegrationEngine.Scheduler
     interface ICronTriggerReadOnly
     {
         string CronExpressionDescription { get; }
+        TimeZoneInfo TimeZoneInfo { get; }
     }
 }

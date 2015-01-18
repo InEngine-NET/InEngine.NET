@@ -8,6 +8,5 @@ namespace IntegrationEngine.Model
         public string JobType { get; set; }
         public string CronExpressionString { get; set; }
         public string TimeZoneId { get; set; }
-        public TimeZoneInfo TimeZone { get; set; }
     }
 }
