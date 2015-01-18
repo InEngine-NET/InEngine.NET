@@ -1,6 +1,5 @@
 ﻿using IntegrationEngine.Api.Controllers;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
 using Moq;
 using NUnit.Framework;

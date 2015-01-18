@@ -63,6 +63,9 @@
     <Reference Include="Common.Logging.NLog31">
       <HintPath>..\packages\Common.Logging.NLog31.3.0.0\lib\net40\Common.Logging.NLog31.dll</HintPath>
     </Reference>
+    <Reference Include="CronExpressionDescriptor">
+      <HintPath>..\packages\CronExpressionDescriptor.1.12.0\lib\net35\CronExpressionDescriptor.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -163,8 +166,10 @@
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
     <Compile Include="ContainerResolver.cs" />
+    <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\EngineScheduler.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
+    <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TriggerStringExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

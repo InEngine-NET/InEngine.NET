@@ -3,7 +3,6 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
 using System.Web.Http.Cors;
 
