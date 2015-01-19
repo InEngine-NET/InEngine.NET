@@ -50,7 +50,7 @@ namespace IntegrationEngine.Scheduler
             var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
             var jobDetail = JobDetailFactory(jobType);
             var trigger = CronTriggerFactory(triggerDefinition, jobType, jobDetail);
-            TryScheduleJobWithTrigger(trigger, jobType, jobDetail);
+            TryScheduleJobWithTrigger(trigger, jobType, jobDetail, triggerDefinition.StateId);
         }
 
         public void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition)
@@ -58,15 +58,29 @@ namespace IntegrationEngine.Scheduler
             var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
             var jobDetail = JobDetailFactory(jobType);
             var trigger = SimpleTriggerFactory(triggerDefinition, jobType, jobDetail);
-            TryScheduleJobWithTrigger(trigger, jobType, jobDetail);
+            TryScheduleJobWithTrigger(trigger, jobType, jobDetail, triggerDefinition.StateId);
         }
 
-        public void TryScheduleJobWithTrigger(ITrigger trigger, Type jobType, IJobDetail jobDetail)
+        public void TryScheduleJobWithTrigger(ITrigger trigger, Type jobType, IJobDetail jobDetail, int stateId)
         {
             if (Scheduler.CheckExists(jobDetail.Key))
                 Scheduler.RescheduleJob(trigger.Key, trigger);
             else
                 Scheduler.ScheduleJob(jobDetail, trigger);
+            SetTriggerState(trigger.Key, stateId);
+        }
+
+        public void SetTriggerState(TriggerKey triggerKey, int triggerState)
+        {
+            switch ((TriggerState)triggerState)
+            {
+                case TriggerState.Paused:
+                    Scheduler.PauseTrigger(triggerKey);
+                    break;
+                case TriggerState.Normal:
+                    Scheduler.ResumeTrigger(triggerKey);
+                    break;
+            }
         }
 
         public void ScheduleJobsWithTriggers(IEnumerable<IIntegrationJobTrigger> triggerDefs, Type jobType, IJobDetail jobDetail)
@@ -82,16 +96,23 @@ namespace IntegrationEngine.Scheduler
                     triggersForJobs.Add(SimpleTriggerFactory(triggerDef as SimpleTrigger, jobType, jobDetail));
             }
             Scheduler.ScheduleJob(jobDetail, triggersForJobs, true);
+            foreach (var triggerDef in triggerDefs)
+                SetTriggerState(TriggerKeyFactory(triggerDef, jobType), triggerDef.StateId);
         }
 
-        TriggerBuilder TriggerBuilderFactory(string triggerName, string triggerGroup)
+        TriggerKey TriggerKeyFactory(IIntegrationJobTrigger integrationJobTrigger, Type jobType)
         {
-            return TriggerBuilder.Create().WithIdentity(new TriggerKey(triggerName, triggerGroup));
+            return new TriggerKey(integrationJobTrigger.Id, jobType.FullName);
+        }
+
+        TriggerBuilder TriggerBuilderFactory(IIntegrationJobTrigger integrationJobTrigger, Type jobType)
+        {
+            return TriggerBuilder.Create().WithIdentity(TriggerKeyFactory(integrationJobTrigger, jobType));
         }
 
         public ITrigger SimpleTriggerFactory(SimpleTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType.FullName);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition, jobType);
             Action<SimpleScheduleBuilder> simpleScheduleBuilderAction;
             if (triggerDefinition.RepeatCount > 0)
                 simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval).WithRepeatCount(triggerDefinition.RepeatCount);
@@ -107,8 +128,8 @@ namespace IntegrationEngine.Scheduler
 
         public ITrigger CronTriggerFactory(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType.FullName);
-            triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZone));
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition, jobType);
+            triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
             return triggerBuilder.Build();
         }
     }

@@ -8,7 +8,6 @@ using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 using Nest;

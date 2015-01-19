@@ -27,8 +27,23 @@ menu:
         web-api:
             text: Web API
             iconClass: 'fa fa-fw fa-cloud'
-            relativeUrl: web-api.html
+            relativeUrl: web-api/cron-trigger.html
         change-log:
             text: Change Log
             iconClass: 'fa fa-fw fa-refresh'
             relativeUrl: change-log.html
+
+webApiMenu:
+    items:
+        cron-trigger:
+            text: CronTrigger
+            relativeUrl: web-api/cron-trigger.html
+        job-type:
+            text: JobType
+            relativeUrl: web-api/job-type.html
+        simple-trigger:
+            text: SimpleTrigger
+            relativeUrl: web-api/simple-trigger.html
+        time-zone:
+            text: TimeZone
+            relativeUrl: web-api/time-zone.html

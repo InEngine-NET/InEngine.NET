@@ -2,12 +2,12 @@
 
 namespace IntegrationEngine.Model
 {
-    public class CronTrigger : IHasStringId, IIntegrationJobTrigger
+    public class CronTrigger : ICronTrigger
     {
         public string Id { get; set; }
         public string JobType { get; set; }
         public string CronExpressionString { get; set; }
-        TimeZoneInfo _timeZone { get; set; }
-        public TimeZoneInfo TimeZone { get { return _timeZone ?? TimeZoneInfo.Utc; } set { _timeZone = value; } }
+        public string TimeZoneId { get; set; }
+        public int StateId { get; set; }
     }
 }

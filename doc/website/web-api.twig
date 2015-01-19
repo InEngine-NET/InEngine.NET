@@ -1,0 +1,16 @@
+{% extends "default.twig" %}
+
+{% block content %}
+    <h2>Web API</h2>
+    <ul class="nav nav-pills">
+        {% for itemId, item in webApiMenu.items %}
+            <li class="{{ itemId == currentSubMenu ? 'active' }}">
+                <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
+                    <span class="{{ item.iconClass }}"></span>
+                    <span>{{ item.text|raw }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    {{ content|raw }}
+{% endblock %}

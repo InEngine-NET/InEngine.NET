@@ -11,20 +11,20 @@ using Quartz;
 
 namespace IntegrationEngine.Api.Controllers
 {
-    public class JobController : ApiController
+    public class JobTypeController : ApiController
     {
         public IEngineScheduler EngineScheduler { get; set; }
 
-        public JobController()
+        public JobTypeController()
         {}
 
-        public JobController(IEngineScheduler engineScheduler)
+        public JobTypeController(IEngineScheduler engineScheduler)
             : this()
         {
             EngineScheduler = engineScheduler;
         }
 
-        public IHttpActionResult GetJobKeys()
+        public IHttpActionResult GetJobTypes()
         {
             return Ok(EngineScheduler.Scheduler
                 .GetJobKeys(GroupMatcher<JobKey>.AnyGroup())

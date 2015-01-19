@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Description;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
-using System.Web.Http.Cors;
 
 namespace IntegrationEngine.Api.Controllers
 {
@@ -45,10 +45,8 @@ namespace IntegrationEngine.Api.Controllers
         {
             if (id != trigger.Id)
                 return BadRequest();
-            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
-                return BadRequest("Job type is invalid: " + trigger.JobType);
-            if (!trigger.CronExpressionString.IsValidCronExpression())
-                return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
+            if (ModelState.IsValid)
+                BadRequest(ModelState);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
@@ -58,10 +56,8 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(CronTrigger))]
         public IHttpActionResult PostCronTrigger(CronTrigger trigger)
         {
-            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
-                return BadRequest("Job type is invalid: " + trigger.JobType);
-            if (!trigger.CronExpressionString.IsValidCronExpression())
-                return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
+            if (ModelState.IsValid)
+                BadRequest(ModelState);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
