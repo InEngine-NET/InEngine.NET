@@ -59,7 +59,9 @@
                             </a>
                         </li>
                     </ul>
-                    {{ content|raw }}
+                    {% block content %}
+                        {{ content|raw }}
+                    {% endblock %}
                 </section>
 
             </div>

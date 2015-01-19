@@ -21,11 +21,11 @@ There are several existing full-featured data integration server products on the
 These products do not work in a way software developers are comfortable with.
 They provide a drag-and-drop GUI application for implementing a data integration.
 This sounds appealing on the surface, but such GUIs are often clunky and slow.
-Also, by their nature data integrations are fragile. 
-Existing products do not provide a testable way to build integrations and detect when they stop functioning.
+Additionally, existing products do not provide a testable way to build integrations and detect when they stop functioning.
+This is a major issue as data integrations are fragile by nature.
 
 In contrast, a developer would prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
-A developer would also like to be able to test their integrations to ensure their continued function. 
+A developer would also like to be able to test their integrations to ensure their continued operation. 
 __InEngine.NET__ provides this.
 
 ### How does it work?
@@ -34,10 +34,10 @@ __InEngine.NET__ provides this.
 project that instantiates and initializes an instance of _IntegrationEngine.EngineHost_. 
 1. Integration jobs that implement _IntegrationEngine.Model.IIntegrationJob_ (located in an assembly passed to _EngineHost_) are loaded.
 1. Integration jobs are scheduled by posting a request to the [InEngine.NET Web API](web-api.html).
-1. When a job is triggered a message is added to the RabbitMQ message queue defined in [IntegrationEngine.json](configuration.html) that indicates which job to run.
-1. When a message is detected, a the __InEngine.NET__ job runner plucks the message from the queue and runs the job encoded within it.
+1. When a job is triggered a message is added to the message queue, defined in [IntegrationEngine.json](configuration.html), that indicates which job to run.
+1. When a message is detected, the __InEngine.NET__ job runner plucks the message from the queue and runs the job encoded within it.
 
-![IntegrationEngine Job Processing Diagram](https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;h=720 "IntegrationEngine Job Processing Diagram")
+<img src="https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;h=720" alt="IntegrationEngine Job Processing Diagram" />
 
 ### How is this software licensed?
 [MIT](https://github.com/ethanhann/InEngine.NET/blob/master/LICENSE)
