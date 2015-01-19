@@ -49,8 +49,8 @@ namespace IntegrationEngine.Api.Controllers
         {
             if (id != trigger.Id)
                 return BadRequest();
-            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
-                return BadRequest("Job type is invalid: " + trigger.JobType);
+            if (ModelState.IsValid)
+                BadRequest(ModelState);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
@@ -60,8 +60,8 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(SimpleTrigger))]
         public IHttpActionResult PostSimpleTrigger(SimpleTrigger trigger)
         {
-            if (!EngineScheduler.IsJobTypeRegistered(trigger.JobType))
-                return BadRequest("Job type is invalid: " + trigger.JobType);
+            if (ModelState.IsValid)
+                BadRequest(ModelState);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);

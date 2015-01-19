@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using Microsoft.Owin.Host.HttpListener;
 using Microsoft.Owin.Hosting;
+using Microsoft.Practices.Unity;
 
 namespace IntegrationEngine.Api
 {

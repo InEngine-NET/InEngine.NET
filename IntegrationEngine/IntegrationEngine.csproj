@@ -172,6 +172,9 @@
     <Compile Include="Scheduler\TimeZone.cs" />
     <Compile Include="Scheduler\TriggerPropertyExtension.cs" />
     <Compile Include="Api\Controllers\JobTypeController.cs" />
+    <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
+    <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
+    <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -201,4 +204,7 @@
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DataAnnotations\" />
+  </ItemGroup>
 </Project>
