@@ -5,6 +5,14 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-beta2
+
+__Chore__
+* Use custom attributes for Web API validation.
+
+__Documentation__
+* Better Web API documentation
+
 ## 2.0.0-beta1
 
 __Features__
