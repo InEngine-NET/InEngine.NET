@@ -142,7 +142,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Api\Controllers\TimeZoneController.cs" />
-    <Compile Include="Api\Controllers\JobController.cs" />
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
     <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
@@ -172,6 +171,7 @@
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TimeZone.cs" />
     <Compile Include="Scheduler\TriggerPropertyExtension.cs" />
+    <Compile Include="Api\Controllers\JobTypeController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
