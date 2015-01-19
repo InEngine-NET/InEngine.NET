@@ -48,6 +48,8 @@ namespace IntegrationEngine.Api.Controllers
                 return BadRequest("Job type is invalid: " + trigger.JobType);
             if (!trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
+            if (!trigger.TimeZoneId.IsValidTimeZone())
+                return BadRequest("Time zone id is invalid: " + trigger.TimeZoneId);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(trigger);
             return StatusCode(HttpStatusCode.NoContent);
@@ -61,6 +63,8 @@ namespace IntegrationEngine.Api.Controllers
                 return BadRequest("Job type is invalid: " + trigger.JobType);
             if (!trigger.CronExpressionString.IsValidCronExpression())
                 return BadRequest("Cron expression is not valid: " + trigger.CronExpressionString);
+            if (!trigger.TimeZoneId.IsValidTimeZone())
+                return BadRequest("Time zone id is invalid: " + trigger.TimeZoneId);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
