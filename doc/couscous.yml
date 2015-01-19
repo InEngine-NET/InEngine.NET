@@ -38,6 +38,9 @@ webApiMenu:
         cron-trigger:
             text: CronTrigger
             relativeUrl: web-api/cron-trigger.html
+        job-type:
+            text: JobType
+            relativeUrl: web-api/job-type.html
         simple-trigger:
             text: SimpleTrigger
             relativeUrl: web-api/simple-trigger.html
