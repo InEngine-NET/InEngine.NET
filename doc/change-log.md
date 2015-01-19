@@ -11,7 +11,7 @@ __Chores__
 * Use custom attributes for Web API validation.
 
 __Documentation__
-* Better Web API documentation
+* Improve Web API documentation.
 
 ## 2.0.0-beta1
 
