@@ -53,7 +53,7 @@
         </a>
     </li>
     <li class="">
-        <a href="http://inengine.net/web-api.html">
+        <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
         </a>
@@ -99,7 +99,7 @@
         </a>
     </li>
     <li class="">
-        <a href="http://inengine.net/web-api.html">
+        <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
         </a>
@@ -127,105 +127,97 @@
                             </a>
                         </li>
                     </ul>
-                    <h1>Change Log</h1>
-<h2>2.0.0-alpha5</h2>
+
+                                            <h1>Change Log</h1>
+<h2>2.0.0-beta1</h2>
+<p><strong>Features</strong></p>
 <ul>
-<li>Features
+<li>Add ability to Pause/Resume triggers.</li>
+<li>Switch to TimeZoneId in CronTrigger (rather than full TimeZoneInfo).</li>
+<li>Add read-only human readable description of CronTrigger's CronExpressionString.</li>
+</ul>
+<h2>2.0.0-alpha5</h2>
+<p><strong>Features</strong></p>
 <ul>
 <li>Create Read-Only web app client called <a href="https://github.com/ethanhann/InEngine.NET-Dashboard">InEngine.NET Dashboard</a>.</li>
 <li>Enable Cors, add "Origins" Option to Web API configuration.</li>
 <li>Use Common.Logging with NLog instead of log4net.</li>
 <li>Make Common.Logging NLog adapter configurable via IntegrationEngine.json.</li>
 <li>Validate JobType classes as integration jobs before scheduling them.</li>
-</ul></li>
 </ul>
 <h2>2.0.0-alpha4</h2>
-<ul>
-<li>Bug
+<p><strong>Fixes</strong></p>
 <ul>
 <li>Use correct MySql.Data.Entity dependency in Core package.</li>
-</ul></li>
 </ul>
 <h2>2.0.0-alpha3</h2>
+<p>Chores__</p>
 <ul>
-<li>Chores
-<ul>
-<li>Use shared assembly to streamline package creation</li>
-<li>Remove stale NuGet dependencies</li>
-</ul></li>
+<li>Use shared assembly to streamline package creation.</li>
+<li>Remove stale NuGet dependencies.</li>
 </ul>
 <h2>2.0.0-alpha2</h2>
-<ul>
-<li>Features
+<p><strong>Features</strong></p>
 <ul>
 <li>Return list of job keys at /api/Job.</li>
 <li>Schedule a Job with a Trigger, when the Trigger is created via the Web API.</li>
 <li>Reschedule a Job with a Trigger, when the Trigger is updated via the Web API.</li>
 <li>Validate cron expression when creating/updating a CronTrigger.</li>
-</ul></li>
-<li>Chores
+</ul>
+<p><strong>Chores</strong></p>
 <ul>
 <li>Use Unity IoC instead of Funq.</li>
-</ul></li>
 </ul>
 <h2>2.0.0-alpha1</h2>
-<ul>
-<li>Features
+<p><strong>Features</strong></p>
 <ul>
 <li>Add SimpleTrigger to Model and Web API.</li>
 <li>Add CronTrigger to Model and Web API.</li>
 <li>Remove IntegrationJob from Model and Web API (replaced by SimpleTrigger and CronTrigger).</li>
-</ul></li>
-<li>Chores
+</ul>
+<p><strong>Chores</strong></p>
 <ul>
 <li>Setup CI with AppVeyor.</li>
-</ul></li>
-<li>Bugs
+</ul>
+<p><strong>Fixes</strong></p>
 <ul>
 <li>Config loader no longer mistakenly looks for config.json instead of IntegrationEngine.json.</li>
-</ul></li>
 </ul>
 <h2>1.4.1</h2>
-<ul>
-<li>Chores
+<p><strong>Chores</strong></p>
 <ul>
 <li>Add link to change log in NuGet package release notes.</li>
-</ul></li>
 </ul>
 <h2>1.4.0</h2>
+<p><strong>Features</strong></p>
 <ul>
-<li>Features
+<li>Make Elasticsearch configurable in IntegrationEngine.json.</li>
+</ul>
+<p><strong>Chores</strong></p>
 <ul>
-<li>Make Elasticsearch configurable in IntegrationEngine.json</li>
-</ul></li>
-<li>Chores
+<li>Rename IElasticSearchJob.cs file to IElasticsearchJob.cs.</li>
+<li>Rename project to InEngine.NET.</li>
+</ul>
+<p><strong>Documentation</strong></p>
 <ul>
-<li>Rename IElasticSearchJob.cs file to IElasticsearchJob.cs</li>
-<li>Rename project to InEngine.NET</li>
-</ul></li>
-<li>Documentation
-<ul>
-<li>Getting started</li>
-<li>Web API</li>
-<li>Integration jobs</li>
+<li>Getting started.</li>
+<li>Web API.</li>
+<li>Integration jobs.</li>
 <li>IntegrationEngine.json configuration file</li>
-</ul></li>
 </ul>
 <h2>1.3.2</h2>
-<ul>
-<li>Features
+<p><strong>Features</strong></p>
 <ul>
 <li>Schedule jobs from an external assembly that implement IIntegrationJob.</li>
 <li>Develop EngineHost, start engine and load jobs from an external assembly.</li>
 <li>Add repository layer for persisting jobs to a data store.</li>
 <li>Create REST API for creating standard jobs.</li>
-</ul></li>
-<li>Chores
+</ul>
+<p><strong>Chores</strong></p>
 <ul>
 <li>Publish packages on NuGet.</li>
-</ul></li>
 </ul>
-                </section>
+                                    </section>
 
             </div>
         </main>

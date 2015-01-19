@@ -53,7 +53,7 @@
         </a>
     </li>
     <li class="active">
-        <a href="http://inengine.net/web-api.html">
+        <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
         </a>
@@ -99,7 +99,7 @@
         </a>
     </li>
     <li class="active">
-        <a href="http://inengine.net/web-api.html">
+        <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
         </a>
@@ -127,58 +127,51 @@
                             </a>
                         </li>
                     </ul>
-                    <h1>Web API</h1>
-<h2>CronTrigger Endpoint <small>&ge;2.0.0</small></h2>
-<p>The CronTrigger endpoint allows for an integration job to be scheduled by creating and manipulating a Quartz.NET CronTrigger.</p>
-<h3>Get a List of CronTriggers</h3>
-<p>GET api/CronTrigger</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger</code></pre>
-<h3>Get a Specific CronTrigger by ID</h3>
-<p>GET api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger/ID</code></pre>
-<h3>Create a New CronTrigger</h3>
-<p>POST api/CronTrigger</p>
-<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/CronTrigger</code></pre>
-<h3>Update a Specific CronTrigger by ID</h3>
-<p>PUT api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl -XPUT "JobType=MyProject.ADifferentIntegrationJob" http://localhost:9001/api/CronTrigger/ID</code></pre>
-<h3>Delete a CronTrigger by ID</h3>
-<p>DELETE api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl -XDELETE http://localhost:9001/api/CronTrigger/ID</code></pre>
-<h2>SimpleTrigger Endpoint <small>&ge;2.0.0</small></h2>
-<p>The SimpleTrigger endpoint allows for an integration job to be scheduled by creating and manipulating a Quartz.NET SimpleTrigger.</p>
-<h3>Get a List of SimpleTriggers</h3>
-<p>GET api/SimpleTrigger</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/SimpleTrigger</code></pre>
-<h3>Get a Specific SimpleTrigger by ID</h3>
-<p>GET api/SimpleTrigger/ID</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/SimpleTrigger/ID</code></pre>
-<h3>Create a New SimpleTrigger</h3>
-<p>POST api/SimpleTrigger</p>
-<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/SimpleTrigger</code></pre>
-<h3>Update a Specific SimpleTrigger by ID</h3>
-<p>PUT api/SimpleTrigger/ID</p>
-<pre><code class="language-sh">curl -XPUT "JobType=MyProject.ADifferentIntegrationJob" http://localhost:9001/api/SimpleTrigger/ID</code></pre>
-<h3>Delete a SimpleTrigger by ID</h3>
-<p>DELETE api/SimpleTrigger/ID</p>
-<pre><code class="language-sh">curl -XDELETE http://localhost:9001/api/SimpleTrigger/ID</code></pre>
-<h2>IntegrationJob Endpoint <small>&le;1.4.1</small></h2>
-<p>The IntegrationJob endpoint allows for an integration job to be scheduled, updated, and viewed.</p>
-<h3>Get a List of Jobs</h3>
-<p>GET api/IntegrationJob</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/IntegrationJob</code></pre>
-<h3>Get a Specific Job by ID</h3>
-<p>GET api/IntegrationJob/ID</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/IntegrationJob/ID</code></pre>
-<h3>Create a New Job</h3>
-<p>POST api/IntegrationJob</p>
-<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/IntegrationJob</code></pre>
-<h3>Update a Specific Job by ID</h3>
-<p>PUT api/IntegrationJob/ID</p>
-<pre><code class="language-sh">curl -XPUT "JobType=MyProject.ADifferentIntegrationJob" http://localhost:9001/api/IntegrationJob/ID</code></pre>
-<h3>Delete a Job by ID</h3>
-<p>DELETE api/IntegrationJob/ID</p>
-<pre><code class="language-sh">curl -XDELETE http://localhost:9001/api/IntegrationJob/ID</code></pre>
+
+                        <h2>Web API</h2>
+    <ul class="nav nav-pills">
+                    <li class="">
+                <a href="http://inengine.net/web-api/cron-trigger.html">
+                    <span class=""></span>
+                    <span>CronTrigger</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/web-api/job-type.html">
+                    <span class=""></span>
+                    <span>JobType</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/web-api/simple-trigger.html">
+                    <span class=""></span>
+                    <span>SimpleTrigger</span>
+                </a>
+            </li>
+                    <li class="active">
+                <a href="http://inengine.net/web-api/time-zone.html">
+                    <span class=""></span>
+                    <span>TimeZone</span>
+                </a>
+            </li>
+            </ul>
+    <h2>TimeZone Endpoint</h2>
+<p>The TimeZone endpoint allows for the retrieval of a system's TimeZone list, provided internally by the <a href="http://msdn.microsoft.com/en-us/library/system.timezoneinfo.getsystemtimezones%28v=vs.110%29.aspx">TimeZoneInfo.GetSystemTimeZones</a> method.</p>
+<h3>Parameters</h3>
+<table class="table table-bordered">
+<thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
+<tbody>
+    <tr><td>Id</td><td><span class="label label-info">string</span></td></td>
+        <td>The time zone identifier. A suitable value for a CronTrigger's TimeZoneId field.</td>
+    </tr>
+    <tr><td>DisplayName</td><td><span class="label label-info">string</span></td></td>
+        <td>The general display name that represents the time zone.</td>
+    </tr>
+</tbody>
+</table>
+<h3>Get a List of TimeZones</h3>
+<p>GET api/TimeZone</p>
+<pre><code class="language-sh">curl http://localhost:9001/api/TimeZone</code></pre>
                 </section>
 
             </div>

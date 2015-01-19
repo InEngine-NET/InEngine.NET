@@ -46,13 +46,13 @@
             <span>Configuration</span>
         </a>
     </li>
-    <li class="active">
+    <li class="">
         <a href="http://inengine.net/integration-jobs.html">
             <span class="fa fa-fw fa-exchange"></span>
             <span>Integration Jobs</span>
         </a>
     </li>
-    <li class="">
+    <li class="active">
         <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
@@ -92,13 +92,13 @@
             <span>Configuration</span>
         </a>
     </li>
-    <li class="active">
+    <li class="">
         <a href="http://inengine.net/integration-jobs.html">
             <span class="fa fa-fw fa-exchange"></span>
             <span>Integration Jobs</span>
         </a>
     </li>
-    <li class="">
+    <li class="active">
         <a href="http://inengine.net/web-api/cron-trigger.html">
             <span class="fa fa-fw fa-cloud"></span>
             <span>Web API</span>
@@ -128,59 +128,72 @@
                         </li>
                     </ul>
 
-                                            <h1>Integration Jobs</h1>
-<p>Integration jobs can do anything, not just retrieve, transform, and persist data.
-They can also be made to send an email, run a console command, call some third party library, or anything else that can 
-be done in a .NET application.</p>
-<h2>Built-in Job Types</h2>
-<p><strong>InEngine.NET</strong> comes with a few built-in integration jobs defined in <em>IntegrationEngine.Core.Jobs</em>.
-They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>Elasticsearch Job</strong>, <strong>Log Job</strong>, and <strong>SQL Job</strong>.</p>
-<h3>Integration Job</h3>
-<ul>
-<li>Implement the <em>IIntegrationJob</em> interface to create a basic integration job.</li>
-<li>An integration job is a C# class that implements the <em>IIntegrationJob</em> interface.</li>
-<li>The interface has one argumentless method called <em>Run</em> which is executed when the job is triggered.</li>
-<li>All other jobs must implement <em>IIntegrationJob</em> directly or indirectly.</li>
-</ul>
-<h3>Mail Job</h3>
-<ul>
-<li>Implement the <em>IMailJob</em> interface to create a mail job.</li>
-<li>The <em>MailClient</em> property of the <em>IMailJob</em> is automatically instantiated and configured with the mail settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>MailClient</em>'s send method can be used to send an <em>System.Net.Mail.MailMessage</em>.</li>
-</ul>
-<h3>Elasticsearch Job</h3>
-<ul>
-<li>Implement the <em>IElasticsearchJob</em> interface to create an Elasticsearch Job.</li>
-<li>The <em>ElasticClient</em> property of the <em>IElasticsearchJob</em> is automatically instantiated and configured with the Elasticsearch settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>ElasticClient</em> is an instance of <em>Nest.ElasticClient</em>. </li>
-<li>See the NEST <a href="http://nest.azurewebsites.net/nest/quick-start.html">quick start</a> for information on how to use it.</li>
-</ul>
-<h3>Log Job</h3>
-<ul>
-<li>Implement the <em>ILogJob</em> interface to create a log job.</li>
-<li>The <em>Log</em> property of the <em>ILogJob</em> is automatically instantiated and configured with the 
-<a href="http://logging.apache.org/log4net/">log4net</a> settings in the host applications App.config file.</li>
-<li>The <em>Log</em> instance can be configured to log to a variety of <a href="logging.apache.org/log4net/release/features.html#appenders">logging targets</a>.</li>
-<li>Messages and exception can be logged according to their <a href="http://logging.apache.org/log4net/release/manual/introduction.html#hierarchy">severity</a>.</li>
-</ul>
-<h3>SQL Job</h3>
-<ul>
-<li>Implement the <em>ISqlJob</em> interface to create a sql job.</li>
-<li>The <em>DbContext</em> property of the <em>ISqlJob</em> is automatically instantiated and configured with the Database settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>Query</em> property of the <em>ISqlJob</em> must be populated with a valid SQL command before the <em>RunQuery<T></em> method is called.</li>
-<li>The generic parameter in the <em>RunQuery<T></em> method is a class that represents a record returned from the database.</li>
-<li>The <em>RunQuery<T></em> method returns a <em>IList<T></em> collection of records from the database.</li>
-</ul>
-<h4>Concrete SQL Job Class</h4>
-<p>There is also concrete class defined in <em>IntegrationEngine.Core.Jobs</em> called <em>SqlJob</em>. </p>
-<ul>
-<li>It implements <em>ISqlJob</em>, <em>IMailJob</em>, amd <em>ILogJob</em>.</li>
-<li>A class derived from <em>SqlJob</em> will run whatever query is assigned to its <em>Query</em> property by default.</li>
-<li>However, both the <em>RunQuery<T></em> and <em>Run</em> methods are marked as virtual and thus can be overridden.</li>
-<li>A common practice is to override the <em>Run</em> method, call <em>RunQuery<T></em>, examine the results, then send a notification email.</li>
-<li>The <em>Log</em> property can be used to log when the query fails.</li>
-</ul>
-                                    </section>
+                        <h2>Web API</h2>
+    <ul class="nav nav-pills">
+                    <li class="active">
+                <a href="http://inengine.net/web-api/cron-trigger.html">
+                    <span class=""></span>
+                    <span>CronTrigger</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/web-api/job-type.html">
+                    <span class=""></span>
+                    <span>JobType</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/web-api/simple-trigger.html">
+                    <span class=""></span>
+                    <span>SimpleTrigger</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/web-api/time-zone.html">
+                    <span class=""></span>
+                    <span>TimeZone</span>
+                </a>
+            </li>
+            </ul>
+    <h2>CronTrigger Endpoint</h2>
+<p>The CronTrigger endpoint allows for an integration job to be scheduled by creating and manipulating a Quartz.NET CronTrigger.</p>
+<h3>Parameters</h3>
+<table class="table table-bordered">
+<thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
+<tbody>
+    <tr><td>Id</td><td><span class="label label-info">string</span></td>
+        <td>A unique, auto-generated identifier for the trigger.</td>
+    </tr>
+    <tr><td>JobType</td><td><span class="label label-info">string</span></td>
+        <td>The <a href="http://msdn.microsoft.com/en-us/library/system.type.fullname%28v=vs.110%29.aspx">FullName</a> of an <a href="integration-jobs.html">Integration Job</a> type.</td>
+    </tr>
+    <tr><td>StateId</td><td><span class="label label-danger">int</span></td>
+        <td>An integer identifier that sets the state of the trigger. Valid values are 0 (active) and 1 (paused).</td>
+    </tr>
+    <tr><td>CronExpressionString</td><td><span class="label label-info">string</span></td>
+    <td>A valid <a href="http://en.wikipedia.org/wiki/Cron#CRON_expression">cron expression</a>.</td>
+    </tr>
+    <tr><td>TimeZoneId</td><td><span class="label label-info">string</span></td>
+        <td>A time zone string id, as defined by the TimeZone endpoint.</td>
+    </tr>
+</tbody>
+</table>
+<h3>Get a List of CronTriggers</h3>
+<p>GET api/CronTrigger</p>
+<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger</code></pre>
+<h3>Get a Specific CronTrigger by ID</h3>
+<p>GET api/CronTrigger/ID</p>
+<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger/ID</code></pre>
+<h3>Create a New CronTrigger</h3>
+<p>POST api/CronTrigger</p>
+<pre><code class="language-sh">curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&amp;CronExpressionString=0 3 4 ? * MON-FRI *&amp;TimeZoneId=America/New_York" http://localhost:9001/api/CronTrigger</code></pre>
+<h3>Update a Specific CronTrigger by ID</h3>
+<p>PUT api/CronTrigger/ID</p>
+<pre><code class="language-sh">curl -XPUT "CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger/ID</code></pre>
+<h3>Delete a CronTrigger by ID</h3>
+<p>DELETE api/CronTrigger/ID</p>
+<pre><code class="language-sh">curl -XDELETE http://localhost:9001/api/CronTrigger/ID</code></pre>
+                </section>
 
             </div>
         </main>
