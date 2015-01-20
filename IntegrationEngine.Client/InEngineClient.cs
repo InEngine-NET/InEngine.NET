@@ -3,42 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using IntegrationEngine.Model;
 using RestSharp;
+using Newtonsoft.Json;
 
 namespace IntegrationEngine.Client
 {
-    public class Client
+    public class InEngineClient
     {
         public RestClient RestClient { get; set; }
 
-        public Client() 
+        public InEngineClient() 
             : this("http://localhost:9001/api/")
         {
         }
 
-        public Client(string apiUrl)
+        public InEngineClient(string apiUrl)
         {
             RestClient = new RestClient(apiUrl);
         }
 
         #region CronTrigger
-        public List<ICronTrigger> GetCronTriggers()
+        public IList<CronTrigger> GetCronTriggers()
         {
             var request = new RestRequest(EndpointName.CronTrigger, Method.GET);
-            return RestClient.Execute<List<ICronTrigger>>(request).Data;
+            request.RequestFormat = DataFormat.Json;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<IList<CronTrigger>>(result.Content);
         }
 
         public CronTrigger GetCronTriggerById(string id)
         {
             var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.GET);
             request.AddUrlSegment("id", id);
-            return RestClient.Execute<CronTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
         }
 
         public CronTrigger CreateCronTrigger(CronTrigger cronTrigger)
         {
             var request = new RestRequest(EndpointName.CronTrigger, Method.POST);
             request.AddObject(cronTrigger);
-            return RestClient.Execute<CronTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
         }
 
         public CronTrigger UpdateCronTrigger(CronTrigger cronTrigger)
@@ -46,36 +51,41 @@ namespace IntegrationEngine.Client
             var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.PUT);
             request.AddUrlSegment("id", cronTrigger.Id);
             request.AddObject(cronTrigger);
-            return RestClient.Execute<CronTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
         }
 
         public CronTrigger DeleteCronTrigger(string id)
         {
             var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.DELETE);
             request.AddUrlSegment("id", id);
-            return RestClient.Execute<CronTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
         }
         #endregion
 
         #region SimpleTrigger
-        public List<SimpleTrigger> GetSimpleTriggers()
+        public IList<SimpleTrigger> GetSimpleTriggers()
         {
             var request = new RestRequest(EndpointName.SimpleTrigger, Method.GET);
-            return RestClient.Execute<List<SimpleTrigger>>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<IList<SimpleTrigger>>(result.Content);
         }
 
         public SimpleTrigger GetSimpleTriggerById(string id)
         {
             var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.GET);
             request.AddUrlSegment("id", id);
-            return RestClient.Execute<SimpleTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
         }
 
         public SimpleTrigger CreateSimpleTrigger(SimpleTrigger simpleTrigger)
         {
             var request = new RestRequest(EndpointName.SimpleTrigger, Method.POST);
             request.AddObject(simpleTrigger);
-            return RestClient.Execute<SimpleTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
         }
 
         public SimpleTrigger UpdateSimpleTrigger(SimpleTrigger simpleTrigger)
@@ -83,30 +93,34 @@ namespace IntegrationEngine.Client
             var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.PUT);
             request.AddUrlSegment("id", simpleTrigger.Id);
             request.AddObject(simpleTrigger);
-            return RestClient.Execute<SimpleTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
         }
 
         public SimpleTrigger DeleteSimpleTrigger(string id)
         {
             var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.DELETE);
             request.AddUrlSegment("id", id);
-            return RestClient.Execute<SimpleTrigger>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
         }
         #endregion
 
         #region TimeZone
-        public List<TimeZone> GetTimeZones()
+        public IList<TimeZone> GetTimeZones()
         {
             var request = new RestRequest(EndpointName.TimeZone, Method.GET);
-            return RestClient.Execute<List<TimeZone>>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<IList<TimeZone>>(result.Content);
         }
         #endregion
 
         #region JobType
-        public List<string> GetJobTypes()
+        public IList<string> GetJobTypes()
         {
             var request = new RestRequest(EndpointName.JobType, Method.GET);
-            return RestClient.Execute<List<string>>(request).Data;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<IList<string>>(result.Content);
         }
         #endregion
     }
