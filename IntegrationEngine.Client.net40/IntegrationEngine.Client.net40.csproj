@@ -7,8 +7,8 @@
     <ProjectGuid>{BBF7B784-DF72-4561-92B9-4021B5F7D8E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IntegrationEngine.Client.net40</RootNamespace>
-    <AssemblyName>IntegrationEngine.Client.net40</AssemblyName>
+    <RootNamespace>IntegrationEngine.Client</RootNamespace>
+    <AssemblyName>IntegrationEngine.Client</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
     </Reference>
@@ -47,11 +51,11 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Client\Client.cs">
-      <Link>Client.cs</Link>
-    </Compile>
     <Compile Include="..\IntegrationEngine.Client\EndpointName.cs">
       <Link>EndpointName.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Client\InEngineClient.cs">
+      <Link>InEngineClient.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
