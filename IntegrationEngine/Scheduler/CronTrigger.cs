@@ -24,7 +24,7 @@ namespace IntegrationEngine.Scheduler
         [ElasticProperty(OptOut = true)]
         public string CronExpressionDescription { get { return ExpressionDescriptor.GetDescription(CronExpressionString); } }
         [ElasticProperty(OptOut = true)]
-        public TimeZoneInfo TimeZoneInfo { get { return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId); } }
+        public TimeZoneInfo TimeZoneInfo { get { return TimeZoneId.GetTimeZoneInfo(); } }
         [ElasticProperty(OptOut = true)]
         public string StateDescription { get { return StateId.GetStateDescription(); } }
     }

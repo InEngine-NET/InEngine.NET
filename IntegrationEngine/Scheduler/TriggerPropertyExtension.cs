@@ -8,5 +8,12 @@ namespace IntegrationEngine.Scheduler
         {
             return ((Quartz.TriggerState)value).ToString();
         }
+
+        public static TimeZoneInfo GetTimeZoneInfo(this string value)
+        {
+            if (value == null)
+                return TimeZoneInfo.Utc;
+            return TimeZoneInfo.FindSystemTimeZoneById(value);
+        }
     }
 }

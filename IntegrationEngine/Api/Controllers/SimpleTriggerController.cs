@@ -53,7 +53,7 @@ namespace IntegrationEngine.Api.Controllers
                 BadRequest(ModelState);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(trigger);
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(Repository.SelectById(trigger.Id));
         }
 
         // POST api/SimpleTrigger

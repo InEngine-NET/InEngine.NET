@@ -49,7 +49,7 @@ namespace IntegrationEngine.Api.Controllers
                 BadRequest(ModelState);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithCronTrigger(trigger);
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(Repository.SelectById(trigger.Id));
         }
 
         // POST api/CronTrigger
