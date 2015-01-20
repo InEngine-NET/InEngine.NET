@@ -5,6 +5,18 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-beta4
+
+__Fixes__
+* Use Json.NET to deserialize client responses.
+
+## 2.0.0-beta3
+
+__Features__
+* Implement a typed client library.
+* Add .NET 4 build of client.
+* Add calendar view to dashboard.
+
 ## 2.0.0-beta2
 
 __Chores__
