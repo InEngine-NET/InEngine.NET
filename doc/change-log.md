@@ -5,6 +5,14 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-beta2
+
+__Chores__
+* Use custom attributes for Web API validation.
+
+__Documentation__
+* Improve Web API documentation.
+
 ## 2.0.0-beta1
 
 __Features__
@@ -28,7 +36,7 @@ __Fixes__
 
 ## 2.0.0-alpha3
 
-Chores__
+__Chores__
 * Use shared assembly to streamline package creation.
 * Remove stale NuGet dependencies.
 

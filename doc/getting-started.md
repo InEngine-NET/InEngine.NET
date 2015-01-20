@@ -68,9 +68,9 @@ namespace MyProject
 ```
 
 ## Schedule a Job
-Post an HTTP request to the IntegrationServer API's IntegrationJob resource with a _JobType_ of 
+Post an HTTP request to the IntegrationServer API's CronTrigger resource with a _JobType_ of
 "MyProject.MyIntegrationJob" - the full name of the job.  
 
 ```sh
-curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob
+curl --data "JobType=MyProject.MyIntegrationJob&CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger
 ```

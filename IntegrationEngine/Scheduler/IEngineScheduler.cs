@@ -12,5 +12,6 @@ namespace IntegrationEngine.Scheduler
         void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition);
         bool IsJobTypeRegistered(string jobTypeName);
         Type GetRegisteredJobTypeByName(string jobTypeName);
+        void Shutdown();
     }
 }
