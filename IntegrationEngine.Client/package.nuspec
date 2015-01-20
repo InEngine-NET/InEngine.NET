@@ -21,4 +21,7 @@
       <dependency id="RestSharp" version="105.0.1" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="..\IntegrationEngine.Client.net40\lib\net40\IntegrationEngine.Client.dll" target="lib\net40" />
+  </files>
 </package>
