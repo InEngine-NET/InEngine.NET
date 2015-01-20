@@ -177,9 +177,9 @@ namespace MyProject
     }
 }</code></pre>
 <h2>Schedule a Job</h2>
-<p>Post an HTTP request to the IntegrationServer API's IntegrationJob resource with a <em>JobType</em> of 
+<p>Post an HTTP request to the IntegrationServer API's CronTrigger resource with a <em>JobType</em> of
 "MyProject.MyIntegrationJob" - the full name of the job.  </p>
-<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob" http://localhost:9001/api/integrationjob</code></pre>
+<pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob&amp;CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger</code></pre>
                                     </section>
 
             </div>
