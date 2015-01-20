@@ -9,5 +9,9 @@ namespace IntegrationEngine.Model
         public string CronExpressionString { get; set; }
         public string TimeZoneId { get; set; }
         public int StateId { get; set; }
+
+        public string CronExpressionDescription { get { throw new NotImplementedException(); } }
+        public TimeZoneInfo TimeZoneInfo { get { throw new NotImplementedException(); } }
+        public string StateDescription { get { throw new NotImplementedException(); } }
     }
 }

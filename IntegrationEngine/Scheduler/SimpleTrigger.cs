@@ -6,7 +6,7 @@ using QuartzTriggerState = Quartz.TriggerState;
 
 namespace IntegrationEngine.Scheduler
 {
-    public class SimpleTrigger : ISimpleTrigger, IHasStateDescription
+    public class SimpleTrigger : ISimpleTrigger
     {
         public string Id { get; set; }
         [Required]

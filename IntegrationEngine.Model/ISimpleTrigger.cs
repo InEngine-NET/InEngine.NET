@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Model
 {
-    public interface ISimpleTrigger : IHasStringId, IIntegrationJobTrigger
+    public interface ISimpleTrigger : IIntegrationJobTrigger
     {
         int RepeatCount { get; set; }
         TimeSpan RepeatInterval { get; set; }

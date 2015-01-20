@@ -1,5 +1,6 @@
-﻿using IntegrationEngine.Scheduler;
-using InEngineTimeZone = IntegrationEngine.Scheduler.TimeZone;
+﻿using IntegrationEngine.Model;
+using IntegrationEngine.Scheduler;
+using InEngineTimeZone = IntegrationEngine.Model.TimeZone;
 using System;
 using System.Linq;
 using System.Collections.Generic;

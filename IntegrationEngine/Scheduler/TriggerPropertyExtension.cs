@@ -1,4 +1,5 @@
 ﻿using System;
+using CronExpressionDescriptor;
 
 namespace IntegrationEngine.Scheduler
 {
@@ -13,7 +14,28 @@ namespace IntegrationEngine.Scheduler
         {
             if (value == null)
                 return TimeZoneInfo.Utc;
-            return TimeZoneInfo.FindSystemTimeZoneById(value);
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(value);
+            } 
+            catch
+            {
+                return TimeZoneInfo.Utc;
+            }
+        }
+
+        public static string GetHumanReadableCronSchedule(this string value)
+        {
+            if (value == null)
+                return string.Empty;
+            try
+            {
+                return ExpressionDescriptor.GetDescription(value);
+            }
+            catch 
+            {
+                return string.Empty;
+            }
         }
     }
 }

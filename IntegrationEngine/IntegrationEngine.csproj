@@ -165,12 +165,8 @@
     <Compile Include="ContainerResolver.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\EngineScheduler.cs" />
-    <Compile Include="Scheduler\ICronTriggerReadOnly.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
-    <Compile Include="Scheduler\IHasStateDescription.cs" />
-    <Compile Include="Scheduler\ITimeZone.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
-    <Compile Include="Scheduler\TimeZone.cs" />
     <Compile Include="Scheduler\TriggerPropertyExtension.cs" />
     <Compile Include="Api\Controllers\JobTypeController.cs" />
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
