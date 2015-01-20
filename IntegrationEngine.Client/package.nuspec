@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>InEngine.NET Client</title>
+    <authors>$author$</authors>
+    <owners>Ethan Hann</owners>
+    <licenseUrl>https://github.com/ethanhann/InEngine.NET/blob/master/IntegrationEngine/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ethanhann/InEngine.NET</projectUrl>
+    <releaseNotes>http://inengine.net/change-log.html</releaseNotes>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Client of IntegrationServer, an asynchronous job scheduling server.</description>
+    <copyright>Copyright 2015</copyright>
+    <tags>Integration Scheduling Server RabbitMQ Elasticsearch Quartz.NET</tags>
+    <references>
+      <reference file="IntegrationEngine.Client.dll" />
+    </references>
+    <dependencies>
+      <dependency id="IntegrationEngine.Model" version="$version$" />
+      <dependency id="RestSharp" version="105.0.1" />
+    </dependencies>
+  </metadata>
+</package>
