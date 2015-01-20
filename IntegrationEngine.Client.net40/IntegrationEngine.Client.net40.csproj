@@ -7,8 +7,8 @@
     <ProjectGuid>{BBF7B784-DF72-4561-92B9-4021B5F7D8E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IntegrationEngine.Client.net40</RootNamespace>
-    <AssemblyName>IntegrationEngine.Client.net40</AssemblyName>
+    <RootNamespace>IntegrationEngine.Client</RootNamespace>
+    <AssemblyName>IntegrationEngine.Client</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
