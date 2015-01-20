@@ -165,8 +165,8 @@ namespace IntegrationEngine
 
         public void Shutdown()
         {
-            var scheduler = Container.Resolve<IScheduler>();
-            scheduler.Shutdown();
+            var engineScheduler = Container.Resolve<IEngineScheduler>();
+            engineScheduler.Shutdown();
         }
     }
 }

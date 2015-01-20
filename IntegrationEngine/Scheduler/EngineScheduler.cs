@@ -5,6 +5,7 @@ using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Model;
 using Quartz;
 using IntegrationEngine.MessageQueue;
+using Quartz.Impl.Matchers;
 
 namespace IntegrationEngine.Scheduler
 {
@@ -15,11 +16,21 @@ namespace IntegrationEngine.Scheduler
         public IMessageQueueClient MessageQueueClient { get; set; }
 
         public EngineScheduler()
-        {}
+        {
+        }
 
         public void Start()
         {
+            var triggerListener = new TriggerListener();
+            var mgr = Scheduler.ListenerManager;
+            mgr.AddTriggerListener(triggerListener, GroupMatcher<TriggerKey>.AnyGroup());
             Scheduler.Start();
+        }
+
+        public void Shutdown()
+        {
+         //   Scheduler.ListenerManager.RemoveTriggerListener();
+            Scheduler.Shutdown();
         }
 
         public Type GetRegisteredJobTypeByName(string jobTypeName)
@@ -41,6 +52,7 @@ namespace IntegrationEngine.Scheduler
             jobDetailsDataMap.Put("IntegrationJob", integrationJob);
             return JobBuilder.Create<IntegrationJobDispatcherJob>()
                 .SetJobData(jobDetailsDataMap)
+                .StoreDurably(true)
                 .WithIdentity(jobType.Name, jobType.Namespace)
                 .Build();
         }
