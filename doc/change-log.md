@@ -5,7 +5,7 @@ currentMenu: change-log
 
 # Change Log
 
-## 2.0.0-beta4
+## 2.0.0-beta5
 
 __Features__
 * Add health API for indicating server connection status.
