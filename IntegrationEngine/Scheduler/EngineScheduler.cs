@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Common.Logging;
 using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.MessageQueue;
 using IntegrationEngine.Model;
 using Quartz;
-using IntegrationEngine.MessageQueue;
 using Quartz.Impl.Matchers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace IntegrationEngine.Scheduler
 {
@@ -14,6 +15,7 @@ namespace IntegrationEngine.Scheduler
         public IScheduler Scheduler { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
         public IMessageQueueClient MessageQueueClient { get; set; }
+        public ILog Log { get; set; }
 
         public EngineScheduler()
         {
@@ -46,15 +48,24 @@ namespace IntegrationEngine.Scheduler
 
         public IJobDetail JobDetailFactory(Type jobType)
         {
-            var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
-            var jobDetailsDataMap = new JobDataMap();
-            jobDetailsDataMap.Put("MessageQueueClient", MessageQueueClient);
-            jobDetailsDataMap.Put("IntegrationJob", integrationJob);
-            return JobBuilder.Create<IntegrationJobDispatcherJob>()
-                .SetJobData(jobDetailsDataMap)
-                .StoreDurably(true)
-                .WithIdentity(jobType.Name, jobType.Namespace)
-                .Build();
+            try
+            {
+                var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
+                var jobDetailsDataMap = new JobDataMap();
+                jobDetailsDataMap.Put("MessageQueueClient", MessageQueueClient);
+                jobDetailsDataMap.Put("IntegrationJob", integrationJob);
+                return JobBuilder.Create<IntegrationJobDispatcherJob>()
+                    .SetJobData(jobDetailsDataMap)
+                    .StoreDurably(true)
+                    .WithIdentity(jobType.Name, jobType.Namespace)
+                    .Build();
+            }
+            catch (Exception exception)
+            {
+                var message = string.Format("Error creating job detail for type: {0}", jobType.FullName);
+                Log.Error(x => x(message), exception);
+                throw new Exception(message, exception);
+            }
         }
 
         public virtual void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
@@ -144,12 +155,20 @@ namespace IntegrationEngine.Scheduler
             triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
             return triggerBuilder.Build();
         }
-
+        
         public bool DeleteTrigger(IIntegrationJobTrigger triggerDefinition)
         {
-            var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
-            var triggerKey = TriggerKeyFactory(triggerDefinition, jobType);
-            return Scheduler.UnscheduleJob(triggerKey);
+            try
+            {
+                var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
+                var triggerKey = TriggerKeyFactory(triggerDefinition, jobType);
+                return Scheduler.UnscheduleJob(triggerKey);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception);
+                return false;
+            }
         }
     }
 }

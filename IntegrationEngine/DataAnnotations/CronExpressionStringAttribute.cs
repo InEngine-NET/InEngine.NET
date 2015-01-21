@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CronExpressionDescriptor;
 using System.ComponentModel.DataAnnotations;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.DataAnnotations
 {
     public class CronExpressionStringAttribute : ValidationAttribute
     {

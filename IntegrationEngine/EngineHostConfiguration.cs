@@ -132,6 +132,7 @@ namespace IntegrationEngine
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueClient = Container.Resolve<IMessageQueueClient>(),
+                Log = Container.Resolve<ILog>(),
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();

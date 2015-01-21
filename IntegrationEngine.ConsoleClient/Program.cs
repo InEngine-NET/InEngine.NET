@@ -11,6 +11,9 @@ namespace IntegrationEngine.ConsoleClient
         static void Main(string[] args)
         {
             var client = new InEngineClient();
+            var triggers = client.GetCronTriggers();
+            Console.WriteLine(triggers.Count);
+            Console.ReadLine();
         }
     }
 }

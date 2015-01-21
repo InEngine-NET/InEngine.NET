@@ -1,31 +1,20 @@
-﻿using CronExpressionDescriptor;
-using IntegrationEngine.Model;
-using Nest;
-using System;
-using QuartzTriggerState = Quartz.TriggerState;
+﻿using IntegrationEngine.DataAnnotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace IntegrationEngine.Scheduler
 {
-    public class CronTrigger : ICronTrigger
+    public class CronTrigger : IntegrationEngine.Model.CronTrigger
     {
-        public string Id { get; set; }
         [Required]
         [JobType]
-        public string JobType { get; set; }
+        public override string JobType { get; set; }
         [Required]
         [CronExpressionString]
-        public string CronExpressionString { get; set; }
+        public override string CronExpressionString { get; set; }
         [Required]
         [TimeZoneId]
-        public string TimeZoneId { get; set; }
+        public override string TimeZoneId { get; set; }
         [Range(0, 1)]
-        public int StateId { get; set; }
-        [ElasticProperty(OptOut = true)]
-        public string CronExpressionDescription { get { return CronExpressionString.GetHumanReadableCronSchedule(); } }
-        [ElasticProperty(OptOut = true)]
-        public TimeZoneInfo TimeZoneInfo { get { return TimeZoneId.GetTimeZoneInfo(); } }
-        [ElasticProperty(OptOut = true)]
-        public string StateDescription { get { return StateId.GetStateDescription(); } }
+        public override int StateId { get; set; }
     }
 }

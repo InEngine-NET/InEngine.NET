@@ -49,7 +49,7 @@ namespace IntegrationEngine.Api.Controllers
         {
             if (id != trigger.Id)
                 return BadRequest();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 BadRequest(ModelState);
             Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(trigger);
@@ -60,7 +60,7 @@ namespace IntegrationEngine.Api.Controllers
         [ResponseType(typeof(SimpleTrigger))]
         public IHttpActionResult PostSimpleTrigger(SimpleTrigger trigger)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 BadRequest(ModelState);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithSimpleTrigger(triggerWithId);
