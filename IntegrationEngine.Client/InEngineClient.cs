@@ -126,7 +126,7 @@ namespace IntegrationEngine.Client
         #endregion
 
         #region HealthStatus
-        public IList<HealthStatus> GetHealthStatus()
+        public HealthStatus GetHealthStatus()
         {
             var request = new RestRequest(EndpointName.HealthStatus, Method.GET);
             var result = RestClient.Execute(request);
