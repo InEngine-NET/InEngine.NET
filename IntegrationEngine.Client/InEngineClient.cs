@@ -124,6 +124,15 @@ namespace IntegrationEngine.Client
             return JsonConvert.DeserializeObject<IList<string>>(result.Content);
         }
         #endregion
+
+        #region HealthStatus
+        public IList<HealthStatus> GetHealthStatus()
+        {
+            var request = new RestRequest(EndpointName.HealthStatus, Method.GET);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<HealthStatus>(result.Content);
+        }
+        #endregion
     }
 }
 
