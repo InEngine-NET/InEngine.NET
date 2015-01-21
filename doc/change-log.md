@@ -7,6 +7,18 @@ currentMenu: change-log
 
 ## 2.0.0-beta4
 
+__Features__
+* Add health API for indicating server connection status.
+* Remove trigger from scheduler when it is deleted via the API.
+
+__Chores__
+* Move properties from scheduler models into model interfaces.
+
+__Fixes__
+* Cron expression description not generating on Mono.
+
+## 2.0.0-beta4
+
 __Fixes__
 * Use Json.NET to deserialize client responses.
 
