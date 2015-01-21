@@ -144,5 +144,12 @@ namespace IntegrationEngine.Scheduler
             triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
             return triggerBuilder.Build();
         }
+
+        public bool DeleteTrigger(IIntegrationJobTrigger triggerDefinition)
+        {
+            var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
+            var triggerKey = TriggerKeyFactory(triggerDefinition, jobType);
+            return Scheduler.UnscheduleJob(triggerKey);
+        }
     }
 }
