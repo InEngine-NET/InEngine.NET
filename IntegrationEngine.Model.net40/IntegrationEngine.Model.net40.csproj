@@ -52,7 +52,6 @@
     <Compile Include="..\IntegrationEngine.Model\ISimpleTrigger.cs">
       <Link>ISimpleTrigger.cs</Link>
     </Compile>
-    <Compile Include="IHasStateId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\IntegrationEngine.Model\SimpleTrigger.cs">
       <Link>SimpleTrigger.cs</Link>
@@ -62,6 +61,18 @@
     </Compile>
     <Compile Include="..\IntegrationEngine.Model\IIntegrationJobTrigger.cs">
       <Link>IIntegrationJobTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\ITimeZone.cs">
+      <Link>ITimeZone.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\TimeZone.cs">
+      <Link>TimeZone.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\HealthStatus.cs">
+      <Link>HealthStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IHealthStatus.cs">
+      <Link>IHealthStatus.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

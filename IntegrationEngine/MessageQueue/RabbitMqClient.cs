@@ -2,6 +2,8 @@
 using IntegrationEngine.Configuration;
 using System;
 using System.Text;
+using System.Net.Sockets;
+using RabbitMQ.Client.Exceptions;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -32,6 +34,19 @@ namespace IntegrationEngine.MessageQueue
             catch (Exception exception)
             {
                 Log.Error(exception);
+            }
+        }
+
+        public bool IsServerAvailable()
+        {
+            try 
+            {
+                return MessageQueueConnection.GetConnection().IsOpen;
+            }
+            catch(BrokerUnreachableException exception) 
+            {
+                Log.Error(exception);
+                return false;
             }
         }
     }

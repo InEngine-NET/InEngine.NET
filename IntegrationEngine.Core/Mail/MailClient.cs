@@ -2,6 +2,8 @@
 using IntegrationEngine.Core.Configuration;
 using System;
 using System.Net.Mail;
+using System.Net.Sockets;
+using System.IO;
 
 namespace IntegrationEngine.Core.Mail
 {
@@ -22,11 +24,11 @@ namespace IntegrationEngine.Core.Mail
         public void Send(MailMessage mailMessage)
         {
             ConfigureSmtpClient();
-            try 
+            try
             {
                 SmtpClient.Send(mailMessage);
             } 
-            catch (Exception exception) 
+            catch (Exception exception)
             {
                 Log.Error(exception);
             }
@@ -38,6 +40,36 @@ namespace IntegrationEngine.Core.Mail
                 SmtpClient = new SmtpClient();
             SmtpClient.Host = MailConfiguration.HostName;
             SmtpClient.Port = MailConfiguration.Port;
+        }
+
+        public bool IsServerAvailable()
+        {
+            try 
+            {
+                using (var client = new TcpClient())
+                {
+                    client.Connect(MailConfiguration.HostName, MailConfiguration.Port);
+                    using (var stream = client.GetStream())
+                    {
+                        using (var writer = new StreamWriter(stream))
+                        using (var reader = new StreamReader(stream))
+                        {
+                            writer.WriteLine("EHLO " + MailConfiguration.HostName);
+                            writer.Flush();
+                            var response = reader.ReadLine();
+                            Log.Debug(x => x("Mail server status: {0}", response));
+                            if (response != null)
+                                return true;
+                        }
+                    }
+                }
+            }
+            catch(SocketException exception) 
+            {
+                Log.Error(exception);
+                return false;
+            }
+            return false;
         }
     }
 }

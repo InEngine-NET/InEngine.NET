@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InEngineTimeZone = IntegrationEngine.Model.TimeZone;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using IntegrationEngine.Model;
@@ -107,11 +108,11 @@ namespace IntegrationEngine.Client
         #endregion
 
         #region TimeZone
-        public IList<TimeZone> GetTimeZones()
+        public IList<InEngineTimeZone> GetTimeZones()
         {
             var request = new RestRequest(EndpointName.TimeZone, Method.GET);
             var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<TimeZone>>(result.Content);
+            return JsonConvert.DeserializeObject<IList<InEngineTimeZone>>(result.Content);
         }
         #endregion
 
@@ -121,6 +122,15 @@ namespace IntegrationEngine.Client
             var request = new RestRequest(EndpointName.JobType, Method.GET);
             var result = RestClient.Execute(request);
             return JsonConvert.DeserializeObject<IList<string>>(result.Content);
+        }
+        #endregion
+
+        #region HealthStatus
+        public HealthStatus GetHealthStatus()
+        {
+            var request = new RestRequest(EndpointName.HealthStatus, Method.GET);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<HealthStatus>(result.Content);
         }
         #endregion
     }

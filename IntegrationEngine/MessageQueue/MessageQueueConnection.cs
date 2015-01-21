@@ -34,11 +34,13 @@ namespace IntegrationEngine.MessageQueue
 
         public IConnection GetConnection()
         {
-            if (_connection != null)
+            if (_connection == null || !_connection.IsOpen) {
+                if (ConnectionFactory == null)
+                    ConnectionFactory = GetConnectionFactory();
+                return _connection = ConnectionFactory.CreateConnection();
+            }
+            else 
                 return _connection;
-            if (ConnectionFactory == null)
-                ConnectionFactory = GetConnectionFactory();
-            return _connection = ConnectionFactory.CreateConnection();
         }
     }
 }

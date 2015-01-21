@@ -10,5 +10,6 @@ namespace IntegrationEngine.Model
         public TimeSpan RepeatInterval { get; set; }
         public DateTimeOffset StartTimeUtc { get; set; }
         public int StateId { get; set; }
+        public string StateDescription { get { throw new NotImplementedException(); } }
     }
 }

@@ -92,10 +92,13 @@ namespace IntegrationEngine
 
         public void SetupMailClient()
         {
+            var log = Container.Resolve<ILog>();
+
             var mailClient = new MailClient() {
                 MailConfiguration = Configuration.Mail,
-                Log = Container.Resolve<ILog>(),
+                Log = log,
             };
+            mailClient.IsServerAvailable();
             Container.RegisterInstance<IMailClient>(mailClient);
         }
 
@@ -153,13 +156,15 @@ namespace IntegrationEngine
             var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
             var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
             var elasticClient = new ElasticClient(settings);
-
+            var log = Container.Resolve<ILog>();
             Container.RegisterInstance<IElasticClient>(elasticClient);
             Container.RegisterInstance<ESRepository<SimpleTrigger>>(new ESRepository<SimpleTrigger>() {
-                ElasticClient = elasticClient
+                ElasticClient = elasticClient,
+                Log = log,
             });
             Container.RegisterInstance<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
-                ElasticClient = elasticClient
+                ElasticClient = elasticClient,
+                Log = log,
             });
         }
 

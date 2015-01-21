@@ -165,17 +165,14 @@
     <Compile Include="ContainerResolver.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\EngineScheduler.cs" />
-    <Compile Include="Scheduler\ICronTriggerReadOnly.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
-    <Compile Include="Scheduler\IHasStateDescription.cs" />
-    <Compile Include="Scheduler\ITimeZone.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
-    <Compile Include="Scheduler\TimeZone.cs" />
     <Compile Include="Scheduler\TriggerPropertyExtension.cs" />
     <Compile Include="Api\Controllers\JobTypeController.cs" />
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
     <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
+    <Compile Include="Api\Controllers\HealthStatusController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

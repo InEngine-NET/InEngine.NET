@@ -8,6 +8,7 @@ namespace IntegrationEngine.Client
         public static string SimpleTrigger = "SimpleTrigger";
         public static string JobType = "JobType";
         public static string TimeZone = "TimeZone";
+        public static string HealthStatus = "HealthStatus";
     }
 }
     

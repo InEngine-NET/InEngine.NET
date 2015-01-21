@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.Scheduler
+namespace IntegrationEngine.Model
 {
     public interface ITimeZone
     {

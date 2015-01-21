@@ -8,6 +8,7 @@ namespace IntegrationEngine.Core.Mail
         MailConfiguration MailConfiguration { get; set; }
         SmtpClient SmtpClient { get; set; }
         void Send(MailMessage mailMessage);
+        bool IsServerAvailable();
     }
 }
 

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IntegrationEngine.Scheduler
 {
-    public class CronTrigger : ICronTrigger, ICronTriggerReadOnly, IHasStateDescription
+    public class CronTrigger : ICronTrigger
     {
         public string Id { get; set; }
         [Required]
@@ -22,7 +22,7 @@ namespace IntegrationEngine.Scheduler
         [Range(0, 1)]
         public int StateId { get; set; }
         [ElasticProperty(OptOut = true)]
-        public string CronExpressionDescription { get { return ExpressionDescriptor.GetDescription(CronExpressionString); } }
+        public string CronExpressionDescription { get { return CronExpressionString.GetHumanReadableCronSchedule(); } }
         [ElasticProperty(OptOut = true)]
         public TimeZoneInfo TimeZoneInfo { get { return TimeZoneId.GetTimeZoneInfo(); } }
         [ElasticProperty(OptOut = true)]

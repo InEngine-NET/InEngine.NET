@@ -75,6 +75,7 @@ namespace IntegrationEngine.Api.Controllers
             if (trigger == null)
                 return NotFound();
             Repository.Delete(trigger.Id);
+            EngineScheduler.DeleteTrigger(trigger);
             return Ok(trigger);
         }
     }
