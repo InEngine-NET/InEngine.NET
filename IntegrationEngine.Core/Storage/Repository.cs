@@ -69,5 +69,10 @@ namespace IntegrationEngine.Core.Storage
         {
             db.Dispose();
         }
+
+        public bool IsServerAvailable()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

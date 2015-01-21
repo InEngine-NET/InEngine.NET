@@ -172,6 +172,7 @@
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
     <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
+    <Compile Include="Api\Controllers\HealthStatusController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

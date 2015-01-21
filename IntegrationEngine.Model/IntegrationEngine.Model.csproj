@@ -54,6 +54,8 @@
     <Compile Include="IIntegrationJobTrigger.cs" />
     <Compile Include="TimeZone.cs" />
     <Compile Include="ITimeZone.cs" />
+    <Compile Include="HealthStatus.cs" />
+    <Compile Include="IHealthStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="package.nuspec">

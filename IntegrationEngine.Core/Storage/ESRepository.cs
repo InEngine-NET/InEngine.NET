@@ -1,4 +1,5 @@
-﻿using IntegrationEngine.Model;
+﻿using Common.Logging;
+using IntegrationEngine.Model;
 using Nest;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,8 @@ namespace IntegrationEngine.Core.Storage
 {
     public class ESRepository<T> : IRepository<T> where T : class, IHasStringId
     {
-        public ElasticClient ElasticClient{ get; set; }
+        public IElasticClient ElasticClient { get; set; }
+        public ILog Log { get; set; }
 
         public ESRepository()
         {
@@ -72,6 +74,19 @@ namespace IntegrationEngine.Core.Storage
         public void Dispose()
         {
             throw new NotImplementedException();
+        }
+
+        public bool IsServerAvailable()
+        {
+            try 
+            {
+                return ElasticClient.Ping(new PingRequest()).ConnectionStatus.Success;
+            }
+            catch(Exception exception) 
+            {
+                Log.Error(exception);
+                return false;
+            }
         }
     }
 }

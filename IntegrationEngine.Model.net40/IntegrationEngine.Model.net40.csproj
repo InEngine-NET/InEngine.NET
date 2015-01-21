@@ -68,6 +68,12 @@
     <Compile Include="..\IntegrationEngine.Model\TimeZone.cs">
       <Link>TimeZone.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Model\HealthStatus.cs">
+      <Link>HealthStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IHealthStatus.cs">
+      <Link>IHealthStatus.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

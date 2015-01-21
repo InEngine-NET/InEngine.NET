@@ -18,5 +18,6 @@ namespace IntegrationEngine.Core.Storage
         bool Exists(object id);
         void SetState(T value, EntityState entityState);
         void Dispose();
+        bool IsServerAvailable();
     }
 }
