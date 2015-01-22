@@ -1,6 +1,7 @@
 ﻿using IntegrationEngine.Scheduler;
+using Moq;
 using NUnit.Framework;
-using Quartz.Impl;
+using Quartz;
 using System;
 using System.Collections.Generic;
 
@@ -16,12 +17,17 @@ namespace IntegrationEngine.Tests.Scheduler
                 IntegrationJobTypes = new List<Type>() { jobType }
             };
             var trigger = new CronTrigger() {
+                Id = "one",
                 JobType = jobType.FullName
             };
+            var scheduler = new Mock<IScheduler>();
+            scheduler.Setup(x => x.UnscheduleJob(It.Is<TriggerKey>(y => y.Name == trigger.Id && 
+                                                                        y.Group == trigger.JobType))).Returns(true);
+            subject.Scheduler = scheduler.Object;
 
-            subject.DeleteTrigger(trigger);
+            var result = subject.DeleteTrigger(trigger);
 
-
+            Assert.That(result, Is.True);
         }
     }
 }
