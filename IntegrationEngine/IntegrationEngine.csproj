@@ -86,6 +86,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Net.Http" />
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -149,6 +150,7 @@
     <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
     <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
+    <Compile Include="MessageQueue\MsmqClient.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TriggerListener.cs" />
