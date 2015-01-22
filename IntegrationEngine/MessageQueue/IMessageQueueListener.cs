@@ -8,6 +8,6 @@ namespace IntegrationEngine.MessageQueue
 {
     public interface IMessageQueueListener
     {
-        public void Listener();
+        void Listen();
     }
 }

@@ -8,7 +8,7 @@ namespace IntegrationEngine.MessageQueue
 {
     public class MsmqListener : IMessageQueueListener
     {
-        void IMessageQueueListener.Listener()
+        public void Listen()
         {
             throw new NotImplementedException();
         }
