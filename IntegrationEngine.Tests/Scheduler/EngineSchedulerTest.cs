@@ -1,4 +1,5 @@
 ﻿using IntegrationEngine.Scheduler;
+using NUnit.Framework;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ namespace IntegrationEngine.Tests.Scheduler
 {
     public class EngineSchedulerTest
     {
+        [Test]
         public void ShouldDeleteTrigger()
         {
             var jobType = typeof(IntegrationJobFixture);
