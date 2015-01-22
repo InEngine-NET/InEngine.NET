@@ -150,7 +150,9 @@
     <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
     <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
+    <Compile Include="MessageQueue\IMessageQueueListener.cs" />
     <Compile Include="MessageQueue\MsmqClient.cs" />
+    <Compile Include="MessageQueue\MsmqListener.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TriggerListener.cs" />
