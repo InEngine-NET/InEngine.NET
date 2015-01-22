@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.DataAnnotations
 {
     public class JobTypeAttribute : ValidationAttribute
     {

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
-namespace IntegrationEngine
+namespace IntegrationEngine.DataAnnotations
 {
     public class TimeZoneIdAttribute : ValidationAttribute
     {

@@ -147,6 +147,10 @@
     <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
     <Compile Include="Configuration\MessageQueueConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfiguration.cs" />
+    <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
+    <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
+    <Compile Include="Scheduler\CronTrigger.cs" />
+    <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Scheduler\TriggerListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
@@ -163,15 +167,10 @@
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
     <Compile Include="ContainerResolver.cs" />
-    <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\EngineScheduler.cs" />
     <Compile Include="Scheduler\IEngineScheduler.cs" />
-    <Compile Include="Scheduler\SimpleTrigger.cs" />
-    <Compile Include="Scheduler\TriggerPropertyExtension.cs" />
     <Compile Include="Api\Controllers\JobTypeController.cs" />
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
-    <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
-    <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

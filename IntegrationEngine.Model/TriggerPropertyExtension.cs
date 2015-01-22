@@ -1,13 +1,13 @@
-﻿using System;
-using CronExpressionDescriptor;
+﻿using CronExpressionDescriptor;
+using System;
 
-namespace IntegrationEngine.Scheduler
+namespace IntegrationEngine.Model
 {
     public static class TriggerPropertyExtension
     {
         public static string GetStateDescription(this int value)
         {
-            return ((Quartz.TriggerState)value).ToString();
+            return ((TriggerStateDescription)value).ToString();
         }
 
         public static TimeZoneInfo GetTimeZoneInfo(this string value)
