@@ -1,21 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="configuration/SharedAssemblyInfo.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Program.cs">
     <Files>
-      <File FileName="configuration/SharedAssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="57" Column="57" />
+      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True">
-          <Node name="IntegrationEngine.Tests" expanded="True">
-            <Node name="IntegrationEngine" expanded="True">
-              <Node name="Tests" expanded="True">
-                <Node name="Api" expanded="True" />
-                <Node name="EngineHostConfigurationTest" expanded="True" selected="True" />
-              </Node>
-            </Node>
-          </Node>
-        </State>
+        <State expanded="True" selected="True" />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
