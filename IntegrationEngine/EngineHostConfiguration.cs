@@ -128,22 +128,28 @@ namespace IntegrationEngine
 
         public void SetupScheduler()
         {
+            var log = Container.Resolve<ILog>();
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueClient = Container.Resolve<IMessageQueueClient>(),
-                Log = Container.Resolve<ILog>(),
+                Log = log,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();
+
             var simpleTriggers = Container.Resolve<ESRepository<SimpleTrigger>>().SelectAll();
-            var cronTriggers = Container.Resolve<ESRepository<CronTrigger>>().SelectAll();
+            var cronTriggerRepo = Container.Resolve<ESRepository<CronTrigger>>();
+            var allCronTriggers = cronTriggerRepo.SelectAll();
+            var cronTriggers = allCronTriggers.Where(x => !string.IsNullOrWhiteSpace(x.CronExpressionString));
             foreach (var jobType in IntegrationJobTypes)
             {
                 var jobDetail = engineScheduler.JobDetailFactory(jobType);
                 engineScheduler.ScheduleJobsWithTriggers(simpleTriggers, jobType, jobDetail);
                 engineScheduler.ScheduleJobsWithTriggers(cronTriggers, jobType, jobDetail);
             }
+            foreach(var cronTrigger in allCronTriggers.Where(x => string.IsNullOrWhiteSpace(x.CronExpressionString)))
+                log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }
 
         public void SetupRScriptRunner()

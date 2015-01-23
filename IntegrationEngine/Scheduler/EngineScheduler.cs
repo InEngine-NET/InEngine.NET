@@ -156,6 +156,7 @@ namespace IntegrationEngine.Scheduler
         {
             var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType);
             triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
+
             return triggerBuilder.Build();
         }
         
