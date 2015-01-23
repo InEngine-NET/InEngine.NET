@@ -9,7 +9,9 @@ namespace IntegrationEngine.Tests
 {
     public class IntegrationJobFixture : IIntegrationJob
     {
+        public static Type Type { get { return typeof(IntegrationJobFixture); } }
+        public static string FullName { get { return Type.FullName; } }
         public void Run()
-        {}
+        {}        
     }
 }

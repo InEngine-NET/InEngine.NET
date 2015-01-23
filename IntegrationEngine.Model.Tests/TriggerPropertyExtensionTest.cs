@@ -64,9 +64,9 @@ namespace IntegrationEngine.Model.Tests
         public void ShouldReturnHumanReadableCronSchedule()
         {
             var expected = "Every minute";
-            string timeZoneId = "* * * * *";
+            string cronExpression = "* * * * *";
 
-            var result = timeZoneId.GetHumanReadableCronSchedule();
+            var result = cronExpression.GetHumanReadableCronSchedule();
 
             Assert.That(result, Is.EqualTo(expected));
         }
@@ -74,9 +74,9 @@ namespace IntegrationEngine.Model.Tests
         [Test]
         public void ShouldReturnEmptyStringIfCronExpressionIsNull()
         {
-            string timeZoneId = null;
+            string cronExpression = null;
 
-            var result = timeZoneId.GetHumanReadableCronSchedule();
+            var result = cronExpression.GetHumanReadableCronSchedule();
 
             Assert.That(result, Is.EqualTo(String.Empty));
         }
@@ -84,9 +84,9 @@ namespace IntegrationEngine.Model.Tests
         [Test]
         public void ShouldReturnEmptyStringIfCronExpressionIsInvalidString()
         {
-            string timeZoneId = "foo";
+            string cronExpression = "foo";
 
-            var result = timeZoneId.GetTimeZoneInfo();
+            var result = cronExpression.GetTimeZoneInfo();
 
             Assert.That(result, Is.EqualTo(TimeZoneInfo.Utc));
         }

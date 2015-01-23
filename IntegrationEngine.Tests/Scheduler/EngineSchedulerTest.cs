@@ -5,28 +5,41 @@ using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
+using UnitTesting;
 
 namespace IntegrationEngine.Tests.Scheduler
 {
-    public class EngineSchedulerTest
+    public class EngineSchedulerTest : TestBase<EngineScheduler>
     {
+        public CronTrigger CronTrigger { get; set; }
+        [SetUp]
+        public void SetUp()
+        {
+            CronTrigger = new CronTrigger() {
+                Id = "one",
+                JobType = IntegrationJobFixture.FullName,
+                CronExpressionString = "* * * * * ?",
+            };
+            Subject.IntegrationJobTypes = new List<Type>() { IntegrationJobFixture.Type };
+            Subject.Scheduler = StdSchedulerFactory.GetDefaultScheduler();
+        }
+
+        [Test]
+        public void ShouldScheduleCronTriggerWithoutAnExceptionThrown()
+        {
+            Subject.ScheduleJobWithCronTrigger(CronTrigger);
+        }
+
         [Test]
         public void ShouldDeleteTrigger()
         {
-            var jobType = typeof(IntegrationJobFixture);
-            var subject = new EngineScheduler() {
-                IntegrationJobTypes = new List<Type>() { jobType }
-            };
-            var trigger = new CronTrigger() {
-                Id = "one",
-                JobType = jobType.FullName
-            };
-            var scheduler = new Mock<IScheduler>();
-            scheduler.Setup(x => x.UnscheduleJob(It.Is<TriggerKey>(y => y.Name == trigger.Id && 
-                                                                        y.Group == trigger.JobType))).Returns(true);
-            subject.Scheduler = scheduler.Object;
+            //var scheduler = new Mock<IScheduler>();
+            //scheduler.Setup(x => x.UnscheduleJob(It.Is<TriggerKey>(y => y.Name == trigger.Id && 
+            //                                                            y.Group == trigger.JobType))).Returns(true);
+            //Subject.Scheduler = scheduler.Object;
+            Subject.ScheduleJobWithCronTrigger(CronTrigger);
 
-            var result = subject.DeleteTrigger(trigger);
+            var result = Subject.DeleteTrigger(CronTrigger);
 
             Assert.That(result, Is.True);
         }
@@ -34,19 +47,7 @@ namespace IntegrationEngine.Tests.Scheduler
         [Test]
         public void ShouldReturnFalseIfATriggerThatIsNotScheduledIsDeleted()
         {
-            var jobType = typeof(IntegrationJobFixture);
-            var subject = new EngineScheduler() {
-                IntegrationJobTypes = new List<Type>() { jobType },
-                Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
-            };
-            var trigger = new CronTrigger()
-            {
-                Id = "one",
-                JobType = jobType.FullName
-            };
-            var scheduler = StdSchedulerFactory.GetDefaultScheduler();
-
-            var result = subject.DeleteTrigger(trigger);
+            var result = Subject.DeleteTrigger(CronTrigger);
 
             Assert.That(result, Is.False);
         }
