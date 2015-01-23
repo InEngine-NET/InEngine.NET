@@ -70,10 +70,6 @@
       <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
       <Name>IntegrationEngine.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UnitTesting\UnitTesting.csproj">
-      <Project>{3A6E4FAB-025B-450C-A286-911BAD1F8E05}</Project>
-      <Name>UnitTesting</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
