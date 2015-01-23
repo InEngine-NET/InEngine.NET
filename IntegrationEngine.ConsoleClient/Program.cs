@@ -2,7 +2,6 @@
 using CommandLine.Text;
 using IntegrationEngine.Client;
 using IntegrationEngine.Model;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
