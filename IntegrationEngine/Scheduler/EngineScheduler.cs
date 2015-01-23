@@ -31,7 +31,6 @@ namespace IntegrationEngine.Scheduler
 
         public void Shutdown()
         {
-         //   Scheduler.ListenerManager.RemoveTriggerListener();
             Scheduler.Shutdown();
         }
 
@@ -120,22 +119,26 @@ namespace IntegrationEngine.Scheduler
             }
             Scheduler.ScheduleJob(jobDetail, triggersForJobs, true);
             foreach (var triggerDef in triggerDefs)
-                SetTriggerState(TriggerKeyFactory(triggerDef, jobType), triggerDef.StateId);
+                SetTriggerState(TriggerKeyFactory(triggerDef.Id, jobType), triggerDef.StateId);
         }
 
-        TriggerKey TriggerKeyFactory(IIntegrationJobTrigger integrationJobTrigger, Type jobType)
+        TriggerKey TriggerKeyFactory(string name, Type jobType)
         {
-            return new TriggerKey(integrationJobTrigger.Id, jobType.FullName);
+            if (name == null)
+                throw new ArgumentNullException();
+            if (jobType == null)
+                throw new ArgumentNullException();
+            return new TriggerKey(name, jobType.FullName);
         }
 
-        TriggerBuilder TriggerBuilderFactory(IIntegrationJobTrigger integrationJobTrigger, Type jobType)
+        TriggerBuilder TriggerBuilderFactory(string name, Type jobType)
         {
-            return TriggerBuilder.Create().WithIdentity(TriggerKeyFactory(integrationJobTrigger, jobType));
+            return TriggerBuilder.Create().WithIdentity(TriggerKeyFactory(name, jobType));
         }
 
         public ITrigger SimpleTriggerFactory(SimpleTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition, jobType);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType);
             Action<SimpleScheduleBuilder> simpleScheduleBuilderAction;
             if (triggerDefinition.RepeatCount > 0)
                 simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval).WithRepeatCount(triggerDefinition.RepeatCount);
@@ -151,24 +154,16 @@ namespace IntegrationEngine.Scheduler
 
         public ITrigger CronTriggerFactory(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition, jobType);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType);
             triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
             return triggerBuilder.Build();
         }
         
         public bool DeleteTrigger(IIntegrationJobTrigger triggerDefinition)
         {
-            try
-            {
-                var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
-                var triggerKey = TriggerKeyFactory(triggerDefinition, jobType);
-                return Scheduler.UnscheduleJob(triggerKey);
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception);
-                return false;
-            }
+            var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
+            var triggerKey = TriggerKeyFactory(triggerDefinition.Id, jobType);
+            return Scheduler.UnscheduleJob(triggerKey);
         }
     }
 }

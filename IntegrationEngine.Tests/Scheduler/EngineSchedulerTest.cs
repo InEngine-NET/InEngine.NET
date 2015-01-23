@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Quartz;
+using Quartz.Impl;
 using System;
 using System.Collections.Generic;
 
@@ -28,6 +29,26 @@ namespace IntegrationEngine.Tests.Scheduler
             var result = subject.DeleteTrigger(trigger);
 
             Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void ShouldReturnFalseIfATriggerThatIsNotScheduledIsDeleted()
+        {
+            var jobType = typeof(IntegrationJobFixture);
+            var subject = new EngineScheduler() {
+                IntegrationJobTypes = new List<Type>() { jobType },
+                Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
+            };
+            var trigger = new CronTrigger()
+            {
+                Id = "one",
+                JobType = jobType.FullName
+            };
+            var scheduler = StdSchedulerFactory.GetDefaultScheduler();
+
+            var result = subject.DeleteTrigger(trigger);
+
+            Assert.That(result, Is.False);
         }
     }
 }
