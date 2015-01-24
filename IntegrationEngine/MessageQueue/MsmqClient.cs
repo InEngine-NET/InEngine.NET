@@ -1,5 +1,6 @@
 ﻿﻿using Common.Logging;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using MSMessageQueue = System.Messaging.MessageQueue;
 
@@ -19,7 +20,7 @@ namespace IntegrationEngine.MessageQueue
         }
         public ILog Log { get; set; }
 
-        public void Publish<T>(T value)
+        public void Publish<T>(T value, IDictionary<string, string> parameters)
         {
             try
             {

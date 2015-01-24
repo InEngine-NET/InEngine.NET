@@ -86,6 +86,7 @@
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="Jobs\ILogJob.cs" />
     <Compile Include="Jobs\IMailJob.cs" />
+    <Compile Include="Jobs\IParameterizedJob.cs" />
     <Compile Include="Jobs\ISqlJob.cs" />
     <Compile Include="Jobs\SqlJob.cs" />
     <Compile Include="Mail\IMailClient.cs" />

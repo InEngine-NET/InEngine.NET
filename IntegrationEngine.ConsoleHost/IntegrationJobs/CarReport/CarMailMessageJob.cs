@@ -1,15 +1,15 @@
 ﻿using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 
 namespace IntegrationEngine.ConsoleHost.Car
 {
-    public class CarMailMessageJob : IMailJob
+    public class CarMailMessageJob : IMailJob, IParameterizedJob
     {
         public IMailClient MailClient { get; set; }
-        public TimeSpan Interval { get; set; }
-        public DateTimeOffset StartTimeUtc { get; set; }
+        public IDictionary<string, string> Parameters { get; set; }
 
         public void Run()
         {

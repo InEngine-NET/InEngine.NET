@@ -142,12 +142,10 @@ namespace IntegrationEngine
             var cronTriggerRepo = Container.Resolve<ESRepository<CronTrigger>>();
             var allCronTriggers = cronTriggerRepo.SelectAll();
             var cronTriggers = allCronTriggers.Where(x => !string.IsNullOrWhiteSpace(x.CronExpressionString));
-            foreach (var jobType in IntegrationJobTypes)
-            {
-                var jobDetail = engineScheduler.JobDetailFactory(jobType);
-                engineScheduler.ScheduleJobsWithTriggers(simpleTriggers, jobType, jobDetail);
-                engineScheduler.ScheduleJobsWithTriggers(cronTriggers, jobType, jobDetail);
-            }
+            foreach (var trigger in simpleTriggers)
+                engineScheduler.ScheduleJobWithSimpleTrigger(trigger);
+            foreach (var trigger in cronTriggers)
+                engineScheduler.ScheduleJobWithCronTrigger(trigger);
             foreach(var cronTrigger in allCronTriggers.Where(x => string.IsNullOrWhiteSpace(x.CronExpressionString)))
                 log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }

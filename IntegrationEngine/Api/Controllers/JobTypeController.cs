@@ -8,6 +8,7 @@ using IntegrationEngine.Model;
 using IntegrationEngine.Scheduler;
 using Quartz.Impl.Matchers;
 using Quartz;
+using System;
 
 namespace IntegrationEngine.Api.Controllers
 {
@@ -24,11 +25,9 @@ namespace IntegrationEngine.Api.Controllers
             EngineScheduler = engineScheduler;
         }
 
-        public IHttpActionResult GetJobTypes()
+        public IEnumerable<JobType> GetJobTypes()
         {
-            return Ok(EngineScheduler.Scheduler
-                .GetJobKeys(GroupMatcher<JobKey>.AnyGroup())
-                .Select(x => x.ToString()).ToList());
+            return EngineScheduler.IntegrationJobTypes.Select(x => new JobType() { FullName = x.FullName, Name = x.Name });
         }
     }
 }

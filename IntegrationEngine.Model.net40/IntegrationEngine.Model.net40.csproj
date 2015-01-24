@@ -60,11 +60,20 @@
     <Compile Include="..\IntegrationEngine.Model\ICronTrigger.cs">
       <Link>ICronTrigger.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IHasParameters.cs">
+      <Link>IHasParameters.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Model\IHasStringId.cs">
       <Link>IHasStringId.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IJobType.cs">
+      <Link>IJobType.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Model\ISimpleTrigger.cs">
       <Link>ISimpleTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\JobType.cs">
+      <Link>JobType.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Model\TriggerPropertyExtension.cs">
       <Link>TriggerPropertyExtension.cs</Link>

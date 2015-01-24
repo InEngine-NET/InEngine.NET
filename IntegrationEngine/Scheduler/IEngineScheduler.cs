@@ -1,11 +1,13 @@
-﻿using System;
-using IntegrationEngine.Model;
+﻿using IntegrationEngine.Model;
 using Quartz;
+using System;
+using System.Collections.Generic;
 
 namespace IntegrationEngine.Scheduler
 {
     public interface IEngineScheduler
     {
+        IList<Type> IntegrationJobTypes { get; set; }
         IScheduler Scheduler { get; set; }
         void Start();
         void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition);

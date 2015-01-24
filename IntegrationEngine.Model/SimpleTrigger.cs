@@ -1,6 +1,6 @@
-﻿using System;
-using IntegrationEngine.Model;
-using Nest;
+﻿using Nest;
+using System;
+using System.Collections.Generic;
 
 namespace IntegrationEngine.Model
 {
@@ -12,6 +12,7 @@ namespace IntegrationEngine.Model
         public virtual TimeSpan RepeatInterval { get; set; }
         public virtual DateTimeOffset StartTimeUtc { get; set; }
         public virtual int StateId { get; set; }
+        public virtual IDictionary<string, string> Parameters { get; set; }
         [ElasticProperty(OptOut = true)]
         public virtual string StateDescription { get { return StateId.GetStateDescription(); } }
 
