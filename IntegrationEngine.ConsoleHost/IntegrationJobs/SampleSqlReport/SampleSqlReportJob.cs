@@ -1,6 +1,7 @@
 ﻿using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using RazorEngine;
+using RazorEngine.Templating;
 using System;
 using System.Net.Mail;
 
@@ -20,13 +21,9 @@ namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
 
             // Pass into Razor engine
             string template = "Created on <strong>@Model.Created</strong> with <strong>@Model.Data.Count</strong> records.";
-            Razor.Compile<SampleReport>(template, "template-01");
-            var html = Razor.Run("template-01", report);
-            //Console.WriteLine(result.ToString());
-             
-            // Write result to Elasticsearch
+            var html = Engine.Razor.RunCompile(template, "template-01", typeof(SampleReport), report);
+
             // Send Mail
-            // How to get recipients?
             var mailMessage = new MailMessage();
             mailMessage.To.Add("ethanhann@gmail.com");
             mailMessage.Subject = "Sample SQL Report";
