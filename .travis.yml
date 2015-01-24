@@ -5,4 +5,4 @@ sudo: false
 cache: apt
 
 script:
-  - xbuild /p:Configuration=Release IntegrationEngine.sln
+  - xbuild /p:Configuration=Debug IntegrationEngine.sln
