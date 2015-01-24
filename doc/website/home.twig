@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ title }}</title>
+
+    <link rel="stylesheet" href="{{ baseUrl }}/bower_components/bootswatch/paper/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ baseUrl }}/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ baseUrl }}/bower_components/highlightjs/styles/dark.css">
+    <link rel="stylesheet" href="{{ baseUrl }}/css/main.css">
+</head>
+<body>
+
+<header class="home">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="fa fa-fw fa-bars"></span>
+            </button>
+            <a class="navbar-brand" href="{{ baseUrl }}/">
+                {{ title|default('The title') }}
+                <small class="hidden-xs hidden-sm">
+                    {{ subTitle|default('This is the default subtitle!') }}
+                </small>
+            </a>
+        </div>
+        {% if menu is defined %}
+            <div id="menu-navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    {{ include('menu-items.twig') }}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    <div class="jumbotron text-center">
+        <h1>{{ title }}</h1>
+        <p class="lead">{{ subTitle }}</p>
+    </div>
+</header>
+
+<main class="home">
+    <div class="container">
+        <section id="content">
+            <div class="row text-center jumbo-nav-icons">
+                {% for itemId, item in menu.items %}
+                    <div class="col-sm-2">
+                        <p>
+                            <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
+                                <span class="{{ item.iconClass }} fa-5x"></span>
+                                <br>
+                                {{ item.text|raw }}
+                            </a>
+
+                        <p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {#<div class="row text-center">#}
+            {#<div class="col-md-4">#}
+            {#<p>#}
+            {#<a href="getting-started.html">#}
+            {#<span class="fa fa-fw fa-power-off fa-5x"></span>#}
+            {#<br>#}
+            {#<strong>Getting Started</strong>#}
+            {#</a>#}
+            {#<p>#}
+            {#</div>#}
+            {#<div class="col-md-4">#}
+            {#<p>#}
+            {#<a href="change-log.html">#}
+            {#<span class="fa fa-fw fa-refresh fa-5x"></span>#}
+            {#<br>#}
+            {#<strong>Change Log</strong>#}
+            {#</a>#}
+            {#<p>#}
+            {#</div>#}
+            {#<div class="col-md-4">#}
+            {#<p>#}
+            {#<a href="configuration.html">#}
+            {#<span class="fa fa-fw fa-gear fa-5x"></span>#}
+            {#<br>#}
+            {#<strong>Configuration</strong>#}
+            {#</a>#}
+            {#<p>#}
+            {#</div>#}
+            {#</div>#}
+
+            {% block content %}
+                {{ content|raw }}
+            {% endblock %}
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p class="text-muted">
+            author <a href="http://www.ethanhann.com" title="Author">Ethan Hann</a>
+        </p>
+    </div>
+</footer>
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
