@@ -142,12 +142,10 @@ namespace IntegrationEngine
             var cronTriggerRepo = Container.Resolve<ESRepository<CronTrigger>>();
             var allCronTriggers = cronTriggerRepo.SelectAll();
             var cronTriggers = allCronTriggers.Where(x => !string.IsNullOrWhiteSpace(x.CronExpressionString));
-            foreach (var jobType in IntegrationJobTypes)
-            {
-                var jobDetail = engineScheduler.JobDetailFactory(jobType);
-                engineScheduler.ScheduleJobsWithTriggers(simpleTriggers, jobType, jobDetail);
-                engineScheduler.ScheduleJobsWithTriggers(cronTriggers, jobType, jobDetail);
-            }
+            foreach (var trigger in simpleTriggers)
+                engineScheduler.ScheduleJobWithSimpleTrigger(trigger);
+            foreach (var trigger in cronTriggers)
+                engineScheduler.ScheduleJobWithCronTrigger(trigger);
             foreach(var cronTrigger in allCronTriggers.Where(x => string.IsNullOrWhiteSpace(x.CronExpressionString)))
                 log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }
@@ -165,10 +163,13 @@ namespace IntegrationEngine
             var elasticClient = new ElasticClient(settings);
             var log = Container.Resolve<ILog>();
             Container.RegisterInstance<IElasticClient>(elasticClient);
-            Container.RegisterInstance<ESRepository<SimpleTrigger>>(new ESRepository<SimpleTrigger>() {
+            var simpleTriggerRepo = new ESRepository<SimpleTrigger>() {
                 ElasticClient = elasticClient,
                 Log = log,
-            });
+            };
+            if (!simpleTriggerRepo.IsServerAvailable())
+                log.Warn("Elasticsearch server does not appear to be available.");
+            Container.RegisterInstance<ESRepository<SimpleTrigger>>(simpleTriggerRepo);
             Container.RegisterInstance<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
                 ElasticClient = elasticClient,
                 Log = log,

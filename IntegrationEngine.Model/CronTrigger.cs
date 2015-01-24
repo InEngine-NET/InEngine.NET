@@ -1,6 +1,6 @@
-﻿using CronExpressionDescriptor;
-using Nest;
+﻿using Nest;
 using System;
+using System.Collections.Generic;
 
 namespace IntegrationEngine.Model
 {
@@ -11,6 +11,7 @@ namespace IntegrationEngine.Model
         public virtual string CronExpressionString { get; set; }
         public virtual string TimeZoneId { get; set; }
         public virtual int StateId { get; set; }
+        public virtual IDictionary<string, string> Parameters { get; set; }
         [ElasticProperty(OptOut = true)]
         public virtual string CronExpressionDescription { get { return CronExpressionString.GetHumanReadableCronSchedule(); } }
         [ElasticProperty(OptOut = true)]

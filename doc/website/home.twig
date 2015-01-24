@@ -14,7 +14,7 @@
 <body>
 
 <header class="home">
-    <div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -58,36 +58,6 @@
                     </div>
                 {% endfor %}
             </div>
-
-            {#<div class="row text-center">#}
-            {#<div class="col-md-4">#}
-            {#<p>#}
-            {#<a href="getting-started.html">#}
-            {#<span class="fa fa-fw fa-power-off fa-5x"></span>#}
-            {#<br>#}
-            {#<strong>Getting Started</strong>#}
-            {#</a>#}
-            {#<p>#}
-            {#</div>#}
-            {#<div class="col-md-4">#}
-            {#<p>#}
-            {#<a href="change-log.html">#}
-            {#<span class="fa fa-fw fa-refresh fa-5x"></span>#}
-            {#<br>#}
-            {#<strong>Change Log</strong>#}
-            {#</a>#}
-            {#<p>#}
-            {#</div>#}
-            {#<div class="col-md-4">#}
-            {#<p>#}
-            {#<a href="configuration.html">#}
-            {#<span class="fa fa-fw fa-gear fa-5x"></span>#}
-            {#<br>#}
-            {#<strong>Configuration</strong>#}
-            {#</a>#}
-            {#<p>#}
-            {#</div>#}
-            {#</div>#}
 
             {% block content %}
                 {{ content|raw }}

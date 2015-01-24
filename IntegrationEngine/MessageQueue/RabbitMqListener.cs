@@ -4,12 +4,12 @@ using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
 using Nest;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace IntegrationEngine.MessageQueue
@@ -40,17 +40,21 @@ namespace IntegrationEngine.MessageQueue
                 {
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
                     var body = eventArgs.Body;
-                    var message = Encoding.UTF8.GetString(body);
+                    var message = JsonConvert.DeserializeObject<DispatchMessage>(Encoding.UTF8.GetString(body));
                     Log.Debug(x => x("Message queue listener received {0}", message));
                     if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                         continue;
-                    var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));
+                    var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobTypeName));
                     var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
                     integrationJob = AutoWireJob(integrationJob, type);
                     try
                     {
                         if (integrationJob != null)
+                        {
+                            if (integrationJob.GetType() is IParameterizedJob)
+                                (integrationJob as IParameterizedJob).Parameters = message.Parameters;
                             integrationJob.Run();
+                        }
                     }
                     catch (Exception exception)
                     {

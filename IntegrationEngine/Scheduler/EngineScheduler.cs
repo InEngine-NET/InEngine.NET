@@ -45,7 +45,7 @@ namespace IntegrationEngine.Scheduler
             return GetRegisteredJobTypeByName(jobTypeName) != null;
         }
 
-        public IJobDetail JobDetailFactory(Type jobType)
+        public IJobDetail JobDetailFactory(Type jobType, IDictionary<string, string> parameters, IIntegrationJobTrigger triggerDefinition)
         {
             try
             {
@@ -53,10 +53,11 @@ namespace IntegrationEngine.Scheduler
                 var jobDetailsDataMap = new JobDataMap();
                 jobDetailsDataMap.Put("MessageQueueClient", MessageQueueClient);
                 jobDetailsDataMap.Put("IntegrationJob", integrationJob);
+                jobDetailsDataMap.Put("Parameters", parameters);
                 return JobBuilder.Create<IntegrationJobDispatcherJob>()
                     .SetJobData(jobDetailsDataMap)
                     .StoreDurably(true)
-                    .WithIdentity(jobType.Name, jobType.Namespace)
+                    .WithIdentity(triggerDefinition.Id, jobType.FullName)
                     .Build();
             }
             catch (Exception exception)
@@ -70,7 +71,7 @@ namespace IntegrationEngine.Scheduler
         public virtual void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition)
         {
             var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
-            var jobDetail = JobDetailFactory(jobType);
+            var jobDetail = JobDetailFactory(jobType, triggerDefinition.Parameters, triggerDefinition);
             var trigger = CronTriggerFactory(triggerDefinition, jobType, jobDetail);
             TryScheduleJobWithTrigger(trigger, jobType, jobDetail, triggerDefinition.StateId);
         }
@@ -78,7 +79,7 @@ namespace IntegrationEngine.Scheduler
         public void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition)
         {
             var jobType = GetRegisteredJobTypeByName(triggerDefinition.JobType);
-            var jobDetail = JobDetailFactory(jobType);
+            var jobDetail = JobDetailFactory(jobType, triggerDefinition.Parameters, triggerDefinition);
             var trigger = SimpleTriggerFactory(triggerDefinition, jobType, jobDetail);
             TryScheduleJobWithTrigger(trigger, jobType, jobDetail, triggerDefinition.StateId);
         }
@@ -131,14 +132,14 @@ namespace IntegrationEngine.Scheduler
             return new TriggerKey(name, jobType.FullName);
         }
 
-        TriggerBuilder TriggerBuilderFactory(string name, Type jobType)
+        TriggerBuilder TriggerBuilderFactory(string name, Type jobType, IJobDetail jobDetail)
         {
-            return TriggerBuilder.Create().WithIdentity(TriggerKeyFactory(name, jobType));
+            return TriggerBuilder.Create().WithIdentity(TriggerKeyFactory(name, jobType)).ForJob(jobDetail);
         }
 
         public ITrigger SimpleTriggerFactory(SimpleTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType, jobDetail);
             Action<SimpleScheduleBuilder> simpleScheduleBuilderAction;
             if (triggerDefinition.RepeatCount > 0)
                 simpleScheduleBuilderAction = x => x.WithInterval(triggerDefinition.RepeatInterval).WithRepeatCount(triggerDefinition.RepeatCount);
@@ -154,9 +155,8 @@ namespace IntegrationEngine.Scheduler
 
         public ITrigger CronTriggerFactory(CronTrigger triggerDefinition, Type jobType, IJobDetail jobDetail)
         {
-            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType);
+            var triggerBuilder = TriggerBuilderFactory(triggerDefinition.Id, jobType, jobDetail);
             triggerBuilder.WithCronSchedule(triggerDefinition.CronExpressionString, x => x.InTimeZone(triggerDefinition.TimeZoneInfo));
-
             return triggerBuilder.Build();
         }
         
