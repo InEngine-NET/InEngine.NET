@@ -1,17 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleHost/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs">
     <Files>
-      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.Client/IInEngineClient.cs" Line="31" Column="31" />
-      <File FileName="IntegrationEngine.Client/InEngineClient.cs" Line="10" Column="10" />
+      <File FileName="IntegrationEngine.ConsoleHost/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs" Line="13" Column="13" />
     </Files>
-    <Pads>
-      <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True" selected="True" />
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
