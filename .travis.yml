@@ -2,4 +2,4 @@ language: csharp
 solution: IntegrationEngine.sln
 
 script:
-  - xbuild /p:Configuration=Release IntegrationEngine.sln
+  - xbuild /p:Configuration=Debug IntegrationEngine.sln
