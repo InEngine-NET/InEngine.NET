@@ -1,11 +1,9 @@
-﻿using IntegrationEngine.Scheduler;
-using Moq;
+﻿using BeekmanLabs.UnitTesting;
+using IntegrationEngine.Scheduler;
 using NUnit.Framework;
-using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
-using UnitTesting;
 
 namespace IntegrationEngine.Tests.Scheduler
 {
@@ -33,10 +31,6 @@ namespace IntegrationEngine.Tests.Scheduler
         [Test]
         public void ShouldDeleteTrigger()
         {
-            //var scheduler = new Mock<IScheduler>();
-            //scheduler.Setup(x => x.UnscheduleJob(It.Is<TriggerKey>(y => y.Name == trigger.Id && 
-            //                                                            y.Group == trigger.JobType))).Returns(true);
-            //Subject.Scheduler = scheduler.Object;
             Subject.ScheduleJobWithCronTrigger(CronTrigger);
 
             var result = Subject.DeleteTrigger(CronTrigger);

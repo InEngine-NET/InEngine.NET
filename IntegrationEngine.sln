@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine", "IntegrationEngine\IntegrationEngine.csproj", "{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}"
 EndProject
@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.gitignore = .gitignore
 		configuration\IntegrationEngine.json = configuration\IntegrationEngine.json
 		configuration\IntegrationEngine.nlog.xml = configuration\IntegrationEngine.nlog.xml
-		package.cmd = package.cmd
+		scripts\package.cmd = scripts\package.cmd
 		README.md = README.md
-		release.cmd = release.cmd
+		scripts\release.cmd = scripts\release.cmd
 		configuration\SharedAssemblyInfo.cs = configuration\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
@@ -38,8 +38,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.ConsoleClient", "IntegrationEngine.ConsoleClient\IntegrationEngine.ConsoleClient.csproj", "{46DB723B-F767-4F5A-A1DA-53A6CF13704B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEngine.Model.Tests", "IntegrationEngine.Model.Tests\IntegrationEngine.Model.Tests.csproj", "{F999051E-B715-4AB9-A3B2-0D91A896A2C2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "UnitTesting\UnitTesting.csproj", "{3A6E4FAB-025B-450C-A286-911BAD1F8E05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

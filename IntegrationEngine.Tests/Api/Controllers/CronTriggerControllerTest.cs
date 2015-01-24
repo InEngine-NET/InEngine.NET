@@ -1,4 +1,5 @@
-﻿using IntegrationEngine.Api.Controllers;
+﻿using BeekmanLabs.UnitTesting;
+using IntegrationEngine.Api.Controllers;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Scheduler;
 using Moq;
@@ -6,12 +7,11 @@ using NUnit.Framework;
 
 namespace IntegrationEngine.Tests.Api.Controllers
 {
-    public class CronTriggerControllerTest
+    public class CronTriggerControllerTest : TestBase<CronTriggerController>
     {
         [Test]
         public void ShouldScheduleJobWhenCronTriggerIsCreatedWithValidCronExpression()
         {
-            var subject = new CronTriggerController();
             var cronExpression = "0 6 * * 1-5 ?";
             var jobType = "MyProject.MyIntegrationJob";
             var expected = new CronTrigger() {
@@ -20,12 +20,12 @@ namespace IntegrationEngine.Tests.Api.Controllers
             };
             var engineScheduler = new Mock<IEngineScheduler>();
             engineScheduler.Setup(x => x.ScheduleJobWithCronTrigger(expected));
-            subject.EngineScheduler = engineScheduler.Object;
+            Subject.EngineScheduler = engineScheduler.Object;
             var esRepository = new Mock<ESRepository<CronTrigger>>();
             esRepository.Setup(x => x.Insert(expected)).Returns(expected);
-            subject.Repository = esRepository.Object;
+            Subject.Repository = esRepository.Object;
 
-            subject.PostCronTrigger(expected);
+            Subject.PostCronTrigger(expected);
 
             engineScheduler.Verify(x => x
                 .ScheduleJobWithCronTrigger(It.Is<CronTrigger>(y => y.JobType == jobType &&

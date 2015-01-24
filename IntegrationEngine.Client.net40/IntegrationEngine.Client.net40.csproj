@@ -53,6 +53,9 @@
     <Compile Include="..\IntegrationEngine.Client\EndpointName.cs">
       <Link>EndpointName.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Client\IInEngineClient.cs">
+      <Link>IInEngineClient.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Client\InEngineClient.cs">
       <Link>InEngineClient.cs</Link>
     </Compile>

@@ -36,6 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BeekmanLabs.UnitTesting">
+      <HintPath>..\packages\BeekmanLabs.UnitTesting.0.0.0\lib\net45\BeekmanLabs.UnitTesting.dll</HintPath>
+    </Reference>
     <Reference Include="fx.configuration">
       <HintPath>..\packages\fx.configuration.0.4.0\lib\net45\fx.configuration.dll</HintPath>
     </Reference>
@@ -115,10 +118,6 @@
     <ProjectReference Include="..\IntegrationEngine\IntegrationEngine.csproj">
       <Project>{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}</Project>
       <Name>IntegrationEngine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UnitTesting\UnitTesting.csproj">
-      <Project>{3A6E4FAB-025B-450C-A286-911BAD1F8E05}</Project>
-      <Name>UnitTesting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
