@@ -165,10 +165,13 @@ namespace IntegrationEngine
             var elasticClient = new ElasticClient(settings);
             var log = Container.Resolve<ILog>();
             Container.RegisterInstance<IElasticClient>(elasticClient);
-            Container.RegisterInstance<ESRepository<SimpleTrigger>>(new ESRepository<SimpleTrigger>() {
+            var simpleTriggerRepo = new ESRepository<SimpleTrigger>() {
                 ElasticClient = elasticClient,
                 Log = log,
-            });
+            };
+            if (!simpleTriggerRepo.IsServerAvailable())
+                log.Warn("Elasticsearch server does not appear to be available.");
+            Container.RegisterInstance<ESRepository<SimpleTrigger>>(simpleTriggerRepo);
             Container.RegisterInstance<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
                 ElasticClient = elasticClient,
                 Log = log,

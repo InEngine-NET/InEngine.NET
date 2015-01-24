@@ -8,7 +8,10 @@ currentMenu: change-log
 ## 2.0.0-beta7
 
 __Features__
-* Expose additional properties to typed client by pushing their implementations into model assembly.
+* Add console client that can query the web API.
+
+__Chores__
+* Add IInEngineClient interface to client project.
 
 ## 2.0.0-beta6
 
