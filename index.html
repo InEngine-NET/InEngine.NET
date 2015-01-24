@@ -1,190 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>InEngine.NET</title>
+    <title>InEngine.NET</title>
 
-        <link rel="stylesheet" href="http://inengine.net/bower_components/bootswatch/paper/bootstrap.min.css">
-        <link rel="stylesheet" href="http://inengine.net/bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="http://inengine.net/bower_components/highlightjs/styles/dark.css">
-        <link rel="stylesheet" href="http://inengine.net/css/main.css">
-    </head>
-    <body>
+    <link rel="stylesheet" href="http://inengine.net/bower_components/bootswatch/paper/bootstrap.min.css">
+    <link rel="stylesheet" href="http://inengine.net/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://inengine.net/bower_components/highlightjs/styles/dark.css">
+    <link rel="stylesheet" href="http://inengine.net/css/main.css">
+</head>
+<body>
 
-        <header class="navbar navbar-default navbar-fixed-top">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="fa fa-fw fa-bars"></span>
-                </button>
-                <a class="navbar-brand" href="http://inengine.net/">
-                    InEngine.NET
-                    <small class="hidden-xs hidden-sm">
-                        An asynchronous job scheduling server.
-                    </small>
-                </a>
+<header class="home">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="fa fa-fw fa-bars"></span>
+            </button>
+            <a class="navbar-brand" href="http://inengine.net/">
+                InEngine.NET
+                <small class="hidden-xs hidden-sm">
+                    An asynchronous job scheduling server.
+                </small>
+            </a>
+        </div>
+                    <div id="menu-navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                        <li class="active">
+        <a href="http://inengine.net/index.html">
+            <span class="fa fa-fw fa-home"></span>
+            <span>Home</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/getting-started.html">
+            <span class="fa fa-fw fa-power-off"></span>
+            <span>Getting Started</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/change-log.html">
+            <span class="fa fa-fw fa-refresh"></span>
+            <span>Change Log</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/configuration.html">
+            <span class="fa fa-fw fa-gear"></span>
+            <span>Configuration</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/integration-jobs.html">
+            <span class="fa fa-fw fa-exchange"></span>
+            <span>Integration Jobs</span>
+        </a>
+    </li>
+    <li class="">
+        <a href="http://inengine.net/web-api/cron-trigger.html">
+            <span class="fa fa-fw fa-cloud"></span>
+            <span>Web API</span>
+        </a>
+    </li>
+
+                </ul>
             </div>
-                            <div id="menu-navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                            <li class="active">
-        <a href="http://inengine.net/index.html">
-            <span class="fa fa-fw fa-home"></span>
-            <span>Welcome</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/getting-started.html">
-            <span class="fa fa-fw fa-power-off"></span>
-            <span>Getting Started</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/configuration.html">
-            <span class="fa fa-fw fa-gear"></span>
-            <span>Configuration</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/integration-jobs.html">
-            <span class="fa fa-fw fa-exchange"></span>
-            <span>Integration Jobs</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/web-api/cron-trigger.html">
-            <span class="fa fa-fw fa-cloud"></span>
-            <span>Web API</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/change-log.html">
-            <span class="fa fa-fw fa-refresh"></span>
-            <span>Change Log</span>
-        </a>
-    </li>
+            </div>
+    <div class="jumbotron text-center">
+        <h1>InEngine.NET</h1>
+        <p class="lead">An asynchronous job scheduling server.</p>
+    </div>
+</header>
 
-                    </ul>
-                </div>
-                    </header>
-
-        <main class="container-fluid">
-            <div class="row">
-
-                                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
-                        <ul class="nav nav-pills nav-stacked">
-                                <li class="active">
-        <a href="http://inengine.net/index.html">
-            <span class="fa fa-fw fa-home"></span>
-            <span>Welcome</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/getting-started.html">
-            <span class="fa fa-fw fa-power-off"></span>
-            <span>Getting Started</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/configuration.html">
-            <span class="fa fa-fw fa-gear"></span>
-            <span>Configuration</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/integration-jobs.html">
-            <span class="fa fa-fw fa-exchange"></span>
-            <span>Integration Jobs</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/web-api/cron-trigger.html">
-            <span class="fa fa-fw fa-cloud"></span>
-            <span>Web API</span>
-        </a>
-    </li>
-    <li class="">
-        <a href="http://inengine.net/change-log.html">
-            <span class="fa fa-fw fa-refresh"></span>
-            <span>Change Log</span>
-        </a>
-    </li>
-
-                        </ul>
-                    </nav>
-                
-                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <ul class="status-badges pull-right list-unstyled list-inline">
-                        <li>
-                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/master">
-                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true&passingText=master%20-%20OK">
+<main class="home">
+    <div class="container">
+        <section id="content">
+            <div class="row text-center jumbo-nav-icons">
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/index.html">
+                                <span class="fa fa-fw fa-home fa-5x"></span>
+                                <br>
+                                Home
                             </a>
-                        </li>
-                        <li>
-                            <a href="https://ci.appveyor.com/project/ethanhann/inengine-net/branch/develop">
-                                <img src="https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=develop&svg=true&passingText=develop%20-%20OK">
-                            </a>
-                        </li>
-                    </ul>
 
-                                            <h1>Welcome</h1>
-<p><strong>InEngine.NET</strong> is a set of .NET packages, created by <a href="http://ethanhann.com">Ethan Hann</a>, that allows for the 
-creation of a code-centric data integration and asynchronous job scheduling server.</p>
-<ul>
-<li><a href="https://www.nuget.org/packages/IntegrationEngine">NuGet Package</a></li>
-<li><a href="https://github.com/ethanhann/InEngine.NET">GitHub Project</a></li>
-</ul>
-<h3>Why should you care?</h3>
-<p>Data integration is a common task when working in a large or medium enterprise environment.
-Data integration servers take data from a data source, transform it (or not), and put it somewhere. 
-<strong>InEngine.NET</strong> can allow you to do that and more in a programmatic manner.</p>
-<p>There are several existing full-featured data integration server products on the market.
-These products do not work in a way software developers are comfortable with.
+                        <p>
+                    </div>
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/getting-started.html">
+                                <span class="fa fa-fw fa-power-off fa-5x"></span>
+                                <br>
+                                Getting Started
+                            </a>
+
+                        <p>
+                    </div>
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/change-log.html">
+                                <span class="fa fa-fw fa-refresh fa-5x"></span>
+                                <br>
+                                Change Log
+                            </a>
+
+                        <p>
+                    </div>
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/configuration.html">
+                                <span class="fa fa-fw fa-gear fa-5x"></span>
+                                <br>
+                                Configuration
+                            </a>
+
+                        <p>
+                    </div>
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/integration-jobs.html">
+                                <span class="fa fa-fw fa-exchange fa-5x"></span>
+                                <br>
+                                Integration Jobs
+                            </a>
+
+                        <p>
+                    </div>
+                                    <div class="col-sm-2">
+                        <p>
+                            <a href="http://inengine.net/web-api/cron-trigger.html">
+                                <span class="fa fa-fw fa-cloud fa-5x"></span>
+                                <br>
+                                Web API
+                            </a>
+
+                        <p>
+                    </div>
+                            </div>
+
+                                                                                                                                                                                                                                                                                                                                                            
+                            <h2>Why should you care?</h2>
+<p><strong>InEngine.NET</strong> is a set of .NET packages that allows for the creation of a code-centric data integration and asynchronous job scheduling server.
+Integration jobs are created in code, making them flexible and testable.</p>
+<p>Existing commercial data integration server products do not work in a way software developers are comfortable with.
 They provide a drag-and-drop GUI application for implementing a data integration.
-This sounds appealing on the surface, but such GUIs are often clunky and slow.
-Additionally, existing products do not provide a testable way to build integrations and detect when they stop functioning.
+This sounds appealing, but such GUIs are often clunky and slow.
+Additionally, such products do not provide a testable way to build integrations and detect when they stop functioning.
 This is a major issue as data integrations are fragile by nature.</p>
 <p>In contrast, a developer would prefer fine-grained, programmatic access to the data they are querying, transforming, and persisting.
 A developer would also like to be able to test their integrations to ensure their continued operation. 
-<strong>InEngine.NET</strong> provides this.</p>
-<h3>How does it work?</h3>
-<ol>
-<li><strong>InEngine.NET</strong> is a library. In order to use the library a developer must create a .NET console or service 
-project that instantiates and initializes an instance of <em>IntegrationEngine.EngineHost</em>. </li>
-<li>Integration jobs that implement <em>IntegrationEngine.Model.IIntegrationJob</em> (located in an assembly passed to <em>EngineHost</em>) are loaded.</li>
-<li>Integration jobs are scheduled by posting a request to the <a href="web-api.html">InEngine.NET Web API</a>.</li>
-<li>When a job is triggered a message is added to the message queue, defined in <a href="configuration.html">IntegrationEngine.json</a>, that indicates which job to run.</li>
-<li>When a message is detected, the <strong>InEngine.NET</strong> job runner plucks the message from the queue and runs the job encoded within it.</li>
-</ol>
-<img src="https://docs.google.com/drawings/d/1dEmGlhfDWhljOjWIn7ttuNQxfY1N_dXOaHxNOLpgV9U/pub?w=960&amp;h=720" alt="IntegrationEngine Job Processing Diagram" />
-<h3>How is this software licensed?</h3>
+<strong>InEngine.NET</strong> allows this.</p>
+<h2>What is the license?</h2>
 <p><a href="https://github.com/ethanhann/InEngine.NET/blob/master/LICENSE">MIT</a></p>
-                                    </section>
+<h2>How much does it cost?</h2>
+<p>It's free!</p>
+<h2>Where can I get this fantastic software?</h2>
+<p>The software is released as a set of <a href="https://www.nuget.org/packages/IntegrationEngine">NuGet Packages</a>.</p>
+<p>The source code is hosted on <a href="https://github.com/ethanhann/InEngine.NET">GitHub</a>.</p>
+                    </section>
+    </div>
+</main>
 
-            </div>
-        </main>
+<footer>
+    <div class="container">
+        <p class="text-muted">
+            author <a href="http://www.ethanhann.com" title="Author">Ethan Hann</a>
+        </p>
+    </div>
+</footer>
 
-        <footer>
-            <div class="container-fluid">
-                <p class="text-muted">
-                    author <a href="http://www.ethanhann.com" title="Author">Ethan Hann</a>
-                </p>
-            </div>
-        </footer>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="bower_components/highlightjs/highlight.pack.js"></script>
-
-        <script>
-            $(function() {
-                $("section>h1").wrap('<div class="page-header" />');
-                // Syntax highlighting
-                hljs.initHighlightingOnLoad();
-            });
-        </script>
-
-    </body>
+</body>
 </html>
