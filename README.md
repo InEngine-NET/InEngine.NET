@@ -15,7 +15,5 @@
 [travis]: https://travis-ci.org/ethanhann/InEngine.NET
 [masterWindows]: https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true
 [developWindows]: https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=develop&svg=true
-[masterLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=master?style=flat-square
-[developLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=develop?style=flat-square
-
-
+[masterLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=master&style=flat-square
+[developLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=develop&style=flat-square
