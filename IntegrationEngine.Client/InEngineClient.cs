@@ -123,11 +123,11 @@ namespace IntegrationEngine.Client
         #endregion
 
         #region JobType
-        public IList<string> GetJobTypes()
+        public IList<JobType> GetJobTypes()
         {
             var request = new RestRequest(EndpointName.JobType, Method.GET);
             var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<string>>(result.Content);
+            return JsonConvert.DeserializeObject<IList<JobType>>(result.Content);
         }
         #endregion
 

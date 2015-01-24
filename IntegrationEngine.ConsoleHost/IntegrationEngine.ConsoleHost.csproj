@@ -86,7 +86,7 @@
       <Name>IntegrationEngine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
-      <Project>{0b499fe4-0bdb-4080-bcb7-f8d4ce54a4ff}</Project>
+      <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
       <Name>IntegrationEngine.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine\IntegrationEngine.csproj">

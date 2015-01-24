@@ -13,7 +13,7 @@ namespace IntegrationEngine.Scheduler
     public class EngineScheduler : IEngineScheduler
     {
         public IScheduler Scheduler { get; set; }
-        public IList<Type> IntegrationJobTypes { get; set; }
+        public virtual IList<Type> IntegrationJobTypes { get; set; }
         public IMessageQueueClient MessageQueueClient { get; set; }
         public ILog Log { get; set; }
 
