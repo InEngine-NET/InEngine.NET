@@ -6,5 +6,5 @@ cache: apt
 
 script:
   - xbuild /p:Configuration=Release IntegrationEngine.sln
-  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./IntegrationEngine.Model.Tests/bin/Debug/IntegrationEngine.Model.Tests.dll
-  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./IntegrationEngine.Tests/bin/Debug/IntegrationEngine.Tests.dll
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./IntegrationEngine.Model.Tests/bin/Release/IntegrationEngine.Model.Tests.dll
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./IntegrationEngine.Tests/bin/Release/IntegrationEngine.Tests.dll
