@@ -20,7 +20,7 @@ namespace IntegrationEngine.Client
         SimpleTrigger UpdateSimpleTrigger(SimpleTrigger simpleTrigger);
         SimpleTrigger DeleteSimpleTrigger(string id);
         IList<InEngineTimeZone> GetTimeZones();
-        IList<string> GetJobTypes();
+        IList<JobType> GetJobTypes();
         HealthStatus GetHealthStatus();
     }
 }

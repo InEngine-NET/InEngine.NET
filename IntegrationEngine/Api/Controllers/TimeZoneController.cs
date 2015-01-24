@@ -14,11 +14,9 @@ namespace IntegrationEngine.Api.Controllers
         public TimeZoneController()
         {}
 
-        [ResponseType(typeof(ITimeZone))]
-        public IHttpActionResult GetTimeZones()
+        public IEnumerable<ITimeZone> GetTimeZones()
         {
-            var timeZones = TimeZoneInfo.GetSystemTimeZones().Select(x => new InEngineTimeZone(x)).ToList();
-            return Ok(timeZones);
+            return TimeZoneInfo.GetSystemTimeZones().Select(x => new InEngineTimeZone(x));
         }
     }
 }

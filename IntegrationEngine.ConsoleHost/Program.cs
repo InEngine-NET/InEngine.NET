@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace IntegrationEngine.ConsoleHost
 {
-    class MainClass
+    public class MainClass
     {
         public static void Main(string[] args)
         {
