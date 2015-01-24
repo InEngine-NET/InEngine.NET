@@ -10,6 +10,11 @@ namespace IntegrationEngine.Model
 
         public HealthStatus()
         {}
+
+        public override string ToString()
+        {
+            return string.Format("[HealthStatus: IsMailServerAvailable={0}, IsMessageQueueServerAvailable={1}, IsElasticsearchServerAvailable={2}]", IsMailServerAvailable, IsMessageQueueServerAvailable, IsElasticsearchServerAvailable);
+        }
     }
 }
 

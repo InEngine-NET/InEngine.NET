@@ -1,23 +1,20 @@
-﻿using IntegrationEngine.Configuration;
-using Microsoft.Practices.Unity;
+﻿using BeekmanLabs.UnitTesting;
 using Moq;
 using NUnit.Framework;
-using System;
 
 namespace IntegrationEngine.Tests
 {
-    public class EngineHostConfigurationTest
+    public class EngineHostConfigurationTest : TestBase<EngineHostConfiguration>
     {
         [Test]
         public void CanLoadConfiguration()
         {
-            var subject = new EngineHostConfiguration();
             var container = new Mock<StubContainer>();
-            subject.Container = container.Object;
+            Subject.Container = container.Object;
 
-            subject.LoadConfiguration();
+            Subject.LoadConfiguration();
 
-            Assert.IsNotNull(subject.Configuration);
+            Assert.IsNotNull(Subject.Configuration);
         }
     }
 }

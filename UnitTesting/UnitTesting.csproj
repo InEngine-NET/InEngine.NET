@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</ProjectGuid>
+    <ProjectGuid>{3A6E4FAB-025B-450C-A286-911BAD1F8E05}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IntegrationEngine.Model</RootNamespace>
-    <AssemblyName>IntegrationEngine.Model</AssemblyName>
+    <RootNamespace>UnitTesting</RootNamespace>
+    <AssemblyName>UnitTesting</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -27,14 +26,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>lib\net45\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CronExpressionDescriptor">
-      <HintPath>..\packages\CronExpressionDescriptor.1.12.0\lib\net35\CronExpressionDescriptor.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,38 +42,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Elasticsearch.Net">
-      <HintPath>..\packages\Elasticsearch.Net.1.3.1\lib\Elasticsearch.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Nest">
-      <HintPath>..\packages\NEST.1.3.1\lib\Nest.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\configuration\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ICronTrigger.cs" />
-    <Compile Include="IHasStringId.cs" />
-    <Compile Include="ISimpleTrigger.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="TestBaseT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CronTrigger.cs" />
-    <Compile Include="SimpleTrigger.cs" />
-    <Compile Include="IIntegrationJobTrigger.cs" />
-    <Compile Include="TimeZone.cs" />
-    <Compile Include="ITimeZone.cs" />
-    <Compile Include="HealthStatus.cs" />
-    <Compile Include="IHealthStatus.cs" />
-    <Compile Include="TriggerPropertyExtension.cs" />
-    <Compile Include="TriggerStateDescription.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="package.nuspec">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

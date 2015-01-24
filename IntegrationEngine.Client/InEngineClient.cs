@@ -5,10 +5,11 @@ using System.Linq;
 using IntegrationEngine.Model;
 using RestSharp;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace IntegrationEngine.Client
 {
-    public class InEngineClient
+    public class InEngineClient : IInEngineClient
     {
         public RestClient RestClient { get; set; }
 
@@ -20,6 +21,11 @@ namespace IntegrationEngine.Client
         public InEngineClient(string apiUrl)
         {
             RestClient = new RestClient(apiUrl);
+        }
+
+        public HttpStatusCode Ping()
+        {
+            return RestClient.Execute(new RestRequest(EndpointName.HealthStatus, Method.GET)).StatusCode;
         }
 
         #region CronTrigger

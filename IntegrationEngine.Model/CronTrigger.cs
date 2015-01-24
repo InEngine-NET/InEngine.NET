@@ -17,5 +17,10 @@ namespace IntegrationEngine.Model
         public virtual TimeZoneInfo TimeZoneInfo { get { return TimeZoneId.GetTimeZoneInfo(); } }
         [ElasticProperty(OptOut = true)]
         public virtual string StateDescription { get { return StateId.GetStateDescription(); } }
+
+        public override string ToString()
+        {
+            return string.Format("[CronTrigger: Id={0}, JobType={1}, CronExpressionString={2}, TimeZoneId={3}, StateId={4}, CronExpressionDescription={5}, TimeZoneInfo={6}, StateDescription={7}]", Id, JobType, CronExpressionString, TimeZoneId, StateId, CronExpressionDescription, TimeZoneInfo, StateDescription);
+        }
     }
 }
