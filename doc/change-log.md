@@ -5,6 +5,11 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-beta7
+
+__Features__
+* Expose additional properties to typed client by pushing their implementations into model assembly.
+
 ## 2.0.0-beta6
 
 __Features__

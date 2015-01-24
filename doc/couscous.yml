@@ -9,13 +9,17 @@ subTitle: An asynchronous job scheduling server.
 menu:
     items:
         home:
-            text: Welcome
+            text: Home
             iconClass: 'fa fa-fw fa-home'
             relativeUrl: index.html
         getting-started:
             text: Getting Started
             iconClass: 'fa fa-fw fa-power-off'
             relativeUrl: getting-started.html
+        change-log:
+            text: Change Log
+            iconClass: 'fa fa-fw fa-refresh'
+            relativeUrl: change-log.html
         configuration:
             text: Configuration
             iconClass: 'fa fa-fw fa-gear'
@@ -28,10 +32,6 @@ menu:
             text: Web API
             iconClass: 'fa fa-fw fa-cloud'
             relativeUrl: web-api/cron-trigger.html
-        change-log:
-            text: Change Log
-            iconClass: 'fa fa-fw fa-refresh'
-            relativeUrl: change-log.html
 
 webApiMenu:
     items:

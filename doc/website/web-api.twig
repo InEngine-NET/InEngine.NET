@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Web API</h2>
-    <ul class="nav nav-pills">
+    <ul class="nav nav-tabs">
         {% for itemId, item in webApiMenu.items %}
             <li class="{{ itemId == currentSubMenu ? 'active' }}">
                 <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
