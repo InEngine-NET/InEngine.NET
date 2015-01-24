@@ -7,8 +7,8 @@
 
 | Branch  | Windows                                               | Linux                                              |
 | ------- | ----------------------------------------------------- | -------------------------------------------------- |
-| master  | [![master Windows][masterWindows]](masterAppVeyor)    | [![master Linux][masterLinux]](travis)             |
-| develop | [![develop Windows][developWindows]](developAppVeyor) | [![develop Windows][developLinux]](travis)         |
+| master  | [![master Windows][masterWindows]][masterAppVeyor]    | [![master Linux][masterLinux]][travis]             |
+| develop | [![develop Windows][developWindows]][developAppVeyor] | [![develop Windows][developLinux]][travis]         |
 
 [masterAppVeyor]: https://ci.appveyor.com/project/ethanhann/inengine-net/branch/master
 [developAppVeyor]: https://ci.appveyor.com/project/ethanhann/inengine-net/branch/develop
