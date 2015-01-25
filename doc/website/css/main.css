@@ -147,3 +147,8 @@ pre code {
     letter-spacing: -2px;
     line-height: 100px;
 }
+
+
+.nav.nav-sub-items li a {
+    padding-left: 1.6em;
+}

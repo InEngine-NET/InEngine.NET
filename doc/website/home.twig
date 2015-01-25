@@ -37,6 +37,7 @@
     </div>
     <div class="jumbotron text-center">
         <h1>{{ title }}</h1>
+
         <p class="lead">{{ subTitle }}</p>
     </div>
 </header>
@@ -45,16 +46,13 @@
     <div class="container">
         <section id="content">
             <div class="row text-center jumbo-nav-icons">
-                {% for itemId, item in menu.items %}
-                    <div class="col-sm-2">
-                        <p>
-                            <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
-                                <span class="{{ item.iconClass }} fa-5x"></span>
-                                <br>
-                                {{ item.text|raw }}
-                            </a>
-
-                        <p>
+                {% for itemId, item in menu.items if itemId != 'home' %}
+                    <div class="col-md-4">
+                        <a href="{{ item.absoluteUrl|default(baseUrl ~ '/' ~ item.relativeUrl) }}">
+                            <span class="{{ item.iconClass }} fa-5x"></span>
+                            <br>
+                            {{ item.text|raw }}
+                        </a>
                     </div>
                 {% endfor %}
             </div>

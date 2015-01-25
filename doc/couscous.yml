@@ -20,18 +20,23 @@ menu:
             text: Change Log
             iconClass: 'fa fa-fw fa-refresh'
             relativeUrl: change-log.html
-        configuration:
-            text: Configuration
-            iconClass: 'fa fa-fw fa-gear'
-            relativeUrl: configuration.html
-        integration-jobs:
-            text: Integration Jobs
-            iconClass: 'fa fa-fw fa-exchange'
-            relativeUrl: integration-jobs.html
-        web-api:
-            text: Web API
-            iconClass: 'fa fa-fw fa-cloud'
-            relativeUrl: web-api/cron-trigger.html
+        documentation:
+            text: Documentation
+            iconClass: 'fa fa-fw fa-book'
+            relativeUrl: documentation.html
+            items:
+                configuration:
+                    text: Configuration
+                    iconClass: 'fa fa-fw fa-gear'
+                    relativeUrl: configuration.html
+                integration-jobs:
+                    text: Integration Jobs
+                    iconClass: 'fa fa-fw fa-exchange'
+                    relativeUrl: integration-jobs.html
+                web-api:
+                    text: Web API
+                    iconClass: 'fa fa-fw fa-cloud'
+                    relativeUrl: web-api/cron-trigger.html
 
 webApiMenu:
     items:
