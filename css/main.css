@@ -148,6 +148,10 @@ pre code {
     line-height: 100px;
 }
 
+.jumbo-nav-icons {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
 
 .nav.nav-sub-items li a {
     padding-left: 1.6em;
