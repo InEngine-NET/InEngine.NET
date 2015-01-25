@@ -152,3 +152,15 @@ pre code {
 .nav.nav-sub-items li a {
     padding-left: 1.6em;
 }
+
+.nav-stacked > li + li,
+.nav-pills > li {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.nav-pills > li > a {
+    border-radius: 0;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}

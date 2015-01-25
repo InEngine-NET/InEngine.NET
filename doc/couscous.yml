@@ -37,7 +37,22 @@ menu:
                     text: Web API
                     iconClass: 'fa fa-fw fa-cloud'
                     relativeUrl: web-api/cron-trigger.html
-
+                client-library:
+                    text: C# Client Library
+                    iconClass: 'fa fa-fw fa-desktop'
+                    relativeUrl: client-library.html
+                console-client:
+                    text: Console Client
+                    iconClass: 'fa fa-fw fa-terminal'
+                    relativeUrl: console-client.html
+                angularjs-api-module:
+                    text: AngularJS Client
+                    iconClass: 'fa fa-fw fa-desktop'
+                    relativeUrl: angularjs-api-module.html
+                dashboard:
+                    text: Web Dashboard
+                    iconClass: 'fa fa-fw fa-dashboard'
+                    relativeUrl: dashboard.html
 webApiMenu:
     items:
         cron-trigger:
