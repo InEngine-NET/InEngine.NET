@@ -10,6 +10,8 @@ It uses the [eeh-inengine-api](angularjs-api-module.html) AngularJS API Module t
 
 The dashboard source is available on [GitHub](https://github.com/ethanhann/InEngine.NET-Dashboard).
 
+![Dashboard Home](https://raw.githubusercontent.com/ethanhann/InEngine.NET-Dashboard/master/screenshots/home.png)
+
 ## Configuration
 
 Be sure to add the domain the dashboard is served from to the WebAPI/Origins section of the [IntegrationEngine.json file](configuration.html).
