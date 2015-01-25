@@ -35,7 +35,7 @@ Now, use NPM to serve the dashboard.
 npm start
 ```
 
-The dashboard will be served at _http://localhost:3000_.
+The dashboard is served by Node.js at _http://localhost:3000_.
  
 Though the dashboard is served by Node.js, any web server can serve it since the dashboard is merely a collection of static files. 
 IIS, Apache HTTP Server, and Nginx are all options.
