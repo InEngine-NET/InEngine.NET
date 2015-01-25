@@ -153,6 +153,10 @@ pre code {
     padding-bottom: 30px;
 }
 
+.jumbo-nav-icons a:hover {
+    text-decoration: none;
+}
+
 .nav.nav-sub-items li a {
     padding-left: 1.6em;
 }
