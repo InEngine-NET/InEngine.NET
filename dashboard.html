@@ -74,7 +74,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="active">
+                    <li class="">
                         <a href="http://inengine.net/web-api/cron-trigger.html">
                             <span class="fa fa-fw fa-cloud"></span>
                             <span>Web API</span>
@@ -114,7 +114,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="">
+                    <li class="active">
                         <a href="http://inengine.net/dashboard.html">
                             <span class="fa fa-fw fa-dashboard"></span>
                             <span>Web Dashboard</span>
@@ -178,7 +178,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="active">
+                    <li class="">
                         <a href="http://inengine.net/web-api/cron-trigger.html">
                             <span class="fa fa-fw fa-cloud"></span>
                             <span>Web API</span>
@@ -218,7 +218,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="">
+                    <li class="active">
                         <a href="http://inengine.net/dashboard.html">
                             <span class="fa fa-fw fa-dashboard"></span>
                             <span>Web Dashboard</span>
@@ -231,77 +231,24 @@
                     </nav>
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                        <h1>Web API</h1>
-    <ul class="nav nav-tabs">
-                    <li class="active">
-                <a href="http://inengine.net/web-api/cron-trigger.html">
-                    <span class=""></span>
-                    <span>CronTrigger</span>
-                </a>
-            </li>
-                    <li class="">
-                <a href="http://inengine.net/web-api/job-type.html">
-                    <span class=""></span>
-                    <span>JobType</span>
-                </a>
-            </li>
-                    <li class="">
-                <a href="http://inengine.net/web-api/simple-trigger.html">
-                    <span class=""></span>
-                    <span>SimpleTrigger</span>
-                </a>
-            </li>
-                    <li class="">
-                <a href="http://inengine.net/web-api/time-zone.html">
-                    <span class=""></span>
-                    <span>TimeZone</span>
-                </a>
-            </li>
-            </ul>
-    <h2>CronTrigger Endpoint</h2>
-<p>The CronTrigger endpoint allows for an integration job to be scheduled by creating and manipulating a Quartz.NET CronTrigger.</p>
-<h3>Parameters</h3>
-<table class="table table-bordered">
-<thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
-<tbody>
-    <tr><td>Id</td><td><span class="label label-info">string</span></td>
-        <td>A unique, auto-generated identifier for the trigger.</td>
-    </tr>
-    <tr><td>JobType</td><td><span class="label label-info">string</span></td>
-        <td>The <a href="http://msdn.microsoft.com/en-us/library/system.type.fullname%28v=vs.110%29.aspx">FullName</a> of an <a href="integration-jobs.html">Integration Job</a> type.</td>
-    </tr>
-    <tr><td>StateId</td><td><span class="label label-danger">int</span></td>
-        <td>An integer identifier that sets the state of the trigger. Valid values are 0 (active) and 1 (paused).</td>
-    </tr>
-    <tr>
-        <td>Parameters</td>
-        <td><a href="https://msdn.microsoft.com/en-us/library/s4ys34ea%28v=vs.110%29.aspx">System.Collections.Generic.IDictionary<string,string></a></td>
-        <td>A key/value object that is made available to integration jobs that implement the _IParameterizedJob_ interface.</td>
-    </tr>
-    <tr><td>CronExpressionString</td><td><span class="label label-info">string</span></td>
-    <td>A valid <a href="http://en.wikipedia.org/wiki/Cron#CRON_expression">cron expression</a>.</td>
-    </tr>
-    <tr><td>TimeZoneId</td><td><span class="label label-info">string</span></td>
-        <td>A time zone string id, as defined by the TimeZone endpoint.</td>
-    </tr>
-</tbody>
-</table>
-<h3>Get a List of CronTriggers</h3>
-<p>GET api/CronTrigger</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger</code></pre>
-<h3>Get a Specific CronTrigger by ID</h3>
-<p>GET api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger/ID</code></pre>
-<h3>Create a New CronTrigger</h3>
-<p>POST api/CronTrigger</p>
-<pre><code class="language-sh">curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&amp;CronExpressionString=0 3 4 ? * MON-FRI *&amp;TimeZoneId=America/New_York" http://localhost:9001/api/CronTrigger</code></pre>
-<h3>Update a Specific CronTrigger by ID</h3>
-<p>PUT api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl -XPUT "CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger/ID</code></pre>
-<h3>Delete a CronTrigger by ID</h3>
-<p>DELETE api/CronTrigger/ID</p>
-<pre><code class="language-sh">curl -XDELETE http://localhost:9001/api/CronTrigger/ID</code></pre>
-                </section>
+                                            <h1>Web Dashboard</h1>
+<p>The dashboard is a web front-end, built with AngularJS, for the InEngine.NET Web API.
+It uses the <a href="angularjs-api-module.html">eeh-inengine-api</a> AngularJS API Module to access the API.</p>
+<p>The dashboard source is available on <a href="https://github.com/ethanhann/InEngine.NET-Dashboard">GitHub</a>.</p>
+<h2>Configuration</h2>
+<p>Be sure to add the domain the dashboard is served from to the WebAPI/Origins section of the <a href="configuration.html">IntegrationEngine.json file</a>.</p>
+<h2>Serving the Dashboard</h2>
+<p>The dashboard is not served from the web API.
+It is a Node.js application.
+To build and serve the dashboard, first download and install <a href="http://nodejs.org/">Node.js</a>,
+then navigate to the root of the project use NPM to install dependencies.</p>
+<pre><code class="language-sh">npm install</code></pre>
+<p>Now, use NPM to serve the dashboard.</p>
+<pre><code class="language-sh">npm start</code></pre>
+<p>The dashboard will be served at <em><a href="http://localhost:3000">http://localhost:3000</a></em>.</p>
+<p>Though the dashboard is served by Node.js, any web server can serve it since the dashboard is merely a collection of static files. 
+IIS, Apache HTTP Server, and Nginx are all options.</p>
+                                    </section>
 
             </div>
         </main>
