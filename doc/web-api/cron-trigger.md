@@ -22,6 +22,11 @@ The CronTrigger endpoint allows for an integration job to be scheduled by creati
     <tr><td>StateId</td><td><span class="label label-danger">int</span></td>
         <td>An integer identifier that sets the state of the trigger. Valid values are 0 (active) and 1 (paused).</td>
     </tr>
+    <tr>
+        <td>Parameters</td>
+        <td><a href="https://msdn.microsoft.com/en-us/library/s4ys34ea%28v=vs.110%29.aspx">System.Collections.Generic.IDictionary<string,string></a></td>
+        <td>A key/value object that is made available to integration jobs that implement the _IParameterizedJob_ interface.</td>
+    </tr>
     <tr><td>CronExpressionString</td><td><span class="label label-info">string</span></td>
     <td>A valid <a href="http://en.wikipedia.org/wiki/Cron#CRON_expression">cron expression</a>.</td>
     </tr>

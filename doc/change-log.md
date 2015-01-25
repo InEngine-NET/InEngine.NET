@@ -9,6 +9,7 @@ currentMenu: change-log
 
 __Features__
 * Add console client that can query the web API.
+* Allow parameters to be passed into a job that implement IParameterizedJob.
 
 __Chores__
 * Add IInEngineClient interface to client project.
