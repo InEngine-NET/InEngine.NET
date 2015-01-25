@@ -10,6 +10,7 @@ The SimpleTrigger endpoint allows for an integration job to be scheduled by crea
 
 ### Parameters
 
+<div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
 <tbody>
@@ -39,6 +40,7 @@ The SimpleTrigger endpoint allows for an integration job to be scheduled by crea
     </tr>
 </tbody>
 </table>
+</div>
 
 ### Get a List of SimpleTriggers
 GET api/SimpleTrigger

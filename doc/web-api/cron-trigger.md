@@ -10,6 +10,7 @@ The CronTrigger endpoint allows for an integration job to be scheduled by creati
 
 ### Parameters
 
+<div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
 <tbody>
@@ -35,6 +36,7 @@ The CronTrigger endpoint allows for an integration job to be scheduled by creati
     </tr>
 </tbody>
 </table>
+</div>
 
 ### Get a List of CronTriggers
 GET api/CronTrigger
