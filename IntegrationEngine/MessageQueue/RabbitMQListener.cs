@@ -32,7 +32,7 @@ namespace IntegrationEngine.MessageQueue
             shouldTerminate = false;
         }
 
-        void Dispose()
+        public void Dispose()
         {
             shouldTerminate = true;
             listenerThread.Join();
