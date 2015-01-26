@@ -20,19 +20,39 @@ menu:
             text: Change Log
             iconClass: 'fa fa-fw fa-refresh'
             relativeUrl: change-log.html
-        configuration:
-            text: Configuration
-            iconClass: 'fa fa-fw fa-gear'
-            relativeUrl: configuration.html
-        integration-jobs:
-            text: Integration Jobs
-            iconClass: 'fa fa-fw fa-exchange'
-            relativeUrl: integration-jobs.html
-        web-api:
-            text: Web API
-            iconClass: 'fa fa-fw fa-cloud'
-            relativeUrl: web-api/cron-trigger.html
-
+        documentation:
+            text: Documentation
+            iconClass: 'fa fa-fw fa-book'
+            relativeUrl: documentation.html
+            items:
+                configuration:
+                    text: Configuration
+                    iconClass: 'fa fa-fw fa-gear'
+                    relativeUrl: configuration.html
+                integration-jobs:
+                    text: Integration Jobs
+                    iconClass: 'fa fa-fw fa-exchange'
+                    relativeUrl: integration-jobs.html
+                web-api:
+                    text: Web API
+                    iconClass: 'fa fa-fw fa-cloud'
+                    relativeUrl: web-api/cron-trigger.html
+                client-library:
+                    text: C# Client Library
+                    iconClass: 'fa fa-fw fa-desktop'
+                    relativeUrl: client-library.html
+                console-client:
+                    text: Console Client
+                    iconClass: 'fa fa-fw fa-terminal'
+                    relativeUrl: console-client.html
+                angularjs-api-module:
+                    text: AngularJS Client
+                    iconClass: 'fa fa-fw fa-desktop'
+                    relativeUrl: angularjs-api-module.html
+                dashboard:
+                    text: Web Dashboard
+                    iconClass: 'fa fa-fw fa-dashboard'
+                    relativeUrl: dashboard.html
 webApiMenu:
     items:
         cron-trigger:

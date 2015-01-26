@@ -5,4 +5,30 @@
             <span>{{ item.text|raw }}</span>
         </a>
     </li>
+
+    {% if item.items is defined and nestSubItems == 'false' %}
+        {% for subItemId, subItem in item.items %}
+            <li class="{{ subItemId == currentMenu ? 'active' }}">
+                <a href="{{ subItem.absoluteUrl|default(baseUrl ~ '/' ~ subItem.relativeUrl) }}">
+                    <span class="{{ subItem.iconClass }}"></span>
+                    <span>{{ subItem.text|raw }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    {% endif %}
+
+    {% if item.items is defined and nestSubItems == 'true' %}
+        {% for subItemId, subItem in item.items %}
+            <li>
+                <ul class="nav nav-pills nav-stacked nav-sub-items">
+                    <li class="{{ subItemId == currentMenu ? 'active' }}">
+                        <a href="{{ subItem.absoluteUrl|default(baseUrl ~ '/' ~ subItem.relativeUrl) }}">
+                            <span class="{{ subItem.iconClass }}"></span>
+                            <span>{{ subItem.text|raw }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endfor %}
+    {% endif %}
 {% endfor %}

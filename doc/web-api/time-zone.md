@@ -10,6 +10,7 @@ The TimeZone endpoint allows for the retrieval of a system's TimeZone list, prov
 
 ### Parameters
 
+<div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
 <tbody>
@@ -21,6 +22,7 @@ The TimeZone endpoint allows for the retrieval of a system's TimeZone list, prov
     </tr>
 </tbody>
 </table>
+</div>
 
 ### Get a List of TimeZones
 GET api/TimeZone

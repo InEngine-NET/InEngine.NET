@@ -21,12 +21,6 @@ They are __Integration Job__, __Mail Job__, __Elasticsearch Job__, __Log Job__, 
 * The interface has one argumentless method called _Run_ which is executed when the job is triggered.
 * All other jobs must implement _IIntegrationJob_ directly or indirectly.
 
-### Mail Job
-
-* Implement the _IMailJob_ interface to create a mail job.
-* The _MailClient_ property of the _IMailJob_ is automatically instantiated and configured with the mail settings in [IntegrationEngine.json](configuration.html).
-* The _MailClient_'s send method can be used to send an _System.Net.Mail.MailMessage_.
-
 ### Elasticsearch Job
 
 * Implement the _IElasticsearchJob_ interface to create an Elasticsearch Job.
@@ -41,6 +35,18 @@ They are __Integration Job__, __Mail Job__, __Elasticsearch Job__, __Log Job__, 
 [log4net](http://logging.apache.org/log4net/) settings in the host applications App.config file.
 * The _Log_ instance can be configured to log to a variety of [logging targets](logging.apache.org/log4net/release/features.html#appenders).
 * Messages and exception can be logged according to their [severity](http://logging.apache.org/log4net/release/manual/introduction.html#hierarchy).
+
+### Mail Job
+
+* Implement the _IMailJob_ interface to create a mail job.
+* The _MailClient_ property of the _IMailJob_ is automatically instantiated and configured with the mail settings in [IntegrationEngine.json](configuration.html).
+* The _MailClient_'s _Send_ method can be used to send a _System.Net.Mail.MailMessage_.
+
+### Parameterized Job
+
+* Implement the _IParameterizedJob_ interface to create a parameterized job.
+* The _Parameters_ property of the _IParameterizedJob_ is automatically instantiated and populated with the Parameters dictionary stored in the trigger that is used to schedule the job.
+* _Parameters_ can be used to configure the job in some way.
 
 ### SQL Job
 

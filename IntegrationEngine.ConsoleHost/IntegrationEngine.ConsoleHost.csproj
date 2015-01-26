@@ -64,11 +64,16 @@
     <Reference Include="RazorEngine">
       <HintPath>..\packages\RazorEngine.3.5.0\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Razor">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InEngineServerInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleReport.cs" />
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleDatum.cs" />
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleSqlReportJob.cs" />
