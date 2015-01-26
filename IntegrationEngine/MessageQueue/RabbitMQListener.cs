@@ -11,11 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace IntegrationEngine.MessageQueue
 {
-    public class RabbitMQListener : IMessageQueueListener
+    public class RabbitMQListener : IMessageQueueListener, IDisposable
     {
+        Thread listenerThread;
+        bool shouldTerminate;
         public IList<Type> IntegrationJobTypes { get; set; }
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
@@ -23,11 +26,19 @@ namespace IntegrationEngine.MessageQueue
         public IMailClient MailClient { get; set; }
         public IntegrationEngineContext IntegrationEngineContext { get; set; }
         public IElasticClient ElasticClient { get; set; }
-
+        
         public RabbitMQListener()
-        {}
+        {
+            shouldTerminate = false;
+        }
 
-        public void Listen()
+        void Dispose()
+        {
+            shouldTerminate = true;
+            listenerThread.Join();
+        }
+
+        void _listen()
         {
             var connection = MessageQueueConnection.GetConnection();
             using (var channel = connection.CreateModel())
@@ -38,6 +49,8 @@ namespace IntegrationEngine.MessageQueue
                 Log.Info(x => x("Waiting for messages..."));
                 while (true)
                 {
+                    if (shouldTerminate)
+                        return;
                     var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
                     var body = eventArgs.Body;
                     var message = JsonConvert.DeserializeObject<DispatchMessage>(Encoding.UTF8.GetString(body));
@@ -62,6 +75,20 @@ namespace IntegrationEngine.MessageQueue
                     }
                 }
             }
+        }
+
+        public void Listen() 
+        {
+            if (listenerThread == null)
+                listenerThread = new Thread(_listen);
+            if (listenerThread.ThreadState == ThreadState.Running)
+            {
+                Log.Info("Message queue listener already running.");
+                return;
+            }
+
+            listenerThread.Start();
+            Log.Info("Message queue listener started.");
         }
 
         T AutoWireJob<T>(T job, Type type)
