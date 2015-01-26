@@ -9,10 +9,18 @@ currentMenu: change-log
 
 __Features__
 * Add console client that can query the web API.
-* Allow parameters to be passed into a job that implement IParameterizedJob.
+* Allow parameters to be passed into a job that implement _IParameterizedJob_.
+* Spawn job processing message queue listener in a thread.
 
 __Chores__
 * Add IInEngineClient interface to client project.
+
+__Documentation__
+* Add _IParameterizedJob_ info to the [Integration Jobs](integration-jobs.html) page.
+* Add [Web Dashboard](dashboard.html) page.
+* Add [C# Client Library](client-library.html) page.
+* Add [C# Client Library](console-client.html) page.
+* Add [AngularJS Client](angular-js-module.html) page.
 
 ## 2.0.0-beta6
 
