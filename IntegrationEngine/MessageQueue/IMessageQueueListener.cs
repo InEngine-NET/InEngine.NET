@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.MessageQueue
 {
-    public interface IMessageQueueListener
+    public interface IMessageQueueListener : IDisposable
     {
         void Listen();
     }

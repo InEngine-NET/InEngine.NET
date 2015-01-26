@@ -22,11 +22,10 @@ namespace IntegrationEngine.ConsoleHost
             {
                 Start(args);
                 Console.WriteLine("Press any key to stop...");
-                Console.ReadKey(true);
+                Console.ReadLine();
                 Stop();
             }
         }
-
 
         private static void Start(string[] args)
         {
@@ -35,7 +34,9 @@ namespace IntegrationEngine.ConsoleHost
         }
 
         private static void Stop()
-        {}
+        {
+            EngineHosts.Dispose();
+        }
 
         public class Service : ServiceBase
         {
