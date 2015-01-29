@@ -93,6 +93,7 @@
     <Compile Include="StubContainer.cs" />
     <Compile Include="Api\Controllers\JobTypeControllerTest.cs" />
     <Compile Include="Api\Controllers\TimeZoneControllerTest.cs" />
+    <Compile Include="Api\Controllers\SimpleTriggerControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\configuration\IntegrationEngine.json">

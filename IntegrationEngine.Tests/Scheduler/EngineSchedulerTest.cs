@@ -25,13 +25,13 @@ namespace IntegrationEngine.Tests.Scheduler
         [Test]
         public void ShouldScheduleCronTriggerWithoutAnExceptionThrown()
         {
-            Subject.ScheduleJobWithCronTrigger(CronTrigger);
+            Subject.ScheduleJobWithTrigger(CronTrigger);
         }
 
         [Test]
         public void ShouldDeleteTrigger()
         {
-            Subject.ScheduleJobWithCronTrigger(CronTrigger);
+            Subject.ScheduleJobWithTrigger(CronTrigger);
 
             var result = Subject.DeleteTrigger(CronTrigger);
 

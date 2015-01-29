@@ -139,14 +139,14 @@ namespace IntegrationEngine
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();
 
-            var simpleTriggers = Container.Resolve<ESRepository<SimpleTrigger>>().SelectAll();
-            var cronTriggerRepo = Container.Resolve<ESRepository<CronTrigger>>();
-            var allCronTriggers = cronTriggerRepo.SelectAll();
+            var elasticRepo = Container.Resolve<IElasticsearchRepository>();
+            var simpleTriggers = elasticRepo.SelectAll<SimpleTrigger>();
+            var allCronTriggers = elasticRepo.SelectAll<CronTrigger>();
             var cronTriggers = allCronTriggers.Where(x => !string.IsNullOrWhiteSpace(x.CronExpressionString));
             foreach (var trigger in simpleTriggers)
-                engineScheduler.ScheduleJobWithSimpleTrigger(trigger);
+                engineScheduler.ScheduleJobWithTrigger(trigger);
             foreach (var trigger in cronTriggers)
-                engineScheduler.ScheduleJobWithCronTrigger(trigger);
+                engineScheduler.ScheduleJobWithTrigger(trigger);
             foreach(var cronTrigger in allCronTriggers.Where(x => string.IsNullOrWhiteSpace(x.CronExpressionString)))
                 log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }
@@ -164,17 +164,13 @@ namespace IntegrationEngine
             var elasticClient = new ElasticClient(settings);
             var log = Container.Resolve<ILog>();
             Container.RegisterInstance<IElasticClient>(elasticClient);
-            var simpleTriggerRepo = new ESRepository<SimpleTrigger>() {
+            var elasticRepo = new ElasticsearchRepository() {
                 ElasticClient = elasticClient,
                 Log = log,
             };
-            if (!simpleTriggerRepo.IsServerAvailable())
+            if (!elasticRepo.IsServerAvailable())
                 log.Warn("Elasticsearch server does not appear to be available.");
-            Container.RegisterInstance<ESRepository<SimpleTrigger>>(simpleTriggerRepo);
-            Container.RegisterInstance<ESRepository<CronTrigger>>(new ESRepository<CronTrigger>() {
-                ElasticClient = elasticClient,
-                Log = log,
-            });
+            Container.RegisterInstance<IElasticsearchRepository>(elasticRepo);
         }
 
         public void Dispose()

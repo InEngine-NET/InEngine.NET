@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Common.Logging;using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Core.Storage
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository : IDatabaseRepository
     {
+        public ILog Log { get; set; }
         public IntegrationEngineContext db = null;
-        public DbSet<T> table = null;
 
         public Repository()
         {
@@ -19,35 +19,35 @@ namespace IntegrationEngine.Core.Storage
         public Repository(IntegrationEngineContext db)
         {
             this.db = db;
-            table = db.Set<T>();
         }
 
-        public IEnumerable<T> SelectAll()
+        public IEnumerable<TItem> SelectAll<TItem>() where TItem : class
         {
-            return table.ToList();
+            return db.Set<TItem>().ToList<TItem>();
         }
 
-        public T SelectById(object id)
+        public TItem SelectById<TItem>(object id) where TItem : class
         {
-            return table.Find(id);
+            return db.Set<TItem>().Find(id);
+
         }
 
-        public T Insert(T value)
+        public TItem Insert<TItem>(TItem item) where TItem : class
         {
-            return table.Add(value);
+            return db.Set<TItem>().Add(item);
         }
 
-        public T Update(T value)
+        public TItem Update<TItem>(TItem item) where TItem : class
         {
-            table.Attach(value);
-            db.Entry(value).State = EntityState.Modified;
-            return db.Entry(value).Entity;
+            db.Set<TItem>().Attach(item);
+            db.Entry(item).State = EntityState.Modified;
+            return db.Entry(item).Entity;
         }
 
-        public void Delete(object id)
+        public void Delete<TItem>(object id) where TItem : class
         {
-            T existing = table.Find(id);
-            table.Remove(existing);
+            TItem existing = db.Set<TItem>().Find(id);
+            db.Set<TItem>().Remove(existing);
         }
 
         public void Save()
@@ -55,14 +55,14 @@ namespace IntegrationEngine.Core.Storage
             db.SaveChanges();
         }
 
-        public bool Exists(object id)
+        public bool Exists<TItem>(object id) where TItem : class
         {
-            return table.Find(id) != null;
+            return db.Set<TItem>().Find(id) != null;
         }
 
-        public void SetState(T value, EntityState entityState)
+        public void SetState<TItem>(TItem item, EntityState entityState) where TItem : class
         {
-            db.Entry(value).State = entityState;
+            db.Entry(item).State = entityState;
         }
 
         public void Dispose()
@@ -72,7 +72,16 @@ namespace IntegrationEngine.Core.Storage
 
         public bool IsServerAvailable()
         {
-            throw new NotImplementedException();
+            try 
+            {
+                db.Database.Connection.Open();
+                return true;
+            }
+            catch(Exception exception) 
+            {
+                Log.Error(exception);
+                return false;
+            }
         }
     }
 }

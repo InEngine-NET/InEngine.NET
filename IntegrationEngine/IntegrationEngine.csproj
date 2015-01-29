@@ -177,6 +177,7 @@
     <Compile Include="Api\Controllers\JobTypeController.cs" />
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
+    <Compile Include="Api\TriggerControllerBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
