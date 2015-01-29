@@ -11,25 +11,20 @@ namespace IntegrationEngine.ConsoleHost
         public static EngineHost EngineHosts { get; set; }
         public static void Main(string[] args)
         {
-            Start(args);
-            Console.WriteLine("Press any key to stop...");
-            Console.ReadLine();
-            Stop();
-
-//            if (!Environment.UserInteractive)
-//            {
-//                // Set current working directory as services use the system directory by default.
-//                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-//                using (var service = new Service())
-//                    ServiceBase.Run(service);
-//            }
-//            else
-//            {
-//                Start(args);
-//                Console.WriteLine("Press any key to stop...");
-//                Console.ReadLine();
-//                Stop();
-//            }
+            if (!Environment.UserInteractive)
+            {
+                // Set current working directory as services use the system directory by default.
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                using (var service = new Service())
+                    ServiceBase.Run(service);
+            }
+            else
+            {
+                Start(args);
+                Console.WriteLine("Press any key to stop...");
+                Console.ReadLine();
+                Stop();
+            }
         }
 
         private static void Start(string[] args)
