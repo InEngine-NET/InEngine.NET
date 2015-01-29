@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace IntegrationEngine
 {
-    public class EngineHost
+    public class EngineHost : IDisposable
     {
         EngineHostConfiguration _engineConfiguration;
         public IList<Assembly> AssembliesWithJobs { get; set; }
@@ -15,10 +15,10 @@ namespace IntegrationEngine
             AssembliesWithJobs = assembliesWithJobs.ToList();
         }
 
-        ~EngineHost()
+        public void Dispose()
         {
-            if (_engineConfiguration == null)
-                _engineConfiguration.Shutdown();
+            if (_engineConfiguration != null)
+                _engineConfiguration.Dispose();
         }
 
         public void Initialize()

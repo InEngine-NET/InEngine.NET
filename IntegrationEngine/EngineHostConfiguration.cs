@@ -20,7 +20,7 @@ using System.Reflection;
 
 namespace IntegrationEngine
 {
-    public class EngineHostConfiguration
+    public class EngineHostConfiguration : IDisposable
     {
         public IUnityContainer Container { get; set; }
         public EngineConfiguration Configuration { get; set; }
@@ -113,6 +113,7 @@ namespace IntegrationEngine
                 IntegrationEngineContext = Container.Resolve<IntegrationEngineContext>(),
                 ElasticClient = Container.Resolve<IElasticClient>(),
             };
+            Container.RegisterInstance<IMessageQueueListener>(rabbitMqListener);
             rabbitMqListener.Listen();
         }
 
@@ -176,10 +177,12 @@ namespace IntegrationEngine
             });
         }
 
-        public void Shutdown()
+        public void Dispose()
         {
             var engineScheduler = Container.Resolve<IEngineScheduler>();
             engineScheduler.Shutdown();
+            var messageQueueListener = Container.Resolve<IMessageQueueListener>();
+            messageQueueListener.Dispose();
         }
     }
 }

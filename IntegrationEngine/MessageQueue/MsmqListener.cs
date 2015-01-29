@@ -54,6 +54,10 @@ namespace IntegrationEngine.MessageQueue
             }
         }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
         T AutoWireJob<T>(T job, Type type)
         {
             if (type.GetInterface(typeof(IMailJob).Name) != null)
