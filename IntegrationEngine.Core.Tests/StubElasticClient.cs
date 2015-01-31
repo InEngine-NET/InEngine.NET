@@ -1137,7 +1137,7 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IGetResponse<T> Get<T>(Func<GetDescriptor<T>, GetDescriptor<T>> getSelector) where T : class
+        public virtual IGetResponse<T> Get<T>(Func<GetDescriptor<T>, GetDescriptor<T>> getSelector) where T : class
         {
             throw new NotImplementedException();
         }

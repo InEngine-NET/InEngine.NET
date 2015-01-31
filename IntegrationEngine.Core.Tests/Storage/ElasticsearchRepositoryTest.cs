@@ -34,5 +34,36 @@ namespace IntegrationEngine.Core.Tests.Storage
             Assert.That(actual, Is.Not.Empty);
             Assert.That(actual.First().Id, Is.EqualTo(expectedId));
         }
+
+        [Test]
+        public void ShouldReturnNullIfDocumentIsNotFoundById()
+        {
+            var elasticClient = new Mock<StubElasticClient>();
+            var getResponse = new Mock<StubGetResponse<CronTrigger>>();
+            elasticClient.Setup(x => x.Get<CronTrigger>(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
+                .Returns(getResponse.Object);
+            Subject.ElasticClient = elasticClient.Object;
+
+            var actual = Subject.SelectById<CronTrigger>("1");
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void ShouldReturnSingleDocumentGivenAnId()
+        {
+            var elasticClient = new Mock<StubElasticClient>();
+            var getResponse = new Mock<StubGetResponse<CronTrigger>>();
+            var expectedId = "1";
+            getResponse.SetupGet(x => x.Id).Returns(() => expectedId);
+            getResponse.SetupGet(x => x.Source).Returns(() => new CronTrigger());
+            elasticClient.Setup(x => x.Get<CronTrigger>(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
+                .Returns(getResponse.Object);
+            Subject.ElasticClient = elasticClient.Object;
+
+            var actual = Subject.SelectById<CronTrigger>(expectedId);
+
+            Assert.That(actual.Id, Is.EqualTo(expectedId));
+        }
     }
 }

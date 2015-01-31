@@ -54,6 +54,7 @@
     <Compile Include="StubElasticClient.cs" />
     <Compile Include="StubSearchResponse.cs" />
     <Compile Include="StubHit.cs" />
+    <Compile Include="StubGetResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
