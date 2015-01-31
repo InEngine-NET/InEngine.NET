@@ -19,10 +19,13 @@ namespace IntegrationEngine.Core.Storage
         public IEnumerable<TItem> SelectAll<TItem>() where TItem : class, IHasStringId
         {
             var response = ElasticClient.Search<TItem>(x => x);
-            return response.Hits.Select(h => {
-                h.Source.Id = h.Id;
-                return h.Source;
-            }).ToList();
+            var hits = response.Hits;
+            var documents = hits.Select(h => {
+                    h.Source.Id = h.Id;
+                    return h.Source;
+            });
+            var list = documents.ToList();
+            return list;
         }
 
         public TItem SelectById<TItem>(object id) where TItem : class, IHasStringId

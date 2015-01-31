@@ -1,4 +1,4 @@
-﻿<Properties>
+﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleHost/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs">
     <Files>

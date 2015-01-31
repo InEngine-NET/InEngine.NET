@@ -15,10 +15,10 @@ namespace IntegrationEngine.Tests.Scheduler
         {
             CronTrigger = new CronTrigger() {
                 Id = "one",
-                JobType = IntegrationJobFixture.FullName,
+                JobType = IntegrationJobStub.FullName,
                 CronExpressionString = "* * * * * ?",
             };
-            Subject.IntegrationJobTypes = new List<Type>() { IntegrationJobFixture.Type };
+            Subject.IntegrationJobTypes = new List<Type>() { IntegrationJobStub.Type };
             Subject.Scheduler = StdSchedulerFactory.GetDefaultScheduler();
         }
 

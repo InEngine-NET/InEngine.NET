@@ -17,7 +17,7 @@ namespace IntegrationEngine.Tests
         public void ShouldReturnListOfJobTypes()
         {
             var engineScheduler = new Mock<EngineScheduler>();
-            var type = typeof(IntegrationJobFixture);
+            var type = typeof(IntegrationJobStub);
             var expected = new JobType() {
                 FullName = type.FullName,
                 Name = type.Name,

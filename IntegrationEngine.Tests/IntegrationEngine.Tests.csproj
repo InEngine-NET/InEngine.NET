@@ -87,13 +87,13 @@
   <ItemGroup>
     <Compile Include="Api\Controllers\CronTriggerControllerTest.cs" />
     <Compile Include="EngineHostConfigurationTest.cs" />
-    <Compile Include="IntegrationJobFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\EngineSchedulerTest.cs" />
-    <Compile Include="StubContainer.cs" />
     <Compile Include="Api\Controllers\JobTypeControllerTest.cs" />
     <Compile Include="Api\Controllers\TimeZoneControllerTest.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerControllerTest.cs" />
+    <Compile Include="IntegrationJobStub.cs" />
+    <Compile Include="StubContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\configuration\IntegrationEngine.json">
