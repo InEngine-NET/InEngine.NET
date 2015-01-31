@@ -55,6 +55,7 @@
     <Compile Include="StubSearchResponse.cs" />
     <Compile Include="StubHit.cs" />
     <Compile Include="StubGetResponse.cs" />
+    <Compile Include="StubIndexResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
