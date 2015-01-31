@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Core.Storage
 {
-    public interface IRepository
+    public interface IRepository<TId>
     {
-        IEnumerable<TItem> SelectAll<TItem>() where TItem : class;
-        TItem SelectById<TItem>(object id) where TItem : class;
-        TItem Insert<TItem>(TItem item) where TItem : class;
-        TItem Update<TItem>(TItem item) where TItem : class;
+        IEnumerable<TItem> SelectAll<TItem>() where TItem : class, TId;
+        TItem SelectById<TItem>(object id) where TItem : class, TId;
+        TItem Insert<TItem>(TItem item) where TItem : class, TId;
+        TItem Update<TItem>(TItem item) where TItem : class, TId;
         void Delete<TItem>(object id) where TItem : class;
         bool Exists<TItem>(object id) where TItem : class;
         bool IsServerAvailable();

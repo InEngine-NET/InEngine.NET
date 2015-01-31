@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IntegrationEngine.Model;
 
 namespace IntegrationEngine.Core.Storage
 {
@@ -21,23 +22,23 @@ namespace IntegrationEngine.Core.Storage
             this.db = db;
         }
 
-        public IEnumerable<TItem> SelectAll<TItem>() where TItem : class
+        public IEnumerable<TItem> SelectAll<TItem>() where TItem : class, IHasLongId
         {
             return db.Set<TItem>().ToList<TItem>();
         }
 
-        public TItem SelectById<TItem>(object id) where TItem : class
+        public TItem SelectById<TItem>(object id) where TItem : class, IHasLongId
         {
             return db.Set<TItem>().Find(id);
 
         }
 
-        public TItem Insert<TItem>(TItem item) where TItem : class
+        public TItem Insert<TItem>(TItem item) where TItem : class, IHasLongId
         {
             return db.Set<TItem>().Add(item);
         }
 
-        public TItem Update<TItem>(TItem item) where TItem : class
+        public TItem Update<TItem>(TItem item) where TItem : class, IHasLongId
         {
             db.Set<TItem>().Attach(item);
             db.Entry(item).State = EntityState.Modified;

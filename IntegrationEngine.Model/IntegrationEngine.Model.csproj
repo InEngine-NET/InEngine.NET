@@ -73,6 +73,7 @@
     <Compile Include="IHealthStatus.cs" />
     <Compile Include="TriggerPropertyExtension.cs" />
     <Compile Include="TriggerStateDescription.cs" />
+    <Compile Include="IHasLongId.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="package.nuspec">

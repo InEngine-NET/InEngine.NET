@@ -48,7 +48,7 @@ namespace IntegrationEngine.Core.Storage
             );
             return response as TItem;
         }
-
+            
         public void Delete<TItem>(object id) where TItem : class
         {
             ElasticClient.Delete<TItem>(x => x.Id(id.ToString()));

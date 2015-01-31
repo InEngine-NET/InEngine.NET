@@ -103,6 +103,9 @@
     <Compile Include="..\IntegrationEngine.Model\IHealthStatus.cs">
       <Link>IHealthStatus.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IHasLongId.cs">
+      <Link>IHasLongId.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
