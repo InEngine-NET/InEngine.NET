@@ -99,11 +99,11 @@
     <Compile Include="Storage\IntegrationEngineContext.cs" />
     <Compile Include="Storage\IntegrationEngineDbConfiguration.cs" />
     <Compile Include="Storage\IRepository.cs" />
-    <Compile Include="Storage\Repository.cs" />
     <Compile Include="Jobs\IElasticsearchJob.cs" />
     <Compile Include="Storage\IElasticsearchRepository.cs" />
     <Compile Include="Storage\ElasticsearchRepository.cs" />
     <Compile Include="Storage\IDatabaseRepository.cs" />
+    <Compile Include="Storage\DatabaseRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

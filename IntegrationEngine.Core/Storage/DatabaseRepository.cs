@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Core.Storage
 {
-    public class Repository : IDatabaseRepository
+    public class DatabaseRepository : IDatabaseRepository
     {
         public ILog Log { get; set; }
         public IntegrationEngineContext db = null;
 
-        public Repository()
+        public DatabaseRepository()
         {
         }
 
-        public Repository(IntegrationEngineContext db)
+        public DatabaseRepository(IntegrationEngineContext db)
         {
             this.db = db;
         }
