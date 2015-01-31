@@ -26,7 +26,7 @@ namespace IntegrationEngine.Api.Controllers
         }
 
         // GET api/T/5
-        [ResponseType(typeof(T))]
+        [ResponseType(typeof(IIntegrationJobTrigger))]
         public IHttpActionResult Get(string id)
         {
             var trigger = Repository.SelectById<T>(id);
@@ -36,6 +36,7 @@ namespace IntegrationEngine.Api.Controllers
         }
 
         // PUT api/T/5
+        [ResponseType(typeof(IIntegrationJobTrigger))]
         public IHttpActionResult Put(string id, T trigger)
         {
             if (id != trigger.Id)
@@ -48,7 +49,7 @@ namespace IntegrationEngine.Api.Controllers
         }
 
         // POST api/T
-        [ResponseType(typeof(T))]
+        [ResponseType(typeof(IIntegrationJobTrigger))]
         public IHttpActionResult Post(T trigger)
         {
             if (!ModelState.IsValid)
@@ -59,7 +60,7 @@ namespace IntegrationEngine.Api.Controllers
         }
 
         // DELETE api/T/5
-        [ResponseType(typeof(T))]
+        [ResponseType(typeof(IIntegrationJobTrigger))]
         public IHttpActionResult Delete(string id)
         {
             var trigger = Repository.SelectById<T>(id);
