@@ -1,4 +1,5 @@
 ﻿using BeekmanLabs.UnitTesting;
+using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 
@@ -9,7 +10,7 @@ namespace IntegrationEngine.Tests
         [Test]
         public void CanLoadConfiguration()
         {
-            var container = new Mock<StubContainer>();
+            var container = new Mock<IUnityContainer>();
             Subject.Container = container.Object;
 
             Subject.LoadConfiguration();
