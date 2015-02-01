@@ -40,21 +40,21 @@ namespace IntegrationEngine.Core.Storage
 
         public TItem Insert<TItem>(TItem item) where TItem : class, IHasStringId
         {
-            return SelectById<TItem>(ElasticClient.Index<TItem>(item).Id);
+            return SelectById<TItem>(ElasticClient.Index<TItem>(item));
         }
 
         public TItem Update<TItem>(TItem item) where TItem : class, IHasStringId
         {
-            var response = ElasticClient.Update<TItem, object>(x => x
+            return SelectById<TItem>(ElasticClient.Update<TItem>(x => x
                 .Id(item.Id)
                 .Doc(item)
-            );
-            return response as TItem;
+            ));
         }
             
         public void Delete<TItem>(object id) where TItem : class
         {
             ElasticClient.Delete<TItem>(x => x.Id(id.ToString()));
+
         }
 
         public bool Exists<TItem>(object id) where TItem : class

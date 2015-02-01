@@ -1,80 +1,72 @@
 ﻿using Elasticsearch.Net;
+using Elasticsearch.Net.Connection.Configuration;
 using Nest;
 using System;
 
 namespace IntegrationEngine.Core.Tests
 {
-    public class StubIndexResponse : IIndexResponse
+    public class StubDeleteRequest : IDeleteRequest
     {
-        public StubIndexResponse()
+        public StubDeleteRequest()
         {
         }
 
-        #region IIndexResponse implementation
+        #region IPathInfo implementation
 
-        public virtual string Id {
+        public ElasticsearchPathInfo<DeleteRequestParameters> ToPathInfo(IConnectionSettingsValues settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IDocumentOptionalPath implementation
+
+        public IndexNameMarker Index {
             get {
+                throw new NotImplementedException();
+            }
+            set {
                 throw new NotImplementedException();
             }
         }
 
-        public string Index {
+        public TypeNameMarker Type {
             get {
+                throw new NotImplementedException();
+            }
+            set {
                 throw new NotImplementedException();
             }
         }
 
-        public string Type {
+        public string Id {
             get {
                 throw new NotImplementedException();
             }
-        }
-
-        public string Version {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool Created {
-            get {
+            set {
                 throw new NotImplementedException();
             }
         }
 
         #endregion
 
-        #region IResponse implementation
+        #region IRequest implementation
 
-        public bool IsValid {
+        public Elasticsearch.Net.DeleteRequestParameters RequestParameters {
             get {
                 throw new NotImplementedException();
             }
-        }
-
-        public IElasticsearchResponse ConnectionStatus {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public ElasticInferrer Infer {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public ElasticsearchServerError ServerError {
-            get {
+            set {
                 throw new NotImplementedException();
             }
         }
 
         #endregion
 
-        #region IResponseWithRequestInformation implementation
+        #region IRequest implementation
 
-        public IElasticsearchResponse RequestInformation {
+        public IRequestConfiguration RequestConfiguration {
             get {
                 throw new NotImplementedException();
             }

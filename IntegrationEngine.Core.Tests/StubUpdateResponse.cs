@@ -1,18 +1,17 @@
-﻿using Elasticsearch.Net;
-using Nest;
+﻿using Nest;
 using System;
 
 namespace IntegrationEngine.Core.Tests
 {
-    public class StubIndexResponse : IIndexResponse
+    public class StubUpdateResponse : IUpdateResponse
     {
-        public StubIndexResponse()
+        public StubUpdateResponse()
         {
         }
 
-        #region IIndexResponse implementation
+        #region IUpdateResponse implementation
 
-        public virtual string Id {
+        public ShardsMetaData ShardsHit {
             get {
                 throw new NotImplementedException();
             }
@@ -30,13 +29,13 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public string Version {
+        public virtual string Id {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public bool Created {
+        public string Version {
             get {
                 throw new NotImplementedException();
             }
@@ -52,7 +51,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public IElasticsearchResponse ConnectionStatus {
+        public Elasticsearch.Net.IElasticsearchResponse ConnectionStatus {
             get {
                 throw new NotImplementedException();
             }
@@ -64,7 +63,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public ElasticsearchServerError ServerError {
+        public Elasticsearch.Net.ElasticsearchServerError ServerError {
             get {
                 throw new NotImplementedException();
             }
@@ -74,7 +73,7 @@ namespace IntegrationEngine.Core.Tests
 
         #region IResponseWithRequestInformation implementation
 
-        public IElasticsearchResponse RequestInformation {
+        public Elasticsearch.Net.IElasticsearchResponse RequestInformation {
             get {
                 throw new NotImplementedException();
             }

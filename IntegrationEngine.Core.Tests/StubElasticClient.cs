@@ -37,7 +37,7 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IUpdateResponse Update<T>(Func<UpdateDescriptor<T, T>, UpdateDescriptor<T, T>> updateSelector) where T : class
+        public virtual IUpdateResponse Update<T>(Func<UpdateDescriptor<T, T>, UpdateDescriptor<T, T>> updateSelector) where T : class
         {
             throw new NotImplementedException();
         }
@@ -1057,12 +1057,12 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IIndexResponse Index<T>(T @object, Func<IndexDescriptor<T>, IndexDescriptor<T>> indexSelector = null) where T : class
+        public virtual IIndexResponse Index<T>(T @object, Func<IndexDescriptor<T>, IndexDescriptor<T>> indexSelector = null) where T : class
         {
             throw new NotImplementedException();
         }
 
-        public IIndexResponse Index<T>(IIndexRequest<T> indexRequest) where T : class
+        public virtual IIndexResponse Index<T>(IIndexRequest<T> indexRequest) where T : class
         {
             throw new NotImplementedException();
         }
@@ -1077,7 +1077,7 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IDeleteResponse Delete<T>(Func<DeleteDescriptor<T>, DeleteDescriptor<T>> deleteSelector) where T : class
+        public virtual IDeleteResponse Delete<T>(Func<DeleteDescriptor<T>, DeleteDescriptor<T>> deleteSelector) where T : class
         {
             throw new NotImplementedException();
         }
@@ -1727,7 +1727,7 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IPingResponse Ping(IPingRequest pingRequest)
+        public virtual IPingResponse Ping(IPingRequest pingRequest)
         {
             throw new NotImplementedException();
         }

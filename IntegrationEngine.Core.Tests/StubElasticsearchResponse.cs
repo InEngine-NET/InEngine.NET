@@ -1,84 +1,73 @@
 ﻿using Elasticsearch.Net;
-using Nest;
+using Elasticsearch.Net.Connection;
 using System;
 
 namespace IntegrationEngine.Core.Tests
 {
-    public class StubIndexResponse : IIndexResponse
+    public class StubElasticsearchResponse : IElasticsearchResponse
     {
-        public StubIndexResponse()
+        public StubElasticsearchResponse()
         {
         }
 
-        #region IIndexResponse implementation
+        #region IElasticsearchResponse implementation
 
-        public virtual string Id {
+        public virtual bool Success {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public string Index {
+        public IConnectionConfigurationValues Settings {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public string Type {
+        public Exception OriginalException {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public string Version {
+        public string RequestMethod {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public bool Created {
+        public string RequestUrl {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        #endregion
-
-        #region IResponse implementation
-
-        public bool IsValid {
+        public int? HttpStatusCode {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public IElasticsearchResponse ConnectionStatus {
+        public int NumberOfRetries {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public ElasticInferrer Infer {
+        public CallMetrics Metrics {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public ElasticsearchServerError ServerError {
+        public byte[] ResponseRaw {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        #endregion
-
-        #region IResponseWithRequestInformation implementation
-
-        public IElasticsearchResponse RequestInformation {
+        public byte[] Request {
             get {
-                throw new NotImplementedException();
-            }
-            set {
                 throw new NotImplementedException();
             }
         }
