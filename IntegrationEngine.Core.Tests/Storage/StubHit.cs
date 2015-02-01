@@ -1,17 +1,25 @@
 ﻿using Nest;
+using Nest.Domain;
 using System;
+using System.Collections.Generic;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubUpdateResponse : IUpdateResponse
+    public class StubHit<TItem> : IHit<TItem> where TItem : class
     {
-        public StubUpdateResponse()
+        public StubHit()
         {
         }
 
-        #region IUpdateResponse implementation
+        #region IHit implementation
 
-        public ShardsMetaData ShardsHit {
+        public IFieldSelection<TItem> Fields {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public virtual TItem Source {
             get {
                 throw new NotImplementedException();
             }
@@ -23,13 +31,13 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public string Type {
+        public double Score {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public virtual string Id {
+        public string Type {
             get {
                 throw new NotImplementedException();
             }
@@ -41,43 +49,32 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        #endregion
-
-        #region IResponse implementation
-
-        public bool IsValid {
+        public virtual string Id {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public Elasticsearch.Net.IElasticsearchResponse ConnectionStatus {
+        public System.Collections.Generic.IEnumerable<object> Sorts {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public ElasticInferrer Infer {
+        public HighlightFieldDictionary Highlights {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public Elasticsearch.Net.ElasticsearchServerError ServerError {
+        public Explanation Explanation {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        #endregion
-
-        #region IResponseWithRequestInformation implementation
-
-        public Elasticsearch.Net.IElasticsearchResponse RequestInformation {
+        public IEnumerable<string> MatchedQueries {
             get {
-                throw new NotImplementedException();
-            }
-            set {
                 throw new NotImplementedException();
             }
         }

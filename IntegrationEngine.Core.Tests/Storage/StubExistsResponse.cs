@@ -1,14 +1,23 @@
-﻿using Elasticsearch.Net;
-using Nest;
+﻿using Nest;
 using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubPingResponse : IPingResponse
+    public class StubExistsResponse : IExistsResponse
     {
-        public StubPingResponse()
+        public StubExistsResponse()
         {
         }
+
+        #region IExistsResponse implementation
+
+        public virtual bool Exists {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
 
         #region IResponse implementation
 
@@ -18,7 +27,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public virtual IElasticsearchResponse ConnectionStatus {
+        public Elasticsearch.Net.IElasticsearchResponse ConnectionStatus {
             get {
                 throw new NotImplementedException();
             }
@@ -30,7 +39,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public ElasticsearchServerError ServerError {
+        public Elasticsearch.Net.ElasticsearchServerError ServerError {
             get {
                 throw new NotImplementedException();
             }
@@ -40,7 +49,7 @@ namespace IntegrationEngine.Core.Tests
 
         #region IResponseWithRequestInformation implementation
 
-        public IElasticsearchResponse RequestInformation {
+        public Elasticsearch.Net.IElasticsearchResponse RequestInformation {
             get {
                 throw new NotImplementedException();
             }

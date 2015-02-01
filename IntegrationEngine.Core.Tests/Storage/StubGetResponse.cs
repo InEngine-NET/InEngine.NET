@@ -1,25 +1,17 @@
-﻿using Nest;
-using Nest.Domain;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Nest;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubHit<TItem> : IHit<TItem> where TItem : class
+    public class StubGetResponse<TItem> : IGetResponse<TItem> where TItem : class
     {
-        public StubHit()
+        public StubGetResponse()
         {
         }
 
-        #region IHit implementation
+        #region IGetResponse implementation
 
-        public IFieldSelection<TItem> Fields {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public virtual TItem Source {
+        public bool Found {
             get {
                 throw new NotImplementedException();
             }
@@ -31,19 +23,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public double Score {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public string Type {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string Version {
             get {
                 throw new NotImplementedException();
             }
@@ -55,26 +35,61 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public System.Collections.Generic.IEnumerable<object> Sorts {
+        public string Version {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public HighlightFieldDictionary Highlights {
+        public virtual TItem Source {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public Explanation Explanation {
+        public Nest.Domain.FieldSelection<TItem> Fields {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public IEnumerable<string> MatchedQueries {
+        #endregion
+
+        #region IResponse implementation
+
+        public bool IsValid {
             get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Elasticsearch.Net.IElasticsearchResponse ConnectionStatus {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public ElasticInferrer Infer {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Elasticsearch.Net.ElasticsearchServerError ServerError {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #region IResponseWithRequestInformation implementation
+
+        public Elasticsearch.Net.IElasticsearchResponse RequestInformation {
+            get {
+                throw new NotImplementedException();
+            }
+            set {
                 throw new NotImplementedException();
             }
         }

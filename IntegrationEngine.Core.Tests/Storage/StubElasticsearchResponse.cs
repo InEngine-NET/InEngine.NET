@@ -2,7 +2,7 @@
 using Elasticsearch.Net.Connection;
 using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
     public class StubElasticsearchResponse : IElasticsearchResponse
     {

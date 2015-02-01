@@ -1,17 +1,41 @@
 ﻿using Nest;
 using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubExistsResponse : IExistsResponse
+    public class StubUpdateResponse : IUpdateResponse
     {
-        public StubExistsResponse()
+        public StubUpdateResponse()
         {
         }
 
-        #region IExistsResponse implementation
+        #region IUpdateResponse implementation
 
-        public virtual bool Exists {
+        public ShardsMetaData ShardsHit {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string Index {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string Type {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public virtual string Id {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string Version {
             get {
                 throw new NotImplementedException();
             }

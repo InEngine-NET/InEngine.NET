@@ -1,7 +1,7 @@
 ﻿using Nest;
 using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
     public class StubElasticClient : IElasticClient
     {

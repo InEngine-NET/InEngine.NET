@@ -104,6 +104,10 @@
     <Compile Include="Storage\ElasticsearchRepository.cs" />
     <Compile Include="Storage\IDatabaseRepository.cs" />
     <Compile Include="Storage\DatabaseRepository.cs" />
+    <Compile Include="Mail\ITcpClient.cs" />
+    <Compile Include="Mail\TcpClientAdapter.cs" />
+    <Compile Include="Mail\SmtpClientAdapter.cs" />
+    <Compile Include="Mail\ISmtpClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Elasticsearch.Net;
 using Nest;
+using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubGetResponse<TItem> : IGetResponse<TItem> where TItem : class
+    public class StubIndexResponse : IIndexResponse
     {
-        public StubGetResponse()
+        public StubIndexResponse()
         {
         }
 
-        #region IGetResponse implementation
+        #region IIndexResponse implementation
 
-        public bool Found {
+        public virtual string Id {
             get {
                 throw new NotImplementedException();
             }
@@ -29,25 +30,13 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public virtual string Id {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public string Version {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public virtual TItem Source {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Nest.Domain.FieldSelection<TItem> Fields {
+        public bool Created {
             get {
                 throw new NotImplementedException();
             }
@@ -63,7 +52,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public Elasticsearch.Net.IElasticsearchResponse ConnectionStatus {
+        public IElasticsearchResponse ConnectionStatus {
             get {
                 throw new NotImplementedException();
             }
@@ -75,7 +64,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public Elasticsearch.Net.ElasticsearchServerError ServerError {
+        public ElasticsearchServerError ServerError {
             get {
                 throw new NotImplementedException();
             }
@@ -85,7 +74,7 @@ namespace IntegrationEngine.Core.Tests
 
         #region IResponseWithRequestInformation implementation
 
-        public Elasticsearch.Net.IElasticsearchResponse RequestInformation {
+        public IElasticsearchResponse RequestInformation {
             get {
                 throw new NotImplementedException();
             }

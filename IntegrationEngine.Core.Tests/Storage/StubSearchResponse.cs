@@ -4,7 +4,7 @@ using Nest.Domain;
 using System;
 using System.Collections.Generic;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
     public class StubSearchResponse<TDocument> : ISearchResponse<TDocument> where TDocument : class
     {

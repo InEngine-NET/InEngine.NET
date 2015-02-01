@@ -2,47 +2,13 @@
 using Nest;
 using System;
 
-namespace IntegrationEngine.Core.Tests
+namespace IntegrationEngine.Core.Tests.Storage
 {
-    public class StubIndexResponse : IIndexResponse
+    public class StubPingResponse : IPingResponse
     {
-        public StubIndexResponse()
+        public StubPingResponse()
         {
         }
-
-        #region IIndexResponse implementation
-
-        public virtual string Id {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string Index {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string Type {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string Version {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool Created {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        #endregion
 
         #region IResponse implementation
 
@@ -52,7 +18,7 @@ namespace IntegrationEngine.Core.Tests
             }
         }
 
-        public IElasticsearchResponse ConnectionStatus {
+        public virtual IElasticsearchResponse ConnectionStatus {
             get {
                 throw new NotImplementedException();
             }
