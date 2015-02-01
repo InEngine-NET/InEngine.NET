@@ -14,13 +14,13 @@ namespace IntegrationEngine.Core.Tests.Storage
 {
     public class ElasticsearchRepositoryTest : TestBase<ElasticsearchRepository>
     {
-        Mock<ElasticClient> ElasticClient { get; set; }
+        Mock<IElasticClient> ElasticClient { get; set; }
         Mock<ILog> Log { get; set; }
 
         [SetUp]
         public void Setup()
         {
-            ElasticClient = new Mock<ElasticClient>();
+            ElasticClient = new Mock<IElasticClient>();
             Subject.ElasticClient = ElasticClient.Object;
             Log = new Mock<ILog>();
             Subject.Log = Log.Object;
@@ -32,7 +32,7 @@ namespace IntegrationEngine.Core.Tests.Storage
             var searchResponse = new Mock<ISearchResponse<CronTrigger>>();
             var hits = new List<IHit<CronTrigger>>();
             var cronTrigger = new CronTrigger();
-            var hit = new Mock<Hit<CronTrigger>>();
+            var hit = new Mock<IHit<CronTrigger>>();
             var expectedId = "1";
             hit.SetupGet(x => x.Source).Returns(() => cronTrigger);
             hit.SetupGet(x => x.Id).Returns(() => expectedId);
