@@ -9,7 +9,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace IntegrationEngine.Tests
+namespace IntegrationEngine.Tests.Api.Controllers
 {
     public class TimeZoneControllerTest : TestBase<TimeZoneController>
     {

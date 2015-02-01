@@ -8,7 +8,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Description;
 
-namespace IntegrationEngine.Api.Controllers
+namespace IntegrationEngine.Api
 {
     public class TriggerControllerBase<T> : ApiController where T: class, IIntegrationJobTrigger
     {
@@ -20,7 +20,7 @@ namespace IntegrationEngine.Api.Controllers
 
 
         // GET api/T
-        public IEnumerable<T> GetList()
+        public IEnumerable<T> GetCollection()
         {
             return Repository.SelectAll<T>();
         }
@@ -43,9 +43,9 @@ namespace IntegrationEngine.Api.Controllers
                 return BadRequest();
             if (!ModelState.IsValid)
                 BadRequest(ModelState);
-            Repository.Update(trigger);
-            EngineScheduler.ScheduleJobWithTrigger(trigger);
-            return Ok(Repository.SelectById<T>(trigger.Id));
+            var updatedTrigger = Repository.Update(trigger);
+            EngineScheduler.ScheduleJobWithTrigger(updatedTrigger);
+            return Ok(updatedTrigger);
         }
 
         // POST api/T
