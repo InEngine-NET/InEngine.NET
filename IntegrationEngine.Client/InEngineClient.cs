@@ -18,7 +18,16 @@ namespace IntegrationEngine.Client
         /// Gets or sets the rest client.
         /// </summary>
         /// <value>The rest client.</value>
-        public RestClient RestClient { get; set; }
+        public IRestClient RestClient { get; set; }
+
+        /// <summary>
+        /// Gets or sets the API URL.
+        /// </summary>
+        /// <value>The API URL.</value>
+        public Uri ApiUrl { 
+            get { return RestClient.BaseUrl; } 
+            set { RestClient.BaseUrl = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntegrationEngine.Client.InEngineClient"/> class.
