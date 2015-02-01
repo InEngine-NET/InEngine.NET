@@ -58,16 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage\ElasticsearchRepositoryTest.cs" />
     <Compile Include="Mail\MailClientTest.cs" />
-    <Compile Include="Storage\StubDeleteRequest.cs" />
-    <Compile Include="Storage\StubElasticClient.cs" />
-    <Compile Include="Storage\StubElasticsearchResponse.cs" />
-    <Compile Include="Storage\StubExistsResponse.cs" />
-    <Compile Include="Storage\StubGetResponse.cs" />
-    <Compile Include="Storage\StubHit.cs" />
-    <Compile Include="Storage\StubIndexResponse.cs" />
-    <Compile Include="Storage\StubPingResponse.cs" />
-    <Compile Include="Storage\StubSearchResponse.cs" />
-    <Compile Include="Storage\StubUpdateResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

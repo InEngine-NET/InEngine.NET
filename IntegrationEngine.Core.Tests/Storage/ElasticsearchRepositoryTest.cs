@@ -14,13 +14,13 @@ namespace IntegrationEngine.Core.Tests.Storage
 {
     public class ElasticsearchRepositoryTest : TestBase<ElasticsearchRepository>
     {
-        Mock<StubElasticClient> ElasticClient { get; set; }
+        Mock<ElasticClient> ElasticClient { get; set; }
         Mock<ILog> Log { get; set; }
 
         [SetUp]
         public void Setup()
         {
-            ElasticClient = new Mock<StubElasticClient>();
+            ElasticClient = new Mock<ElasticClient>();
             Subject.ElasticClient = ElasticClient.Object;
             Log = new Mock<ILog>();
             Subject.Log = Log.Object;
@@ -29,10 +29,10 @@ namespace IntegrationEngine.Core.Tests.Storage
         [Test]
         public void ShouldReturnListOfDocumentsWithIdsFromElasticsearch()
         {
-            var searchResponse = new Mock<StubSearchResponse<CronTrigger>>();
+            var searchResponse = new Mock<ISearchResponse<CronTrigger>>();
             var hits = new List<IHit<CronTrigger>>();
             var cronTrigger = new CronTrigger();
-            var hit = new Mock<StubHit<CronTrigger>>();
+            var hit = new Mock<Hit<CronTrigger>>();
             var expectedId = "1";
             hit.SetupGet(x => x.Source).Returns(() => cronTrigger);
             hit.SetupGet(x => x.Id).Returns(() => expectedId);
@@ -40,7 +40,6 @@ namespace IntegrationEngine.Core.Tests.Storage
             searchResponse.SetupGet(x => x.Hits).Returns(() => hits);
             ElasticClient.Setup(x => x.Search<CronTrigger>(It.IsAny<Func<SearchDescriptor<CronTrigger>, SearchDescriptor<CronTrigger>>>()))
                 .Returns(searchResponse.Object);
-
 
             var actual = Subject.SelectAll<CronTrigger>();
 
@@ -52,7 +51,7 @@ namespace IntegrationEngine.Core.Tests.Storage
         [Test]
         public void ShouldReturnNullIfDocumentIsNotFoundById()
         {
-            var getResponse = new Mock<StubGetResponse<CronTrigger>>();
+            var getResponse = new Mock<IGetResponse<CronTrigger>>();
             ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
                 .Returns(getResponse.Object);
 
@@ -64,7 +63,7 @@ namespace IntegrationEngine.Core.Tests.Storage
 
         void  SetupForGetDocument(string id) 
         {
-            var getResponse = new Mock<StubGetResponse<CronTrigger>>();
+            var getResponse = new Mock<IGetResponse<CronTrigger>>();
             getResponse.SetupGet(x => x.Id).Returns(() => id);
             getResponse.SetupGet(x => x.Source).Returns(() => new CronTrigger());
             ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
@@ -89,7 +88,7 @@ namespace IntegrationEngine.Core.Tests.Storage
             var expectedId = "1";
             SetupForGetDocument(expectedId);
             var expected = new CronTrigger() { Id = expectedId };
-            var indexResponse = new Mock<StubIndexResponse>();
+            var indexResponse = new Mock<IIndexResponse>();
             indexResponse.SetupGet(x => x.Id).Returns(() => expected.Id);
             ElasticClient.Setup(x => x.Index(expected, It.IsAny<Func<IndexDescriptor<CronTrigger>, IndexDescriptor<CronTrigger>>>()))
                 .Returns(indexResponse.Object);
@@ -106,7 +105,7 @@ namespace IntegrationEngine.Core.Tests.Storage
             var expectedId = "1";
             SetupForGetDocument(expectedId);
             var expected = new CronTrigger() { Id = expectedId };
-            var updateResponse = new Mock<StubUpdateResponse>();
+            var updateResponse = new Mock<IUpdateResponse>();
             updateResponse.SetupGet(x => x.Id).Returns(() => expected.Id);
             ElasticClient.Setup(x => x.Update<CronTrigger>(It.IsAny<Func<UpdateDescriptor<CronTrigger, CronTrigger>, UpdateDescriptor<CronTrigger, CronTrigger>>>()))
                 .Returns(updateResponse.Object);
@@ -132,7 +131,7 @@ namespace IntegrationEngine.Core.Tests.Storage
 
         void SetupForDocumentExists(bool exists) 
         {
-            var existsResponse = new Mock<StubExistsResponse>();
+            var existsResponse = new Mock<IExistsResponse>();
             existsResponse.SetupGet(x => x.Exists).Returns(exists);
             ElasticClient.Setup(x => x.DocumentExists(It.IsAny<Func<DocumentExistsDescriptor<CronTrigger>, DocumentExistsDescriptor<CronTrigger>>>()))
                 .Returns(existsResponse.Object);
@@ -160,9 +159,9 @@ namespace IntegrationEngine.Core.Tests.Storage
 
         void SetupForIsServerAvailable(bool success) 
         {
-            var elasticsearchResponse = new Mock<StubElasticsearchResponse>();
+            var elasticsearchResponse = new Mock<IElasticsearchResponse>();
             elasticsearchResponse.SetupGet(x => x.Success).Returns(() => success);
-            var pingResponse = new Mock<StubPingResponse>();
+            var pingResponse = new Mock<IPingResponse>();
             pingResponse.SetupGet(x => x.ConnectionStatus).Returns(() => elasticsearchResponse.Object);
             ElasticClient.Setup(x => x.Ping(It.IsAny<PingRequest>())).Returns(pingResponse.Object);
         }
