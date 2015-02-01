@@ -66,6 +66,7 @@
     <Compile Include="StubDeleteRequest.cs" />
     <Compile Include="StubPingResponse.cs" />
     <Compile Include="StubElasticsearchResponse.cs" />
+    <Compile Include="StubExistsResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

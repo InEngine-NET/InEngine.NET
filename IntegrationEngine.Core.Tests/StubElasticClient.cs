@@ -1377,7 +1377,7 @@ namespace IntegrationEngine.Core.Tests
             throw new NotImplementedException();
         }
 
-        public IExistsResponse DocumentExists<T>(Func<DocumentExistsDescriptor<T>, DocumentExistsDescriptor<T>> existsSelector) where T : class
+        public virtual IExistsResponse DocumentExists<T>(Func<DocumentExistsDescriptor<T>, DocumentExistsDescriptor<T>> existsSelector) where T : class
         {
             throw new NotImplementedException();
         }
