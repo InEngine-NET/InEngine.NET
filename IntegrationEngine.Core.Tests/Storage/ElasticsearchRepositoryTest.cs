@@ -29,44 +29,44 @@ namespace IntegrationEngine.Core.Tests.Storage
         [Test]
         public void ShouldReturnListOfDocumentsWithIdsFromElasticsearch()
         {
-            var searchResponse = new Mock<ISearchResponse<CronTrigger>>();
-            var hits = new List<IHit<CronTrigger>>();
-            var cronTrigger = new CronTrigger();
-            var hit = new Mock<IHit<CronTrigger>>();
+            var searchResponse = new Mock<ISearchResponse<DocumentStub>>();
+            var hits = new List<IHit<DocumentStub>>();
+            var cronTrigger = new DocumentStub();
+            var hit = new Mock<IHit<DocumentStub>>();
             var expectedId = "1";
             hit.SetupGet(x => x.Source).Returns(() => cronTrigger);
             hit.SetupGet(x => x.Id).Returns(() => expectedId);
             hits.Add(hit.Object);
             searchResponse.SetupGet(x => x.Hits).Returns(() => hits);
-            ElasticClient.Setup(x => x.Search<CronTrigger>(It.IsAny<Func<SearchDescriptor<CronTrigger>, SearchDescriptor<CronTrigger>>>()))
+            ElasticClient.Setup(x => x.Search<DocumentStub>(It.IsAny<Func<SearchDescriptor<DocumentStub>, SearchDescriptor<DocumentStub>>>()))
                 .Returns(searchResponse.Object);
 
-            var actual = Subject.SelectAll<CronTrigger>();
+            var actual = Subject.SelectAll<DocumentStub>();
 
             Assert.That(actual, Is.Not.Empty);
             Assert.That(actual.First().Id, Is.EqualTo(expectedId));
-            ElasticClient.Verify(x => x.Search(It.IsAny<Func<SearchDescriptor<CronTrigger>, SearchDescriptor<CronTrigger>>>()), Times.Once);
+            ElasticClient.Verify(x => x.Search(It.IsAny<Func<SearchDescriptor<DocumentStub>, SearchDescriptor<DocumentStub>>>()), Times.Once);
         }
 
         [Test]
         public void ShouldReturnNullIfDocumentIsNotFoundById()
         {
-            var getResponse = new Mock<IGetResponse<CronTrigger>>();
-            ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
+            var getResponse = new Mock<IGetResponse<DocumentStub>>();
+            ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<DocumentStub>, GetDescriptor<DocumentStub>>>()))
                 .Returns(getResponse.Object);
 
-            var actual = Subject.SelectById<CronTrigger>("1");
+            var actual = Subject.SelectById<DocumentStub>("1");
 
             Assert.That(actual, Is.Null);
-            ElasticClient.Verify(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()), Times.Once);
+            ElasticClient.Verify(x => x.Get(It.IsAny<Func<GetDescriptor<DocumentStub>, GetDescriptor<DocumentStub>>>()), Times.Once);
         }
 
         void  SetupForGetDocument(string id) 
         {
-            var getResponse = new Mock<IGetResponse<CronTrigger>>();
+            var getResponse = new Mock<IGetResponse<DocumentStub>>();
             getResponse.SetupGet(x => x.Id).Returns(() => id);
-            getResponse.SetupGet(x => x.Source).Returns(() => new CronTrigger());
-            ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()))
+            getResponse.SetupGet(x => x.Source).Returns(() => new DocumentStub());
+            ElasticClient.Setup(x => x.Get(It.IsAny<Func<GetDescriptor<DocumentStub>, GetDescriptor<DocumentStub>>>()))
                 .Returns(getResponse.Object);
         }
 
@@ -76,10 +76,10 @@ namespace IntegrationEngine.Core.Tests.Storage
             var expectedId = "1";
             SetupForGetDocument(expectedId);
 
-            var actual = Subject.SelectById<CronTrigger>(expectedId);
+            var actual = Subject.SelectById<DocumentStub>(expectedId);
 
             Assert.That(actual.Id, Is.EqualTo(expectedId));
-            ElasticClient.Verify(x => x.Get(It.IsAny<Func<GetDescriptor<CronTrigger>, GetDescriptor<CronTrigger>>>()), Times.Once);
+            ElasticClient.Verify(x => x.Get(It.IsAny<Func<GetDescriptor<DocumentStub>, GetDescriptor<DocumentStub>>>()), Times.Once);
         }
 
         [Test]
@@ -87,16 +87,16 @@ namespace IntegrationEngine.Core.Tests.Storage
         {
             var expectedId = "1";
             SetupForGetDocument(expectedId);
-            var expected = new CronTrigger() { Id = expectedId };
+            var expected = new DocumentStub() { Id = expectedId };
             var indexResponse = new Mock<IIndexResponse>();
             indexResponse.SetupGet(x => x.Id).Returns(() => expected.Id);
-            ElasticClient.Setup(x => x.Index(expected, It.IsAny<Func<IndexDescriptor<CronTrigger>, IndexDescriptor<CronTrigger>>>()))
+            ElasticClient.Setup(x => x.Index(expected, It.IsAny<Func<IndexDescriptor<DocumentStub>, IndexDescriptor<DocumentStub>>>()))
                 .Returns(indexResponse.Object);
 
             var actual = Subject.Insert(expected);
 
             Assert.That(actual.Id, Is.EqualTo(expected.Id));
-            ElasticClient.Verify(x => x.Index(expected, It.IsAny<Func<IndexDescriptor<CronTrigger>, IndexDescriptor<CronTrigger>>>()), Times.Once);
+            ElasticClient.Verify(x => x.Index(expected, It.IsAny<Func<IndexDescriptor<DocumentStub>, IndexDescriptor<DocumentStub>>>()), Times.Once);
         }
 
         [Test]
@@ -104,17 +104,17 @@ namespace IntegrationEngine.Core.Tests.Storage
         {
             var expectedId = "1";
             SetupForGetDocument(expectedId);
-            var expected = new CronTrigger() { Id = expectedId };
+            var expected = new DocumentStub() { Id = expectedId };
             var updateResponse = new Mock<IUpdateResponse>();
             updateResponse.SetupGet(x => x.Id).Returns(() => expected.Id);
-            ElasticClient.Setup(x => x.Update<CronTrigger>(It.IsAny<Func<UpdateDescriptor<CronTrigger, CronTrigger>, UpdateDescriptor<CronTrigger, CronTrigger>>>()))
+            ElasticClient.Setup(x => x.Update<DocumentStub>(It.IsAny<Func<UpdateDescriptor<DocumentStub, DocumentStub>, UpdateDescriptor<DocumentStub, DocumentStub>>>()))
                 .Returns(updateResponse.Object);
 
             var actual = Subject.Update(expected);
 
             Assert.That(actual.Id, Is.EqualTo(expected.Id));
             ElasticClient.Verify(
-                x => x.Update<CronTrigger>(It.IsAny<Func<UpdateDescriptor<CronTrigger, CronTrigger>, UpdateDescriptor<CronTrigger, CronTrigger>>>()), 
+                x => x.Update<DocumentStub>(It.IsAny<Func<UpdateDescriptor<DocumentStub, DocumentStub>, UpdateDescriptor<DocumentStub, DocumentStub>>>()), 
                 Times.Once);
         }
 
@@ -122,18 +122,18 @@ namespace IntegrationEngine.Core.Tests.Storage
         public void ShouldDeleteDocument()
         {
             var id = "1";
-            ElasticClient.Setup(x => x.Delete(It.IsAny<Func<DeleteDescriptor<CronTrigger>, DeleteDescriptor<CronTrigger>>>()));
+            ElasticClient.Setup(x => x.Delete(It.IsAny<Func<DeleteDescriptor<DocumentStub>, DeleteDescriptor<DocumentStub>>>()));
 
-            Subject.Delete<CronTrigger>(id);
+            Subject.Delete<DocumentStub>(id);
 
-            ElasticClient.Verify(x => x.Delete(It.IsAny<Func<DeleteDescriptor<CronTrigger>, DeleteDescriptor<CronTrigger>>>()), Times.Once);
+            ElasticClient.Verify(x => x.Delete(It.IsAny<Func<DeleteDescriptor<DocumentStub>, DeleteDescriptor<DocumentStub>>>()), Times.Once);
         }
 
         void SetupForDocumentExists(bool exists) 
         {
             var existsResponse = new Mock<IExistsResponse>();
             existsResponse.SetupGet(x => x.Exists).Returns(exists);
-            ElasticClient.Setup(x => x.DocumentExists(It.IsAny<Func<DocumentExistsDescriptor<CronTrigger>, DocumentExistsDescriptor<CronTrigger>>>()))
+            ElasticClient.Setup(x => x.DocumentExists(It.IsAny<Func<DocumentExistsDescriptor<DocumentStub>, DocumentExistsDescriptor<DocumentStub>>>()))
                 .Returns(existsResponse.Object);
         }
 
@@ -142,7 +142,7 @@ namespace IntegrationEngine.Core.Tests.Storage
         {
             SetupForDocumentExists(true);
 
-            var actual = Subject.Exists<CronTrigger>("does not exist");
+            var actual = Subject.Exists<DocumentStub>("does not exist");
 
             Assert.That(actual, Is.True);
         }
@@ -152,7 +152,7 @@ namespace IntegrationEngine.Core.Tests.Storage
         {
             SetupForDocumentExists(false);
 
-            var actual = Subject.Exists<CronTrigger>("does not exist");
+            var actual = Subject.Exists<DocumentStub>("does not exist");
 
             Assert.That(actual, Is.False);
         }
