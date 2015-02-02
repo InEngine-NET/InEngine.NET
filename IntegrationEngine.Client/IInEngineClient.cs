@@ -8,7 +8,13 @@ namespace IntegrationEngine.Client
 {
     public interface IInEngineClient
     {
+        IJsonConvert JsonConvert { get; set; }
         HttpStatusCode Ping();
+        IList<TItem> GetCollection<TItem>() where TItem : class;
+        TItem Get<TItem>(string id) where TItem : class, IHasStringId;
+        TItem Create<TItem>(TItem item);
+        TItem Update<TItem>(TItem item) where TItem : class, IHasStringId;
+        TItem Delete<TItem>(string id);
         IList<CronTrigger> GetCronTriggers();
         CronTrigger GetCronTriggerById(string id);
         CronTrigger CreateCronTrigger(CronTrigger cronTrigger);

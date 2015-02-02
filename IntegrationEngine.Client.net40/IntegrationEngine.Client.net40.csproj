@@ -50,9 +50,6 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Client\EndpointName.cs">
-      <Link>EndpointName.cs</Link>
-    </Compile>
     <Compile Include="..\IntegrationEngine.Client\IInEngineClient.cs">
       <Link>IInEngineClient.cs</Link>
     </Compile>
@@ -60,6 +57,12 @@
       <Link>InEngineClient.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\IntegrationEngine.Client\IJsonConvert.cs">
+      <Link>IJsonConvert.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Client\JsonConvertAdapter.cs">
+      <Link>JsonConvertAdapter.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
