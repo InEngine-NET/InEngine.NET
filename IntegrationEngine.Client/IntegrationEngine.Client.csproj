@@ -47,6 +47,7 @@
     <Compile Include="IInEngineClient.cs" />
     <Compile Include="IJsonConvert.cs" />
     <Compile Include="JsonConvertAdapter.cs" />
+    <Compile Include="Endpoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
