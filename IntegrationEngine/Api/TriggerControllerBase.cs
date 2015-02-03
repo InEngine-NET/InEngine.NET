@@ -55,7 +55,7 @@ namespace IntegrationEngine.Api
             if (!ModelState.IsValid)
                 BadRequest(ModelState);
             var triggerWithId = Repository.Insert(trigger);
-            EngineScheduler.ScheduleJobWithTrigger(trigger);
+            EngineScheduler.ScheduleJobWithTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
         }
 
