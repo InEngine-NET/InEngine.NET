@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="IntegrationEngine.ConsoleClient/IntegrationEngine.ConsoleClient.csproj">
+﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Options.cs">
     <Files>

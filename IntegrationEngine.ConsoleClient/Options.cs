@@ -23,7 +23,7 @@ namespace IntegrationEngine.ConsoleClient
         public string GetUsage()
         {
             var version = (Attribute.GetCustomAttribute(
-                Assembly.GetEntryAssembly(), 
+                Assembly.GetEntryAssembly(),
                 typeof(AssemblyInformationalVersionAttribute)) 
                 as AssemblyInformationalVersionAttribute).InformationalVersion;
             var usage = new StringBuilder();

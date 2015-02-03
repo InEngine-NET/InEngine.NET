@@ -2,15 +2,23 @@
 <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
+  <extensions>
+    <add assembly="NLog.Targets.ElasticSearch"/>
+  </extensions>
+
   <targets>
     <target name="logfile" xsi:type="File" fileName="IntegrationEngine.log.txt" />
     <target name="console" xsi:type="Console" />
     <target name="mailServer" xsi:type="Mail" to="ethanhann@gmail.com" from="ethanhann@gmail.com" />
+    <target name="elastic" xsi:type="BufferingWrapper" flushTimeout="5000">
+      <target xsi:type="ElasticSearch" index="integration-engine"/>
+    </target>
   </targets>
 
   <rules>
     <logger name="*" minlevel="Trace" writeTo="logfile" />
     <logger name="*" writeTo="console" />
     <logger name="*" minlevel="Error" writeTo="mailServer" />
+    <logger name="*" writeTo="elastic" />    
   </rules>
 </nlog>

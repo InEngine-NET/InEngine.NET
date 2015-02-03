@@ -137,6 +137,9 @@
     <Reference Include="CronExpressionDescriptor">
       <HintPath>..\packages\CronExpressionDescriptor.1.13.0\lib\net35\CronExpressionDescriptor.dll</HintPath>
     </Reference>
+    <Reference Include="NLog.Targets.ElasticSearch">
+      <HintPath>..\packages\NLog.Targets.ElasticSearch.0.9.5.0\lib\net40\NLog.Targets.ElasticSearch.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
@@ -178,6 +181,7 @@
     <Compile Include="DataAnnotations\JobTypeAttribute.cs" />
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
     <Compile Include="Api\TriggerControllerBase.cs" />
+    <Compile Include="Api\Controllers\LogEventController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -74,6 +74,7 @@
     <Compile Include="TriggerPropertyExtension.cs" />
     <Compile Include="TriggerStateDescription.cs" />
     <Compile Include="IHasLongId.cs" />
+    <Compile Include="LogEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="package.nuspec">
