@@ -10,7 +10,7 @@ namespace IntegrationEngine.ConsoleClient
         [Option('e', "endpoint", Required = true, HelpText="Endpoint to consume.")]
         public Endpoint Resource { get; set; }
 
-        [Option('i', "id", HelpText="Id of resource to consume.")]
+        [Option('i', "id", HelpText="Id of endpoint to consume.")]
         public string Id { get; set; }
     }
 }

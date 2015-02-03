@@ -15,13 +15,11 @@ namespace IntegrationEngine.ConsoleClient
         static void Main(string[] args)
         {
             var options = new Options();
-            if (args.Length <= 1) {
-                Console.WriteLine(options.GetUsage());
-                Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
-            }
             var invokedVerb = "";
             var invokedVerbInstance = new object();
-            if (!CommandLine.Parser.Default.ParseArguments(args, options, (verb, subOptions) => {
+            if (args == null || 
+                args.Length == 0 || 
+                !CommandLine.Parser.Default.ParseArguments(args, options, (verb, subOptions) => {
                 invokedVerb = verb;
                 invokedVerbInstance = subOptions;
             }))
@@ -36,24 +34,38 @@ namespace IntegrationEngine.ConsoleClient
 
             if (invokedVerb == "get") {
                 var getSubOptions = (GetSubOptions)invokedVerbInstance;
-                switch (getSubOptions.Resource)
-                {
-                case Endpoint.CronTrigger:
-                    ResolveResult(client.GetCollection<CronTrigger>());
-                    break;
-                case Endpoint.SimpleTrigger:
-                    ResolveResult(client.GetCollection<SimpleTrigger>());
-                    break;
-                case Endpoint.JobType:
-                    ResolveResult(client.GetCollection<JobType>());
-                    break;
-                case Endpoint.TimeZone:
-                    ResolveResult(client.GetCollection<IntegrationEngine.Model.TimeZone>());
-                    break;
-                case Endpoint.HealthStatus:
-                    ResolveResult(client.GetHealthStatus());
-                    break;
-                }
+                if (getSubOptions.Id != null)
+                    switch (getSubOptions.Resource)
+                    {
+                    case Endpoint.CronTrigger:
+                        ResolveResult(client.Get<CronTrigger>(getSubOptions.Id));
+                        break;
+                    case Endpoint.SimpleTrigger:
+                        ResolveResult(client.Get<SimpleTrigger>(getSubOptions.Id));
+                        break;
+                    }
+                else
+                    switch (getSubOptions.Resource)
+                    {
+                    case Endpoint.CronTrigger:
+                        ResolveResult(client.GetCollection<CronTrigger>());
+                        break;
+                    case Endpoint.SimpleTrigger:
+                        ResolveResult(client.GetCollection<SimpleTrigger>());
+                        break;
+                    case Endpoint.JobType:
+                        ResolveResult(client.GetCollection<JobType>());
+                        break;
+                    case Endpoint.TimeZone:
+                        ResolveResult(client.GetCollection<IntegrationEngine.Model.TimeZone>());
+                        break;
+                    case Endpoint.HealthStatus:
+                        ResolveResult(client.GetHealthStatus());
+                        break;
+                    }
+            }
+            if (invokedVerb == "ping") {
+                Console.WriteLine(client.Ping());
             }
         }
 

@@ -1,13 +1,10 @@
-﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
+﻿<Properties StartupItem="IntegrationEngine.ConsoleClient/IntegrationEngine.ConsoleClient.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Options.cs">
     <Files>
-      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.ConsoleClient/GetSubOptions.cs" Line="25" Column="25" />
-      <File FileName="IntegrationEngine.Client/InEngineClient.cs" Line="10" Column="10" />
-      <File FileName="IntegrationEngine.ConsoleHost/Program.cs" Line="20" Column="20" />
-      <File FileName="IntegrationEngine/MessageQueue/MessageQueueConnection.cs" Line="64" Column="64" />
+      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="41" Column="41" />
+      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="25" Column="25" />
+      <File FileName="IntegrationEngine.ConsoleClient/PingSubOptions.cs" Line="6" Column="6" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
@@ -18,7 +15,8 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.Core/Storage/ElasticsearchRepository.cs" line="34" column="1" />
-      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Program.cs" line="17" column="1" />
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="31" column="1" />
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="39" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
