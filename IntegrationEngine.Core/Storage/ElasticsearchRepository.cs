@@ -2,8 +2,10 @@
 using IntegrationEngine.Model;
 using Nest;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace IntegrationEngine.Core.Storage
 {
@@ -24,8 +26,49 @@ namespace IntegrationEngine.Core.Storage
                     h.Source.Id = h.Id;
                     return h.Source;
             });
-            var list = documents.ToList();
-            return list;
+            return documents.ToList();
+        }
+
+        public IEnumerable<TItem> SelectAll<TItem, TKey>(Expression<Func<TItem, TKey>> orderBy, 
+            bool ascending = true, 
+            int pageIndex = 0, 
+            int rowCount = 10) 
+            where TItem : class, IHasStringId
+        {
+            var documents = ElasticClient.Search<TItem>(x => x.From(pageIndex).Size(rowCount))
+                .Hits
+                .Select(h => {
+                    h.Source.Id = h.Id;
+                    return h.Source;
+                }).AsQueryable();
+            if (ascending)
+                documents.OrderBy(orderBy);
+            else 
+                documents.OrderByDescending(orderBy);
+            return documents.ToList();
+        }
+
+        public IEnumerable<TItem> Search<TItem, TKey>(string query, 
+            Expression<Func<TItem, TKey>> orderBy,
+            bool ascending = true,
+            int pageIndex = 0,
+            int rowCount = 10) 
+            where TItem : class, IHasStringId
+        {
+            var documents = ElasticClient.Search<TItem>(x => x
+                .From(pageIndex)
+                .Size(rowCount)
+                .Query(q => q.Match(m => m.OnField("_all").Query(query)) || q.Fuzzy(fd => fd.OnField("_all").PrefixLength(1).Value(query).Boost(0.1))))
+                .Hits
+                .Select(h => {
+                    h.Source.Id = h.Id;
+                    return h.Source;
+                }).AsQueryable();
+            if (ascending)
+                documents.OrderBy(orderBy);
+            else 
+                documents.OrderByDescending(orderBy);
+            return documents.AsEnumerable();
         }
 
         public TItem SelectById<TItem>(object id) where TItem : class, IHasStringId

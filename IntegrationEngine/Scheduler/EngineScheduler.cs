@@ -37,7 +37,10 @@ namespace IntegrationEngine.Scheduler
         public Type GetRegisteredJobTypeByName(string jobTypeName)
         {
             var jobTypes = IntegrationJobTypes.Where(x => x.FullName == jobTypeName);
-            return jobTypes.Any() ? jobTypes.Single() : null;
+            if (jobTypes.Any())
+                return jobTypes.Single();
+            Log.Warn(x => x("JobType is not registered: {0}", jobTypeName));
+            return null;
         }
 
         public bool IsJobTypeRegistered(string jobTypeName)
@@ -72,6 +75,8 @@ namespace IntegrationEngine.Scheduler
             where T : IIntegrationJobTrigger
         {
             var jobType = GetRegisteredJobTypeByName(item.JobType);
+            if (jobType == null)
+                return;
             var jobDetail = JobDetailFactory(jobType, item.Parameters, item);
             var trigger = TriggerFactory(item, jobType, jobDetail);
             TryScheduleJobWithTrigger(trigger, jobType, jobDetail, item.StateId);
@@ -131,7 +136,7 @@ namespace IntegrationEngine.Scheduler
             var triggerBuilder = TriggerBuilderFactory(item.Id, jobType, jobDetail);
             if (item is CronTrigger) {
                 var cronTrigger = item as CronTrigger;
-                triggerBuilder.WithCronSchedule(cronTrigger.CronExpressionString, x => x.InTimeZone(cronTrigger.TimeZoneInfo));
+                triggerBuilder.WithCronSchedule(cronTrigger.CronExpressionString, x => x.InTimeZone(TimeZoneInfo.Utc));
             }
             else if (item is SimpleTrigger) {
                 var simpleTrigger = item as SimpleTrigger;

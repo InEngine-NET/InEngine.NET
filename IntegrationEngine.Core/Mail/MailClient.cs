@@ -13,7 +13,6 @@ namespace IntegrationEngine.Core.Mail
         public ISmtpClient SmtpClient { get; set; }
         public MailConfiguration MailConfiguration { get; set; }
         public ILog Log { get; set; }
-        public ITcpClient TcpClient { get; set; }
 
         public MailClient()
         {
@@ -42,26 +41,26 @@ namespace IntegrationEngine.Core.Mail
         public bool IsServerAvailable()
         {
             var isAvailable = false;
-            try 
+            try
             {
-                if (TcpClient == null)
-                    TcpClient = new TcpClientAdapter();
-                TcpClient.Connect(MailConfiguration.HostName, MailConfiguration.Port);
-                using (var stream = TcpClient.GetStream())
+                using (var client = new TcpClient())
                 {
-                    using (var writer = new StreamWriter(stream))
-                    using (var reader = new StreamReader(stream))
+                    client.Connect(MailConfiguration.HostName, MailConfiguration.Port);
+                    using (var stream = client.GetStream())
                     {
-                        writer.WriteLine("EHLO " + MailConfiguration.HostName);
-                        writer.Flush();
-                        stream.Position = 0;
-                        reader.DiscardBufferedData();
-                        isAvailable = reader.ReadLine() != null;
+                        using (var writer = new StreamWriter(stream))
+                        using (var reader = new StreamReader(stream))
+                        {
+                            writer.WriteLine("EHLO " + MailConfiguration.HostName);
+                            writer.Flush();
+                            var response = reader.ReadLine();
+                            if (response != null)
+                                isAvailable = true;
+                        }
                     }
                 }
-                TcpClient.Close();
             }
-            catch(SocketException exception) 
+            catch (SocketException exception)
             {
                 Log.Error(exception);
                 isAvailable = false;

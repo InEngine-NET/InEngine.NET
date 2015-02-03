@@ -11,9 +11,6 @@ namespace IntegrationEngine.Scheduler
         [Required]
         [CronExpressionString]
         public override string CronExpressionString { get; set; }
-        [Required]
-        [TimeZoneId]
-        public override string TimeZoneId { get; set; }
         [Range(0, 1)]
         public override int StateId { get; set; }
     }

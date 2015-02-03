@@ -1,4 +1,4 @@
-﻿using InEngineTimeZone = IntegrationEngine.Model.TimeZone;
+﻿using InEngineLogEvent = IntegrationEngine.Model.LogEvent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,12 @@ namespace IntegrationEngine.Client
     /// </summary>
     public class InEngineClient : IInEngineClient
     {
+        /// <summary>
+        /// Gets or sets the json convert.
+        /// </summary>
+        /// <value>The json convert.</value>
+        public IJsonConvert JsonConvert { get; set; }
+
         /// <summary>
         /// Gets or sets the rest client.
         /// </summary>
@@ -44,6 +50,7 @@ namespace IntegrationEngine.Client
         public InEngineClient(string apiUrl)
         {
             RestClient = new RestClient(apiUrl);
+            JsonConvert = new JsonConvertAdapter();
         }
 
         /// <summary>
@@ -51,7 +58,48 @@ namespace IntegrationEngine.Client
         /// </summary>
         public HttpStatusCode Ping()
         {
-            return RestClient.Execute(new RestRequest(EndpointName.HealthStatus, Method.GET)).StatusCode;
+            return RestClient.Execute(new RestRequest(typeof(HealthStatus).Name, Method.GET)).StatusCode;
+        }
+
+        public IList<TItem> GetCollection<TItem>() where TItem : class
+        {
+            var request = new RestRequest(typeof(TItem).Name, Method.GET);
+            request.RequestFormat = DataFormat.Json;
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<IList<TItem>>(result.Content);
+        }
+
+        public TItem Get<TItem>(string id) where TItem : class, IHasStringId
+        {
+            var request = new RestRequest(typeof(TItem).Name + "/{id}", Method.GET);
+            request.AddUrlSegment("id", id);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<TItem>(result.Content);
+        }
+
+        public TItem Create<TItem>(TItem item)
+        {
+            var request = new RestRequest(typeof(TItem).Name, Method.POST);
+            request.AddObject(item);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<TItem>(result.Content);
+        }
+
+        public TItem Update<TItem>(TItem item) where TItem : class, IHasStringId
+        {
+            var request = new RestRequest(typeof(TItem).Name + "/{id}", Method.PUT);
+            request.AddUrlSegment("id", item.Id);
+            request.AddObject(item);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<TItem>(result.Content);
+        }
+
+        public TItem Delete<TItem>(string id)
+        {
+            var request = new RestRequest(typeof(TItem).Name + "/{id}", Method.DELETE);
+            request.AddUrlSegment("id", id);
+            var result = RestClient.Execute(request);
+            return JsonConvert.DeserializeObject<TItem>(result.Content);
         }
 
         #region CronTrigger
@@ -61,10 +109,7 @@ namespace IntegrationEngine.Client
         /// <returns>The cron triggers.</returns>
         public IList<CronTrigger> GetCronTriggers()
         {
-            var request = new RestRequest(EndpointName.CronTrigger, Method.GET);
-            request.RequestFormat = DataFormat.Json;
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<CronTrigger>>(result.Content);
+            return GetCollection<CronTrigger>();
         }
 
         /// <summary>
@@ -74,10 +119,7 @@ namespace IntegrationEngine.Client
         /// <param name="id">Identifier.</param>
         public CronTrigger GetCronTriggerById(string id)
         {
-            var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.GET);
-            request.AddUrlSegment("id", id);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
+            return Get<CronTrigger>(id);
         }
 
         /// <summary>
@@ -87,10 +129,7 @@ namespace IntegrationEngine.Client
         /// <param name="cronTrigger">Cron trigger.</param>
         public CronTrigger CreateCronTrigger(CronTrigger cronTrigger)
         {
-            var request = new RestRequest(EndpointName.CronTrigger, Method.POST);
-            request.AddObject(cronTrigger);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
+            return Create(cronTrigger);
         }
 
         /// <summary>
@@ -100,11 +139,7 @@ namespace IntegrationEngine.Client
         /// <param name="cronTrigger">Cron trigger.</param>
         public CronTrigger UpdateCronTrigger(CronTrigger cronTrigger)
         {
-            var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.PUT);
-            request.AddUrlSegment("id", cronTrigger.Id);
-            request.AddObject(cronTrigger);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
+            return Update(cronTrigger);
         }
 
         /// <summary>
@@ -114,10 +149,7 @@ namespace IntegrationEngine.Client
         /// <param name="id">Identifier.</param>
         public CronTrigger DeleteCronTrigger(string id)
         {
-            var request = new RestRequest(EndpointName.CronTrigger + "/{id}", Method.DELETE);
-            request.AddUrlSegment("id", id);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<CronTrigger>(result.Content);
+            return Delete<CronTrigger>(id);
         }
         #endregion
 
@@ -128,9 +160,7 @@ namespace IntegrationEngine.Client
         /// <returns>The simple triggers.</returns>
         public IList<SimpleTrigger> GetSimpleTriggers()
         {
-            var request = new RestRequest(EndpointName.SimpleTrigger, Method.GET);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<SimpleTrigger>>(result.Content);
+            return GetCollection<SimpleTrigger>();
         }
 
         /// <summary>
@@ -140,10 +170,7 @@ namespace IntegrationEngine.Client
         /// <param name="id">Identifier.</param>
         public SimpleTrigger GetSimpleTriggerById(string id)
         {
-            var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.GET);
-            request.AddUrlSegment("id", id);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
+            return Get<SimpleTrigger>(id);
         }
 
         /// <summary>
@@ -153,10 +180,7 @@ namespace IntegrationEngine.Client
         /// <param name="simpleTrigger">Simple trigger.</param>
         public SimpleTrigger CreateSimpleTrigger(SimpleTrigger simpleTrigger)
         {
-            var request = new RestRequest(EndpointName.SimpleTrigger, Method.POST);
-            request.AddObject(simpleTrigger);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
+            return Create(simpleTrigger);
         }
 
 
@@ -167,11 +191,7 @@ namespace IntegrationEngine.Client
         /// <param name="simpleTrigger">Simple trigger.</param>
         public SimpleTrigger UpdateSimpleTrigger(SimpleTrigger simpleTrigger)
         {
-            var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.PUT);
-            request.AddUrlSegment("id", simpleTrigger.Id);
-            request.AddObject(simpleTrigger);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
+            return Update(simpleTrigger);
         }
 
         /// <summary>
@@ -181,23 +201,18 @@ namespace IntegrationEngine.Client
         /// <param name="id">Identifier.</param>
         public SimpleTrigger DeleteSimpleTrigger(string id)
         {
-            var request = new RestRequest(EndpointName.SimpleTrigger + "/{id}", Method.DELETE);
-            request.AddUrlSegment("id", id);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<SimpleTrigger>(result.Content);
+            return Delete<SimpleTrigger>(id);
         }
         #endregion
 
-        #region TimeZone
+        #region LogEvent
         /// <summary>
-        /// Gets the time zones.
+        /// Gets the log events.
         /// </summary>
-        /// <returns>The time zones.</returns>
-        public IList<InEngineTimeZone> GetTimeZones()
+        /// <returns>The log events.</returns>
+        public IList<LogEvent> GetLogEvents()
         {
-            var request = new RestRequest(EndpointName.TimeZone, Method.GET);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<InEngineTimeZone>>(result.Content);
+            return GetCollection<LogEvent>();
         }
         #endregion
 
@@ -208,9 +223,7 @@ namespace IntegrationEngine.Client
         /// <returns>The job types.</returns>
         public IList<JobType> GetJobTypes()
         {
-            var request = new RestRequest(EndpointName.JobType, Method.GET);
-            var result = RestClient.Execute(request);
-            return JsonConvert.DeserializeObject<IList<JobType>>(result.Content);
+            return GetCollection<JobType>();
         }
         #endregion
 
@@ -221,7 +234,7 @@ namespace IntegrationEngine.Client
         /// <returns>The health status.</returns>
         public HealthStatus GetHealthStatus()
         {
-            var request = new RestRequest(EndpointName.HealthStatus, Method.GET);
+            var request = new RestRequest(typeof(HealthStatus).Name, Method.GET);
             var result = RestClient.Execute(request);
             return JsonConvert.DeserializeObject<HealthStatus>(result.Content);
         }

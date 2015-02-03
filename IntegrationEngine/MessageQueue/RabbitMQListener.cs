@@ -84,7 +84,7 @@ namespace IntegrationEngine.MessageQueue
                     }
                     catch (Exception exception)
                     {
-                        Log.Error(x => x("Integration job did not run successfully ({0})}", message.JobTypeName), exception);
+                        Log.Error(x => x("Integration job did not run successfully ({0})", message.JobTypeName), exception);
                     }
                 }
             }

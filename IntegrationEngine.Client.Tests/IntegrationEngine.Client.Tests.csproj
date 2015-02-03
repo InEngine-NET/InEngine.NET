@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InEngineClientTest.cs" />
+    <Compile Include="ResourceStub.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -60,6 +61,13 @@
       <Project>{F3FCB706-F0DD-46C1-B121-785757FAE9B9}</Project>
       <Name>IntegrationEngine.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
+      <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
+      <Name>IntegrationEngine.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
