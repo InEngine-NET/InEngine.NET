@@ -31,36 +31,6 @@ namespace IntegrationEngine.Model.Tests
         }
 
         [Test]
-        public void ShouldGetTimeZoneFromTimeZoneId()
-        {
-            string timeZoneId = "New York Standard Time";
-
-            var result = timeZoneId.GetTimeZoneInfo();
-
-            Assert.That(result, Is.EqualTo(TimeZoneInfo.Utc));
-        }
-
-        [Test]
-        public void ShouldReturnUtcTimeZoneIfTimeZoneIdIsNull()
-        {
-            string timeZoneId = null;
-
-            var result = timeZoneId.GetTimeZoneInfo();
-
-            Assert.That(result, Is.EqualTo(TimeZoneInfo.Utc));
-        }
-
-        [Test]
-        public void ShouldReturnUtcTimeZoneIfTimeZoneIdDoesNotExist()
-        {
-            string timeZoneId = "foo";
-
-            var result = timeZoneId.GetTimeZoneInfo();
-
-            Assert.That(result, Is.EqualTo(TimeZoneInfo.Utc));
-        }
-
-        [Test]
         public void ShouldReturnHumanReadableCronSchedule()
         {
             var expected = "Every minute";
@@ -79,16 +49,6 @@ namespace IntegrationEngine.Model.Tests
             var result = cronExpression.GetHumanReadableCronSchedule();
 
             Assert.That(result, Is.EqualTo(String.Empty));
-        }
-
-        [Test]
-        public void ShouldReturnEmptyStringIfCronExpressionIsInvalidString()
-        {
-            string cronExpression = "foo";
-
-            var result = cronExpression.GetTimeZoneInfo();
-
-            Assert.That(result, Is.EqualTo(TimeZoneInfo.Utc));
         }
     }
 }

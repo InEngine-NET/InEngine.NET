@@ -1,4 +1,4 @@
-﻿using InEngineTimeZone = IntegrationEngine.Model.TimeZone;
+﻿using InEngineLogEvent = IntegrationEngine.Model.LogEvent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -205,14 +205,14 @@ namespace IntegrationEngine.Client
         }
         #endregion
 
-        #region TimeZone
+        #region LogEvent
         /// <summary>
-        /// Gets the time zones.
+        /// Gets the log events.
         /// </summary>
-        /// <returns>The time zones.</returns>
-        public IList<InEngineTimeZone> GetTimeZones()
+        /// <returns>The log events.</returns>
+        public IList<LogEvent> GetLogEvents()
         {
-            return GetCollection<InEngineTimeZone>();
+            return GetCollection<LogEvent>();
         }
         #endregion
 

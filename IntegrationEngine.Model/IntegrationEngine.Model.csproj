@@ -67,8 +67,6 @@
     <Compile Include="CronTrigger.cs" />
     <Compile Include="SimpleTrigger.cs" />
     <Compile Include="IIntegrationJobTrigger.cs" />
-    <Compile Include="TimeZone.cs" />
-    <Compile Include="ITimeZone.cs" />
     <Compile Include="HealthStatus.cs" />
     <Compile Include="IHealthStatus.cs" />
     <Compile Include="TriggerPropertyExtension.cs" />

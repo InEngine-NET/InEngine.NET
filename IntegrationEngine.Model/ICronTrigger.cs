@@ -10,7 +10,5 @@ namespace IntegrationEngine.Model
     {
         string CronExpressionString { get; set; }
         string CronExpressionDescription { get; }
-        string TimeZoneId { get; set; }
-        TimeZoneInfo TimeZoneInfo { get; }
     }
 }

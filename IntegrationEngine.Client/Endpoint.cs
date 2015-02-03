@@ -7,7 +7,7 @@ namespace IntegrationEngine.Client
         CronTrigger,
         SimpleTrigger,
         JobType,
-        TimeZone,
+        LogEvent,
         HealthStatus,
     }
 }

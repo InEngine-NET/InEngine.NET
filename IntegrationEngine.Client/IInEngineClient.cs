@@ -1,5 +1,4 @@
-﻿using InEngineTimeZone = IntegrationEngine.Model.TimeZone;
-using IntegrationEngine.Model;
+﻿using IntegrationEngine.Model;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -25,7 +24,7 @@ namespace IntegrationEngine.Client
         SimpleTrigger CreateSimpleTrigger(SimpleTrigger simpleTrigger);
         SimpleTrigger UpdateSimpleTrigger(SimpleTrigger simpleTrigger);
         SimpleTrigger DeleteSimpleTrigger(string id);
-        IList<InEngineTimeZone> GetTimeZones();
+        IList<LogEvent> GetLogEvents();
         IList<JobType> GetJobTypes();
         HealthStatus GetHealthStatus();
     }

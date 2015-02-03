@@ -91,12 +91,6 @@
     <Compile Include="..\IntegrationEngine.Model\IIntegrationJobTrigger.cs">
       <Link>IIntegrationJobTrigger.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Model\ITimeZone.cs">
-      <Link>ITimeZone.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Model\TimeZone.cs">
-      <Link>TimeZone.cs</Link>
-    </Compile>
     <Compile Include="..\IntegrationEngine.Model\HealthStatus.cs">
       <Link>HealthStatus.cs</Link>
     </Compile>

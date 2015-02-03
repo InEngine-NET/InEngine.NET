@@ -131,7 +131,7 @@ namespace IntegrationEngine.Scheduler
             var triggerBuilder = TriggerBuilderFactory(item.Id, jobType, jobDetail);
             if (item is CronTrigger) {
                 var cronTrigger = item as CronTrigger;
-                triggerBuilder.WithCronSchedule(cronTrigger.CronExpressionString, x => x.InTimeZone(cronTrigger.TimeZoneInfo));
+                triggerBuilder.WithCronSchedule(cronTrigger.CronExpressionString, x => x.InTimeZone(TimeZoneInfo.Utc));
             }
             else if (item is SimpleTrigger) {
                 var simpleTrigger = item as SimpleTrigger;

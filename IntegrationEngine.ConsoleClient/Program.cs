@@ -56,8 +56,8 @@ namespace IntegrationEngine.ConsoleClient
                     case Endpoint.JobType:
                         ResolveResult(client.GetCollection<JobType>());
                         break;
-                    case Endpoint.TimeZone:
-                        ResolveResult(client.GetCollection<IntegrationEngine.Model.TimeZone>());
+                    case Endpoint.LogEvent:
+                        ResolveResult(client.GetCollection<LogEvent>());
                         break;
                     case Endpoint.HealthStatus:
                         ResolveResult(client.GetHealthStatus());
