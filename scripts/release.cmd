@@ -1,1 +1,1 @@
-%userprofile%\bin\nuget.exe push *.nupkg
+.nuget\nuget.exe push *.nupkg

@@ -73,7 +73,7 @@ namespace IntegrationEngine.MessageQueue
                         integrationJob = AutoWireJob(integrationJob, type);
                         if (integrationJob != null)
                         {
-                            if (integrationJob.GetType() is IParameterizedJob)
+                            if (integrationJob is IParameterizedJob)
                                 (integrationJob as IParameterizedJob).Parameters = message.Parameters;
                             integrationJob.Run();
                         }

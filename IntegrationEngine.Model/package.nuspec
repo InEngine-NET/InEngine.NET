@@ -17,7 +17,7 @@
       <reference file="IntegrationEngine.Model.dll" />
     </references>
     <dependencies>
-      <dependency id="CronExpressionDescriptor" version="1.12.0" />
+      <dependency id="CronExpressionDescriptor" version="1.13.0" />
       <dependency id="Elasticsearch.Net" version="1.4.0" />
       <dependency id="NEST" version="1.4.0" />
       <dependency id="Newtonsoft.Json" version="6.0.8" />

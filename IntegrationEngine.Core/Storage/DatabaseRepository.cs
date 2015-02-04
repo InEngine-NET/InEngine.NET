@@ -29,7 +29,7 @@ namespace IntegrationEngine.Core.Storage
             return db.Set<TItem>().ToList<TItem>();
         }
 
-        public TItem SelectById<TItem>(object id) where TItem : class, IHasLongId
+        public TItem SelectById<TItem>(long id) where TItem : class, IHasLongId
         {
             return db.Set<TItem>().Find(id);
 
@@ -47,7 +47,7 @@ namespace IntegrationEngine.Core.Storage
             return db.Entry(item).Entity;
         }
 
-        public void Delete<TItem>(object id) where TItem : class
+        public void Delete<TItem>(long id) where TItem : class
         {
             TItem existing = db.Set<TItem>().Find(id);
             db.Set<TItem>().Remove(existing);
@@ -58,7 +58,7 @@ namespace IntegrationEngine.Core.Storage
             db.SaveChanges();
         }
 
-        public bool Exists<TItem>(object id) where TItem : class
+        public bool Exists<TItem>(long id) where TItem : class
         {
             return db.Set<TItem>().Find(id) != null;
         }

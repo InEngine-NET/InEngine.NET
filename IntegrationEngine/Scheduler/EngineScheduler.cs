@@ -29,7 +29,7 @@ namespace IntegrationEngine.Scheduler
             Scheduler.Start();
         }
 
-        public void Shutdown()
+        public virtual void Shutdown()
         {
             Scheduler.Shutdown();
         }

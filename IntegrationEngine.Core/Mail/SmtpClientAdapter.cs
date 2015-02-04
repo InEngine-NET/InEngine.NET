@@ -11,6 +11,7 @@ namespace IntegrationEngine.Core
 
         public SmtpClientAdapter()
         {
+            SmtpClient = new SmtpClient();
         }
             
         public virtual void Send(MailMessage mailMessage)

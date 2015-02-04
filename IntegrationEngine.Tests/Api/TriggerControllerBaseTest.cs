@@ -87,16 +87,19 @@ namespace IntegrationEngine.Tests.Api
         public void ShouldScheduleJobWhenTriggerIsCreated()
         {
             var jobType = "MyProject.MyIntegrationJob";
+            var triggerWithoutId = new TriggerStub() { JobType = jobType };
             var expected = new TriggerStub() {
-                JobType = jobType
+                JobType = jobType,
+                Id = TriggerDocumentId,
             };
+            MockElasticRepo.Setup(x => x.Insert(triggerWithoutId)).Returns(expected);
             MockEngineScheduler.Setup(x => x.ScheduleJobWithTrigger(expected));
-            MockElasticRepo.Setup(x => x.Insert(expected)).Returns(expected);
 
-            Subject.Post(expected);
+            Subject.Post(triggerWithoutId);
 
+            MockElasticRepo.Verify(x => x.Insert(triggerWithoutId), Times.Once);
             MockEngineScheduler.Verify(x => x
-                .ScheduleJobWithTrigger(It.Is<TriggerStub>(y => y.JobType == jobType)), Times.Once);
+                .ScheduleJobWithTrigger(It.Is<TriggerStub>(y => y.JobType == jobType && y.Id == TriggerDocumentId)), Times.Once);
         }
 
         [Test]
