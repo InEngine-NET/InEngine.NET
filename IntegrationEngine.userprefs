@@ -1,12 +1,23 @@
-﻿<Properties>
+﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleHost/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Options.cs">
     <Files>
-      <File FileName="IntegrationEngine.ConsoleHost/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs" Line="13" Column="13" />
+      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="41" Column="41" />
+      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="25" Column="25" />
+      <File FileName="IntegrationEngine.ConsoleClient/PingSubOptions.cs" Line="6" Column="6" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.Core/Storage/ElasticsearchRepository.cs" line="34" column="1" />
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="31" column="1" />
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="39" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

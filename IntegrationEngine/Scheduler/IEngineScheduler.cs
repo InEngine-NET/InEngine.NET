@@ -10,8 +10,7 @@ namespace IntegrationEngine.Scheduler
         IList<Type> IntegrationJobTypes { get; set; }
         IScheduler Scheduler { get; set; }
         void Start();
-        void ScheduleJobWithCronTrigger(CronTrigger triggerDefinition);
-        void ScheduleJobWithSimpleTrigger(SimpleTrigger triggerDefinition);
+        void ScheduleJobWithTrigger<T>(T item) where T : IIntegrationJobTrigger;
         bool IsJobTypeRegistered(string jobTypeName);
         Type GetRegisteredJobTypeByName(string jobTypeName);
         bool DeleteTrigger(IIntegrationJobTrigger triggerDefinition);

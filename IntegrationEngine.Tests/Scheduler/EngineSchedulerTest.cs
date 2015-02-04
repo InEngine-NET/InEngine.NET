@@ -15,23 +15,23 @@ namespace IntegrationEngine.Tests.Scheduler
         {
             CronTrigger = new CronTrigger() {
                 Id = "one",
-                JobType = IntegrationJobFixture.FullName,
+                JobType = IntegrationJobStub.FullName,
                 CronExpressionString = "* * * * * ?",
             };
-            Subject.IntegrationJobTypes = new List<Type>() { IntegrationJobFixture.Type };
+            Subject.IntegrationJobTypes = new List<Type>() { IntegrationJobStub.Type };
             Subject.Scheduler = StdSchedulerFactory.GetDefaultScheduler();
         }
 
         [Test]
         public void ShouldScheduleCronTriggerWithoutAnExceptionThrown()
         {
-            Subject.ScheduleJobWithCronTrigger(CronTrigger);
+            Subject.ScheduleJobWithTrigger(CronTrigger);
         }
 
         [Test]
         public void ShouldDeleteTrigger()
         {
-            Subject.ScheduleJobWithCronTrigger(CronTrigger);
+            Subject.ScheduleJobWithTrigger(CronTrigger);
 
             var result = Subject.DeleteTrigger(CronTrigger);
 

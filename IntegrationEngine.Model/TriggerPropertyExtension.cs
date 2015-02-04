@@ -10,20 +10,6 @@ namespace IntegrationEngine.Model
             return ((TriggerStateDescription)value).ToString();
         }
 
-        public static TimeZoneInfo GetTimeZoneInfo(this string value)
-        {
-            if (value == null)
-                return TimeZoneInfo.Utc;
-            try
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById(value);
-            } 
-            catch
-            {
-                return TimeZoneInfo.Utc;
-            }
-        }
-
         public static string GetHumanReadableCronSchedule(this string value)
         {
             if (value == null)

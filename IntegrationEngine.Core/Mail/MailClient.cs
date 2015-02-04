@@ -4,17 +4,20 @@ using System;
 using System.Net.Mail;
 using System.Net.Sockets;
 using System.IO;
+using System.Text;
 
 namespace IntegrationEngine.Core.Mail
 {
     public class MailClient : IMailClient
     {
-        public SmtpClient SmtpClient { get; set; }
+        public ISmtpClient SmtpClient { get; set; }
         public MailConfiguration MailConfiguration { get; set; }
         public ILog Log { get; set; }
 
         public MailClient()
-        {}
+        {
+            SmtpClient = new SmtpClientAdapter();
+        }
 
         public MailClient (ILog log) : this()
         {
@@ -23,7 +26,8 @@ namespace IntegrationEngine.Core.Mail
 
         public void Send(MailMessage mailMessage)
         {
-            ConfigureSmtpClient();
+            SmtpClient.Host = MailConfiguration.HostName;
+            SmtpClient.Port = MailConfiguration.Port;
             try
             {
                 SmtpClient.Send(mailMessage);
@@ -34,17 +38,10 @@ namespace IntegrationEngine.Core.Mail
             }
         }
 
-        void ConfigureSmtpClient()
-        {
-            if (SmtpClient == null)
-                SmtpClient = new SmtpClient();
-            SmtpClient.Host = MailConfiguration.HostName;
-            SmtpClient.Port = MailConfiguration.Port;
-        }
-
         public bool IsServerAvailable()
         {
-            try 
+            var isAvailable = false;
+            try
             {
                 using (var client = new TcpClient())
                 {
@@ -57,19 +54,18 @@ namespace IntegrationEngine.Core.Mail
                             writer.WriteLine("EHLO " + MailConfiguration.HostName);
                             writer.Flush();
                             var response = reader.ReadLine();
-                            Log.Debug(x => x("Mail server status: {0}", response));
                             if (response != null)
-                                return true;
+                                isAvailable = true;
                         }
                     }
                 }
             }
-            catch(SocketException exception) 
+            catch (SocketException exception)
             {
                 Log.Error(exception);
-                return false;
+                isAvailable = false;
             }
-            return false;
+            return isAvailable;
         }
     }
 }

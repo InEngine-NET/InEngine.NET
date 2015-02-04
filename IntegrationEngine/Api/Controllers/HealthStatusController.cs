@@ -17,17 +17,17 @@ namespace IntegrationEngine.Api.Controllers
     {
         public IMailClient MailClient { get; set; }
         public IMessageQueueClient MessageQueueClient { get; set; }
-        public ESRepository<CronTrigger> ESRepository { get; set; }
+        public IElasticsearchRepository Repository { get; set; }
 
         public HealthStatusController()
         {}
 
-        public HealthStatusController(IMailClient mailClient, IMessageQueueClient messageQueueClient, ESRepository<CronTrigger> esRepository)
+        public HealthStatusController(IMailClient mailClient, IMessageQueueClient messageQueueClient, IElasticsearchRepository repository)
             : this()
         {
             MailClient = mailClient;
             MessageQueueClient = messageQueueClient;
-            ESRepository = esRepository;
+            Repository = repository;
         }
 
         [ResponseType(typeof(InEngineHealthStatus))]
@@ -36,7 +36,7 @@ namespace IntegrationEngine.Api.Controllers
             return Ok(new InEngineHealthStatus() {
                 IsMailServerAvailable = MailClient.IsServerAvailable(),
                 IsMessageQueueServerAvailable = MessageQueueClient.IsServerAvailable(),
-                IsElasticsearchServerAvailable = ESRepository.IsServerAvailable(),
+                IsElasticsearchServerAvailable = Repository.IsServerAvailable(),
             });
         }
     }

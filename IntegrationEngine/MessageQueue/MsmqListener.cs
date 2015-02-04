@@ -1,4 +1,4 @@
-﻿﻿using Common.Logging;
+﻿using Common.Logging;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
@@ -58,6 +58,7 @@ namespace IntegrationEngine.MessageQueue
         {
             throw new NotImplementedException();
         }
+
         T AutoWireJob<T>(T job, Type type)
         {
             if (type.GetInterface(typeof(IMailJob).Name) != null)

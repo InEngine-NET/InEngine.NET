@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace IntegrationEngine.Tests
 {
-    public class IntegrationJobFixture : IIntegrationJob
+    public class IntegrationJobStub : IIntegrationJob
     {
-        public static Type Type { get { return typeof(IntegrationJobFixture); } }
+        public static Type Type { get { return typeof(IntegrationJobStub); } }
         public static string FullName { get { return Type.FullName; } }
         public void Run()
         {}        
