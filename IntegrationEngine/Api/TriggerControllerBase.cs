@@ -42,7 +42,7 @@ namespace IntegrationEngine.Api
             if (id != trigger.Id)
                 return BadRequest();
             if (!ModelState.IsValid)
-                BadRequest(ModelState);
+                return BadRequest(ModelState);
             var updatedTrigger = Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithTrigger(updatedTrigger);
             return Ok(updatedTrigger);
@@ -53,7 +53,7 @@ namespace IntegrationEngine.Api
         public IHttpActionResult Post(T trigger)
         {
             if (!ModelState.IsValid)
-                BadRequest(ModelState);
+                return BadRequest(ModelState);
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
