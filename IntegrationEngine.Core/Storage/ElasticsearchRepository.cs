@@ -71,7 +71,7 @@ namespace IntegrationEngine.Core.Storage
             return documents.AsEnumerable();
         }
 
-        public TItem SelectById<TItem>(object id) where TItem : class, IHasStringId
+        public TItem SelectById<TItem>(string id) where TItem : class, IHasStringId
         {
             var response = ElasticClient.Get<TItem>(x => x.Id(id.ToString()));
             if (response.Source == null)
@@ -95,15 +95,15 @@ namespace IntegrationEngine.Core.Storage
             );
             return SelectById<TItem>(updateResponse.Id);
         }
-            
-        public void Delete<TItem>(object id) where TItem : class
+
+        public void Delete<TItem>(string id) where TItem : class
         {
             ElasticClient.Delete<TItem>(x => x.Id(id.ToString()));
         }
 
-        public bool Exists<TItem>(object id) where TItem : class
+        public bool Exists<TItem>(string id) where TItem : class
         {
-            return ElasticClient.DocumentExists<TItem>(x => x.Id(id.ToString())).Exists;
+            return ElasticClient.DocumentExists<TItem>(x => x.Id(id)).Exists;
         }
 
         public bool IsServerAvailable()
