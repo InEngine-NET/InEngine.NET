@@ -5,6 +5,8 @@ namespace IntegrationEngine.Core.Storage
 {
     public class IntegrationEngineContext : DbContext
     {
+        public IntegrationEngineContext() { }
+
         public IntegrationEngineContext(string connectionString)
             : base(connectionString)
         { }

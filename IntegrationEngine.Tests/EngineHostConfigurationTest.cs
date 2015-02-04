@@ -18,11 +18,13 @@ namespace IntegrationEngine.Tests
     public class EngineHostConfigurationTest : TestBase<EngineHostConfiguration>
     {
         public IUnityContainer UnityContainer { get; set; }
+        public Mock<ILog> MockLog { get; set; }
 
         [SetUp]
         public void Setup()
         {
             Subject.Container = UnityContainer = new UnityContainer();
+            MockLog = new Mock<ILog>();
         }
 
         [Test]
@@ -44,13 +46,23 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
-        public void ShouldSetupDatabaseAndRepository()
+        public void ShouldSetupDatabaseContext()
         {
             Subject.LoadConfiguration();
 
-            Subject.SetupDatabaseRepository();
+            Subject.SetupDatabaseContext();
 
             Subject.Container.Resolve<IntegrationEngineContext>();
+        }
+
+        [Test]
+        public void ShouldSetupDatabaseRepository()
+        {
+            Subject.LoadConfiguration();
+            var mockIntegrationEngineContext = new Mock<IntegrationEngineContext>();
+
+            Subject.SetupDatabaseRepository(mockIntegrationEngineContext.Object);
+
             Subject.Container.Resolve<IDatabaseRepository>();
         }
 
@@ -58,22 +70,30 @@ namespace IntegrationEngine.Tests
         public void ShouldSetupMailClient()
         {
             Subject.LoadConfiguration();
-            Subject.SetupLogging();
 
-            Subject.SetupMailClient();
+            Subject.SetupMailClient(MockLog.Object);
 
             Subject.Container.Resolve<IMailClient>();
         }
 
         [Test]
-        public void ShouldSetupElasticClientAndRepository()
+        public void ShouldSetupElasticClient()
         {
             Subject.LoadConfiguration();
-            Subject.SetupLogging();
 
-            Subject.SetupElasticClientAndRepository();
+            Subject.SetupElasticClient();
 
             Subject.Container.Resolve<IElasticClient>();
+        }
+
+        [Test]
+        public void ShouldSetupElasticsearchRepository()
+        {
+            Subject.LoadConfiguration();
+            var mockElasticClient = new Mock<IElasticClient>();
+
+            Subject.SetupElasticsearchRepository(MockLog.Object, mockElasticClient.Object);
+
             Subject.Container.Resolve<IElasticsearchRepository>();
         }
 
@@ -81,12 +101,11 @@ namespace IntegrationEngine.Tests
         public void ShouldSetupMessageQueueListener()
         {
             Subject.LoadConfiguration();
-            Subject.SetupLogging();
-            Subject.SetupMailClient();
-            Subject.SetupDatabaseRepository();
-            Subject.SetupElasticClientAndRepository();
+            var mockMailClient = new Mock<IMailClient>();
+            var mockElasticClient = new Mock<IElasticClient>();
+            var mockIntegrationEngineContext = new Mock<IntegrationEngineContext>();
 
-            Subject.SetupMessageQueueListener();
+            Subject.SetupMessageQueueListener(MockLog.Object, mockMailClient.Object, mockElasticClient.Object, mockIntegrationEngineContext.Object);
 
             Subject.Container.Resolve<IMessageQueueListener>();
         }
@@ -95,9 +114,8 @@ namespace IntegrationEngine.Tests
         public void ShouldSetupMessageQueueClient()
         {
             Subject.LoadConfiguration();
-            Subject.SetupLogging();
 
-            Subject.SetupMessageQueueClient();
+            Subject.SetupMessageQueueClient(MockLog.Object);
 
             Subject.Container.Resolve<IMessageQueueClient>();
         }
@@ -107,11 +125,11 @@ namespace IntegrationEngine.Tests
         {
             Subject.IntegrationJobTypes = new List<Type>();
             Subject.LoadConfiguration();
-            Subject.SetupLogging();
-            Subject.SetupMessageQueueClient();
-            Subject.SetupElasticClientAndRepository();
+            var mockMailClient = new Mock<IMailClient>();
+            var mockElasticsearchRespository= new Mock<IElasticsearchRepository>();
+            var mockMessageQueueClient = new Mock<IMessageQueueClient>();
 
-            Subject.SetupEngineScheduler();
+            Subject.SetupEngineScheduler(MockLog.Object, mockMessageQueueClient.Object, mockElasticsearchRespository.Object);
 
             Subject.Container.Resolve<IEngineScheduler>();
         }

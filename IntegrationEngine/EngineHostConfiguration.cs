@@ -38,28 +38,17 @@ namespace IntegrationEngine
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
                         .ToList();
             LoadConfiguration();
-            SetupLogging();
-            TryAndLogFailure("Setup Database Repository", SetupDatabaseRepository);
-            TryAndLogFailure("Setup Mail Client", SetupMailClient);
-            TryAndLogFailure("Setup Elastic Client", SetupElasticClientAndRepository);
-            TryAndLogFailure("Setup RScript Runner", SetupRScriptRunner);
-            TryAndLogFailure("Setup Message Queue Client", SetupMessageQueueClient);
-            TryAndLogFailure("Setup Scheduler", SetupEngineScheduler);
-            TryAndLogFailure("Setup Web Api", SetupWebApi);
-            TryAndLogFailure("Setup Message Queue Listener", SetupMessageQueueListener);
-        }
-
-        static void TryAndLogFailure(string description, Action action)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception exception)
-            {
-                var log = Common.Logging.LogManager.GetLogger(typeof(EngineHost));
-                log.Error(description, exception);
-            }
+            var log = SetupLogging();
+            var dbContext = SetupDatabaseContext();
+            SetupRScriptRunner();
+            SetupDatabaseRepository(dbContext);
+            var mailClient = SetupMailClient(log);
+            var elasticClient = SetupElasticClient();
+            var elasticsearchRepository = SetupElasticsearchRepository(log, elasticClient);
+            var messageQueueClient = SetupMessageQueueClient(log);
+            SetupEngineScheduler(log, messageQueueClient, elasticsearchRepository);
+            SetupMessageQueueListener(log, mailClient, elasticClient, dbContext);
+            SetupWebApi();
         }
 
         public void LoadConfiguration()
@@ -68,7 +57,7 @@ namespace IntegrationEngine
             Container.RegisterInstance<EngineConfiguration>(Configuration);
         }
 
-        public void SetupLogging()
+        public ILog SetupLogging()
         {
             var config = Configuration.NLogAdapter;
             var properties = new NameValueCollection();
@@ -77,13 +66,19 @@ namespace IntegrationEngine
             Common.Logging.LogManager.Adapter = new NLogLoggerFactoryAdapter(properties);  
             var log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             Container.RegisterInstance<ILog>(log);
+            return log;
         }
 
-        public void SetupDatabaseRepository()
+        public IntegrationEngineContext SetupDatabaseContext()
         {
-            var dbContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
-            Container.RegisterInstance<IntegrationEngineContext>(dbContext);
-            Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(dbContext));
+            var integrationEngineContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
+            Container.RegisterInstance<IntegrationEngineContext>(integrationEngineContext);
+            return integrationEngineContext;
+        }
+
+        public void SetupDatabaseRepository(IntegrationEngineContext integrationEngineContext)
+        {
+            Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(integrationEngineContext));
         }
 
         public void SetupWebApi()
@@ -92,57 +87,54 @@ namespace IntegrationEngine
             IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
         }
 
-        public void SetupMailClient()
+        public IMailClient SetupMailClient(ILog log)
         {
-            var log = Container.Resolve<ILog>();
-
             var mailClient = new MailClient() {
                 MailConfiguration = Configuration.Mail,
                 Log = log,
             };
             Container.RegisterInstance<IMailClient>(mailClient);
+            return mailClient;
         }
 
-        public void SetupMessageQueueListener()
+        public void SetupMessageQueueListener(ILog log, IMailClient mailClient, IElasticClient elasticClient, IntegrationEngineContext integrationEngineContext)
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
-                Log = Container.Resolve<ILog>(),
-                MailClient = Container.Resolve<IMailClient>(),
-                IntegrationEngineContext = Container.Resolve<IntegrationEngineContext>(),
-                ElasticClient = Container.Resolve<IElasticClient>(),
+                Log = log,
+                MailClient = mailClient,
+                IntegrationEngineContext = integrationEngineContext,
+                ElasticClient = elasticClient,
             };
             Container.RegisterInstance<IMessageQueueListener>(rabbitMqListener);
             rabbitMqListener.Listen();
         }
 
-        public void SetupMessageQueueClient()
+        public IMessageQueueClient SetupMessageQueueClient(ILog log)
         {
             var messageQueueClient = new RabbitMQClient() {
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
-                Log = Container.Resolve<ILog>(),
+                Log = log,
             };
             Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
+            return messageQueueClient;
         }
 
-        public void SetupEngineScheduler()
+        public void SetupEngineScheduler(ILog log, IMessageQueueClient messageQueueClient, IElasticsearchRepository elasticsearchRepository)
         {
-            var log = Container.Resolve<ILog>();
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueClient = Container.Resolve<IMessageQueueClient>(),
+                MessageQueueClient = messageQueueClient,
                 Log = log,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             engineScheduler.Start();
-
-            var elasticRepo = Container.Resolve<IElasticsearchRepository>();
-            var simpleTriggers = elasticRepo.SelectAll<SimpleTrigger>();
-            var allCronTriggers = elasticRepo.SelectAll<CronTrigger>();
+            var simpleTriggers = elasticsearchRepository.SelectAll<SimpleTrigger>();
+            var allCronTriggers = elasticsearchRepository.SelectAll<CronTrigger>();
             var cronTriggers = allCronTriggers.Where(x => !string.IsNullOrWhiteSpace(x.CronExpressionString));
             foreach (var trigger in simpleTriggers)
                 engineScheduler.ScheduleJobWithTrigger(trigger);
@@ -157,21 +149,26 @@ namespace IntegrationEngine
             Container.RegisterInstance<RScriptRunner>(new RScriptRunner());
         }
 
-        public void SetupElasticClientAndRepository()
+        public IElasticClient SetupElasticClient()
         {
             var config = Configuration.Elasticsearch;
             var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
             var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
             var elasticClient = new ElasticClient(settings);
-            var log = Container.Resolve<ILog>();
             Container.RegisterInstance<IElasticClient>(elasticClient);
-            var elasticRepo = new ElasticsearchRepository() {
-                ElasticClient = elasticClient,
+            return elasticClient;
+        }
+
+        public IElasticsearchRepository SetupElasticsearchRepository(ILog log, IElasticClient elasticClient)
+        {
+            var elasticsearchRepository = new ElasticsearchRepository() {
                 Log = log,
+                ElasticClient = elasticClient,
             };
-            if (!elasticRepo.IsServerAvailable())
+            if (!elasticsearchRepository.IsServerAvailable())
                 log.Warn("Elasticsearch server does not appear to be available.");
-            Container.RegisterInstance<IElasticsearchRepository>(elasticRepo);
+            Container.RegisterInstance<IElasticsearchRepository>(elasticsearchRepository);
+            return elasticsearchRepository;
         }
 
         public void Dispose()
