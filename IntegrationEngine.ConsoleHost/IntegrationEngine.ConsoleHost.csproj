@@ -95,6 +95,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\IntegrationEngine.Client\IntegrationEngine.Client.csproj">
+      <Project>{f3fcb706-f0dd-46c1-b121-785757fae9b9}</Project>
+      <Name>IntegrationEngine.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
       <Project>{3F3794D7-4078-4D26-954C-7864173EDD86}</Project>
       <Name>IntegrationEngine.Core</Name>
