@@ -41,11 +41,11 @@ namespace IntegrationEngine
             SetupLogging();
             TryAndLogFailure("Setup Database Repository", SetupDatabaseRepository);
             TryAndLogFailure("Setup Mail Client", SetupMailClient);
-            TryAndLogFailure("Setup Elastic Client", SetupElasticClient);
+            TryAndLogFailure("Setup Elastic Client", SetupElasticClientAndRepository);
             TryAndLogFailure("Setup RScript Runner", SetupRScriptRunner);
             TryAndLogFailure("Setup Message Queue Client", SetupMessageQueueClient);
-            TryAndLogFailure("Setup Scheduler", SetupScheduler);
-            TryAndLogFailure("Setup Web Api", SetupApi);
+            TryAndLogFailure("Setup Scheduler", SetupEngineScheduler);
+            TryAndLogFailure("Setup Web Api", SetupWebApi);
             TryAndLogFailure("Setup Message Queue Listener", SetupMessageQueueListener);
         }
 
@@ -81,10 +81,12 @@ namespace IntegrationEngine
 
         public void SetupDatabaseRepository()
         {
-            Container.RegisterInstance<IntegrationEngineContext>(new DatabaseInitializer(Configuration.Database).GetDbContext());
+            var dbContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
+            Container.RegisterInstance<IntegrationEngineContext>(dbContext);
+            Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(dbContext));
         }
 
-        public void SetupApi()
+        public void SetupWebApi()
         {
             var config = Configuration.WebApi;
             IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
@@ -98,7 +100,6 @@ namespace IntegrationEngine
                 MailConfiguration = Configuration.Mail,
                 Log = log,
             };
-            mailClient.IsServerAvailable();
             Container.RegisterInstance<IMailClient>(mailClient);
         }
 
@@ -127,7 +128,7 @@ namespace IntegrationEngine
             Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
         }
 
-        public void SetupScheduler()
+        public void SetupEngineScheduler()
         {
             var log = Container.Resolve<ILog>();
             var engineScheduler = new EngineScheduler() {
@@ -156,7 +157,7 @@ namespace IntegrationEngine
             Container.RegisterInstance<RScriptRunner>(new RScriptRunner());
         }
 
-        public void SetupElasticClient()
+        public void SetupElasticClientAndRepository()
         {
             var config = Configuration.Elasticsearch;
             var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
