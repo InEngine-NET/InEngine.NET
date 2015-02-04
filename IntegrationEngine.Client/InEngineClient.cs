@@ -80,7 +80,8 @@ namespace IntegrationEngine.Client
         public TItem Create<TItem>(TItem item)
         {
             var request = new RestRequest(typeof(TItem).Name, Method.POST);
-            request.AddObject(item);
+            var json = JsonConvert.SerializeObject(item);
+            request.AddParameter("text/json", json, ParameterType.RequestBody);
             var result = RestClient.Execute(request);
             return JsonConvert.DeserializeObject<TItem>(result.Content);
         }
@@ -89,7 +90,8 @@ namespace IntegrationEngine.Client
         {
             var request = new RestRequest(typeof(TItem).Name + "/{id}", Method.PUT);
             request.AddUrlSegment("id", item.Id);
-            request.AddObject(item);
+            var json = JsonConvert.SerializeObject(item);
+            request.AddParameter("text/json", json, ParameterType.RequestBody);
             var result = RestClient.Execute(request);
             return JsonConvert.DeserializeObject<TItem>(result.Content);
         }

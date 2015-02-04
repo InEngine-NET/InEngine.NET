@@ -151,7 +151,6 @@
     <Compile Include="Configuration\MessageQueueConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
-    <Compile Include="DataAnnotations\TimeZoneIdAttribute.cs" />
     <Compile Include="MessageQueue\DispatchMessage.cs" />
     <Compile Include="MessageQueue\IMessageQueueListener.cs" />
     <Compile Include="MessageQueue\MsmqClient.cs" />

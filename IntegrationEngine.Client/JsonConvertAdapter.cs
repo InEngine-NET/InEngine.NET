@@ -9,6 +9,11 @@ namespace IntegrationEngine.Client
         {
             return JsonConvert.DeserializeObject<T>(value);
         }
+
+        public virtual string SerializeObject(object value)
+        {
+            return JsonConvert.SerializeObject(value);
+        }
     }
 }
 
