@@ -23,10 +23,12 @@ namespace IntegrationEngine.Scheduler
 
         public void Start()
         {
-            var triggerListener = new TriggerListener();
-            var mgr = Scheduler.ListenerManager;
-            mgr.AddTriggerListener(triggerListener, GroupMatcher<TriggerKey>.AnyGroup());
             Scheduler.Start();
+        }
+
+        public void AddSchedulerListener(EngineSchedulerListener engineSchedulerListener)
+        {
+            Scheduler.ListenerManager.AddSchedulerListener(engineSchedulerListener);
         }
 
         public virtual void Shutdown()

@@ -132,6 +132,11 @@ namespace IntegrationEngine
                 Log = log,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
+            var engineSchedulerListener = new EngineSchedulerListener() {
+                ElasticsearchRepository = elasticsearchRepository,
+                Log = log,
+            };
+            engineScheduler.AddSchedulerListener(engineSchedulerListener);
             engineScheduler.Start();
             var simpleTriggers = elasticsearchRepository.SelectAll<SimpleTrigger>();
             var allCronTriggers = elasticsearchRepository.SelectAll<CronTrigger>();
