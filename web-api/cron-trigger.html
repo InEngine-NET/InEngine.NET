@@ -279,7 +279,7 @@
 <pre><code class="language-sh">curl http://localhost:9001/api/CronTrigger/ID</code></pre>
 <h3>Create a New CronTrigger</h3>
 <p>POST api/CronTrigger</p>
-<pre><code class="language-sh">curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&amp;CronExpressionString=0 3 4 ? * MON-FRI *&amp;TimeZoneId=America/New_York" http://localhost:9001/api/CronTrigger</code></pre>
+<pre><code class="language-sh">curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&amp;CronExpressionString=0 3 4 ? * MON-FRI *" http://localhost:9001/api/CronTrigger</code></pre>
 <h3>Update a Specific CronTrigger by ID</h3>
 <p>PUT api/CronTrigger/ID</p>
 <pre><code class="language-sh">curl -XPUT "CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger/ID</code></pre>
