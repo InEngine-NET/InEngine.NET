@@ -50,7 +50,7 @@ curl http://localhost:9001/api/CronTrigger/ID
 ### Create a New CronTrigger
 POST api/CronTrigger
 ```sh
-curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&CronExpressionString=0 3 4 ? * MON-FRI *&TimeZoneId=America/New_York" http://localhost:9001/api/CronTrigger
+curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&CronExpressionString=0 3 4 ? * MON-FRI *" http://localhost:9001/api/CronTrigger
 ```
 
 ### Update a Specific CronTrigger by ID
