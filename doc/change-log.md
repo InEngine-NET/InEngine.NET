@@ -13,7 +13,7 @@ __Fixes__
 ## 2.0.0-beta9
 
 __Fixes__
-* Return BadRequest in TriggerControllerBase instead of simply calling it
+* Return BadRequest in TriggerControllerBase instead of simply calling it.
 
 ## 2.0.0-beta8
 
@@ -26,10 +26,10 @@ __Chores__
 * DRYout Web API and Repository Layer.
 * DRYout IntegrationEngine.Client.
 * Refactor ConsoleClient internals.
-* Use generics for repo item id.
+* Use generic type argument for repo item Id parameters.
 
 __Fixes__
-* TCPClient issues with mail server health check.
+* Resolve TCPClient issues with mail server health check.
 
 ## 2.0.0-beta7
 
