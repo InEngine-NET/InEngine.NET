@@ -238,31 +238,44 @@
                 </a>
             </li>
                     <li class="active">
-                <a href="http://inengine.net/web-api/time-zone.html">
+                <a href="http://inengine.net/web-api/log-event.html">
                     <span class=""></span>
-                    <span>TimeZone</span>
+                    <span>LogEvent</span>
                 </a>
             </li>
             </ul>
-    <h2>TimeZone Endpoint</h2>
-<p>The TimeZone endpoint allows for the retrieval of a system's TimeZone list, provided internally by the <a href="http://msdn.microsoft.com/en-us/library/system.timezoneinfo.getsystemtimezones%28v=vs.110%29.aspx">TimeZoneInfo.GetSystemTimeZones</a> method.</p>
+    <h2>LogEvent Endpoint</h2>
+<p>The LogEvent endpoint allows for the retrieval of log events.</p>
 <h3>Parameters</h3>
 <div class="table-responsive">
 <table class="table table-bordered">
 <thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
 <tbody>
-    <tr><td>Id</td><td><span class="label label-info">string</span></td></td>
-        <td>The time zone identifier. A suitable value for a CronTrigger's TimeZoneId field.</td>
+    <tr>
+        <td>Id</td>
+        <td><span class="label label-info">string</span></td></td>
+        <td>A unique, auto-generated identifier for the log event.</td>
     </tr>
-    <tr><td>DisplayName</td><td><span class="label label-info">string</span></td></td>
-        <td>The general display name that represents the time zone.</td>
+    <tr>
+        <td>StartTimeUtc</td><td><a href="http://msdn.microsoft.com/en-us/library/system.datetimeoffset%28v=vs.110%29.aspx">System.DateTimeOffset</a></td>
+        <td>The time at which the log event was created.</td>
+    </tr>
+    <tr>
+        <td>Level</td>
+        <td><span class="label label-info">string</span></td></td>
+        <td>The <a href="http://en.wikipedia.org/wiki/Log4j#Log4j_1_Log_level">level</a> of the log event.</td>
+    </tr>
+    <tr>
+        <td>Message</td>
+        <td><span class="label label-info">string</span></td></td>
+        <td>The textual message body of the log event.</td>
     </tr>
 </tbody>
 </table>
 </div>
 <h3>Get a List of TimeZones</h3>
-<p>GET api/TimeZone</p>
-<pre><code class="language-sh">curl http://localhost:9001/api/TimeZone</code></pre>
+<p>GET api/LogEvent</p>
+<pre><code class="language-sh">curl http://localhost:9001/api/LogEvent</code></pre>
                 </section>
 
             </div>
