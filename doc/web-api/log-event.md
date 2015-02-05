@@ -36,7 +36,7 @@ The LogEvent endpoint allows for the retrieval of log events.
 </tbody>
 </table>
 </div>
-### Get a List of TimeZones
+### Get a List of LogEvents
 GET api/LogEvent
 ```sh   
 curl http://localhost:9001/api/LogEvent

@@ -31,9 +31,6 @@ The CronTrigger endpoint allows for an integration job to be scheduled by creati
     <tr><td>CronExpressionString</td><td><span class="label label-info">string</span></td>
     <td>A valid <a href="http://en.wikipedia.org/wiki/Cron#CRON_expression">cron expression</a>.</td>
     </tr>
-    <tr><td>TimeZoneId</td><td><span class="label label-info">string</span></td>
-        <td>A time zone string id, as defined by the TimeZone endpoint.</td>
-    </tr>
 </tbody>
 </table>
 </div>
