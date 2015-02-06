@@ -11,6 +11,9 @@ namespace IntegrationEngine.Model
         public virtual string CronExpressionString { get; set; }
         public virtual int StateId { get; set; }
         public virtual IDictionary<string, string> Parameters { get; set; }
+        public int RetryCount { get; set; }
+        public TimeSpan RetryInterval { get; set; }
+        public TimeSpan RetryStartDelay { get; set; }
         [ElasticProperty(OptOut = true)]
         public virtual string CronExpressionDescription { get { return CronExpressionString.GetHumanReadableCronSchedule(); } }
         [ElasticProperty(OptOut = true)]

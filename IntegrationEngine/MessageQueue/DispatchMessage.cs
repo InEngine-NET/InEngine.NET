@@ -11,5 +11,10 @@ namespace IntegrationEngine.MessageQueue
     {
         public string JobTypeName { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
+        public int RetryCounter { get; set; }
+
+        public DispatchMessage () {
+            RetryCounter = 0;
+        }
     }
 }

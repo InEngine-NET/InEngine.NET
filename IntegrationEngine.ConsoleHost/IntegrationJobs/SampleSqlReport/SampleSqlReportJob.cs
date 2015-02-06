@@ -31,6 +31,7 @@ namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
                 mailMessage.Body = html;
                 mailMessage.IsBodyHtml = true;
                 MailClient.Send(mailMessage);
+                throw new Exception();
             }
             catch (Exception exception)
             {

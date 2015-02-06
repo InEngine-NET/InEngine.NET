@@ -3,6 +3,7 @@ using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
+//using IntegrationEngine.Scheduler;
 using Nest;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -29,6 +30,8 @@ namespace IntegrationEngine.MessageQueue
         public IMailClient MailClient { get; set; }
         public IntegrationEngineContext IntegrationEngineContext { get; set; }
         public IElasticClient ElasticClient { get; set; }
+        //public IEngineScheduler EngineScheduler { get; set; }
+        public IMessageQueueClient MessageQueueClient { get; set; }
 
         public RabbitMQListener()
         {
@@ -77,12 +80,29 @@ namespace IntegrationEngine.MessageQueue
                         {
                             if (integrationJob is IParameterizedJob)
                                 (integrationJob as IParameterizedJob).Parameters = message.Parameters;
-                            integrationJob.Run();
+                            try
+                            {
+                                integrationJob.Run();
+                            }
+                            catch (IntegrationJobRunFailureException exception)
+                            {
+                                Log.Error(x => x("Integration job did not run successfully ({0}).", message.JobTypeName), exception);
+                                if (message is IntegrationEngine.Model.IRetryOnFailure)
+                                {
+                                    var retriableMessage = (message as IntegrationEngine.Model.IRetryOnFailure);
+                                    if (retriableMessage.RetryCount > 0) {
+                                        retriableMessage.RetryCount -= 1;
+                                        MessageQueueClient.Publish(retriableMessage, message.Parameters);
+                                    }
+                                    //EngineScheduler.ScheduleJobWithTrigger<SimpleTrigger>(new SimpleTrigger() {
+                                    //    JobType = message.JobTypeName,
+                                    //    StartTimeUtc = DateTimeOffset.Now.Add(failureInstructions.RetryStartDelay),
+                                    //    RepeatInterval = failureInstructions.RetryRepeatInterval,
+                                    //    RepeatCount = failureInstructions.RetryRepeatCount,
+                                    //});
+                                }
+                            }
                         }
-                    }
-                    catch (IntegrationJobRunFailureException exception)
-                    {
-                        Log.Error(x => x("Integration job did not run successfully ({0}).", message.JobTypeName), exception);
                     }
                     catch (EndOfStreamException exception)
                     {

@@ -61,6 +61,7 @@
     <Compile Include="IHasParameters.cs" />
     <Compile Include="IHasStringId.cs" />
     <Compile Include="IJobType.cs" />
+    <Compile Include="IRetryOnFailure.cs" />
     <Compile Include="ISimpleTrigger.cs" />
     <Compile Include="JobType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
