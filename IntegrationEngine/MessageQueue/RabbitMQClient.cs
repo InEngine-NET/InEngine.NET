@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace IntegrationEngine.MessageQueue
@@ -16,7 +17,9 @@ namespace IntegrationEngine.MessageQueue
         public ILog Log { get; set; }
 
         public RabbitMQClient() 
-        {}
+        {
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        }
 
         public void Publish<T>(T value, IDictionary<string, string> parameters)
         {

@@ -3,10 +3,10 @@ using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.MessageQueue;
 using IntegrationEngine.Model;
 using Quartz;
-using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine.Scheduler
 {
@@ -19,6 +19,7 @@ namespace IntegrationEngine.Scheduler
 
         public EngineScheduler()
         {
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void Start()

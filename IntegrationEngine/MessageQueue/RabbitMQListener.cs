@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -32,6 +33,7 @@ namespace IntegrationEngine.MessageQueue
         public RabbitMQListener()
         {
             shouldTerminate = false;
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void Dispose()

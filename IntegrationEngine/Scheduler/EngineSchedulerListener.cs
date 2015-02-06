@@ -2,6 +2,7 @@
 using IntegrationEngine.Core.Storage;
 using Quartz;
 using System;
+using System.Reflection;
 
 namespace IntegrationEngine.Scheduler
 {
@@ -9,6 +10,11 @@ namespace IntegrationEngine.Scheduler
     {
         public IElasticsearchRepository ElasticsearchRepository { get; set; }
         public ILog Log { get; set; }
+
+        public EngineSchedulerListener()
+        {
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        }
 
         public void JobAdded(IJobDetail jobDetail)
         {
