@@ -27,10 +27,10 @@ namespace IntegrationEngine.Core.Mail
 
         public void Send(MailMessage mailMessage)
         {
-            SmtpClient.Host = MailConfiguration.HostName;
-            SmtpClient.Port = MailConfiguration.Port;
             try
             {
+                SmtpClient.Host = MailConfiguration.HostName;
+                SmtpClient.Port = MailConfiguration.Port;
                 SmtpClient.Send(mailMessage);
             } 
             catch (Exception exception)
