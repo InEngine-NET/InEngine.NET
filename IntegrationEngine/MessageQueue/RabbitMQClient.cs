@@ -13,7 +13,7 @@ namespace IntegrationEngine.MessageQueue
     public class RabbitMQClient : IMessageQueueClient
     {
         public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
-        public MessageQueueConnection MessageQueueConnection { get; set; }
+        public IMessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
 
         public RabbitMQClient() 
@@ -40,6 +40,7 @@ namespace IntegrationEngine.MessageQueue
                     channel.BasicPublish(MessageQueueConfiguration.ExchangeName, "", null, body);
                     Log.Debug(x => x("Sent message: {0}", message));
                 }
+
             }
             catch (Exception exception)
             {
@@ -61,4 +62,3 @@ namespace IntegrationEngine.MessageQueue
         }
     }
 }
-

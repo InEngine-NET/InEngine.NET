@@ -7,6 +7,7 @@ namespace IntegrationEngine.MessageQueue
     {
         MessageQueueConfiguration MessageQueueConfiguration { get; set; } 
         ConnectionFactory GetConnectionFactory();
+        IConnection GetConnection();
     }
 }
 
