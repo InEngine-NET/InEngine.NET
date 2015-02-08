@@ -145,8 +145,9 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Api\IntegrationEngineApi.cs" />
-    <Compile Include="Api\Startup.cs" />
+    <Compile Include="Api\IWebApiApplication.cs" />
+    <Compile Include="Api\WebApiApplication.cs" />
+    <Compile Include="Api\WebApiStartup.cs" />
     <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
     <Compile Include="Configuration\MessageQueueConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfiguration.cs" />
