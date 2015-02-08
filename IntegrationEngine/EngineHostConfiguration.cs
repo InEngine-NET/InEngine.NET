@@ -75,8 +75,11 @@ namespace IntegrationEngine
 
         public void SetupWebApi()
         {
-            var config = Configuration.WebApi;
-            IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
+            var webApiApplication = new WebApiApplication() { 
+                WebApiConfiguration = Configuration.WebApi
+            };
+            webApiApplication.Start();
+            Container.RegisterInstance<IWebApiApplication>(webApiApplication);
         }
 
 //        public IMailClient SetupMailClient()
@@ -161,6 +164,8 @@ namespace IntegrationEngine
 
         public void Dispose()
         {
+            var webApiApplication = Container.Resolve<IWebApiApplication>();
+            webApiApplication.Stop();            
             var engineScheduler = Container.Resolve<IEngineScheduler>();
             engineScheduler.Shutdown();
             var messageQueueListener = Container.Resolve<IMessageQueueListener>();

@@ -6,11 +6,11 @@ using System.Web.Http.Cors;
 using Microsoft.Practices.Unity;
 using IntegrationEngine.Configuration;
 
-[assembly: OwinStartup(typeof(IntegrationEngine.Api.Startup))]
+[assembly: OwinStartup(typeof(IntegrationEngine.Api.WebApiStartup))]
 
 namespace IntegrationEngine.Api
 {
-    public class Startup
+    public class WebApiStartup
     {
         public void Configuration(IAppBuilder appBuilder)
         {
