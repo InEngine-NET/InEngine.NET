@@ -27,6 +27,7 @@ namespace IntegrationEngine
         public EngineConfiguration Configuration { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
         public ILog Log { get; set; }
+        public IWebApiApplication WebApiApplication { get; set; }
 
         public EngineHostConfiguration()
         {
@@ -50,7 +51,7 @@ namespace IntegrationEngine
             var messageQueueClient = SetupMessageQueueClient();
             var dispatcher = SetupDispatcher(messageQueueClient);
             SetupEngineScheduler(dispatcher, elasticsearchRepository);
-            SetupAsyncListener();
+            SetupThreadedListenerManager();
             SetupWebApi();
         }
 
@@ -77,11 +78,10 @@ namespace IntegrationEngine
 
         public void SetupWebApi()
         {
-            var webApiApplication = new WebApiApplication() { 
+            WebApiApplication = new WebApiApplication() { 
                 WebApiConfiguration = Configuration.WebApi
             };
-            webApiApplication.Start();
-            Container.RegisterInstance<IWebApiApplication>(webApiApplication);
+            WebApiApplication.Start();
         }
 
 //        public IMailClient SetupMailClient()
@@ -93,7 +93,7 @@ namespace IntegrationEngine
 //            return mailClient;
 //        }
 
-        public void SetupAsyncListener()
+        public void SetupThreadedListenerManager()
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
@@ -177,8 +177,8 @@ namespace IntegrationEngine
 
         public void Dispose()
         {
-            var webApiApplication = Container.Resolve<IWebApiApplication>();
-            webApiApplication.Dispose();
+            if (WebApiApplication != null)
+                WebApiApplication.Dispose();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using BeekmanLabs.UnitTesting;
 using Common.Logging;
-using IntegrationEngine.Configuration;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.Core.Configuration;
+using IntegrationEngine.Core.MessageQueue;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -10,7 +10,7 @@ using System.Text;
 using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.Configuration;
 
-namespace IntegrationEngine.Tests.MessageQueue
+namespace IntegrationEngine.Core.Tests.MessageQueue
 {
     public class RabbitMQClientTest : TestBase<RabbitMQClient>
     {

@@ -1,7 +1,6 @@
 ﻿using BeekmanLabs.UnitTesting;
 using Common.Logging;
 using IntegrationEngine.Api;
-using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
@@ -73,9 +72,9 @@ namespace IntegrationEngine.Tests
         {
             Subject.LoadConfiguration();
 
-            Subject.SetupAsyncListener();
+            Subject.SetupThreadedListenerManager();
 
-            Subject.Container.Resolve<IMessageQueueListener>();
+            Subject.Container.Resolve<IThreadedListenerManager>();
         }
 
         [Test]
@@ -110,19 +109,14 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
-        public void ShouldShutdownSchedulerAndDisposeOfMessageQueueListener()
+        public void ShouldDisposeOfResources()
         {
-            var mockEngineScheduler = new Mock<IEngineScheduler>();
-            mockEngineScheduler.Setup(x => x.Dispose());
-            UnityContainer.RegisterInstance<IEngineScheduler>(mockEngineScheduler.Object);
-            var mockMessageQueueListener = new Mock<IMessageQueueListener>();
-            mockMessageQueueListener.Setup(x => x.Dispose());
-            UnityContainer.RegisterInstance<IMessageQueueListener>(mockMessageQueueListener.Object);
-
+            var mockWebApiApplication = new Mock<IWebApiApplication>();
+            Subject.WebApiApplication = mockWebApiApplication.Object;
+            
             Subject.Dispose();
 
-            mockEngineScheduler.Verify(x => x.Dispose(), Times.Once);
-            mockMessageQueueListener.Verify(x => x.Dispose(), Times.Once);
+            mockWebApiApplication.Verify(x => x.Dispose(), Times.Once);
         }
     }
 }

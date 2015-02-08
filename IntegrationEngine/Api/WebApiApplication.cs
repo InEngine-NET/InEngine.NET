@@ -20,7 +20,8 @@ namespace IntegrationEngine.Api
 
         public void Dispose()
         {
-            webApi.Dispose();
+            if (webApi != null)
+                webApi.Dispose();
         }
     }
 }

@@ -26,12 +26,12 @@ namespace IntegrationEngine.Core.Tests.Mail
         [Test]
         public void ShouldLogExceptionAndReturnFalseIfMailServerIsNotAvailable()
         {
-            MockLog.Setup(x => x.Error(It.IsAny<SocketException>()));
+            MockLog.Setup(x => x.Error(It.IsAny<Exception>()));
 
             var actual = Subject.IsServerAvailable();
            
             Assert.That(actual, Is.False);
-            MockLog.Verify(x => x.Error(It.IsAny<SocketException>()));
+            MockLog.Verify(x => x.Error(It.IsAny<Exception>()));
         }
 
         // @TODO Do not mock tcp client, instead test with listener or real mail server.

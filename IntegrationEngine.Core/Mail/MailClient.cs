@@ -60,7 +60,7 @@ namespace IntegrationEngine.Core.Mail
                     }
                 }
             }
-            catch (SocketException exception)
+            catch (Exception exception)
             {
                 Log.Error(exception);
                 isAvailable = false;
