@@ -113,7 +113,7 @@ namespace IntegrationEngine.Tests
         public void ShouldShutdownSchedulerAndDisposeOfMessageQueueListener()
         {
             var mockEngineScheduler = new Mock<IEngineScheduler>();
-            mockEngineScheduler.Setup(x => x.Shutdown());
+            mockEngineScheduler.Setup(x => x.Dispose());
             UnityContainer.RegisterInstance<IEngineScheduler>(mockEngineScheduler.Object);
             var mockMessageQueueListener = new Mock<IMessageQueueListener>();
             mockMessageQueueListener.Setup(x => x.Dispose());
@@ -121,7 +121,7 @@ namespace IntegrationEngine.Tests
 
             Subject.Dispose();
 
-            mockEngineScheduler.Verify(x => x.Shutdown(), Times.Once);
+            mockEngineScheduler.Verify(x => x.Dispose(), Times.Once);
             mockMessageQueueListener.Verify(x => x.Dispose(), Times.Once);
         }
     }
