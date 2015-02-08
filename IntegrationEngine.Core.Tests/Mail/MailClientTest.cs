@@ -21,10 +21,6 @@ namespace IntegrationEngine.Core.Tests.Mail
         {
             MockLog = new Mock<ILog>();
             Subject.Log = MockLog.Object;
-            Subject.MailConfiguration = new MailConfiguration() {
-                HostName = "hostName",
-                Port = 0,
-            };
         }
 
         [Test]
@@ -52,9 +48,7 @@ namespace IntegrationEngine.Core.Tests.Mail
         //    stream.Write(responseInBytes, 0, responseInBytes.Length);
         //    MockTcpClient.Setup(x => x.GetStream()).Returns(stream);
         //    MockTcpClient.Setup(x => x.Close());
-
         //    var actual = Subject.IsServerAvailable();
-
         //    Assert.That(actual, Is.True);
         //    MockTcpClient.Verify(x => x.Close(), Times.Once);
         //}

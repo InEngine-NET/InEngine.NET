@@ -148,7 +148,6 @@
     <Compile Include="Api\IntegrationEngineApi.cs" />
     <Compile Include="Api\Startup.cs" />
     <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
-    <Compile Include="Configuration\MessageQueueConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
     <Compile Include="MessageQueue\DispatchMessage.cs" />
@@ -181,6 +180,7 @@
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
     <Compile Include="Api\TriggerControllerBase.cs" />
     <Compile Include="Api\Controllers\LogEventController.cs" />
+    <Compile Include="Configuration\RabbitMQConfiguration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -40,15 +40,15 @@ namespace IntegrationEngine
                         .ToList();
             LoadConfiguration();
             SetupLogging();
-            var dbContext = SetupDatabaseContext();
+//            var dbContext = SetupDatabaseContext();
             SetupRScriptRunner();
-            SetupDatabaseRepository(dbContext);
-            var mailClient = SetupMailClient();
+//            SetupDatabaseRepository();
+//            var mailClient = SetupMailClient();
             var elasticClient = SetupElasticClient();
             var elasticsearchRepository = SetupElasticsearchRepository(elasticClient);
             var messageQueueClient = SetupMessageQueueClient();
             SetupEngineScheduler(messageQueueClient, elasticsearchRepository);
-            SetupMessageQueueListener(mailClient, elasticClient, dbContext);
+            SetupMessageQueueListener();
             SetupWebApi();
         }
 
@@ -68,13 +68,6 @@ namespace IntegrationEngine
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
-        public IntegrationEngineContext SetupDatabaseContext()
-        {
-            var integrationEngineContext = new DatabaseInitializer(Configuration.Database).GetDbContext();
-            Container.RegisterInstance<IntegrationEngineContext>(integrationEngineContext);
-            return integrationEngineContext;
-        }
-
         public void SetupDatabaseRepository(IntegrationEngineContext integrationEngineContext)
         {
             Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(integrationEngineContext));
@@ -86,24 +79,21 @@ namespace IntegrationEngine
             IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
         }
 
-        public IMailClient SetupMailClient()
-        {
-            var mailClient = new MailClient() {
-                MailConfiguration = Configuration.Mail
-            };
-            Container.RegisterInstance<IMailClient>(mailClient);
-            return mailClient;
-        }
+//        public IMailClient SetupMailClient()
+//        {
+//            var mailClient = new MailClient() {
+//                MailConfiguration = Configuration.Mail
+//            };
+//            Container.RegisterInstance<IMailClient>(mailClient);
+//            return mailClient;
+//        }
 
-        public void SetupMessageQueueListener(IMailClient mailClient, IElasticClient elasticClient, IntegrationEngineContext integrationEngineContext)
+        public void SetupMessageQueueListener()
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
-                MailClient = mailClient,
-                IntegrationEngineContext = integrationEngineContext,
-                ElasticClient = elasticClient,
             };
             Container.RegisterInstance<IMessageQueueListener>(rabbitMqListener);
             rabbitMqListener.Listen();

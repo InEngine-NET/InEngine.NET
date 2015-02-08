@@ -47,37 +47,6 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
-        public void ShouldSetupDatabaseContext()
-        {
-            Subject.LoadConfiguration();
-
-            Subject.SetupDatabaseContext();
-
-            Subject.Container.Resolve<IntegrationEngineContext>();
-        }
-
-        [Test]
-        public void ShouldSetupDatabaseRepository()
-        {
-            Subject.LoadConfiguration();
-            var mockIntegrationEngineContext = new Mock<IntegrationEngineContext>();
-
-            Subject.SetupDatabaseRepository(mockIntegrationEngineContext.Object);
-
-            Subject.Container.Resolve<IDatabaseRepository>();
-        }
-
-        [Test]
-        public void ShouldSetupMailClient()
-        {
-            Subject.LoadConfiguration();
-
-            Subject.SetupMailClient();
-
-            Subject.Container.Resolve<IMailClient>();
-        }
-
-        [Test]
         public void ShouldSetupElasticClient()
         {
             Subject.LoadConfiguration();
@@ -102,11 +71,8 @@ namespace IntegrationEngine.Tests
         public void ShouldSetupMessageQueueListener()
         {
             Subject.LoadConfiguration();
-            var mockMailClient = new Mock<IMailClient>();
-            var mockElasticClient = new Mock<IElasticClient>();
-            var mockIntegrationEngineContext = new Mock<IntegrationEngineContext>();
 
-            Subject.SetupMessageQueueListener(mockMailClient.Object, mockElasticClient.Object, mockIntegrationEngineContext.Object);
+            Subject.SetupMessageQueueListener();
 
             Subject.Container.Resolve<IMessageQueueListener>();
         }

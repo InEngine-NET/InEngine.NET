@@ -81,7 +81,6 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Configuration\DatabaseConfiguration.cs" />
     <Compile Include="Configuration\MailConfiguration.cs" />
     <Compile Include="Jobs\IIntegrationJob.cs" />
     <Compile Include="Jobs\ILogJob.cs" />
@@ -108,6 +107,16 @@
     <Compile Include="Mail\ITcpClient.cs" />
     <Compile Include="Mail\SmtpClientAdapter.cs" />
     <Compile Include="Mail\ISmtpClient.cs" />
+    <Compile Include="Points\IIntegrationPoint.cs" />
+    <Compile Include="Points\IRabbitMQPoint.cs" />
+    <Compile Include="Points\IMySqlPoint.cs" />
+    <Compile Include="Points\IElasticsearchPoint.cs" />
+    <Compile Include="Points\ISqlServerPoint.cs" />
+    <Compile Include="Points\ElasticsearchPoint.cs" />
+    <Compile Include="Points\MySqlPoint.cs" />
+    <Compile Include="Points\RabbitMQPoint.cs" />
+    <Compile Include="Points\SqlServerPoint.cs" />
+    <Compile Include="Points\IMailPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -133,4 +142,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Points\" />
+  </ItemGroup>
 </Project>

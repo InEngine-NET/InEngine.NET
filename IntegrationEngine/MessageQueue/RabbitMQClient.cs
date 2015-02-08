@@ -12,7 +12,7 @@ namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMQClient : IMessageQueueClient
     {
-        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public RabbitMQConfiguration MessageQueueConfiguration { get; set; }
         public IMessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
 

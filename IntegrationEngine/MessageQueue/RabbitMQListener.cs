@@ -23,12 +23,9 @@ namespace IntegrationEngine.MessageQueue
         volatile bool shouldTerminate;
         QueueingBasicConsumer consumer;
         public IList<Type> IntegrationJobTypes { get; set; }
-        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public RabbitMQConfiguration MessageQueueConfiguration { get; set; }
         public MessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
-        public IMailClient MailClient { get; set; }
-        public IntegrationEngineContext IntegrationEngineContext { get; set; }
-        public IElasticClient ElasticClient { get; set; }
 
         public RabbitMQListener()
         {
@@ -72,7 +69,7 @@ namespace IntegrationEngine.MessageQueue
                             continue;
                         var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobTypeName));
                         var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
-                        integrationJob = AutoWireJob(integrationJob, type);
+//                        integrationJob = AutoWireJob(integrationJob, type);
                         if (integrationJob != null)
                         {
                             if (integrationJob is IParameterizedJob)
@@ -108,19 +105,6 @@ namespace IntegrationEngine.MessageQueue
 
             listenerThread.Start();
             Log.Info("Message queue listener started.");
-        }
-
-        T AutoWireJob<T>(T job, Type type)
-        {
-            if (type.GetInterface(typeof(IMailJob).Name) != null)
-                (job as IMailJob).MailClient = MailClient;
-            if (type.GetInterface(typeof(ISqlJob).Name) != null)
-                (job as ISqlJob).DbContext = IntegrationEngineContext;
-            if (type.GetInterface(typeof(ILogJob).Name) != null)
-                (job as ILogJob).Log = Log;
-            if (type.GetInterface(typeof(IElasticsearchJob).Name) != null)
-                (job as IElasticsearchJob).ElasticClient = ElasticClient;
-            return job;
         }
     }
 }

@@ -1,12 +1,17 @@
-﻿using IntegrationEngine.Core.Points;
+﻿using System;
 
-namespace IntegrationEngine.Configuration
+namespace IntegrationEngine.Core.Points
 {
-    public class ElasticsearchConfiguration : IElasticsearchPoint
+    public class ElasticsearchPoint : IElasticsearchPoint
     {
         public string Protocol { get; set; }
         public string HostName { get; set; }
         public int Port { get; set; }
         public string DefaultIndex { get; set; }
+
+        public ElasticsearchPoint()
+        {
+        }
     }
 }
+

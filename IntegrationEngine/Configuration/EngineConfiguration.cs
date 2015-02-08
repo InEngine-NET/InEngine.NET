@@ -9,9 +9,7 @@ namespace IntegrationEngine.Configuration
         {}
 
         public WebApiConfiguration WebApi { get; set; }
-        public MessageQueueConfiguration MessageQueue { get; set; }
-        public MailConfiguration Mail { get; set; }
-        public DatabaseConfiguration Database { get; set; }
+        public RabbitMQConfiguration MessageQueue { get; set; }
         public ElasticsearchConfiguration Elasticsearch { get; set; }
         public NLogAdapterConfiguration NLogAdapter { get; set; }
     }

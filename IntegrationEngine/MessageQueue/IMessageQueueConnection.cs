@@ -5,7 +5,7 @@ namespace IntegrationEngine.MessageQueue
 {
     public interface IMessageQueueConnection
     {
-        MessageQueueConfiguration MessageQueueConfiguration { get; set; } 
+        RabbitMQConfiguration MessageQueueConfiguration { get; set; } 
         ConnectionFactory GetConnectionFactory();
         IConnection GetConnection();
     }

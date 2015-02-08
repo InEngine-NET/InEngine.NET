@@ -15,7 +15,7 @@ namespace IntegrationEngine.Tests.MessageQueue
         [Test]
         public void ShouldPublishDispatchMessage()
         {
-            var config = new MessageQueueConfiguration() {
+            var config = new RabbitMQConfiguration() {
                 QueueName = "MyQueue",
                 ExchangeName = "MyExchange",
             };

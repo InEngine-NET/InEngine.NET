@@ -6,7 +6,7 @@ namespace IntegrationEngine.MessageQueue
 {
     public class MessageQueueConnection : IMessageQueueConnection
     {
-        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public RabbitMQConfiguration MessageQueueConfiguration { get; set; }
         public ConnectionFactory ConnectionFactory { get; set; }
         IConnection _connection;
 
@@ -14,7 +14,7 @@ namespace IntegrationEngine.MessageQueue
         {
         }
 
-        public MessageQueueConnection(MessageQueueConfiguration messageQueueConfiguration)
+        public MessageQueueConnection(RabbitMQConfiguration messageQueueConfiguration)
             : this()
         {
             MessageQueueConfiguration = messageQueueConfiguration;
