@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IntegrationEngine.Core.Points;
 
-namespace IntegrationEngine.Configuration
+namespace IntegrationEngine.Core.Configuration
 {
     public class RabbitMQConfiguration : IRabbitMQPoint
     {

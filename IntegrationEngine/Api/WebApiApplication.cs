@@ -18,7 +18,7 @@ namespace IntegrationEngine.Api
             webApi = WebApp.Start<WebApiStartup>(baseAddress);
         }
 
-        public void Stop()
+        public void Dispose()
         {
             webApi.Dispose();
         }

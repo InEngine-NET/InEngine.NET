@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using MSMessageQueue = System.Messaging.MessageQueue;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Core.MessageQueue
 {
     public class MsmqClient : IMessageQueueClient
     {
@@ -20,19 +20,9 @@ namespace IntegrationEngine.MessageQueue
         }
         public ILog Log { get; set; }
 
-        public void Publish<T>(T value, IDictionary<string, string> parameters)
+        public void Publish(byte[] message)
         {
-            try
-            {
-                var message = value.GetType().FullName;
-                var body = Encoding.UTF8.GetBytes(message);
-                MSMessageQueue.Send(body);
-                Log.Debug(x => x("Sent message: {0}", message));
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception);
-            }
+            MSMessageQueue.Send(message);
         }
 
         public bool IsServerAvailable()

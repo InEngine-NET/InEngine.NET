@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
+using IntegrationEngine.Core.MessageQueue;
 
 
 namespace IntegrationEngine.Api.Controllers

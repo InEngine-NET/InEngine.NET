@@ -1,15 +1,14 @@
-﻿using IntegrationEngine.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Model
 {
-    public class DispatchMessage : IHasParameters
+    public class DispatchTrigger : IDispatchable
     {
-        public string JobTypeName { get; set; }
+        public string JobType { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
     }
 }

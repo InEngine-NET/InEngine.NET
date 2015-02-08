@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Core.MessageQueue
 {
     public interface IMessageQueueClient
     {
-        void Publish<T>(T value, IDictionary<string, string> parameters);
+        void Publish(byte[] message);
         bool IsServerAvailable();
     }
 }

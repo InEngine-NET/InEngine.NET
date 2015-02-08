@@ -5,6 +5,7 @@ using IntegrationEngine.Api;
 using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.MessageQueue;
@@ -47,8 +48,9 @@ namespace IntegrationEngine
             var elasticClient = SetupElasticClient();
             var elasticsearchRepository = SetupElasticsearchRepository(elasticClient);
             var messageQueueClient = SetupMessageQueueClient();
-            SetupEngineScheduler(messageQueueClient, elasticsearchRepository);
-            SetupMessageQueueListener();
+            var dispatcher = SetupDispatcher(messageQueueClient);
+            SetupEngineScheduler(dispatcher, elasticsearchRepository);
+            SetupAsyncListener();
             SetupWebApi();
         }
 
@@ -91,15 +93,19 @@ namespace IntegrationEngine
 //            return mailClient;
 //        }
 
-        public void SetupMessageQueueListener()
+        public void SetupAsyncListener()
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
-                MessageQueueConfiguration = Configuration.MessageQueue,
+                RabbitMQConfiguration = Configuration.MessageQueue,
             };
-            Container.RegisterInstance<IMessageQueueListener>(rabbitMqListener);
-            rabbitMqListener.Listen();
+
+            var threadedListenerManager = new ThreadedListenerManager() {
+                MessageQueueListener = rabbitMqListener,
+            };
+            Container.RegisterInstance<IThreadedListenerManager>(threadedListenerManager);
+            threadedListenerManager.StartListener();
         }
 
         public IMessageQueueClient SetupMessageQueueClient()
@@ -112,12 +118,19 @@ namespace IntegrationEngine
             return messageQueueClient;
         }
 
-        public void SetupEngineScheduler(IMessageQueueClient messageQueueClient, IElasticsearchRepository elasticsearchRepository)
+        public IDispatcher SetupDispatcher(IMessageQueueClient messageQueueClient)
+        {
+            return new Dispatcher() {
+                MessageQueueClient = messageQueueClient,
+            };
+        }
+
+        public void SetupEngineScheduler(IDispatcher dispatcher, IElasticsearchRepository elasticsearchRepository)
         {
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueClient = messageQueueClient,
+                Dispatcher = dispatcher,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
             var engineSchedulerListener = new EngineSchedulerListener() {
@@ -165,12 +178,7 @@ namespace IntegrationEngine
         public void Dispose()
         {
             var webApiApplication = Container.Resolve<IWebApiApplication>();
-            webApiApplication.Stop();            
-            var engineScheduler = Container.Resolve<IEngineScheduler>();
-            engineScheduler.Shutdown();
-            var messageQueueListener = Container.Resolve<IMessageQueueListener>();
-            messageQueueListener.Dispose();
+            webApiApplication.Dispose();
         }
     }
 }
-

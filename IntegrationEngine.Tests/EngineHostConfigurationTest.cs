@@ -2,6 +2,7 @@
 using Common.Logging;
 using IntegrationEngine.Api;
 using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.MessageQueue;
@@ -72,7 +73,7 @@ namespace IntegrationEngine.Tests
         {
             Subject.LoadConfiguration();
 
-            Subject.SetupMessageQueueListener();
+            Subject.SetupAsyncListener();
 
             Subject.Container.Resolve<IMessageQueueListener>();
         }
@@ -93,9 +94,9 @@ namespace IntegrationEngine.Tests
             Subject.IntegrationJobTypes = new List<Type>();
             Subject.LoadConfiguration();
             var mockElasticsearchRespository= new Mock<IElasticsearchRepository>();
-            var mockMessageQueueClient = new Mock<IMessageQueueClient>();
+            var mockDispatcher = new Mock<IDispatcher>();
 
-            Subject.SetupEngineScheduler(mockMessageQueueClient.Object, mockElasticsearchRespository.Object);
+            Subject.SetupEngineScheduler(mockDispatcher.Object, mockElasticsearchRespository.Object);
 
             Subject.Container.Resolve<IEngineScheduler>();
         }

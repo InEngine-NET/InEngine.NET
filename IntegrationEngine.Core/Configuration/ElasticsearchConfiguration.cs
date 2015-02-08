@@ -1,6 +1,6 @@
 ﻿using IntegrationEngine.Core.Points;
 
-namespace IntegrationEngine.Configuration
+namespace IntegrationEngine.Core.Configuration
 {
     public class ElasticsearchConfiguration : IElasticsearchPoint
     {

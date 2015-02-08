@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace IntegrationEngine.MessageQueue
 {
     public interface IMessageQueueListener : IDisposable
     {
-        void Listen();
+        void Listen(CancellationToken cancellationToken);
     }
 }
