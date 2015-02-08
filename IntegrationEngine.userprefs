@@ -1,22 +1,32 @@
 ﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleClient/Options.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/MessageQueue/RabbitMQClientTest.cs">
     <Files>
-      <File FileName="IntegrationEngine.ConsoleClient/Program.cs" Line="41" Column="41" />
-      <File FileName="IntegrationEngine.ConsoleClient/Options.cs" Line="25" Column="25" />
-      <File FileName="IntegrationEngine.ConsoleClient/PingSubOptions.cs" Line="6" Column="6" />
+      <File FileName="IntegrationEngine/MessageQueue/RabbitMQClient.cs" Line="64" Column="64" />
+      <File FileName="IntegrationEngine.Tests/MessageQueue/RabbitMQClientTest.cs" Line="10" Column="10" />
+      <File FileName="IntegrationEngine/MessageQueue/IntegrationJobDispatcherJob.cs" Line="87" Column="87" />
+      <File FileName="IntegrationEngine/MessageQueue/IMessageQueueConnection.cs" Line="16" Column="16" />
+      <File FileName="IntegrationEngine.Tests/EngineHostConfigurationTest.cs" Line="41" Column="41" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State />
+        <State expanded="True">
+          <Node name="IntegrationEngine.Tests" expanded="True" selected="True">
+            <Node name="IntegrationEngine" expanded="True">
+              <Node name="Tests" expanded="True">
+                <Node name="MessageQueue" expanded="True">
+                  <Node name="RabbitMQClientTest" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.Core/Storage/ElasticsearchRepository.cs" line="34" column="1" />
-      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="31" column="1" />
-      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine.ConsoleClient/Options.cs" line="39" column="1" />
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine/MessageQueue/RabbitMQListener.cs" line="104" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

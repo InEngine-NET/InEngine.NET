@@ -126,7 +126,6 @@ namespace IntegrationEngine.Tests
         {
             Subject.IntegrationJobTypes = new List<Type>();
             Subject.LoadConfiguration();
-            var mockMailClient = new Mock<IMailClient>();
             var mockElasticsearchRespository= new Mock<IElasticsearchRepository>();
             var mockMessageQueueClient = new Mock<IMessageQueueClient>();
 
