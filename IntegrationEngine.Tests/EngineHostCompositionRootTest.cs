@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace IntegrationEngine.Tests
 {
-    public class EngineHostConfigurationTest : TestBase<EngineHostConfiguration>
+    public class EngineHostCompositionRootTest : TestBase<EngineHostCompositionRoot>
     {
         public IUnityContainer UnityContainer { get; set; }
         public Mock<ILog> MockLog { get; set; }
@@ -33,7 +33,7 @@ namespace IntegrationEngine.Tests
         {
             Subject.LoadConfiguration();
 
-            Assert.IsNotNull(Subject.Configuration);
+            Assert.IsNotNull(Subject.EngineConfiguration);
         }
 
         [Test]

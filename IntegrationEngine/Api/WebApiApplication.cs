@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using Microsoft.Owin.Hosting;
 using System;
 

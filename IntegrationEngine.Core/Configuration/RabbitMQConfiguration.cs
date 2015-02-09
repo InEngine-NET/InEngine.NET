@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IntegrationEngine.Core.Points;
-
+﻿
 namespace IntegrationEngine.Core.Configuration
 {
-    public class RabbitMQConfiguration : IRabbitMQPoint
+    public class RabbitMQConfiguration : IRabbitMQConfiguration
     {
         public string QueueName { get; set; }
         public string ExchangeName { get; set; }

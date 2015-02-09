@@ -1,5 +1,4 @@
 ﻿using Common.Logging;
-using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;

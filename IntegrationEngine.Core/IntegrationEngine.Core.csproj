@@ -114,16 +114,16 @@
     <Compile Include="Mail\ITcpClient.cs" />
     <Compile Include="Mail\SmtpClientAdapter.cs" />
     <Compile Include="Mail\ISmtpClient.cs" />
-    <Compile Include="Points\IIntegrationPoint.cs" />
-    <Compile Include="Points\IRabbitMQPoint.cs" />
-    <Compile Include="Points\IMySqlPoint.cs" />
-    <Compile Include="Points\IElasticsearchPoint.cs" />
-    <Compile Include="Points\ISqlServerPoint.cs" />
-    <Compile Include="Points\ElasticsearchPoint.cs" />
-    <Compile Include="Points\MySqlPoint.cs" />
-    <Compile Include="Points\RabbitMQPoint.cs" />
-    <Compile Include="Points\SqlServerPoint.cs" />
-    <Compile Include="Points\IMailPoint.cs" />
+    <Compile Include="Configuration\IEngineConfiguration.cs" />
+    <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
+    <Compile Include="Configuration\WebApiConfiguration.cs" />
+    <Compile Include="Configuration\IMailConfiguration.cs" />
+    <Compile Include="Configuration\IIntegrationPointConfiguration.cs" />
+    <Compile Include="Configuration\IElasticsearchConfiguration.cs" />
+    <Compile Include="Configuration\ISqlServerConfiguration.cs" />
+    <Compile Include="Configuration\IRabbitMQConfiguration.cs" />
+    <Compile Include="Configuration\IMySqlConfiguration.cs" />
+    <Compile Include="Configuration\IntegrationPointConfigurations.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

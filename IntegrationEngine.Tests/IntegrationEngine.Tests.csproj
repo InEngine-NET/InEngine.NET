@@ -107,13 +107,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineHostConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\EngineSchedulerTest.cs" />
     <Compile Include="Api\Controllers\JobTypeControllerTest.cs" />
     <Compile Include="IntegrationJobStub.cs" />
     <Compile Include="Api\TriggerControllerBaseTest.cs" />
     <Compile Include="Api\TriggerStub.cs" />
+    <Compile Include="EngineHostCompositionRootTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\configuration\IntegrationEngine.json">

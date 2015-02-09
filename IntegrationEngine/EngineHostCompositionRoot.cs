@@ -2,7 +2,7 @@
 using Common.Logging.Configuration;
 using Common.Logging.NLog;
 using IntegrationEngine.Api;
-using IntegrationEngine.Configuration;
+using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
@@ -21,17 +21,16 @@ using System.Reflection;
 
 namespace IntegrationEngine
 {
-    public class EngineHostConfiguration : IDisposable
+    public class EngineHostCompositionRoot : IDisposable
     {
         public IUnityContainer Container { get; set; }
-        public EngineConfiguration Configuration { get; set; }
+        public IEngineConfiguration EngineConfiguration { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
         public ILog Log { get; set; }
         public IWebApiApplication WebApiApplication { get; set; }
 
-        public EngineHostConfiguration()
-        {
-        }
+        public EngineHostCompositionRoot()
+        {}
 
         public void Configure(IList<Assembly> assembliesWithJobs)
         {
@@ -42,10 +41,8 @@ namespace IntegrationEngine
                         .ToList();
             LoadConfiguration();
             SetupLogging();
-//            var dbContext = SetupDatabaseContext();
+            RegisterIntegrationPoints();
             SetupRScriptRunner();
-//            SetupDatabaseRepository();
-//            var mailClient = SetupMailClient();
             var elasticClient = SetupElasticClient();
             var elasticsearchRepository = SetupElasticsearchRepository(elasticClient);
             var messageQueueClient = SetupMessageQueueClient();
@@ -57,13 +54,13 @@ namespace IntegrationEngine
 
         public void LoadConfiguration()
         {
-            Configuration = new EngineConfiguration();
-            Container.RegisterInstance<EngineConfiguration>(Configuration);
+            Container.RegisterType<IEngineConfiguration, EngineConfiguration>();
+            EngineConfiguration = Container.Resolve<IEngineConfiguration>();
         }
 
         public void SetupLogging()
         {
-            var config = Configuration.NLogAdapter;
+            var config = EngineConfiguration.NLogAdapter;
             var properties = new NameValueCollection();
             properties["configType"] = config.ConfigType;
             properties["configFile"] = config.ConfigFile;
@@ -79,26 +76,23 @@ namespace IntegrationEngine
         public void SetupWebApi()
         {
             WebApiApplication = new WebApiApplication() { 
-                WebApiConfiguration = Configuration.WebApi
+                WebApiConfiguration = EngineConfiguration.WebApi
             };
             WebApiApplication.Start();
         }
 
-//        public IMailClient SetupMailClient()
-//        {
-//            var mailClient = new MailClient() {
-//                MailConfiguration = Configuration.Mail
-//            };
-//            Container.RegisterInstance<IMailClient>(mailClient);
-//            return mailClient;
-//        }
+        public void RegisterIntegrationPoints()
+        {
+            foreach (var config in EngineConfiguration.IntegrationPoints.Mail)
+                Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
+        }
 
         public void SetupThreadedListenerManager()
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
-                RabbitMQConfiguration = Configuration.MessageQueue,
+                MessageQueueConnection = new MessageQueueConnection(EngineConfiguration.MessageQueue),
+                RabbitMQConfiguration = EngineConfiguration.MessageQueue,
             };
 
             var threadedListenerManager = new ThreadedListenerManager() {
@@ -111,8 +105,8 @@ namespace IntegrationEngine
         public IMessageQueueClient SetupMessageQueueClient()
         {
             var messageQueueClient = new RabbitMQClient() {
-                MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
-                MessageQueueConfiguration = Configuration.MessageQueue,
+                MessageQueueConnection = new MessageQueueConnection(EngineConfiguration.MessageQueue),
+                MessageQueueConfiguration = EngineConfiguration.MessageQueue,
             };
             Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
             return messageQueueClient;
@@ -156,7 +150,7 @@ namespace IntegrationEngine
 
         public IElasticClient SetupElasticClient()
         {
-            var config = Configuration.Elasticsearch;
+            var config = EngineConfiguration.Elasticsearch;
             var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
             var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
             var elasticClient = new ElasticClient(settings);

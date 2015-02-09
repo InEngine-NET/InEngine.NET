@@ -1,5 +1,5 @@
 ﻿using Common.Logging;
-using IntegrationEngine.Core.Points;
+using IntegrationEngine.Core.Configuration;
 using System;
 using System.IO;
 using System.Net.Mail;
@@ -8,18 +8,24 @@ using System.Reflection;
 
 namespace IntegrationEngine.Core.Mail
 {
-    public class MailClient : IMailClient, IMailPoint
+    public class MailClient : IMailClient
     {
         public ISmtpClient SmtpClient { get; set; }
         public ILog Log { get; set; }
-        public string HostName { get { return SmtpClient.HostName; } set { SmtpClient.HostName = value; } }
-        public int Port { get { return SmtpClient.Port; } set { SmtpClient.Port = value; } }
+        public IMailConfiguration MailConfiguration { get; set; }
 
         public MailClient()
         {
             SmtpClient = new SmtpClientAdapter();
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
+            
+        public MailClient(IMailConfiguration mailConfiguration) 
+            : this()
+        {
+            MailConfiguration = mailConfiguration;
+        }
+
 
         public MailClient (ILog log) : this()
         {
@@ -45,13 +51,13 @@ namespace IntegrationEngine.Core.Mail
             {
                 using (var client = new TcpClient())
                 {
-                    client.Connect(HostName, Port);
+                    client.Connect(MailConfiguration.HostName, MailConfiguration.Port);
                     using (var stream = client.GetStream())
                     {
                         using (var writer = new StreamWriter(stream))
                         using (var reader = new StreamReader(stream))
                         {
-                            writer.WriteLine("EHLO " + HostName);
+                            writer.WriteLine("EHLO " + MailConfiguration.HostName);
                             writer.Flush();
                             var response = reader.ReadLine();
                             if (response != null)

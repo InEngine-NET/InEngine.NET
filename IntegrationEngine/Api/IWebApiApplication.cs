@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using System;
 
 namespace IntegrationEngine.Api

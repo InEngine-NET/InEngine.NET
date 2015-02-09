@@ -1,9 +1,8 @@
-﻿using IntegrationEngine.Core.Points;
-
-namespace IntegrationEngine.Core.Configuration
+﻿namespace IntegrationEngine.Core.Configuration
 {
-    public class MailConfiguration : IMailPoint
+    public class MailConfiguration : IMailConfiguration
     {
+        public string IntegrationPointName { get; set; }
         public string HostName { get; set; }
         public int Port { get; set; }
     }

@@ -1,9 +1,12 @@
-﻿using FX.Configuration;
-using IntegrationEngine.Core.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
+using FX.Configuration;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
-namespace IntegrationEngine.Configuration
+namespace IntegrationEngine
 {
-    public class EngineConfiguration : JsonConfiguration
+    public class EngineConfiguration : JsonConfiguration, IEngineConfiguration
     {
         public EngineConfiguration() : base("IntegrationEngine.json")
         {}
@@ -12,5 +15,6 @@ namespace IntegrationEngine.Configuration
         public RabbitMQConfiguration MessageQueue { get; set; }
         public ElasticsearchConfiguration Elasticsearch { get; set; }
         public NLogAdapterConfiguration NLogAdapter { get; set; }
+        public IntegrationPointConfigurations IntegrationPoints { get; set; }
     }
 }

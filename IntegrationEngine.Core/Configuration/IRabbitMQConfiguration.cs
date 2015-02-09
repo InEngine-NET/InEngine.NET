@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace IntegrationEngine.Core.Points
+namespace IntegrationEngine.Core.Configuration
 {
-    public interface IRabbitMQPoint
+    public interface IRabbitMQConfiguration
     {
         string QueueName { get; set; }
         string ExchangeName { get; set; }

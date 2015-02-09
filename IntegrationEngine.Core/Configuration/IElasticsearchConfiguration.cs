@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace IntegrationEngine.Core.Points
+namespace IntegrationEngine.Core.Configuration
 {
-    public interface IElasticsearchPoint
+    public interface IElasticsearchConfiguration
     {
         string Protocol { get; set; }
         string HostName { get; set; }

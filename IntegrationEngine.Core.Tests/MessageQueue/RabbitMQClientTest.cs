@@ -4,11 +4,9 @@ using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.MessageQueue;
 using Moq;
 using NUnit.Framework;
-using System;
 using RabbitMQ.Client;
+using System;
 using System.Text;
-using IntegrationEngine.Core.MessageQueue;
-using IntegrationEngine.Core.Configuration;
 
 namespace IntegrationEngine.Core.Tests.MessageQueue
 {

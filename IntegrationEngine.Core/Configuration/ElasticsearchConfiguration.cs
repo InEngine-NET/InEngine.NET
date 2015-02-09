@@ -1,8 +1,7 @@
-﻿using IntegrationEngine.Core.Points;
-
+﻿
 namespace IntegrationEngine.Core.Configuration
 {
-    public class ElasticsearchConfiguration : IElasticsearchPoint
+    public class ElasticsearchConfiguration : IElasticsearchConfiguration
     {
         public string Protocol { get; set; }
         public string HostName { get; set; }

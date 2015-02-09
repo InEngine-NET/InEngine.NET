@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using Microsoft.Practices.Unity;
-using IntegrationEngine.Configuration;
+using IntegrationEngine.Core.Configuration;
 
 [assembly: OwinStartup(typeof(IntegrationEngine.Api.WebApiStartup))]
 

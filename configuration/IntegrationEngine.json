@@ -18,20 +18,15 @@
         "Port": 9200,
         "DefaultIndex": "integration-engine"
     },
-    "Mail": {
-        "HostName": "localhost",
-        "Port": 25
-    },
-    "Database": {
-        "ServerType": "SQLServer",
-        "HostName": "localhost",
-        "Port": 1433,
-        "DatabaseName": "IntegrationEngine",
-        "UserName": "inengine",
-        "Password": "secret"
-    },
 	"NLogAdapter": {
 		"ConfigType": "File",
 		"ConfigFile": "IntegrationEngine.nlog.xml"
-	}
+	},
+    "IntegrationPoints": {
+        "Mail": [{
+            "IntegrationPointName": "FooMailClient",
+            "HostName": "localhost",
+            "Port": 25
+        }]
+    }
 }

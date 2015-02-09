@@ -1,6 +1,5 @@
 ﻿using System;
 using RabbitMQ.Client;
-using IntegrationEngine.Configuration;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.MessageQueue;
 

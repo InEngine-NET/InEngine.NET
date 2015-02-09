@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace IntegrationEngine.Core.Points
+namespace IntegrationEngine.Core.Configuration
 {
-    public interface ISqlServerPoint : IIntegrationPoint
+    public interface ISqlServerConfiguration : IIntegrationPointConfiguration
     {
         string HostName { get; set; }
         uint Port { get; set; }
