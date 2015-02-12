@@ -19,6 +19,11 @@ namespace IntegrationEngine.Core.Storage
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
+        public ElasticsearchRepository(IElasticClient elasticClient) : this()
+        {
+            ElasticClient = elasticClient;
+        }
+
         public IEnumerable<TItem> SelectAll<TItem>() where TItem : class, IHasStringId
         {
             var response = ElasticClient.Search<TItem>(x => x);

@@ -163,7 +163,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngineHost.cs" />
     <Compile Include="Scheduler\IntegrationJobDispatcherJob.cs" />
-    <Compile Include="MessageQueue\MessageQueueConnection.cs" />
     <Compile Include="ContainerSingleton.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />

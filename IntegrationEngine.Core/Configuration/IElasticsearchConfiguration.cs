@@ -2,7 +2,7 @@
 
 namespace IntegrationEngine.Core.Configuration
 {
-    public interface IElasticsearchConfiguration
+    public interface IElasticsearchConfiguration : IIntegrationPointConfiguration
     {
         string Protocol { get; set; }
         string HostName { get; set; }

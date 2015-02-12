@@ -2,7 +2,7 @@
 
 namespace IntegrationEngine.Core.Configuration
 {
-    public interface IRabbitMQConfiguration
+    public interface IRabbitMQConfiguration : IIntegrationPointConfiguration
     {
         string QueueName { get; set; }
         string ExchangeName { get; set; }

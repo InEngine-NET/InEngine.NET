@@ -21,6 +21,12 @@ namespace IntegrationEngine.Core.MessageQueue
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
+        public RabbitMQClient(RabbitMQConfiguration messageQueueConfiguration) : this()
+        {
+            MessageQueueConnection = new MessageQueueConnection(messageQueueConfiguration); 
+            MessageQueueConfiguration = messageQueueConfiguration;
+        }
+
         public void Publish(byte[] message)
         {
             using (var connection = MessageQueueConnection.GetConnection())

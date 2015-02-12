@@ -4,29 +4,31 @@
         "Port": 9001,
         "Origins": ["*"]
     },
-    "MessageQueue": {
-        "QueueName": "myqueue",
-        "ExchangeName": "amq.direct",
-        "UserName": "inengine",
-        "Password": "secret",
-        "HostName": "localhost",
-        "VirtualHost": "/"
-    },
-    "Elasticsearch": {
-        "Protocol": "http",
-        "HostName": "localhost",
-        "Port": 9200,
-        "DefaultIndex": "integration-engine"
-    },
 	"NLogAdapter": {
 		"ConfigType": "File",
 		"ConfigFile": "IntegrationEngine.nlog.xml"
 	},
     "IntegrationPoints": {
         "Mail": [{
-            "IntegrationPointName": "FooMailClient",
+            "IntegrationPointName": "DefaultMail",
             "HostName": "localhost",
             "Port": 25
-        }]
+        }],
+        "RabbitMQ": [{
+            "IntegrationPointName": "DefaultRabbitMQ",
+            "QueueName": "myqueue",
+            "ExchangeName": "amq.direct",
+            "UserName": "inengine",
+            "Password": "secret",
+            "HostName": "localhost",
+            "VirtualHost": "/"
+        }],
+        "Elasticsearch": [{
+            "IntegrationPointName": "DefaultElasticsearch",
+            "Protocol": "http",
+            "HostName": "localhost",
+            "Port": 9200,
+            "DefaultIndex": "integration-engine"
+        }],
     }
 }

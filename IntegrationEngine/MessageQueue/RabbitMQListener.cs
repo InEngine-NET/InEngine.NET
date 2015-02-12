@@ -2,6 +2,7 @@
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Model;
 using Nest;
@@ -22,8 +23,8 @@ namespace IntegrationEngine.MessageQueue
     {
         public QueueingBasicConsumer Consumer { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
-        public RabbitMQConfiguration RabbitMQConfiguration { get; set; }
-        public MessageQueueConnection MessageQueueConnection { get; set; }
+        public IRabbitMQConfiguration RabbitMQConfiguration { get; set; }
+        public IMessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
         public IConnection Connection { get; set; }
 

@@ -43,11 +43,8 @@ namespace IntegrationEngine
             SetupLogging();
             RegisterIntegrationPoints();
             SetupRScriptRunner();
-            var elasticClient = SetupElasticClient();
-            var elasticsearchRepository = SetupElasticsearchRepository(elasticClient);
-            var messageQueueClient = SetupMessageQueueClient();
-            var dispatcher = SetupDispatcher(messageQueueClient);
-            SetupEngineScheduler(dispatcher, elasticsearchRepository);
+            SetupElasticsearchRepository();
+            SetupEngineScheduler();
             SetupThreadedListenerManager();
             SetupWebApi();
         }
@@ -73,26 +70,43 @@ namespace IntegrationEngine
             Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(integrationEngineContext));
         }
 
-        public void SetupWebApi()
-        {
-            WebApiApplication = new WebApiApplication() { 
-                WebApiConfiguration = EngineConfiguration.WebApi
-            };
-            WebApiApplication.Start();
-        }
-
         public void RegisterIntegrationPoints()
         {
-            foreach (var config in EngineConfiguration.IntegrationPoints.Mail)
+            Container.RegisterType<Elasticsearch.Net.Connection.IConnection, Elasticsearch.Net.Connection.HttpConnection>();
+            Container.RegisterType<INestSerializer, NestSerializer>();
+            Container.RegisterType<Elasticsearch.Net.Connection.ITransport, Elasticsearch.Net.Connection.Transport>();
+            Container.RegisterType<IConnectionSettingsValues, ConnectionSettings>();
+            foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
+                Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
+            }
+            foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
+                Container.RegisterInstance<IElasticsearchConfiguration>(config.IntegrationPointName, config);
+                var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
+                var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
+                var client = new ElasticClient(settings);
+                Container.RegisterInstance<IElasticClient>(config.IntegrationPointName, client);
+//                Container.RegisterType<IElasticClient, ElasticClient>(config.IntegrationPointName,
+//                    new InjectionConstructor(
+//                        settings,
+//                        new ResolvedParameter<Elasticsearch.Net.Connection.IConnection>(),
+//                        new ResolvedParameter<INestSerializer>(),
+//                        new ResolvedParameter<Elasticsearch.Net.Connection.ITransport>())
+//                );
+            }
+            foreach (var config in EngineConfiguration.IntegrationPoints.RabbitMQ) {
+                Container.RegisterInstance<IRabbitMQConfiguration>(config.IntegrationPointName, config);
+                Container.RegisterType<IMessageQueueClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
+            }
         }
 
         public void SetupThreadedListenerManager()
         {
+            var config = Container.Resolve<IRabbitMQConfiguration>("DefaultRabbitMQ");
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueConnection = new MessageQueueConnection(EngineConfiguration.MessageQueue),
-                RabbitMQConfiguration = EngineConfiguration.MessageQueue,
+                MessageQueueConnection = new MessageQueueConnection(config),
+                RabbitMQConfiguration = config,
             };
 
             var threadedListenerManager = new ThreadedListenerManager() {
@@ -101,32 +115,19 @@ namespace IntegrationEngine
             Container.RegisterInstance<IThreadedListenerManager>(threadedListenerManager);
             threadedListenerManager.StartListener();
         }
-
-        public IMessageQueueClient SetupMessageQueueClient()
+            
+        public void SetupEngineScheduler()
         {
-            var messageQueueClient = new RabbitMQClient() {
-                MessageQueueConnection = new MessageQueueConnection(EngineConfiguration.MessageQueue),
-                MessageQueueConfiguration = EngineConfiguration.MessageQueue,
+            var dispatcher = new Dispatcher() {
+                MessageQueueClient = Container.Resolve<IMessageQueueClient>("DefaultRabbitMQ"),
             };
-            Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
-            return messageQueueClient;
-        }
-
-        public IDispatcher SetupDispatcher(IMessageQueueClient messageQueueClient)
-        {
-            return new Dispatcher() {
-                MessageQueueClient = messageQueueClient,
-            };
-        }
-
-        public void SetupEngineScheduler(IDispatcher dispatcher, IElasticsearchRepository elasticsearchRepository)
-        {
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
                 Dispatcher = dispatcher,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
+            var elasticsearchRepository = Container.Resolve<IElasticsearchRepository>();
             var engineSchedulerListener = new EngineSchedulerListener() {
                 ElasticsearchRepository = elasticsearchRepository,
             };
@@ -143,30 +144,22 @@ namespace IntegrationEngine
                 Log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }
 
+        public void SetupElasticsearchRepository()
+        {
+            Container.RegisterType<IElasticsearchRepository, ElasticsearchRepository>(new InjectionConstructor(new ResolvedParameter<IElasticClient>("DefaultElasticsearch")));
+        }
+
         public void SetupRScriptRunner()
         {
-            Container.RegisterInstance<RScriptRunner>(new RScriptRunner());
+            Container.RegisterInstance<IRScriptRunner>(new RScriptRunner());
         }
 
-        public IElasticClient SetupElasticClient()
+        public void SetupWebApi()
         {
-            var config = EngineConfiguration.Elasticsearch;
-            var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
-            var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
-            var elasticClient = new ElasticClient(settings);
-            Container.RegisterInstance<IElasticClient>(elasticClient);
-            return elasticClient;
-        }
-
-        public IElasticsearchRepository SetupElasticsearchRepository(IElasticClient elasticClient)
-        {
-            var elasticsearchRepository = new ElasticsearchRepository() {
-                ElasticClient = elasticClient,
+            WebApiApplication = new WebApiApplication() { 
+                WebApiConfiguration = EngineConfiguration.WebApi
             };
-            if (!elasticsearchRepository.IsServerAvailable())
-                Log.Warn("Elasticsearch server does not appear to be available.");
-            Container.RegisterInstance<IElasticsearchRepository>(elasticsearchRepository);
-            return elasticsearchRepository;
+            WebApiApplication.Start();
         }
 
         public void Dispose()

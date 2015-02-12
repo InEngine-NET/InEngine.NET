@@ -12,8 +12,6 @@ namespace IntegrationEngine
         {}
 
         public WebApiConfiguration WebApi { get; set; }
-        public RabbitMQConfiguration MessageQueue { get; set; }
-        public ElasticsearchConfiguration Elasticsearch { get; set; }
         public NLogAdapterConfiguration NLogAdapter { get; set; }
         public IntegrationPointConfigurations IntegrationPoints { get; set; }
     }

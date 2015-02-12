@@ -47,27 +47,6 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
-        public void ShouldSetupElasticClient()
-        {
-            Subject.LoadConfiguration();
-
-            Subject.SetupElasticClient();
-
-            Subject.Container.Resolve<IElasticClient>();
-        }
-
-        [Test]
-        public void ShouldSetupElasticsearchRepository()
-        {
-            Subject.LoadConfiguration();
-            var mockElasticClient = new Mock<IElasticClient>();
-
-            Subject.SetupElasticsearchRepository(mockElasticClient.Object);
-
-            Subject.Container.Resolve<IElasticsearchRepository>();
-        }
-
-        [Test]
         public void ShouldSetupMessageQueueListener()
         {
             Subject.LoadConfiguration();
@@ -75,29 +54,6 @@ namespace IntegrationEngine.Tests
             Subject.SetupThreadedListenerManager();
 
             Subject.Container.Resolve<IThreadedListenerManager>();
-        }
-
-        [Test]
-        public void ShouldSetupMessageQueueClient()
-        {
-            Subject.LoadConfiguration();
-
-            Subject.SetupMessageQueueClient();
-
-            Subject.Container.Resolve<IMessageQueueClient>();
-        }
-
-        [Test]
-        public void ShouldSetupEngineScheduler()
-        {
-            Subject.IntegrationJobTypes = new List<Type>();
-            Subject.LoadConfiguration();
-            var mockElasticsearchRespository= new Mock<IElasticsearchRepository>();
-            var mockDispatcher = new Mock<IDispatcher>();
-
-            Subject.SetupEngineScheduler(mockDispatcher.Object, mockElasticsearchRespository.Object);
-
-            Subject.Container.Resolve<IEngineScheduler>();
         }
 
         [Test]
