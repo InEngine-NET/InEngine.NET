@@ -143,7 +143,7 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
-        public void ShouldShutdownSchedulerAndDisposeOfMessageQueueListener()
+        public void ShouldDisposeOfEngineResources()
         {
             var mockWebApiApplication = new Mock<IWebApiApplication>();
             mockWebApiApplication.Setup(x => x.Stop());
