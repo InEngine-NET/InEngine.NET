@@ -5,6 +5,32 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-rc1
+
+__Fixes__
+* Use Json.NET to serialize post/put requests in IntegrationEngine.Client as RestSharp does not appear to be able to serialize a dictionary.
+
+## 2.0.0-beta9
+
+__Fixes__
+* Return BadRequest in TriggerControllerBase instead of simply calling it.
+
+## 2.0.0-beta8
+
+__Features__
+* Add LogEvent to Web API
+* Always use UTC; remove timezone fields from model and Web API.
+
+__Chores__
+* Back fill tests for various components.
+* DRYout Web API and Repository Layer.
+* DRYout IntegrationEngine.Client.
+* Refactor ConsoleClient internals.
+* Use generic type argument for repo item Id parameters.
+
+__Fixes__
+* Resolve TCPClient issues with mail server health check.
+
 ## 2.0.0-beta7
 
 __Features__

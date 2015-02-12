@@ -31,9 +31,6 @@ The CronTrigger endpoint allows for an integration job to be scheduled by creati
     <tr><td>CronExpressionString</td><td><span class="label label-info">string</span></td>
     <td>A valid <a href="http://en.wikipedia.org/wiki/Cron#CRON_expression">cron expression</a>.</td>
     </tr>
-    <tr><td>TimeZoneId</td><td><span class="label label-info">string</span></td>
-        <td>A time zone string id, as defined by the TimeZone endpoint.</td>
-    </tr>
 </tbody>
 </table>
 </div>
@@ -53,7 +50,7 @@ curl http://localhost:9001/api/CronTrigger/ID
 ### Create a New CronTrigger
 POST api/CronTrigger
 ```sh
-curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&CronExpressionString=0 3 4 ? * MON-FRI *&TimeZoneId=America/New_York" http://localhost:9001/api/CronTrigger
+curl --data "JobType=IntegrationEngine.ConsoleHost.Car.CarMailMessageJob&CronExpressionString=0 3 4 ? * MON-FRI *" http://localhost:9001/api/CronTrigger
 ```
 
 ### Update a Specific CronTrigger by ID

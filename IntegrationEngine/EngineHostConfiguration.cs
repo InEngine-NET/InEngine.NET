@@ -25,6 +25,7 @@ namespace IntegrationEngine
         public IUnityContainer Container { get; set; }
         public EngineConfiguration Configuration { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
+        public ILog Log { get; set; }
 
         public EngineHostConfiguration()
         {
@@ -38,16 +39,16 @@ namespace IntegrationEngine
                         .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
                         .ToList();
             LoadConfiguration();
-            var log = SetupLogging();
+            SetupLogging();
             var dbContext = SetupDatabaseContext();
             SetupRScriptRunner();
             SetupDatabaseRepository(dbContext);
-            var mailClient = SetupMailClient(log);
+            var mailClient = SetupMailClient();
             var elasticClient = SetupElasticClient();
-            var elasticsearchRepository = SetupElasticsearchRepository(log, elasticClient);
-            var messageQueueClient = SetupMessageQueueClient(log);
-            SetupEngineScheduler(log, messageQueueClient, elasticsearchRepository);
-            SetupMessageQueueListener(log, mailClient, elasticClient, dbContext);
+            var elasticsearchRepository = SetupElasticsearchRepository(elasticClient);
+            var messageQueueClient = SetupMessageQueueClient();
+            SetupEngineScheduler(messageQueueClient, elasticsearchRepository);
+            SetupMessageQueueListener(mailClient, elasticClient, dbContext);
             SetupWebApi();
         }
 
@@ -57,16 +58,14 @@ namespace IntegrationEngine
             Container.RegisterInstance<EngineConfiguration>(Configuration);
         }
 
-        public ILog SetupLogging()
+        public void SetupLogging()
         {
             var config = Configuration.NLogAdapter;
             var properties = new NameValueCollection();
             properties["configType"] = config.ConfigType;
             properties["configFile"] = config.ConfigFile;
             Common.Logging.LogManager.Adapter = new NLogLoggerFactoryAdapter(properties);  
-            var log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            Container.RegisterInstance<ILog>(log);
-            return log;
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public IntegrationEngineContext SetupDatabaseContext()
@@ -83,27 +82,28 @@ namespace IntegrationEngine
 
         public void SetupWebApi()
         {
-            var config = Configuration.WebApi;
-            IntegrationEngineApi.Start((new UriBuilder("http", config.HostName, config.Port)).Uri.AbsoluteUri);
+            var webApiApplication = new WebApiApplication() { 
+                WebApiConfiguration = Configuration.WebApi
+            };
+            webApiApplication.Start();
+            Container.RegisterInstance<IWebApiApplication>(webApiApplication);
         }
 
-        public IMailClient SetupMailClient(ILog log)
+        public IMailClient SetupMailClient()
         {
             var mailClient = new MailClient() {
-                MailConfiguration = Configuration.Mail,
-                Log = log,
+                MailConfiguration = Configuration.Mail
             };
             Container.RegisterInstance<IMailClient>(mailClient);
             return mailClient;
         }
 
-        public void SetupMessageQueueListener(ILog log, IMailClient mailClient, IElasticClient elasticClient, IntegrationEngineContext integrationEngineContext)
+        public void SetupMessageQueueListener(IMailClient mailClient, IElasticClient elasticClient, IntegrationEngineContext integrationEngineContext)
         {
             var rabbitMqListener = new RabbitMQListener() {
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
-                Log = log,
                 MailClient = mailClient,
                 IntegrationEngineContext = integrationEngineContext,
                 ElasticClient = elasticClient,
@@ -112,26 +112,28 @@ namespace IntegrationEngine
             rabbitMqListener.Listen();
         }
 
-        public IMessageQueueClient SetupMessageQueueClient(ILog log)
+        public IMessageQueueClient SetupMessageQueueClient()
         {
             var messageQueueClient = new RabbitMQClient() {
                 MessageQueueConnection = new MessageQueueConnection(Configuration.MessageQueue),
                 MessageQueueConfiguration = Configuration.MessageQueue,
-                Log = log,
             };
             Container.RegisterInstance<IMessageQueueClient>(messageQueueClient);
             return messageQueueClient;
         }
 
-        public void SetupEngineScheduler(ILog log, IMessageQueueClient messageQueueClient, IElasticsearchRepository elasticsearchRepository)
+        public void SetupEngineScheduler(IMessageQueueClient messageQueueClient, IElasticsearchRepository elasticsearchRepository)
         {
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueClient = messageQueueClient,
-                Log = log,
             };
             Container.RegisterInstance<IEngineScheduler>(engineScheduler);
+            var engineSchedulerListener = new EngineSchedulerListener() {
+                ElasticsearchRepository = elasticsearchRepository,
+            };
+            engineScheduler.AddSchedulerListener(engineSchedulerListener);
             engineScheduler.Start();
             var simpleTriggers = elasticsearchRepository.SelectAll<SimpleTrigger>();
             var allCronTriggers = elasticsearchRepository.SelectAll<CronTrigger>();
@@ -141,7 +143,7 @@ namespace IntegrationEngine
             foreach (var trigger in cronTriggers)
                 engineScheduler.ScheduleJobWithTrigger(trigger);
             foreach(var cronTrigger in allCronTriggers.Where(x => string.IsNullOrWhiteSpace(x.CronExpressionString)))
-                log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
+                Log.Warn(x => x("Cron expression for trigger ({0}) is null, empty, or whitespace.", cronTrigger.Id));
         }
 
         public void SetupRScriptRunner()
@@ -159,20 +161,21 @@ namespace IntegrationEngine
             return elasticClient;
         }
 
-        public IElasticsearchRepository SetupElasticsearchRepository(ILog log, IElasticClient elasticClient)
+        public IElasticsearchRepository SetupElasticsearchRepository(IElasticClient elasticClient)
         {
             var elasticsearchRepository = new ElasticsearchRepository() {
-                Log = log,
                 ElasticClient = elasticClient,
             };
             if (!elasticsearchRepository.IsServerAvailable())
-                log.Warn("Elasticsearch server does not appear to be available.");
+                Log.Warn("Elasticsearch server does not appear to be available.");
             Container.RegisterInstance<IElasticsearchRepository>(elasticsearchRepository);
             return elasticsearchRepository;
         }
 
         public void Dispose()
         {
+            var webApiApplication = Container.Resolve<IWebApiApplication>();
+            webApiApplication.Stop();            
             var engineScheduler = Container.Resolve<IEngineScheduler>();
             engineScheduler.Shutdown();
             var messageQueueListener = Container.Resolve<IMessageQueueListener>();

@@ -2,10 +2,10 @@
 using IntegrationEngine.Model;
 using Nest;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace IntegrationEngine.Core.Storage
 {
@@ -16,6 +16,7 @@ namespace IntegrationEngine.Core.Storage
 
         public ElasticsearchRepository()
         {
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public IEnumerable<TItem> SelectAll<TItem>() where TItem : class, IHasStringId

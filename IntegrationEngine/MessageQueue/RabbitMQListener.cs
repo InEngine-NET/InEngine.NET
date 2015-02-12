@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -32,6 +33,7 @@ namespace IntegrationEngine.MessageQueue
         public RabbitMQListener()
         {
             shouldTerminate = false;
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void Dispose()
@@ -78,13 +80,17 @@ namespace IntegrationEngine.MessageQueue
                             integrationJob.Run();
                         }
                     }
+                    catch (IntegrationJobRunFailureException exception)
+                    {
+                        Log.Error(x => x("Integration job did not run successfully ({0}).", message.JobTypeName), exception);
+                    }
                     catch (EndOfStreamException exception)
                     {
                         Log.Debug(x => x("The message queue ({0}) has closed.", MessageQueueConfiguration.QueueName), exception);
                     }
                     catch (Exception exception)
                     {
-                        Log.Error(x => x("Integration job did not run successfully ({0})", message.JobTypeName), exception);
+                        Log.Error("Issue receiving/decoding dispatch message or running job.", exception);
                     }
                 }
             }

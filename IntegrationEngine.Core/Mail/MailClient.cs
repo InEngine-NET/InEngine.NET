@@ -1,10 +1,10 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Configuration;
 using System;
+using System.IO;
 using System.Net.Mail;
 using System.Net.Sockets;
-using System.IO;
-using System.Text;
+using System.Reflection;
 
 namespace IntegrationEngine.Core.Mail
 {
@@ -17,6 +17,7 @@ namespace IntegrationEngine.Core.Mail
         public MailClient()
         {
             SmtpClient = new SmtpClientAdapter();
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public MailClient (ILog log) : this()
@@ -26,10 +27,10 @@ namespace IntegrationEngine.Core.Mail
 
         public void Send(MailMessage mailMessage)
         {
-            SmtpClient.Host = MailConfiguration.HostName;
-            SmtpClient.Port = MailConfiguration.Port;
             try
             {
+                SmtpClient.Host = MailConfiguration.HostName;
+                SmtpClient.Port = MailConfiguration.Port;
                 SmtpClient.Send(mailMessage);
             } 
             catch (Exception exception)

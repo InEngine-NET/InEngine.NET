@@ -64,6 +64,6 @@ webApiMenu:
         simple-trigger:
             text: SimpleTrigger
             relativeUrl: web-api/simple-trigger.html
-        time-zone:
-            text: TimeZone
-            relativeUrl: web-api/time-zone.html
+        log-event:
+            text: LogEvent
+            relativeUrl: web-api/log-event.html

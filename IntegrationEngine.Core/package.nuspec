@@ -31,4 +31,7 @@
 	    <dependency id="RabbitMQ.Client" version="3.4.3" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="..\IntegrationEngine.Core.net40\lib\net40\IntegrationEngine.Core.dll" target="lib\net40" />
+  </files>
 </package>

@@ -11,26 +11,31 @@ namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
     {
         public override void Run()
         {
-            var report = new SampleReport() {
-                Created = DateTime.Now,
-                Data = new System.Collections.Generic.List<SampleDatum>(),
-                //Data = RunQuery<SampleDatum>(),
-            };
+            try
+            {
+                var report = new SampleReport() {
+                    Created = DateTime.Now,
+                    Data = new System.Collections.Generic.List<SampleDatum>(),
+                    //Data = RunQuery<SampleDatum>(),
+                };
 
-            // Write result to Elasticsearch
+                // Pass into Razor engine
+                string template = "Created on <strong>@Model.Created</strong> with <strong>@Model.Data.Count</strong> records.";
+                var html = Engine.Razor.RunCompile(template, "template-01", typeof(SampleReport), report);
 
-            // Pass into Razor engine
-            string template = "Created on <strong>@Model.Created</strong> with <strong>@Model.Data.Count</strong> records.";
-            var html = Engine.Razor.RunCompile(template, "template-01", typeof(SampleReport), report);
-
-            // Send Mail
-            var mailMessage = new MailMessage();
-            mailMessage.To.Add("ethanhann@gmail.com");
-            mailMessage.Subject = "Sample SQL Report";
-            mailMessage.From = new MailAddress("root@localhost");
-            mailMessage.Body = html;
-            mailMessage.IsBodyHtml = true;
-            MailClient.Send(mailMessage);
+                // Send Mail
+                var mailMessage = new MailMessage();
+                mailMessage.To.Add("ethanhann@gmail.com");
+                mailMessage.Subject = "Sample SQL Report";
+                mailMessage.From = new MailAddress("root@localhost");
+                mailMessage.Body = html;
+                mailMessage.IsBodyHtml = true;
+                MailClient.Send(mailMessage);
+            }
+            catch (Exception exception)
+            {
+                throw new IntegrationJobRunFailureException("SampleSqlReportJob failed.", exception);
+            }
         }
     }
 }
