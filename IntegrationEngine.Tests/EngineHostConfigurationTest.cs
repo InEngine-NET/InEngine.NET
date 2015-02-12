@@ -145,6 +145,9 @@ namespace IntegrationEngine.Tests
         [Test]
         public void ShouldShutdownSchedulerAndDisposeOfMessageQueueListener()
         {
+            var mockWebApiApplication = new Mock<IWebApiApplication>();
+            mockWebApiApplication.Setup(x => x.Stop());
+            UnityContainer.RegisterInstance<IWebApiApplication>(mockWebApiApplication.Object);
             var mockEngineScheduler = new Mock<IEngineScheduler>();
             mockEngineScheduler.Setup(x => x.Shutdown());
             UnityContainer.RegisterInstance<IEngineScheduler>(mockEngineScheduler.Object);
@@ -154,6 +157,7 @@ namespace IntegrationEngine.Tests
 
             Subject.Dispose();
 
+            mockWebApiApplication.Verify(x => x.Stop(), Times.Once);
             mockEngineScheduler.Verify(x => x.Shutdown(), Times.Once);
             mockMessageQueueListener.Verify(x => x.Dispose(), Times.Once);
         }
