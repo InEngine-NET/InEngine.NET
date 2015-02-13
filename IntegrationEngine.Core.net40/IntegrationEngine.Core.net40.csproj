@@ -82,8 +82,17 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Configuration\DatabaseConfiguration.cs">
-      <Link>DatabaseConfiguration.cs</Link>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IIntegrationPointConfiguration.cs">
+      <Link>IIntegrationPointConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IMailConfiguration.cs">
+      <Link>IMailConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IMySqlConfiguration.cs">
+      <Link>IMySqlConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\ISqlServerConfiguration.cs">
+      <Link>ISqlServerConfiguration.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Configuration\MailConfiguration.cs">
       <Link>MailConfiguration.cs</Link>
@@ -132,6 +141,9 @@
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Reports\IReport.cs">
       <Link>IReport.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\R\IRScriptRunner.cs">
+      <Link>IRScriptRunner.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\R\RScriptRunner.cs">
       <Link>RScriptRunner.cs</Link>
