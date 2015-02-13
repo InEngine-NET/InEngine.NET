@@ -1,17 +1,14 @@
 ﻿using BeekmanLabs.UnitTesting;
 using Common.Logging;
+using Common.Logging.NLog;
 using IntegrationEngine.Api;
-using IntegrationEngine.Core.MessageQueue;
+using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.R;
-using IntegrationEngine.Core.Storage;
 using IntegrationEngine.MessageQueue;
-using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 using Moq;
 using Nest;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace IntegrationEngine.Tests
 {
@@ -43,13 +40,15 @@ namespace IntegrationEngine.Tests
 
             Subject.SetupLogging();
 
-            Assert.That(Subject.Log.GetType(), Is.EqualTo(typeof(Common.Logging.NLog.NLogLogger)));
+            Assert.That(Subject.Log.GetType(), Is.EqualTo(typeof (NLogLogger)));
         }
 
         [Test]
         public void ShouldSetupMessageQueueListener()
         {
             Subject.LoadConfiguration();
+            Subject.Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>("DefaultRabbitMQ");
+
 
             Subject.SetupThreadedListenerManager();
 
@@ -59,6 +58,8 @@ namespace IntegrationEngine.Tests
         [Test]
         public void ShouldSetupRScriptRunner()
         {
+            Subject.Container.RegisterInstance<IElasticClient>(new ElasticClient());
+
             Subject.SetupRScriptRunner();
 
             Subject.Container.Resolve<RScriptRunner>();
@@ -69,7 +70,7 @@ namespace IntegrationEngine.Tests
         {
             var mockWebApiApplication = new Mock<IWebApiApplication>();
             Subject.WebApiApplication = mockWebApiApplication.Object;
-            
+
             Subject.Dispose();
 
             mockWebApiApplication.Verify(x => x.Dispose(), Times.Once);
