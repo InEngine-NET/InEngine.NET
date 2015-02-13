@@ -1,12 +1,12 @@
 ﻿using System;
 using RabbitMQ.Client;
-using IntegrationEngine.Configuration;
+using IntegrationEngine.Core.Configuration;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Core.MessageQueue
 {
     public class MessageQueueConnection : IMessageQueueConnection
     {
-        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
+        public IRabbitMQConfiguration MessageQueueConfiguration { get; set; }
         public ConnectionFactory ConnectionFactory { get; set; }
         IConnection _connection;
 
@@ -14,7 +14,7 @@ namespace IntegrationEngine.MessageQueue
         {
         }
 
-        public MessageQueueConnection(MessageQueueConfiguration messageQueueConfiguration)
+        public MessageQueueConnection(IRabbitMQConfiguration messageQueueConfiguration)
             : this()
         {
             MessageQueueConfiguration = messageQueueConfiguration;

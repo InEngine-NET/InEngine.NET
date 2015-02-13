@@ -57,8 +57,14 @@
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Model\DispatchTrigger.cs">
+      <Link>DispatchTrigger.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Model\ICronTrigger.cs">
       <Link>ICronTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Model\IDispatchable.cs">
+      <Link>IDispatchable.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Model\IHasParameters.cs">
       <Link>IHasParameters.cs</Link>

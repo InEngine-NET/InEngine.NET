@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using Microsoft.Owin.Hosting;
 using System;
 
@@ -18,9 +18,10 @@ namespace IntegrationEngine.Api
             webApi = WebApp.Start<WebApiStartup>(baseAddress);
         }
 
-        public void Stop()
+        public void Dispose()
         {
-            webApi.Dispose();
+            if (webApi != null)
+                webApi.Dispose();
         }
     }
 }

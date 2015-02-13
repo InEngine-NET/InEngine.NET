@@ -11,14 +11,21 @@ namespace IntegrationEngine.Core.Mail
     public class MailClient : IMailClient
     {
         public ISmtpClient SmtpClient { get; set; }
-        public MailConfiguration MailConfiguration { get; set; }
         public ILog Log { get; set; }
+        public IMailConfiguration MailConfiguration { get; set; }
 
         public MailClient()
         {
             SmtpClient = new SmtpClientAdapter();
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
+            
+        public MailClient(IMailConfiguration mailConfiguration) 
+            : this()
+        {
+            MailConfiguration = mailConfiguration;
+        }
+
 
         public MailClient (ILog log) : this()
         {
@@ -29,8 +36,6 @@ namespace IntegrationEngine.Core.Mail
         {
             try
             {
-                SmtpClient.Host = MailConfiguration.HostName;
-                SmtpClient.Port = MailConfiguration.Port;
                 SmtpClient.Send(mailMessage);
             } 
             catch (Exception exception)
@@ -61,7 +66,7 @@ namespace IntegrationEngine.Core.Mail
                     }
                 }
             }
-            catch (SocketException exception)
+            catch (Exception exception)
             {
                 Log.Error(exception);
                 isAvailable = false;

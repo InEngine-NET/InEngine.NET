@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace IntegrationEngine.Scheduler
 {
-    public interface IEngineScheduler
+    public interface IEngineScheduler : IDisposable
     {
         IList<Type> IntegrationJobTypes { get; set; }
         IScheduler Scheduler { get; set; }
@@ -14,6 +14,5 @@ namespace IntegrationEngine.Scheduler
         bool IsJobTypeRegistered(string jobTypeName);
         Type GetRegisteredJobTypeByName(string jobTypeName);
         bool DeleteTrigger(IIntegrationJobTrigger triggerDefinition);
-        void Shutdown();
     }
 }

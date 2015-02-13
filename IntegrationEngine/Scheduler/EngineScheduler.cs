@@ -1,5 +1,6 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.MessageQueue;
 using IntegrationEngine.Model;
 using Quartz;
@@ -14,7 +15,7 @@ namespace IntegrationEngine.Scheduler
     {
         public IScheduler Scheduler { get; set; }
         public virtual IList<Type> IntegrationJobTypes { get; set; }
-        public IMessageQueueClient MessageQueueClient { get; set; }
+        public IDispatcher Dispatcher { get; set; }
         public ILog Log { get; set; }
 
         public EngineScheduler()
@@ -32,7 +33,7 @@ namespace IntegrationEngine.Scheduler
             Scheduler.ListenerManager.AddSchedulerListener(engineSchedulerListener);
         }
 
-        public virtual void Shutdown()
+        public virtual void Dispose()
         {
             Scheduler.Shutdown();
         }
@@ -57,7 +58,7 @@ namespace IntegrationEngine.Scheduler
             {
                 var integrationJob = Activator.CreateInstance(jobType) as IIntegrationJob;
                 var jobDetailsDataMap = new JobDataMap();
-                jobDetailsDataMap.Put("MessageQueueClient", MessageQueueClient);
+                jobDetailsDataMap.Put("Dispatcher", Dispatcher);
                 jobDetailsDataMap.Put("IntegrationJob", integrationJob);
                 jobDetailsDataMap.Put("Parameters", parameters);
                 return JobBuilder.Create<IntegrationJobDispatcherJob>()

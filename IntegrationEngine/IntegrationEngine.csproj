@@ -148,30 +148,22 @@
     <Compile Include="Api\IWebApiApplication.cs" />
     <Compile Include="Api\WebApiApplication.cs" />
     <Compile Include="Api\WebApiStartup.cs" />
-    <Compile Include="Configuration\NLogAdapterConfiguration.cs" />
-    <Compile Include="Configuration\MessageQueueConfiguration.cs" />
-    <Compile Include="Configuration\WebApiConfiguration.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
-    <Compile Include="MessageQueue\DispatchMessage.cs" />
+    <Compile Include="MessageQueue\IThreadedListenerManager.cs" />
+    <Compile Include="MessageQueue\ThreadedListenerManager.cs" />
+    <Compile Include="Scheduler\Dispatcher.cs" />
     <Compile Include="MessageQueue\IMessageQueueListener.cs" />
-    <Compile Include="MessageQueue\MsmqClient.cs" />
     <Compile Include="MessageQueue\MsmqListener.cs" />
+    <Compile Include="MessageQueue\RabbitMQListener.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
+    <Compile Include="Scheduler\IDispatcher.cs" />
     <Compile Include="Scheduler\IEngineSchedulerListener.cs" />
     <Compile Include="Scheduler\EngineSchedulerListener.cs" />
     <Compile Include="Scheduler\SimpleTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageQueue\IMessageQueueClient.cs" />
-    <Compile Include="MessageQueue\RabbitMQClient.cs" />
-    <Compile Include="MessageQueue\RabbitMQListener.cs" />
     <Compile Include="EngineHost.cs" />
-    <Compile Include="EngineHostConfiguration.cs" />
-    <Compile Include="MessageQueue\IntegrationJobDispatcherJob.cs" />
-    <Compile Include="Configuration\EngineConfiguration.cs" />
-    <Compile Include="MessageQueue\IMessageQueueConnection.cs" />
-    <Compile Include="MessageQueue\MessageQueueConnection.cs" />
+    <Compile Include="Scheduler\IntegrationJobDispatcherJob.cs" />
     <Compile Include="ContainerSingleton.cs" />
-    <Compile Include="Configuration\ElasticsearchConfiguration.cs" />
     <Compile Include="Api\Controllers\SimpleTriggerController.cs" />
     <Compile Include="Api\Controllers\CronTriggerController.cs" />
     <Compile Include="ContainerResolver.cs" />
@@ -182,6 +174,8 @@
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
     <Compile Include="Api\TriggerControllerBase.cs" />
     <Compile Include="Api\Controllers\LogEventController.cs" />
+    <Compile Include="EngineConfiguration.cs" />
+    <Compile Include="EngineHostCompositionRoot.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

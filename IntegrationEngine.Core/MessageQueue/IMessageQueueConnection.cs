@@ -1,11 +1,11 @@
-﻿using IntegrationEngine.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
 using RabbitMQ.Client;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Core.MessageQueue
 {
     public interface IMessageQueueConnection
     {
-        MessageQueueConfiguration MessageQueueConfiguration { get; set; } 
+        IRabbitMQConfiguration MessageQueueConfiguration { get; set; } 
         ConnectionFactory GetConnectionFactory();
         IConnection GetConnection();
     }

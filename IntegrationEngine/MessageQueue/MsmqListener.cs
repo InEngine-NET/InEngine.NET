@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Messaging;
 using System.Text;
+using System.Threading;
 using MSMessageQueue = System.Messaging.MessageQueue;
 
 namespace IntegrationEngine.MessageQueue
@@ -32,8 +33,9 @@ namespace IntegrationEngine.MessageQueue
             }
         }
 
-        public void Listen()
+        public void Listen(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             Message newMessage = MSMessageQueue.Receive();
             var body = newMessage.Body as byte[];
             var message = Encoding.UTF8.GetString(body);
@@ -42,7 +44,6 @@ namespace IntegrationEngine.MessageQueue
                 return;
             var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message));
             var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
-            integrationJob = AutoWireJob(integrationJob, type);
             try
             {
                 if (integrationJob != null)
@@ -57,19 +58,6 @@ namespace IntegrationEngine.MessageQueue
         public void Dispose()
         {
             throw new NotImplementedException();
-        }
-
-        T AutoWireJob<T>(T job, Type type)
-        {
-            if (type.GetInterface(typeof(IMailJob).Name) != null)
-                (job as IMailJob).MailClient = MailClient;
-            if (type.GetInterface(typeof(ISqlJob).Name) != null)
-                (job as ISqlJob).DbContext = IntegrationEngineContext;
-            if (type.GetInterface(typeof(ILogJob).Name) != null)
-                (job as ILogJob).Log = Log;
-            if (type.GetInterface(typeof(IElasticsearchJob).Name) != null)
-                (job as IElasticsearchJob).ElasticClient = ElasticClient;
-            return job;
         }
     }
 }

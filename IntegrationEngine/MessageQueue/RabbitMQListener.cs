@@ -1,8 +1,10 @@
 ﻿using Common.Logging;
-using IntegrationEngine.Configuration;
+using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
+using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.Storage;
+using IntegrationEngine.Model;
 using Nest;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -19,60 +21,50 @@ namespace IntegrationEngine.MessageQueue
 {
     public class RabbitMQListener : IMessageQueueListener
     {
-        Thread listenerThread;
-        volatile bool shouldTerminate;
-        QueueingBasicConsumer consumer;
+        public QueueingBasicConsumer Consumer { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
-        public MessageQueueConfiguration MessageQueueConfiguration { get; set; }
-        public MessageQueueConnection MessageQueueConnection { get; set; }
+        public IRabbitMQConfiguration RabbitMQConfiguration { get; set; }
+        public IMessageQueueConnection MessageQueueConnection { get; set; }
         public ILog Log { get; set; }
-        public IMailClient MailClient { get; set; }
-        public IntegrationEngineContext IntegrationEngineContext { get; set; }
-        public IElasticClient ElasticClient { get; set; }
+        public IConnection Connection { get; set; }
 
         public RabbitMQListener()
         {
-            shouldTerminate = false;
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void Dispose()
         {
-            shouldTerminate = true;
-            if (consumer != null)
-                consumer.Queue.Close();
-            listenerThread.Join();
+            if (Consumer != null)
+                Consumer.Queue.Close();
+            if (Connection != null)
+                Connection.Close();
         }
 
-        void _listen()
+        public void Listen(CancellationToken cancellationToken)
         {
-            var connection = MessageQueueConnection.GetConnection();
-            using (var channel = connection.CreateModel())
+            Connection = MessageQueueConnection.GetConnection();
+            using (var channel = Connection.CreateModel())
             {
-                consumer = new QueueingBasicConsumer(channel);
-                channel.BasicConsume(MessageQueueConfiguration.QueueName, true, consumer);
+                Consumer = new QueueingBasicConsumer(channel);
+                channel.BasicConsume(RabbitMQConfiguration.QueueName, true, Consumer);
                 Log.Info(x => x("Waiting for messages..."));
 
                 while (true)
                 {
-                    var message = new DispatchMessage();
+                    var message = new DispatchTrigger();
                     try
                     {
-                        if (shouldTerminate)
-                        {
-                            connection.Close();
-                            Log.Info("Message queue listener has stopped listening for messages.");
-                            return;
-                        }
-                        var eventArgs = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var eventArgs = (BasicDeliverEventArgs)Consumer.Queue.Dequeue();
                         var body = eventArgs.Body;
-                        message = JsonConvert.DeserializeObject<DispatchMessage>(Encoding.UTF8.GetString(body));
+                        message = JsonConvert.DeserializeObject<DispatchTrigger>(Encoding.UTF8.GetString(body));
                         Log.Debug(x => x("Message queue listener received {0}", message));
                         if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                             continue;
-                        var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobTypeName));
+                        var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobType));
                         var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
-                        integrationJob = AutoWireJob(integrationJob, type);
+                        //                        integrationJob = AutoWireJob(integrationJob, type);
                         if (integrationJob != null)
                         {
                             if (integrationJob is IParameterizedJob)
@@ -80,13 +72,18 @@ namespace IntegrationEngine.MessageQueue
                             integrationJob.Run();
                         }
                     }
+                    catch (OperationCanceledException exception)
+                    { 
+                        Log.Info(x => x("Message queue listener has gracefully shutdown.", RabbitMQConfiguration.QueueName), exception);
+                        return;
+                    }
                     catch (IntegrationJobRunFailureException exception)
                     {
-                        Log.Error(x => x("Integration job did not run successfully ({0}).", message.JobTypeName), exception);
+                        Log.Error(x => x("Integration job did not run successfully ({0}).", message.JobType), exception);
                     }
                     catch (EndOfStreamException exception)
                     {
-                        Log.Debug(x => x("The message queue ({0}) has closed.", MessageQueueConfiguration.QueueName), exception);
+                        Log.Debug(x => x("The message queue ({0}) has closed.", RabbitMQConfiguration.QueueName), exception);
                     }
                     catch (Exception exception)
                     {
@@ -94,33 +91,6 @@ namespace IntegrationEngine.MessageQueue
                     }
                 }
             }
-        }
-
-        public void Listen() 
-        {
-            if (listenerThread == null)
-                listenerThread = new Thread(_listen);
-            if (listenerThread.ThreadState == ThreadState.Running)
-            {
-                Log.Info("Message queue listener already running.");
-                return;
-            }
-
-            listenerThread.Start();
-            Log.Info("Message queue listener started.");
-        }
-
-        T AutoWireJob<T>(T job, Type type)
-        {
-            if (type.GetInterface(typeof(IMailJob).Name) != null)
-                (job as IMailJob).MailClient = MailClient;
-            if (type.GetInterface(typeof(ISqlJob).Name) != null)
-                (job as ISqlJob).DbContext = IntegrationEngineContext;
-            if (type.GetInterface(typeof(ILogJob).Name) != null)
-                (job as ILogJob).Log = Log;
-            if (type.GetInterface(typeof(IElasticsearchJob).Name) != null)
-                (job as IElasticsearchJob).ElasticClient = ElasticClient;
-            return job;
         }
     }
 }

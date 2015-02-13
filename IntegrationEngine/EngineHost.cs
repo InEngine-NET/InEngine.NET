@@ -7,7 +7,7 @@ namespace IntegrationEngine
 {
     public class EngineHost : IDisposable
     {
-        EngineHostConfiguration _engineConfiguration;
+        EngineHostCompositionRoot _engineConfiguration;
         public IList<Assembly> AssembliesWithJobs { get; set; }
 
         public EngineHost(params Assembly[] assembliesWithJobs)
@@ -23,7 +23,7 @@ namespace IntegrationEngine
 
         public void Initialize()
         {
-            _engineConfiguration = new EngineHostConfiguration();
+            _engineConfiguration = new EngineHostCompositionRoot();
             _engineConfiguration.Configure(AssembliesWithJobs);
         }
     }

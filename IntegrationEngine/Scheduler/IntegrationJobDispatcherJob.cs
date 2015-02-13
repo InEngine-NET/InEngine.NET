@@ -3,12 +3,12 @@ using Microsoft.Practices.Unity;
 using Quartz;
 using IntegrationEngine.Model;
 using System.Collections.Generic;
+using IntegrationEngine.Core.MessageQueue;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.Scheduler
 {
     public class IntegrationJobDispatcherJob : IJob
     {
-
         public IntegrationJobDispatcherJob()
         {
         }
@@ -20,9 +20,9 @@ namespace IntegrationEngine.MessageQueue
                 map.ContainsKey("IntegrationJob") && 
                 map.ContainsKey("Parameters"))
             {
-                var messageQueueClient = map.Get("MessageQueueClient") as IMessageQueueClient;
+                var dispatcher = map.Get("Dispatcher") as IDispatcher;
                 var parameters = map.Get("Parameters") as IDictionary<string, string>;
-                messageQueueClient.Publish(map.Get("IntegrationJob"), parameters);
+                dispatcher.Dispatch(map.Get("IntegrationJob"), parameters);
             }
         }
     }
