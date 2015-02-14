@@ -9,6 +9,7 @@
 
         <link rel="stylesheet" href="http://inengine.net/bower_components/bootswatch/paper/bootstrap.min.css">
         <link rel="stylesheet" href="http://inengine.net/bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://inengine.net/bower_components/ionicons/css/ionicons.min.css">
         <link rel="stylesheet" href="http://inengine.net/bower_components/highlightjs/styles/dark.css">
         <link rel="stylesheet" href="http://inengine.net/css/main.css">
     </head>
@@ -93,7 +94,7 @@
             </li>
                     <li class="">
                 <a href="http://inengine.net/angularjs-api-module.html">
-                    <span class="fa fa-fw fa-desktop"></span>
+                    <span class="icon ion-social-angular"></span>
                     <span>AngularJS Client</span>
                 </a>
             </li>
@@ -199,7 +200,7 @@
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
                     <li class="">
                         <a href="http://inengine.net/angularjs-api-module.html">
-                            <span class="fa fa-fw fa-desktop"></span>
+                            <span class="icon ion-social-angular"></span>
                             <span>AngularJS Client</span>
                         </a>
                     </li>
@@ -220,6 +221,18 @@
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                                             <h1>Change Log</h1>
+<h2>2.0.0-rc2</h2>
+<p><strong>Features</strong></p>
+<ul>
+<li>Delete SimpleTrigger from Elasticsearch repo when it is &quot;finalized&quot; by the scheduler.
+This prevents jobs scheduled with SimpleTriggers from possibly rerunning when the server restarts.</li>
+</ul>
+<p><strong>Chores</strong></p>
+<ul>
+<li>Add .net 4 version of Core assembly.</li>
+<li>Gracefully shutdown Web API to avoid service restart issues.</li>
+<li>Initialize logger in the type where it is used.</li>
+</ul>
 <h2>2.0.0-rc1</h2>
 <p><strong>Fixes</strong></p>
 <ul>
