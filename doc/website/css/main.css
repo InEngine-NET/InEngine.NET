@@ -172,3 +172,9 @@ pre code {
     padding-top: 6px;
     padding-bottom: 6px;
 }
+
+.navbar-brand img {
+    max-width:100px;
+    margin-top: -7px;
+    display: inline-block;
+}
