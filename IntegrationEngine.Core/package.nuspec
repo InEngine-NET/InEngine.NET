@@ -7,7 +7,8 @@
     <authors>$author$</authors>
     <owners>Ethan Hann</owners>
     <licenseUrl>https://github.com/ethanhann/InEngine.NET/blob/master/IntegrationEngine/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/ethanhann/InEngine.NET</projectUrl>
+    <projectUrl>http://inengine.net</projectUrl>
+    <iconUrl>http://inengine.net/images/inengine-logo-32.png</iconUrl>
     <releaseNotes>http://inengine.net/change-log.html</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Core of IntegrationServer, an asynchronous job scheduling server.</description>
