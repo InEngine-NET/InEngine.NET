@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="images/favicon.ico" />
 
         <title>InEngine.NET</title>
 
@@ -20,6 +21,7 @@
                     <span class="fa fa-fw fa-bars"></span>
                 </button>
                 <a class="navbar-brand" href="http://inengine.net/">
+                    <img src="http://inengine.net/images/inengine-logo-32-alt.png" />
                     InEngine.NET
                     <small class="hidden-xs hidden-sm">
                         An asynchronous job scheduling server.
@@ -224,15 +226,15 @@
 <li><a href="http://www.elasticsearch.org/overview/elkdownloads/">Elasticsearch</a></li>
 </ul>
 <h2>Create a Console Application</h2>
-<p><a href="http://msdn.microsoft.com/en-us/library/k1sx6ed2.aspx">Create a console application</a> called "MyProject" in Visual Studio or Xamarin Studio. </p>
+<p><a href="http://msdn.microsoft.com/en-us/library/k1sx6ed2.aspx">Create a console application</a> called &quot;MyProject&quot; in Visual Studio or Xamarin Studio. </p>
 <h2>Add the InEngine.NET Package</h2>
 <h3>Visual Studio</h3>
 <p>Run the following command in the Package Manager Console.</p>
 <pre><code class="language-sh">PM&gt; Install-Package IntegrationEngine</code></pre>
 <h3>Xamarin Studio</h3>
-<p>Navigate to <em>Project</em>&#8594;<em>Add Packages</em>, then search for "InEngine.NET" in the <em>Add Packages</em> GUI.</p>
+<p>Navigate to <em>Project</em>&#8594;<em>Add Packages</em>, then search for &quot;InEngine.NET&quot; in the <em>Add Packages</em> GUI.</p>
 <h2>Initialize InEngine.NET</h2>
-<p><strong>InEngine.NET</strong> requires a host application. 
+<p><strong>InEngine.NET</strong> requires a host application.
 It can be a console or service application.
 The following code snippet demonstrates how to instantiate and initialize <strong>InEngine.NET</strong> in a console app called <em>MyProject</em>.
 It also indicates to the instance of <em>EngineHost</em> that it should look in the the assembly containing class <em>MainClass</em>
@@ -267,7 +269,7 @@ namespace MyProject
 }</code></pre>
 <h2>Schedule a Job</h2>
 <p>Post an HTTP request to the IntegrationServer API's CronTrigger resource with a <em>JobType</em> of
-"MyProject.MyIntegrationJob" - the full name of the job.  </p>
+&quot;MyProject.MyIntegrationJob&quot; - the full name of the job.  </p>
 <pre><code class="language-sh">curl --data "JobType=MyProject.MyIntegrationJob&amp;CronExpressionString=0 4 1 ? * MON-FRI *" http://localhost:9001/api/CronTrigger</code></pre>
                                     </section>
 

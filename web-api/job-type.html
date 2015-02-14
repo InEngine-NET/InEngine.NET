@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="images/favicon.ico" />
 
         <title>InEngine.NET</title>
 
@@ -20,6 +21,7 @@
                     <span class="fa fa-fw fa-bars"></span>
                 </button>
                 <a class="navbar-brand" href="http://inengine.net/">
+                    <img src="http://inengine.net/images/inengine-logo-32-alt.png" />
                     InEngine.NET
                     <small class="hidden-xs hidden-sm">
                         An asynchronous job scheduling server.
@@ -248,22 +250,16 @@
 <p>A list of registered Job types.</p>
 <h3>Parameters</h3>
 <div class="table-responsive">
-<table class="table table-bordered">
-<thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead>
-<tbody>
-    <tr>
-        <td>Name</td>
-        <td><span class="label label-info">string</span></td></td>
+<table class="table table-bordered"><thead><tr><th>Param</th>
+<th>Type</th>
+<th>Details</th>
+</tr></thead><tbody><tr><td>Name</td>
+        <td><span class="label label-info">string</span></td>
         <td>The name of the integration job class.</td>
-    </tr>
-    <tr>
-        <td>FullName</td>
-        <td><span class="label label-info">string</span></td></td>
+    </tr><tr><td>FullName</td>
+        <td><span class="label label-info">string</span></td>
         <td>The fully qualified name (namespace + class) of the integration job class.</td>
-    </tr>
-</tbody>
-</table>
-</div>
+    </tr></tbody></table></div>
 <h3>Get a List of JobTypes</h3>
 <p>GET api/JobType</p>
 <pre><code class="language-sh">curl http://localhost:9001/api/JobType</code></pre>

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="images/favicon.ico" />
 
         <title>InEngine.NET</title>
 
@@ -20,6 +21,7 @@
                     <span class="fa fa-fw fa-bars"></span>
                 </button>
                 <a class="navbar-brand" href="http://inengine.net/">
+                    <img src="http://inengine.net/images/inengine-logo-32-alt.png" />
                     InEngine.NET
                     <small class="hidden-xs hidden-sm">
                         An asynchronous job scheduling server.
@@ -221,11 +223,11 @@
 <p><strong>InEngine.NET</strong> is configured with a JSON file called IntegrationEngine.json.
 The configuration file has several sections, outlined below.</p>
 <h3>WebApi</h3>
-<p>The <em>WebApi</em> section contains settings for the InEngine.NET's WebApi. 
+<p>The <em>WebApi</em> section contains settings for the InEngine.NET's WebApi.
 Namely, the hostname and port of the web API.
 A list of CORS origins can also be specified.
 This is useful when accessing the API via the browser with the <a href="https://github.com/ethanhann/InEngine.NET-Dashboard">InEngine.NET Dashboard</a>.
-Note that it is not recommended to use "*" wildcard, but a list of specific domains is preferred instead.</p>
+Note that it is not recommended to use &quot;*&quot; wildcard, but a list of specific domains is preferred instead.</p>
 <pre><code class="language-js">{
     // ...
     "WebApi": {
@@ -236,9 +238,9 @@ Note that it is not recommended to use "*" wildcard, but a list of specific doma
     // ...
 }</code></pre>
 <h3>MessageQueue</h3>
-<p>The <em>MessageQueue</em> section contains settings for connecting to a RabbitMQ server. 
+<p>The <em>MessageQueue</em> section contains settings for connecting to a RabbitMQ server.
 If these settings are not correct, then a connection exception will be thrown when a job is triggered.</p>
-<p>A queue called "myqueue" will not exist on a freshly installed RabbitMQ server. 
+<p>A queue called &quot;myqueue&quot; will not exist on a freshly installed RabbitMQ server.
 It will need to be created.</p>
 <pre><code class="language-js">{
     // ...
@@ -253,7 +255,7 @@ It will need to be created.</p>
     // ...
 }</code></pre>
 <h3>Elasticsearch</h3>
-<p>The <em>Elasticsearch</em> section contains settings for connecting to a Elasticsearch server. 
+<p>The <em>Elasticsearch</em> section contains settings for connecting to a Elasticsearch server.
 If these settings are not correct, then a connection exception will be thrown when a job is scheduled.</p>
 <pre><code class="language-js">{
     // ...

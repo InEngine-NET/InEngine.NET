@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="images/favicon.ico" />
 
         <title>InEngine.NET</title>
 
@@ -20,6 +21,7 @@
                     <span class="fa fa-fw fa-bars"></span>
                 </button>
                 <a class="navbar-brand" href="http://inengine.net/">
+                    <img src="http://inengine.net/images/inengine-logo-32-alt.png" />
                     InEngine.NET
                     <small class="hidden-xs hidden-sm">
                         An asynchronous job scheduling server.
@@ -219,7 +221,7 @@
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                                             <h1>Integration Jobs</h1>
 <p>Integration jobs can do anything, not just retrieve, transform, and persist data.
-They can also be made to send an email, run a console command, call some third party library, or anything else that can 
+They can also be made to send an email, run a console command, call some third party library, or anything else that can
 be done in a .NET application.</p>
 <h2>Built-in Job Types</h2>
 <p><strong>InEngine.NET</strong> comes with a few built-in integration jobs defined in <em>IntegrationEngine.Core.Jobs</em>.
@@ -241,7 +243,7 @@ They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>El
 <h3>Log Job</h3>
 <ul>
 <li>Implement the <em>ILogJob</em> interface to create a log job.</li>
-<li>The <em>Log</em> property of the <em>ILogJob</em> is automatically instantiated and configured with the 
+<li>The <em>Log</em> property of the <em>ILogJob</em> is automatically instantiated and configured with the
 <a href="http://logging.apache.org/log4net/">log4net</a> settings in the host applications App.config file.</li>
 <li>The <em>Log</em> instance can be configured to log to a variety of <a href="logging.apache.org/log4net/release/features.html#appenders">logging targets</a>.</li>
 <li>Messages and exception can be logged according to their <a href="http://logging.apache.org/log4net/release/manual/introduction.html#hierarchy">severity</a>.</li>
