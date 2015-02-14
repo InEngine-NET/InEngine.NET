@@ -222,16 +222,16 @@
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                                             <h1>Change Log</h1>
 <h2>2.0.0-rc2</h2>
-<p><strong>Features</strong></p>
-<ul>
-<li>Delete SimpleTrigger from Elasticsearch repo when it is &quot;finalized&quot; by the scheduler.
-This prevents jobs scheduled with SimpleTriggers from possibly rerunning when the server restarts.</li>
-</ul>
 <p><strong>Chores</strong></p>
 <ul>
 <li>Add .net 4 version of Core assembly.</li>
 <li>Gracefully shutdown Web API to avoid service restart issues.</li>
 <li>Initialize logger in the type where it is used.</li>
+</ul>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>Delete SimpleTrigger from Elasticsearch repo when it is &quot;finalized&quot; by the scheduler.
+This prevents jobs scheduled with SimpleTriggers from possibly rerunning when the server restarts.</li>
 </ul>
 <h2>2.0.0-rc1</h2>
 <p><strong>Fixes</strong></p>
