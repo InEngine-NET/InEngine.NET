@@ -5,9 +5,9 @@ namespace IntegrationEngine.Core.Configuration
 {
     public class IntegrationPointConfigurations
     {
-        public IList<MailConfiguration> Mail { get; set; }
-        public IList<RabbitMQConfiguration> RabbitMQ { get; set; }
-        public IList<ElasticsearchConfiguration> Elasticsearch { get; set; }
+        public List<MailConfiguration> Mail { get; set; }
+        public List<RabbitMQConfiguration> RabbitMQ { get; set; }
+        public List<ElasticsearchConfiguration> Elasticsearch { get; set; }
     }
 }
 
