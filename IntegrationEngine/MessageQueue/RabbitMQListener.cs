@@ -65,8 +65,6 @@ namespace IntegrationEngine.MessageQueue
                         if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                             continue;
                         var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobType));
-                        //var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
-                        //integrationJob = AutoWireJob(integrationJob, type);
                         var integrationJob = ContainerSingleton.GetContainer().Resolve(type) as IIntegrationJob;
                         if (integrationJob != null)
                         {

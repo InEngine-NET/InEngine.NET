@@ -154,7 +154,7 @@ namespace IntegrationEngine
                         //Container.RegisterType(parameterType, new InjectionConstructor(config));
 
                         //Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
-                        Container.RegisterType(parameterType, typeof(MailClient));
+//                        Container.RegisterType(parameterType, typeof(MailClient));
                         resolvedParameters.Add(new ResolvedParameter(parameterType, parameterName));
                     }
                 }

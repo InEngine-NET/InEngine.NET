@@ -6,6 +6,6 @@ namespace IntegrationEngine.Core.Configuration
     {
         public string HostName { get; set; }
         public int Port { get; set; }
-        public IList<string> Origins { get; set; }
+        public List<string> Origins { get; set; }
     }
 }

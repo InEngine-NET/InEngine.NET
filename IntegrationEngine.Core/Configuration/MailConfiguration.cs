@@ -8,7 +8,12 @@ namespace IntegrationEngine.Core.Configuration
         public string HostName { get; set; }
         public int Port { get; set; }
 
+        public MailConfiguration()
+        {
+        }
+
         public MailConfiguration(IEngineConfiguration engineConfiguration, string integrationPointName)
+            : this()
         {
             var config = engineConfiguration.IntegrationPoints.Mail.Single(x => x.IntegrationPointName == integrationPointName);
             HostName = config.HostName;
