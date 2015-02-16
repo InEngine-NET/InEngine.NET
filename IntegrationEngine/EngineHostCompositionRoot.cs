@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace IntegrationEngine
 {
@@ -88,15 +90,22 @@ namespace IntegrationEngine
             //Container.RegisterType<IMailConfiguration, MailConfiguration>();
             foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
 //                Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
-                Container.RegisterType<IMailConfiguration, MailConfiguration>(config.IntegrationPointName, 
+                Container.RegisterType<IMailConfiguration, MailConfiguration>(config.IntegrationPointName,
                     new InjectionConstructor(
                         new ResolvedParameter<IEngineConfiguration>(),
-                        new ResolvedParameter<string>(config.IntegrationPointName)
+                        config.IntegrationPointName
                     )
                 );
+
+                //Container.RegisterType<Func<string, IMailConfiguration>>(
+                //    new InjectionFactory(c => new Func<string, IMailConfiguration>(name => c.Resolve<IMailConfiguration>(name))));
+
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
             
+            
+
+
             foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
                 Container.RegisterInstance<IElasticsearchConfiguration>(config.IntegrationPointName, config);
                 var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
@@ -119,48 +128,30 @@ namespace IntegrationEngine
 
         public void RegisterIntegrationJobs()
         {
-            foreach (var jobType in IntegrationJobTypes)
-            {
-                // Register the Types with the Container
-                // Register a constructor with the Container
-                // Need to know which constructor should be used.
-                // If it has no constructor, assume default constructor
-                // If it has one constructor, then use that constructor
-                // If it has two or more constructors use the first one with arguments
-                var constructorCount = jobType.GetConstructors().Count();
-                if (constructorCount <= 1)
-                {
-                    Container.RegisterType(jobType);
-                    continue;
-                }
-                //else if (constructorCount >= 2)
-                //{
-                var parameters = jobType.GetConstructors().Single(x => x.GetParameters().Any()).GetParameters();
-                // Resolve the integration point type (in parameters).
+            IntegrationJobTypes.ForEach(jobType => {
+                // Resolve the integration point type (specified in the job's parameters).
                 // Configure the integration point type with a configuration, based on the parameter name.                    
-                var resolvedParameters = new List<ResolvedParameter>();
-                foreach (var parameterInfo in parameters)
-                {
-                    var parameterType = parameterInfo.ParameterType;              // The type of integration point (e.g. IElasticClient)
-                    var parameterName = parameterInfo.ParameterType.Name;         // The name of the configuration endpoint (e.g. "MyElasticClient")
-
-                    if (typeof(IMailClient).IsAssignableFrom(parameterType))
+                Func<ParameterInfo[], object[]> resolveParameters = infos => {
+                    var resolvedParameters = new List<object>();
+                    foreach (var parameterInfo in infos)
                     {
-                        // Register the integration point.
-                        // To register the integration point, the parameters of the type's constructor must be known.
-                        // To make this happen, an integration point must have a constructor that takes a configuration object parameter.
-                        //var configName = parameterType.GetCustomAttribute<IntegrationPointConfigurationAttribute>().Name;
-                        //var config = Container.Resolve<IMailConfiguration>(parameterName);
-                        //Container.RegisterType(parameterType, new InjectionConstructor(config));
-
-                        //Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
-//                        Container.RegisterType(parameterType, typeof(MailClient));
-                        resolvedParameters.Add(new ResolvedParameter(parameterType, parameterName));
+                        var parameterType = parameterInfo.ParameterType; // The type of integration point (e.g. IElasticClient)
+                        var parameterName = parameterInfo.ParameterType.Name; // The name of the configuration endpoint (e.g. "MyElasticClient")
+                        if (typeof(IMailClient).IsAssignableFrom(parameterType))
+                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IMailConfiguration>(parameterName)));
                     }
+                    return resolvedParameters.Cast<object>().ToArray();
+                };
+                var constructors = jobType.GetConstructors();
+                if (constructors.Count() == 1 && !constructors.Single().GetParameters().Any()) // Handle Default Constructor case.
+                    Container.RegisterType(jobType, new InjectionFactory((c, t, s) => Activator.CreateInstance(jobType)));
+                else
+                {
+                    // Use the first constructor with parameters.
+                    var constructor = constructors.First(x => x.GetParameters().Any());
+                    Container.RegisterType(jobType, new InjectionFactory((c, t, s) => Activator.CreateInstance(jobType, resolveParameters(constructor.GetParameters())))); 
                 }
-                var objectArray = resolvedParameters.Cast<object>().ToArray();
-                Container.RegisterType(jobType, new InjectionConstructor(objectArray));
-            }
+            });
         }
 
         public void SetupThreadedListenerManager()
