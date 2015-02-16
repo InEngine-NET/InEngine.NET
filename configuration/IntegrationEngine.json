@@ -13,6 +13,10 @@
             "IntegrationPointName": "DefaultMail",
             "HostName": "localhost",
             "Port": 25
+        }, {
+            "IntegrationPointName": "FooMailClient",
+            "HostName": "localhost",
+            "Port": 25
         }],
         "RabbitMQ": [{
             "IntegrationPointName": "DefaultRabbitMQ",

@@ -1,4 +1,5 @@
-﻿using IntegrationEngine.Core.Jobs;
+﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,16 @@ namespace IntegrationEngine.ConsoleHost.Car
     {
         public IMailClient MailClient { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
+
+        public CarMailMessageJob()
+        {
+        }
+
+        public CarMailMessageJob(IFooMailClient mailClient)
+            : this()
+        {
+            MailClient = mailClient;
+        } 
 
         public void Run()
         {

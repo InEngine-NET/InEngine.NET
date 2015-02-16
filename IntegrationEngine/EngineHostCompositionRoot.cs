@@ -42,10 +42,11 @@ namespace IntegrationEngine
             LoadConfiguration();
             SetupLogging();
             RegisterIntegrationPoints();
+            RegisterIntegrationJobs();
             SetupRScriptRunner();
             SetupElasticsearchRepository();
-            SetupEngineScheduler();
             SetupThreadedListenerManager();
+            SetupEngineScheduler();
             SetupWebApi();
         }
 
@@ -76,10 +77,13 @@ namespace IntegrationEngine
             Container.RegisterType<INestSerializer, NestSerializer>();
             Container.RegisterType<Elasticsearch.Net.Connection.ITransport, Elasticsearch.Net.Connection.Transport>();
             Container.RegisterType<IConnectionSettingsValues, ConnectionSettings>();
+            //Container.RegisterType<IMailConfiguration, MailConfiguration>();
             foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
                 Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
+            var mailClientConfig = Container.Resolve<IMailConfiguration>("FooMailClient");
+            
             foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
                 Container.RegisterInstance<IElasticsearchConfiguration>(config.IntegrationPointName, config);
                 var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
@@ -97,6 +101,52 @@ namespace IntegrationEngine
             foreach (var config in EngineConfiguration.IntegrationPoints.RabbitMQ) {
                 Container.RegisterInstance<IRabbitMQConfiguration>(config.IntegrationPointName, config);
                 Container.RegisterType<IMessageQueueClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
+            }
+        }
+
+        public void RegisterIntegrationJobs()
+        {
+            foreach (var jobType in IntegrationJobTypes)
+            {
+                // Register the Types with the Container
+                // Register a constructor with the Container
+                // Need to know which constructor should be used.
+                // If it has no constructor, assume default constructor
+                // If it has one constructor, then use that constructor
+                // If it has two or more constructors use the first one with arguments
+                var constructorCount = jobType.GetConstructors().Count();
+                if (constructorCount <= 1)
+                {
+                    Container.RegisterType(jobType);
+                    continue;
+                }
+                //else if (constructorCount >= 2)
+                //{
+                var parameters = jobType.GetConstructors().Single(x => x.GetParameters().Any()).GetParameters();
+                // Resolve the integration point type (in parameters).
+                // Configure the integration point type with a configuration, based on the parameter name.                    
+                var resolvedParameters = new List<ResolvedParameter>();
+                foreach (var parameterInfo in parameters)
+                {
+                    var parameterType = parameterInfo.ParameterType;              // The type of integration point (e.g. IElasticClient)
+                    var parameterName = parameterInfo.ParameterType.Name;         // The name of the configuration endpoint (e.g. "MyElasticClient")
+
+                    if (typeof(IMailClient).IsAssignableFrom(parameterType))
+                    {
+                        // Register the integration point.
+                        // To register the integration point, the parameters of the type's constructor must be known.
+                        // To make this happen, an integration point must have a constructor that takes a configuration object parameter.
+                        //var configName = parameterType.GetCustomAttribute<IntegrationPointConfigurationAttribute>().Name;
+                        //var config = Container.Resolve<IMailConfiguration>(parameterName);
+                        //Container.RegisterType(parameterType, new InjectionConstructor(config));
+
+                        //Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
+                        Container.RegisterType(parameterType, typeof(MailClient));
+                        resolvedParameters.Add(new ResolvedParameter(parameterType, parameterName));
+                    }
+                }
+                var objectArray = resolvedParameters.Cast<object>().ToArray();
+                Container.RegisterType(jobType, new InjectionConstructor(objectArray));
             }
         }
 

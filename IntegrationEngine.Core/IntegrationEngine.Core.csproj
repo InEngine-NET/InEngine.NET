@@ -89,6 +89,7 @@
     <Compile Include="Jobs\ILogJob.cs" />
     <Compile Include="Jobs\IMailJob.cs" />
     <Compile Include="Jobs\IntegrationJobRunFailureException.cs" />
+    <Compile Include="Configuration\IntegrationPointConfigurationAttribute.cs" />
     <Compile Include="Jobs\IParameterizedJob.cs" />
     <Compile Include="Jobs\ISqlJob.cs" />
     <Compile Include="Jobs\SqlJob.cs" />

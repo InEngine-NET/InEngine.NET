@@ -11,11 +11,13 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using Microsoft.Practices.Unity;
 
 namespace IntegrationEngine.MessageQueue
 {
@@ -63,8 +65,9 @@ namespace IntegrationEngine.MessageQueue
                         if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                             continue;
                         var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobType));
-                        var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
-                        //                        integrationJob = AutoWireJob(integrationJob, type);
+                        //var integrationJob = Activator.CreateInstance(type) as IIntegrationJob;
+                        //integrationJob = AutoWireJob(integrationJob, type);
+                        var integrationJob = ContainerSingleton.GetContainer().Resolve(type) as IIntegrationJob;
                         if (integrationJob != null)
                         {
                             if (integrationJob is IParameterizedJob)

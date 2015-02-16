@@ -5,11 +5,7 @@ using IntegrationEngine.Core.Configuration;
 namespace IntegrationEngine.ConsoleHost.IntegrationPoints
 {
     //[IntegrationPointConfiguration("FooMailClient")]
-    public class FooMailClient : MailClient
+    public interface IFooMailClient : IMailClient
     {
-        public FooMailClient(IMailConfiguration mailConfiguration)
-        {
-            MailConfiguration = mailConfiguration;
-        }
     }
 }

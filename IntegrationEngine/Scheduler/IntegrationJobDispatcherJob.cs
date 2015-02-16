@@ -16,12 +16,12 @@ namespace IntegrationEngine.Scheduler
         public virtual void Execute(IJobExecutionContext context)
         {
             var map = context.MergedJobDataMap;
-            if (map.ContainsKey("MessageQueueClient") && 
+            if (map.ContainsKey("Dispatcher") && 
                 map.ContainsKey("IntegrationJob") && 
                 map.ContainsKey("Parameters"))
             {
-                var dispatcher = map.Get("Dispatcher") as IDispatcher;
                 var parameters = map.Get("Parameters") as IDictionary<string, string>;
+                var dispatcher = map.Get("Dispatcher") as IDispatcher;
                 dispatcher.Dispatch(map.Get("IntegrationJob"), parameters);
             }
         }
