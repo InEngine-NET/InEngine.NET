@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -59,10 +59,6 @@
     <Reference Include="Nest">
       <HintPath>..\packages\NEST.1.3.1\lib\Nest.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.1.0.0\lib\net40\NLog.dll</HintPath>
     </Reference>
@@ -77,6 +73,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
@@ -173,6 +172,30 @@
       <Link>IRepository.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IEngineConfiguration.cs">
+      <Link>IEngineConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\WebApiConfiguration.cs">
+      <Link>WebApiConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\NLogAdapterConfiguration.cs">
+      <Link>NLogAdapterConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IntegrationPointConfigurations.cs">
+      <Link>IntegrationPointConfigurations.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\ElasticsearchConfiguration.cs">
+      <Link>ElasticsearchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\RabbitMQConfiguration.cs">
+      <Link>RabbitMQConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IElasticsearchConfiguration.cs">
+      <Link>IElasticsearchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IRabbitMQConfiguration.cs">
+      <Link>IRabbitMQConfiguration.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -180,7 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationEngine.Model.net40\IntegrationEngine.Model.net40.csproj">
-      <Project>{dfcd19ce-a96a-4b19-8cf1-9cac560e7f42}</Project>
+      <Project>{DFCD19CE-A96A-4B19-8CF1-9CAC560E7F42}</Project>
       <Name>IntegrationEngine.Model.net40</Name>
     </ProjectReference>
   </ItemGroup>
