@@ -33,6 +33,6 @@
             "HostName": "localhost",
             "Port": 9200,
             "DefaultIndex": "integration-engine"
-        }],
+        }]
     }
 }
