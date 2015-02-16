@@ -52,6 +52,14 @@ namespace IntegrationEngine
 
         public void LoadConfiguration()
         {
+            try
+            {
+                new EngineConfiguration();
+            }
+            catch (Exception exception)
+            {
+                throw new Exception("Could not read configuration.", exception);
+            }
             Container.RegisterType<IEngineConfiguration, EngineConfiguration>();
             EngineConfiguration = Container.Resolve<IEngineConfiguration>();
         }
@@ -79,10 +87,15 @@ namespace IntegrationEngine
             Container.RegisterType<IConnectionSettingsValues, ConnectionSettings>();
             //Container.RegisterType<IMailConfiguration, MailConfiguration>();
             foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
-                Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
+//                Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
+                Container.RegisterType<IMailConfiguration, MailConfiguration>(config.IntegrationPointName, 
+                    new InjectionConstructor(
+                        new ResolvedParameter<IEngineConfiguration>(),
+                        new ResolvedParameter<string>(config.IntegrationPointName)
+                    )
+                );
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
-            var mailClientConfig = Container.Resolve<IMailConfiguration>("FooMailClient");
             
             foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
                 Container.RegisterInstance<IElasticsearchConfiguration>(config.IntegrationPointName, config);

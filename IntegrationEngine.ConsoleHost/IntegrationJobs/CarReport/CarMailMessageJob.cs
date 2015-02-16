@@ -16,7 +16,7 @@ namespace IntegrationEngine.ConsoleHost.Car
         {
         }
 
-        public CarMailMessageJob(IFooMailClient mailClient)
+        public CarMailMessageJob(FooMailClient mailClient)
             : this()
         {
             MailClient = mailClient;
