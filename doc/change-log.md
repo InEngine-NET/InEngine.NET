@@ -5,6 +5,17 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.0-rc2
+
+__Chores__
+* Add .net 4 version of Core assembly.
+* Gracefully shutdown Web API to avoid service restart issues.
+* Initialize logger in the type where it is used.
+
+__Fixes__
+* Delete SimpleTrigger from Elasticsearch repo when it is "finalized" by the scheduler. 
+This prevents jobs scheduled with SimpleTriggers from possibly rerunning when the server restarts.
+
 ## 2.0.0-rc1
 
 __Fixes__
