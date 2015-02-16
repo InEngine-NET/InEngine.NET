@@ -11,7 +11,8 @@ namespace IntegrationEngine.ConsoleHost
         public static EngineHost EngineHosts { get; set; }
         public static void Main(string[] args)
         {
-            if (!Environment.UserInteractive)
+            var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
+            if (!Environment.UserInteractive && !isRunningUnderMono)
             {
                 // Set current working directory as services use the system directory by default.
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
