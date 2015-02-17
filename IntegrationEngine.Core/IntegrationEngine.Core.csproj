@@ -83,7 +83,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\ElasticsearchConfiguration.cs" />
-    <Compile Include="Configuration\IntegrationPointConfigurationByAttribute.cs" />
     <Compile Include="Configuration\MailConfiguration.cs" />
     <Compile Include="Configuration\RabbitMQConfiguration.cs" />
     <Compile Include="Elasticsearch\ElasticClientAdapter.cs" />

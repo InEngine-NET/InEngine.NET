@@ -96,6 +96,12 @@
     <Compile Include="..\IntegrationEngine.Core\Configuration\MailConfiguration.cs">
       <Link>MailConfiguration.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationPoint\IIntegrationPoint.cs">
+      <Link>IIntegrationPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationPoint\IIntegrationPointT.cs">
+      <Link>IIntegrationPointT.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Core\Jobs\IElasticsearchJob.cs">
       <Link>IElasticsearchJob.cs</Link>
     </Compile>
