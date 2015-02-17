@@ -3,6 +3,8 @@ using Common.Logging.Configuration;
 using Common.Logging.NLog;
 using IntegrationEngine.Api;
 using IntegrationEngine.Core.Configuration;
+using IntegrationEngine.Core.Elasticsearch;
+using IntegrationEngine.Core.IntegrationPoint;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
@@ -110,7 +112,7 @@ namespace IntegrationEngine
                         config.IntegrationPointName
                     )
                 );
-                Container.RegisterType<IElasticClient, ElasticClient>(config.IntegrationPointName, 
+                Container.RegisterType<IElasticClient, ElasticClientAdapter>(config.IntegrationPointName, 
                     new InjectionFactory(elasticClientFactory));
             }
             foreach (var config in EngineConfiguration.IntegrationPoints.RabbitMQ) {
@@ -138,12 +140,12 @@ namespace IntegrationEngine
                     {
                         var parameterType = parameterInfo.ParameterType; // The type of integration point (e.g. IElasticClient)
                         var parameterName = parameterInfo.ParameterType.Name; // The name of the configuration endpoint (e.g. "MyElasticClient")
-                        if (typeof(IMailClient).IsAssignableFrom(parameterType))
-                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IMailConfiguration>(parameterName)));
-                        if (typeof(IRabbitMQClient).IsAssignableFrom(parameterType))
-                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IRabbitMQConfiguration>(parameterName)));
-                        if (typeof(IElasticClient).IsAssignableFrom(parameterType))
-                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IElasticsearchConfiguration>(parameterName)));
+                        // If the parameter implements IIntegrationPoint, resolve it's configuration type from the container.
+                        if (typeof(IIntegrationPoint).IsAssignableFrom(parameterType))
+                        {
+                            var configType = parameterType.GetInterface(typeof(IIntegrationPoint<IIntegrationPointConfiguration>).Name).GetGenericArguments().Single(); ;
+                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve(configType, parameterName)));
+                        }
                     }
                     return resolvedParameters.Cast<object>().ToArray();
                 };
