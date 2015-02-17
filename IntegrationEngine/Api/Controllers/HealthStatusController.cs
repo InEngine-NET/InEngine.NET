@@ -1,7 +1,7 @@
 ﻿using IntegrationEngine.Scheduler;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.JobProcessor;
 using InEngineHealthStatus = IntegrationEngine.Model.HealthStatus;
 using Nest;
 using System;

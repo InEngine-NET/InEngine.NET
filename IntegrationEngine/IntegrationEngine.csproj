@@ -149,12 +149,7 @@
     <Compile Include="Api\WebApiApplication.cs" />
     <Compile Include="Api\WebApiStartup.cs" />
     <Compile Include="DataAnnotations\CronExpressionStringAttribute.cs" />
-    <Compile Include="MessageQueue\IThreadedListenerManager.cs" />
-    <Compile Include="MessageQueue\ThreadedListenerManager.cs" />
     <Compile Include="Scheduler\Dispatcher.cs" />
-    <Compile Include="MessageQueue\IMessageQueueListener.cs" />
-    <Compile Include="MessageQueue\MsmqListener.cs" />
-    <Compile Include="MessageQueue\RabbitMQListener.cs" />
     <Compile Include="Scheduler\CronTrigger.cs" />
     <Compile Include="Scheduler\IDispatcher.cs" />
     <Compile Include="Scheduler\IEngineSchedulerListener.cs" />
@@ -174,8 +169,13 @@
     <Compile Include="Api\Controllers\HealthStatusController.cs" />
     <Compile Include="Api\TriggerControllerBase.cs" />
     <Compile Include="Api\Controllers\LogEventController.cs" />
-    <Compile Include="EngineConfiguration.cs" />
     <Compile Include="EngineHostCompositionRoot.cs" />
+    <Compile Include="JobProcessor\IThreadedListenerManager.cs" />
+    <Compile Include="JobProcessor\ThreadedListenerManager.cs" />
+    <Compile Include="JobProcessor\IMessageQueueListener.cs" />
+    <Compile Include="JobProcessor\MsmqListener.cs" />
+    <Compile Include="JobProcessor\RabbitMQListener.cs" />
+    <Compile Include="EngineConfiguration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -1,18 +1,23 @@
 ﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.ConsoleHost/IntegrationJobs/CarReport/CarMailMessageJob.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/EngineHostCompositionRoot.cs">
     <Files>
-      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="27" Column="27" />
-      <File FileName="IntegrationEngine.ConsoleHost/IntegrationJobs/CarReport/CarMailMessageJob.cs" Line="6" Column="6" />
-      <File FileName="IntegrationEngine.Core/Configuration/IMailConfiguration.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine/EngineConfiguration.cs" Line="3" Column="3" />
-      <File FileName="IntegrationEngine.Core/Configuration/IntegrationPointConfigurations.cs" Line="31" Column="31" />
-      <File FileName="configuration/IntegrationEngine.json" Line="10" Column="10" />
-      <File FileName="IntegrationEngine.Core/Configuration/MailConfiguration.cs" Line="13" Column="13" />
+      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="85" Column="85" />
+      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True" selected="True" />
+        <State expanded="True">
+          <Node name="IntegrationEngine.Tests" expanded="True">
+            <Node name="IntegrationEngine" expanded="True">
+              <Node name="Tests" expanded="True">
+                <Node name="EngineHostCompositionRootTest" expanded="True">
+                  <Node name="ShouldSetupMessageQueueListener" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

@@ -127,6 +127,8 @@
     <Compile Include="Configuration\IntegrationPointConfigurations.cs" />
     <Compile Include="R\IRScriptRunner.cs" />
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
+    <Compile Include="MessageQueue\IRabbitMQClient.cs" />
+    <Compile Include="MessageQueue\IMsmqClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

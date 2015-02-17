@@ -1,4 +1,4 @@
-﻿﻿using Common.Logging;
+﻿using Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +6,7 @@ using MSMessageQueue = System.Messaging.MessageQueue;
 
 namespace IntegrationEngine.Core.MessageQueue
 {
-    public class MsmqClient : IMessageQueueClient
+    public class MsmqClient : IMsmqClient
     {
         public MSMessageQueue MSMessageQueue { get; set; }
         string _queueName { get; set; }

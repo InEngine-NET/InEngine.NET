@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.JobProcessor
 {
     public interface IMessageQueueListener : IDisposable
     {

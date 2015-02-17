@@ -16,6 +16,7 @@ namespace IntegrationEngine.Core.Configuration
             : this()
         {
             var config = engineConfiguration.IntegrationPoints.Mail.Single(x => x.IntegrationPointName == integrationPointName);
+            IntegrationPointName = integrationPointName;
             HostName = config.HostName;
             Port = config.Port;
         }

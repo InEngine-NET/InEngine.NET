@@ -4,7 +4,7 @@ using Common.Logging.NLog;
 using IntegrationEngine.Api;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.R;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.JobProcessor;
 using Microsoft.Practices.Unity;
 using Moq;
 using Nest;
@@ -47,8 +47,9 @@ namespace IntegrationEngine.Tests
         public void ShouldSetupMessageQueueListener()
         {
             Subject.LoadConfiguration();
-            Subject.Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>("DefaultRabbitMQ");
-
+            var configName = "DefaultRabbitMQ";
+            Subject.Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>(configName,
+                new InjectionConstructor(new ResolvedParameter<IEngineConfiguration>(), configName));
 
             Subject.SetupThreadedListenerManager();
 

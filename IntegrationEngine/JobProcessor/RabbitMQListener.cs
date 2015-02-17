@@ -19,7 +19,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Practices.Unity;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.JobProcessor
 {
     public class RabbitMQListener : IMessageQueueListener
     {

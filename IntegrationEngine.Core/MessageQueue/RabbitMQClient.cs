@@ -10,7 +10,7 @@ using System.Text;
 
 namespace IntegrationEngine.Core.MessageQueue
 {
-    public class RabbitMQClient : IMessageQueueClient
+    public class RabbitMQClient : IRabbitMQClient
     {
         public RabbitMQConfiguration MessageQueueConfiguration { get; set; }
         public IMessageQueueConnection MessageQueueConnection { get; set; }

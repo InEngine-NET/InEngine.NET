@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq;
+
 namespace IntegrationEngine.Core.Configuration
 {
     public class RabbitMQConfiguration : IRabbitMQConfiguration
@@ -10,5 +11,22 @@ namespace IntegrationEngine.Core.Configuration
         public string Password { get; set; }
         public string HostName { get; set; }
         public string VirtualHost { get; set; }
+
+        public RabbitMQConfiguration()
+        {
+        }
+
+        public RabbitMQConfiguration(IEngineConfiguration engineConfiguration, string integrationPointName)
+            : this()
+        {
+            var config = engineConfiguration.IntegrationPoints.RabbitMQ.Single(x => x.IntegrationPointName == integrationPointName);
+            IntegrationPointName = integrationPointName;
+            QueueName = config.QueueName;
+            ExchangeName = config.ExchangeName;
+            UserName = config.UserName;
+            Password = config.Password;
+            HostName = config.HostName;
+            VirtualHost = config.VirtualHost;
+        }
     }
 }

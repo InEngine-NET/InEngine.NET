@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using MSMessageQueue = System.Messaging.MessageQueue;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.JobProcessor
 {
     public class MsmqListener : IMessageQueueListener
     {

@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 
-namespace IntegrationEngine.MessageQueue
+namespace IntegrationEngine.JobProcessor
 {
     public interface IThreadedListenerManager : IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Jobs;
 using IntegrationEngine.Core.MessageQueue;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.JobProcessor;
 using IntegrationEngine.Model;
 using Quartz;
 using System;

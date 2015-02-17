@@ -8,7 +8,7 @@ using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.JobProcessor;
 using IntegrationEngine.Scheduler;
 using Microsoft.Practices.Unity;
 using Nest;
@@ -87,50 +87,51 @@ namespace IntegrationEngine
             Container.RegisterType<INestSerializer, NestSerializer>();
             Container.RegisterType<Elasticsearch.Net.Connection.ITransport, Elasticsearch.Net.Connection.Transport>();
             Container.RegisterType<IConnectionSettingsValues, ConnectionSettings>();
-            //Container.RegisterType<IMailConfiguration, MailConfiguration>();
             foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
-//                Container.RegisterInstance<IMailConfiguration>(config.IntegrationPointName, config);
                 Container.RegisterType<IMailConfiguration, MailConfiguration>(config.IntegrationPointName,
                     new InjectionConstructor(
                         new ResolvedParameter<IEngineConfiguration>(),
                         config.IntegrationPointName
                     )
                 );
-
-                //Container.RegisterType<Func<string, IMailConfiguration>>(
-                //    new InjectionFactory(c => new Func<string, IMailConfiguration>(name => c.Resolve<IMailConfiguration>(name))));
-
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
-            
-            
 
-
-            foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
-                Container.RegisterInstance<IElasticsearchConfiguration>(config.IntegrationPointName, config);
+            Func<IUnityContainer, Type, string, object> elasticClientFactory = (container, type, configName) => {
+                var config = container.Resolve<IElasticsearchConfiguration>(configName);
                 var serverUri = new UriBuilder(config.Protocol, config.HostName, config.Port).Uri;
                 var settings = new ConnectionSettings(serverUri, config.DefaultIndex);
-                var client = new ElasticClient(settings);
-                Container.RegisterInstance<IElasticClient>(config.IntegrationPointName, client);
-//                Container.RegisterType<IElasticClient, ElasticClient>(config.IntegrationPointName,
-//                    new InjectionConstructor(
-//                        settings,
-//                        new ResolvedParameter<Elasticsearch.Net.Connection.IConnection>(),
-//                        new ResolvedParameter<INestSerializer>(),
-//                        new ResolvedParameter<Elasticsearch.Net.Connection.ITransport>())
-//                );
+                return new ElasticClient(settings);
+            };
+            foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
+                Container.RegisterType<IElasticsearchConfiguration, ElasticsearchConfiguration>(config.IntegrationPointName,
+                    new InjectionConstructor(
+                        new ResolvedParameter<IEngineConfiguration>(),
+                        config.IntegrationPointName
+                    )
+                );
+                Container.RegisterType<IElasticClient, ElasticClient>(config.IntegrationPointName, 
+                    new InjectionFactory(elasticClientFactory));
             }
             foreach (var config in EngineConfiguration.IntegrationPoints.RabbitMQ) {
-                Container.RegisterInstance<IRabbitMQConfiguration>(config.IntegrationPointName, config);
-                Container.RegisterType<IMessageQueueClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
+                Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>(config.IntegrationPointName,
+                    new InjectionConstructor(
+                        new ResolvedParameter<IEngineConfiguration>(),
+                        config.IntegrationPointName
+                    )
+                );
+                Container.RegisterType<IRabbitMQClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
         }
 
+        /// <summary>
+        /// Registers the integration jobs.
+        /// Resolve the integration point type (specified in a job's parameters).
+        /// Configure the integration point type with a configuration, based on a parameter's name.                    
+        /// </summary>
         public void RegisterIntegrationJobs()
         {
             IntegrationJobTypes.ForEach(jobType => {
-                // Resolve the integration point type (specified in the job's parameters).
-                // Configure the integration point type with a configuration, based on the parameter name.                    
                 Func<ParameterInfo[], object[]> resolveParameters = infos => {
                     var resolvedParameters = new List<object>();
                     foreach (var parameterInfo in infos)
@@ -139,6 +140,10 @@ namespace IntegrationEngine
                         var parameterName = parameterInfo.ParameterType.Name; // The name of the configuration endpoint (e.g. "MyElasticClient")
                         if (typeof(IMailClient).IsAssignableFrom(parameterType))
                             resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IMailConfiguration>(parameterName)));
+                        if (typeof(IRabbitMQClient).IsAssignableFrom(parameterType))
+                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IRabbitMQConfiguration>(parameterName)));
+                        if (typeof(IElasticClient).IsAssignableFrom(parameterType))
+                            resolvedParameters.Add(Activator.CreateInstance(parameterType, Container.Resolve<IElasticsearchConfiguration>(parameterName)));
                     }
                     return resolvedParameters.Cast<object>().ToArray();
                 };
@@ -173,7 +178,7 @@ namespace IntegrationEngine
         public void SetupEngineScheduler()
         {
             var dispatcher = new Dispatcher() {
-                MessageQueueClient = Container.Resolve<IMessageQueueClient>("DefaultRabbitMQ"),
+                MessageQueueClient = Container.Resolve<IRabbitMQClient>("DefaultRabbitMQ"),
             };
             var engineScheduler = new EngineScheduler() {
                 Scheduler = StdSchedulerFactory.GetDefaultScheduler(),
