@@ -114,6 +114,7 @@
     <Compile Include="Api\TriggerControllerBaseTest.cs" />
     <Compile Include="Api\TriggerStub.cs" />
     <Compile Include="EngineHostCompositionRootTest.cs" />
+    <Compile Include="JobProcessor\ThreadedListenerManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\configuration\IntegrationEngine.json">
@@ -163,4 +164,7 @@
   </Target>
   -->
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="JobProcessor\" />
+  </ItemGroup>
 </Project>

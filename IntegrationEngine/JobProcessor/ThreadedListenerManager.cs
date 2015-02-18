@@ -37,7 +37,7 @@ namespace IntegrationEngine.JobProcessor
             listenerThread.Join();
         }
 
-        void listen()
+        void Listen()
         {
             MessageQueueListener.Listen(CancellationTokenSource.Token);
         }
@@ -45,10 +45,10 @@ namespace IntegrationEngine.JobProcessor
         public void StartListener() 
         {
             if (listenerThread == null)
-                listenerThread = new Thread(listen);
+                listenerThread = new Thread(Listen);
             if (listenerThread.ThreadState == ThreadState.Running)
             {
-                Log.Info("Message queue listener already running.");
+                Log.Warn("Message queue listener already running.");
                 return;
             }
 

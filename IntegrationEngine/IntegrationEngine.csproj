@@ -171,11 +171,11 @@
     <Compile Include="Api\Controllers\LogEventController.cs" />
     <Compile Include="EngineHostCompositionRoot.cs" />
     <Compile Include="JobProcessor\IThreadedListenerManager.cs" />
-    <Compile Include="JobProcessor\ThreadedListenerManager.cs" />
     <Compile Include="JobProcessor\IMessageQueueListener.cs" />
     <Compile Include="JobProcessor\MsmqListener.cs" />
     <Compile Include="JobProcessor\RabbitMQListener.cs" />
     <Compile Include="EngineConfiguration.cs" />
+    <Compile Include="JobProcessor\ThreadedListenerManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
