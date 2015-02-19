@@ -1,5 +1,6 @@
 ﻿using ServiceStack;
 using IntegrationEngine.Core.Configuration;
+using System.Net;
 
 namespace IntegrationEngine.Core.ServiceStack
 {
@@ -10,6 +11,7 @@ namespace IntegrationEngine.Core.ServiceStack
         {
             UserName = jsonServiceConfiguration.UserName;
             Password = jsonServiceConfiguration.Password;
+            AlwaysSendBasicAuthHeader = jsonServiceConfiguration.AlwaysSendBasicAuthHeader;
         }
     }
 }

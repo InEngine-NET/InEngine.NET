@@ -9,6 +9,7 @@ namespace IntegrationEngine.Core.Configuration
         public string UserName { get; set; }
         public string Password { get; set; }
         public bool IgnoreInvalidSslCertificate { get; set; }
+        public bool AlwaysSendBasicAuthHeader { get; set; }
 
         public JsonServiceConfiguration()
         {
@@ -23,6 +24,7 @@ namespace IntegrationEngine.Core.Configuration
             UserName = config.UserName;
             Password = config.Password;
             IgnoreInvalidSslCertificate = config.IgnoreInvalidSslCertificate;
+            AlwaysSendBasicAuthHeader = config.AlwaysSendBasicAuthHeader;
         }
     }
 }
