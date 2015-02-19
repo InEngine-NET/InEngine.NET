@@ -84,6 +84,13 @@ namespace IntegrationEngine
             Container.RegisterInstance<IDatabaseRepository>(new DatabaseRepository(integrationEngineContext));
         }
 
+        void RegisterConfig(Type from, Type to, string integrationPointName)
+        {
+            Container.RegisterType(from, to, integrationPointName,
+                new InjectionConstructor(new ResolvedParameter<IEngineConfiguration>(), integrationPointName)
+            );
+        }
+
         public void RegisterIntegrationPoints()
         {
             Container.RegisterType<Elasticsearch.Net.Connection.IConnection, Elasticsearch.Net.Connection.HttpConnection>();
@@ -91,12 +98,7 @@ namespace IntegrationEngine
             Container.RegisterType<Elasticsearch.Net.Connection.ITransport, Elasticsearch.Net.Connection.Transport>();
             Container.RegisterType<IConnectionSettingsValues, ConnectionSettings>();
             foreach (var config in EngineConfiguration.IntegrationPoints.Mail) {
-                Container.RegisterType<IMailConfiguration, MailConfiguration>(config.IntegrationPointName,
-                    new InjectionConstructor(
-                        new ResolvedParameter<IEngineConfiguration>(),
-                        config.IntegrationPointName
-                    )
-                );
+                RegisterConfig(typeof(IMailConfiguration), typeof(MailConfiguration), config.IntegrationPointName);
                 Container.RegisterType<IMailClient, MailClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
 
@@ -107,31 +109,15 @@ namespace IntegrationEngine
                 return new ElasticClient(settings);
             };
             foreach (var config in EngineConfiguration.IntegrationPoints.Elasticsearch) {
-                Container.RegisterType<IElasticsearchConfiguration, ElasticsearchConfiguration>(config.IntegrationPointName,
-                    new InjectionConstructor(
-                        new ResolvedParameter<IEngineConfiguration>(),
-                        config.IntegrationPointName
-                    )
-                );
-                Container.RegisterType<IElasticClient, ElasticClientAdapter>(config.IntegrationPointName, 
-                    new InjectionFactory(elasticClientFactory));
+                RegisterConfig(typeof(IElasticsearchConfiguration), typeof(ElasticsearchConfiguration), config.IntegrationPointName);
+                Container.RegisterType<IElasticClient, ElasticClientAdapter>(config.IntegrationPointName, new InjectionFactory(elasticClientFactory));
             }
             foreach (var config in EngineConfiguration.IntegrationPoints.RabbitMQ) {
-                Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>(config.IntegrationPointName,
-                    new InjectionConstructor(
-                        new ResolvedParameter<IEngineConfiguration>(),
-                        config.IntegrationPointName
-                    )
-                );
+                RegisterConfig(typeof(IRabbitMQConfiguration), typeof(RabbitMQConfiguration), config.IntegrationPointName);
                 Container.RegisterType<IRabbitMQClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
             }
             foreach (var config in EngineConfiguration.IntegrationPoints.JsonService) {
-                Container.RegisterType<IJsonServiceConfiguration, JsonServiceConfiguration>(config.IntegrationPointName,
-                    new InjectionConstructor(
-                        new ResolvedParameter<IEngineConfiguration>(),
-                        config.IntegrationPointName
-                    )
-                );
+                RegisterConfig(typeof(IJsonServiceConfiguration), typeof(JsonServiceConfiguration), config.IntegrationPointName);
                 Container.RegisterType<IJsonServiceClient, JsonServiceClientAdapter>(config.IntegrationPointName, new InjectionConstructor(config));
             }
         }
