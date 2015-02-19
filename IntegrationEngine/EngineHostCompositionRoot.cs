@@ -5,7 +5,7 @@ using IntegrationEngine.Api;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.Elasticsearch;
 using IntegrationEngine.Core.IntegrationPoint;
-using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Core.R;

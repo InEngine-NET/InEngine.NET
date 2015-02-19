@@ -1,6 +1,5 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Configuration;
-using IntegrationEngine.Core.Jobs;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Exceptions;
 using System;

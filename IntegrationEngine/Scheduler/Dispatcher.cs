@@ -1,5 +1,5 @@
 ﻿using Common.Logging;
-using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.MessageQueue;
 using IntegrationEngine.Model;
 using Newtonsoft.Json;

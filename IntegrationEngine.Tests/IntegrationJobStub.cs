@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Core.Jobs;
+﻿using IntegrationEngine.Core.IntegrationJob;
 using System;
 using System.Collections.Generic;
 using System.Linq;

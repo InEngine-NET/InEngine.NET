@@ -111,30 +111,6 @@
     <Compile Include="..\IntegrationEngine.Core\IntegrationPoint\IIntegrationPointT.cs">
       <Link>IIntegrationPointT.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IElasticsearchJob.cs">
-      <Link>IElasticsearchJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IIntegrationJob.cs">
-      <Link>IIntegrationJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\ILogJob.cs">
-      <Link>ILogJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IMailJob.cs">
-      <Link>IMailJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IntegrationJobRunFailureException.cs">
-      <Link>IntegrationJobRunFailureException.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IParameterizedJob.cs">
-      <Link>IParameterizedJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\ISqlJob.cs">
-      <Link>ISqlJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\SqlJob.cs">
-      <Link>SqlJob.cs</Link>
-    </Compile>
     <Compile Include="..\IntegrationEngine.Core\Mail\IMailClient.cs">
       <Link>IMailClient.cs</Link>
     </Compile>
@@ -222,6 +198,15 @@
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\ServiceStack\JsonServiceClientAdapter.cs">
       <Link>JsonServiceClientAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IIntegrationJob.cs">
+      <Link>IIntegrationJob.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IntegrationJobRunFailureException.cs">
+      <Link>IntegrationJobRunFailureException.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IParameterizedJob.cs">
+      <Link>IParameterizedJob.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

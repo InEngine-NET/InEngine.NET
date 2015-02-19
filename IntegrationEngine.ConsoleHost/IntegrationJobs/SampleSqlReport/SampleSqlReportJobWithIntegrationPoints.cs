@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.Core.Jobs;
+﻿using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.ConsoleHost.IntegrationPoints;
 using RazorEngine;
 using RazorEngine.Templating;

@@ -1,5 +1,5 @@
 ﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
-using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using RazorEngine.Configuration;
 
 namespace IntegrationEngine.ConsoleHost.Car
 {
-    public class CarMailMessageJob : IMailJob, IParameterizedJob
+    public class CarMailMessageJob : IParameterizedJob
     {
         public IMailClient MailClient { get; set; }
         public IDictionary<string, string> Parameters { get; set; }

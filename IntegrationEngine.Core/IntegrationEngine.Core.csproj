@@ -97,14 +97,7 @@
     <Compile Include="Elasticsearch\ElasticClientAdapter.cs" />
     <Compile Include="IntegrationPoint\IIntegrationPointT.cs" />
     <Compile Include="IntegrationPoint\IIntegrationPoint.cs" />
-    <Compile Include="Jobs\IIntegrationJob.cs" />
-    <Compile Include="Jobs\ILogJob.cs" />
-    <Compile Include="Jobs\IMailJob.cs" />
-    <Compile Include="Jobs\IntegrationJobRunFailureException.cs" />
     <Compile Include="Configuration\IntegrationPointConfigurationAttribute.cs" />
-    <Compile Include="Jobs\IParameterizedJob.cs" />
-    <Compile Include="Jobs\ISqlJob.cs" />
-    <Compile Include="Jobs\SqlJob.cs" />
     <Compile Include="Mail\IMailClient.cs" />
     <Compile Include="Mail\MailClient.cs" />
     <Compile Include="MessageQueue\IMessageQueueClient.cs" />
@@ -119,7 +112,6 @@
     <Compile Include="Storage\IntegrationEngineContext.cs" />
     <Compile Include="Storage\IntegrationEngineDbConfiguration.cs" />
     <Compile Include="Storage\IRepository.cs" />
-    <Compile Include="Jobs\IElasticsearchJob.cs" />
     <Compile Include="Storage\IElasticsearchRepository.cs" />
     <Compile Include="Storage\ElasticsearchRepository.cs" />
     <Compile Include="Storage\IDatabaseRepository.cs" />
@@ -145,6 +137,9 @@
     <Compile Include="Configuration\JsonServiceConfiguration.cs" />
     <Compile Include="Configuration\IJsonServiceConfiguration.cs" />
     <Compile Include="ServiceStack\IJsonServiceClient.cs" />
+    <Compile Include="IntegrationJob\IIntegrationJob.cs" />
+    <Compile Include="IntegrationJob\IntegrationJobRunFailureException.cs" />
+    <Compile Include="IntegrationJob\IParameterizedJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

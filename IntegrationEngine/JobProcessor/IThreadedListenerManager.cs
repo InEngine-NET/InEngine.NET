@@ -1,6 +1,6 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Configuration;
-using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
 using Nest;
