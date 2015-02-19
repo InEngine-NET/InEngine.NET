@@ -1,17 +1,13 @@
 ﻿using Common.Logging;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.IntegrationJob;
-using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.MessageQueue;
-using IntegrationEngine.Core.Storage;
 using IntegrationEngine.Model;
-using Nest;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;

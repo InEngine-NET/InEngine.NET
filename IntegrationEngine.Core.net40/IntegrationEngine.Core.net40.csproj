@@ -68,6 +68,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -125,6 +126,27 @@
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Mail\SmtpClientAdapter.cs">
       <Link>SmtpClientAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMessageQueueClient.cs">
+      <Link>IMessageQueueClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMessageQueueConnection.cs">
+      <Link>IMessageQueueConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMsmqClient.cs">
+      <Link>IMsmqClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IRabbitMQClient.cs">
+      <Link>IRabbitMQClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\MessageQueueConnection.cs">
+      <Link>MessageQueueConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\MsmqClient.cs">
+      <Link>MsmqClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\RabbitMQClient.cs">
+      <Link>RabbitMQClient.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Reports\IDatum.cs">
       <Link>IDatum.cs</Link>

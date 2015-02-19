@@ -72,7 +72,7 @@
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -210,10 +210,6 @@
     <ProjectReference Include="..\IntegrationEngine.Model\IntegrationEngine.Model.csproj">
       <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
       <Name>IntegrationEngine.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IntegrationEngine.Core.net40\IntegrationEngine.Core.net40.csproj">
-      <Project>{9332D22A-0D09-4DA7-B2F9-6DE7E9F28715}</Project>
-      <Name>IntegrationEngine.Core.net40</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
