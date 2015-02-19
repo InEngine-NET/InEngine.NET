@@ -77,6 +77,15 @@
     <Reference Include="Nest">
       <HintPath>..\packages\NEST.1.4.0\lib\net45\Nest.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.36\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.36\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\packages\ServiceStack.Client.4.0.36\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
@@ -132,6 +141,10 @@
     <Compile Include="MessageQueue\MessageQueueConnection.cs" />
     <Compile Include="MessageQueue\IRabbitMQClient.cs" />
     <Compile Include="MessageQueue\IMsmqClient.cs" />
+    <Compile Include="ServiceStack\JsonServiceClientAdapter.cs" />
+    <Compile Include="Configuration\JsonServiceConfiguration.cs" />
+    <Compile Include="Configuration\IJsonServiceConfiguration.cs" />
+    <Compile Include="ServiceStack\IJsonServiceClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -158,4 +171,7 @@
   </Target>
   -->
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ServiceStack\" />
+  </ItemGroup>
 </Project>

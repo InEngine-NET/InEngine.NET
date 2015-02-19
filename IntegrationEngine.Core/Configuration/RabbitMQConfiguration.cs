@@ -13,8 +13,7 @@ namespace IntegrationEngine.Core.Configuration
         public string VirtualHost { get; set; }
 
         public RabbitMQConfiguration()
-        {
-        }
+        {}
 
         public RabbitMQConfiguration(IEngineConfiguration engineConfiguration, string integrationPointName)
             : this()

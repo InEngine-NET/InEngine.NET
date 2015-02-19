@@ -12,6 +12,7 @@ using IntegrationEngine.Core.R;
 using IntegrationEngine.Core.Storage;
 using IntegrationEngine.JobProcessor;
 using IntegrationEngine.Scheduler;
+using Microsoft.Practices.ObjectBuilder2;
 using Microsoft.Practices.Unity;
 using Nest;
 using Quartz;
@@ -21,7 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Practices.ObjectBuilder2;
+using IntegrationEngine.Core.ServiceStack;
 
 namespace IntegrationEngine
 {
@@ -123,6 +124,15 @@ namespace IntegrationEngine
                     )
                 );
                 Container.RegisterType<IRabbitMQClient, RabbitMQClient>(config.IntegrationPointName, new InjectionConstructor(config));
+            }
+            foreach (var config in EngineConfiguration.IntegrationPoints.JsonService) {
+                Container.RegisterType<IJsonServiceConfiguration, JsonServiceConfiguration>(config.IntegrationPointName,
+                    new InjectionConstructor(
+                        new ResolvedParameter<IEngineConfiguration>(),
+                        config.IntegrationPointName
+                    )
+                );
+                Container.RegisterType<IJsonServiceClient, JsonServiceClientAdapter>(config.IntegrationPointName, new InjectionConstructor(config));
             }
         }
 

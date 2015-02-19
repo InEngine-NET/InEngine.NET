@@ -76,6 +76,15 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.36\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.36\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\packages\ServiceStack.Client.4.0.36\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
@@ -201,6 +210,18 @@
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Configuration\IRabbitMQConfiguration.cs">
       <Link>IRabbitMQConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\JsonServiceConfiguration.cs">
+      <Link>JsonServiceConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IJsonServiceConfiguration.cs">
+      <Link>IJsonServiceConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\ServiceStack\IJsonServiceClient.cs">
+      <Link>IJsonServiceClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\ServiceStack\JsonServiceClientAdapter.cs">
+      <Link>JsonServiceClientAdapter.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

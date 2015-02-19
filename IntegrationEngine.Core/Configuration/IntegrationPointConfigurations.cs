@@ -8,6 +8,7 @@ namespace IntegrationEngine.Core.Configuration
         public List<MailConfiguration> Mail { get; set; }
         public List<RabbitMQConfiguration> RabbitMQ { get; set; }
         public List<ElasticsearchConfiguration> Elasticsearch { get; set; }
+        public List<JsonServiceConfiguration> JsonService { get; set; }
     }
 }
 
