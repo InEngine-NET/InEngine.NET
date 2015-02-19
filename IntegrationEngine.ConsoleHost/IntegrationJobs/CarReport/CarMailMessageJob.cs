@@ -11,16 +11,18 @@ namespace IntegrationEngine.ConsoleHost.Car
     public class CarMailMessageJob : IParameterizedJob
     {
         public IMailClient MailClient { get; set; }
+        public ExampleJsonService ExampleJsonService { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
 
         public CarMailMessageJob()
         {
         }
 
-        public CarMailMessageJob(FooMailClient mailClient)
+        public CarMailMessageJob(FooMailClient mailClient, ExampleJsonService exampleJsonService)
             : this()
         {
             MailClient = mailClient;
+            ExampleJsonService = exampleJsonService;
         } 
 
         public void Run()
