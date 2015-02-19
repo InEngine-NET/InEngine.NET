@@ -21,8 +21,9 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -44,6 +45,8 @@
     <Prefer32Bit>true</Prefer32Bit>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -92,11 +95,15 @@
     <Compile Include="IntegrationJobs\CarReport\CarReport.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarReportJob.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarMailMessageJob.cs" />
+    <Compile Include="IntegrationJobs\SampleSqlReport\SampleSqlReportJobWithIntegrationPoints.cs" />
+    <Compile Include="IntegrationPoints\FooMailClient.cs" />
+    <Compile Include="IntegrationPoints\BarSqlServer.cs" />
+    <Compile Include="IntegrationPoints\IFooMailClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\IntegrationEngine.Client\IntegrationEngine.Client.csproj">
-      <Project>{f3fcb706-f0dd-46c1-b121-785757fae9b9}</Project>
+      <Project>{F3FCB706-F0DD-46C1-B121-785757FAE9B9}</Project>
       <Name>IntegrationEngine.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
@@ -132,4 +139,7 @@
     </Content>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ItemGroup>
+    <Folder Include="IntegrationPoints\" />
+  </ItemGroup>
 </Project>

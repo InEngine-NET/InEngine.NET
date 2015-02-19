@@ -6,7 +6,7 @@ using IntegrationEngine.Core.Reports;
 
 namespace IntegrationEngine.Core.R
 {
-    public class RScriptRunner
+    public class RScriptRunner : IRScriptRunner
     {
         public IElasticClient ElasticClient { get; set; }
 

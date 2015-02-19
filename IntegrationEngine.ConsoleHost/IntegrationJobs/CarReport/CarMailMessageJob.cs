@@ -1,15 +1,27 @@
-﻿using IntegrationEngine.Core.Jobs;
+﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using RazorEngine.Configuration;
 
 namespace IntegrationEngine.ConsoleHost.Car
 {
-    public class CarMailMessageJob : IMailJob, IParameterizedJob
+    public class CarMailMessageJob : IParameterizedJob
     {
         public IMailClient MailClient { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
+
+        public CarMailMessageJob()
+        {
+        }
+
+        public CarMailMessageJob(FooMailClient mailClient)
+            : this()
+        {
+            MailClient = mailClient;
+        } 
 
         public void Run()
         {

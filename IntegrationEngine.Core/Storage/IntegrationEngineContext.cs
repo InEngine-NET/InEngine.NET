@@ -10,11 +10,5 @@ namespace IntegrationEngine.Core.Storage
         public IntegrationEngineContext(string connectionString)
             : base(connectionString)
         { }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Conventions.Add<PluralizingTableNameConvention>();
-        }
     }
 }

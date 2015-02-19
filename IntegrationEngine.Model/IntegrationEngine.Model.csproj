@@ -58,9 +58,11 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ICronTrigger.cs" />
+    <Compile Include="IDispatchable.cs" />
     <Compile Include="IHasParameters.cs" />
     <Compile Include="IHasStringId.cs" />
     <Compile Include="IJobType.cs" />
+    <Compile Include="DispatchTrigger.cs" />
     <Compile Include="ISimpleTrigger.cs" />
     <Compile Include="JobType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,11 +3,13 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="{{ baseUrl }}/images/favicon.ico" />
 
         <title>{{ title }}</title>
 
         <link rel="stylesheet" href="{{ baseUrl }}/bower_components/bootswatch/paper/bootstrap.min.css">
         <link rel="stylesheet" href="{{ baseUrl }}/bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ baseUrl }}/bower_components/ionicons/css/ionicons.min.css">
         <link rel="stylesheet" href="{{ baseUrl }}/bower_components/highlightjs/styles/dark.css">
         <link rel="stylesheet" href="{{ baseUrl }}/css/main.css">
     </head>
@@ -20,6 +22,7 @@
                     <span class="fa fa-fw fa-bars"></span>
                 </button>
                 <a class="navbar-brand" href="{{ baseUrl }}/">
+                    <img src="{{ baseUrl }}/images/inengine-logo-32-alt.png" />
                     {{ title|default('The title') }}
                     <small class="hidden-xs hidden-sm">
                         {{ subTitle|default('This is the default subtitle!') }}

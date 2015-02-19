@@ -1,4 +1,5 @@
-﻿using IntegrationEngine.Core.Jobs;
+﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using RazorEngine;
 using RazorEngine.Templating;
@@ -7,9 +8,16 @@ using System.Net.Mail;
 
 namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
 {
-    public class SampleSqlReportJob : SqlJob
+    public class SampleSqlReportJob : IIntegrationJob
     {
-        public override void Run()
+        public IMailClient MailClient { get; set; }
+
+        public SampleSqlReportJob (FooMailClient fooMailClient) 
+        {
+            MailClient = fooMailClient;
+        }
+
+        public void Run()
         {
             try
             {

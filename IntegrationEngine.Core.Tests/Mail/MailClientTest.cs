@@ -21,21 +21,17 @@ namespace IntegrationEngine.Core.Tests.Mail
         {
             MockLog = new Mock<ILog>();
             Subject.Log = MockLog.Object;
-            Subject.MailConfiguration = new MailConfiguration() {
-                HostName = "hostName",
-                Port = 0,
-            };
         }
 
         [Test]
         public void ShouldLogExceptionAndReturnFalseIfMailServerIsNotAvailable()
         {
-            MockLog.Setup(x => x.Error(It.IsAny<SocketException>()));
+            MockLog.Setup(x => x.Error(It.IsAny<Exception>()));
 
             var actual = Subject.IsServerAvailable();
            
             Assert.That(actual, Is.False);
-            MockLog.Verify(x => x.Error(It.IsAny<SocketException>()));
+            MockLog.Verify(x => x.Error(It.IsAny<Exception>()));
         }
 
         // @TODO Do not mock tcp client, instead test with listener or real mail server.
@@ -52,9 +48,7 @@ namespace IntegrationEngine.Core.Tests.Mail
         //    stream.Write(responseInBytes, 0, responseInBytes.Length);
         //    MockTcpClient.Setup(x => x.GetStream()).Returns(stream);
         //    MockTcpClient.Setup(x => x.Close());
-
         //    var actual = Subject.IsServerAvailable();
-
         //    Assert.That(actual, Is.True);
         //    MockTcpClient.Verify(x => x.Close(), Times.Once);
         //}

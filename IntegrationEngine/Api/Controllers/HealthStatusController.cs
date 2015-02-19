@@ -1,7 +1,7 @@
 ﻿using IntegrationEngine.Scheduler;
 using IntegrationEngine.Core.Mail;
 using IntegrationEngine.Core.Storage;
-using IntegrationEngine.MessageQueue;
+using IntegrationEngine.JobProcessor;
 using InEngineHealthStatus = IntegrationEngine.Model.HealthStatus;
 using Nest;
 using System;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
+using IntegrationEngine.Core.MessageQueue;
 
 
 namespace IntegrationEngine.Api.Controllers

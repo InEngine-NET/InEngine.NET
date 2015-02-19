@@ -47,7 +47,7 @@ menu:
                     relativeUrl: console-client.html
                 angularjs-api-module:
                     text: AngularJS Client
-                    iconClass: 'fa fa-fw fa-desktop'
+                    iconClass: 'icon ion-social-angular'
                     relativeUrl: angularjs-api-module.html
                 dashboard:
                     text: Web Dashboard

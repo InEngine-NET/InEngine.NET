@@ -5,7 +5,7 @@ namespace IntegrationEngine.Core
 {
     public interface ISmtpClient
     {
-        string Host { get; set; }
+        string HostName { get; set; }
         int Port { get; set; }
         void Send(MailMessage message);
     }

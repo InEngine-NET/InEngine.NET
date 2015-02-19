@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -59,10 +59,6 @@
     <Reference Include="Nest">
       <HintPath>..\packages\NEST.1.3.1\lib\Nest.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.1.0.0\lib\net40\NLog.dll</HintPath>
     </Reference>
@@ -72,45 +68,49 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.36\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.36\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\packages\ServiceStack.Client.4.0.36\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\configuration\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Configuration\DatabaseConfiguration.cs">
-      <Link>DatabaseConfiguration.cs</Link>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IIntegrationPointConfiguration.cs">
+      <Link>IIntegrationPointConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IMailConfiguration.cs">
+      <Link>IMailConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IMySqlConfiguration.cs">
+      <Link>IMySqlConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\ISqlServerConfiguration.cs">
+      <Link>ISqlServerConfiguration.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Configuration\MailConfiguration.cs">
       <Link>MailConfiguration.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IElasticsearchJob.cs">
-      <Link>IElasticsearchJob.cs</Link>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationPoint\IIntegrationPoint.cs">
+      <Link>IIntegrationPoint.cs</Link>
     </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IIntegrationJob.cs">
-      <Link>IIntegrationJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\ILogJob.cs">
-      <Link>ILogJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IMailJob.cs">
-      <Link>IMailJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IntegrationJobRunFailureException.cs">
-      <Link>IntegrationJobRunFailureException.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\IParameterizedJob.cs">
-      <Link>IParameterizedJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\ISqlJob.cs">
-      <Link>ISqlJob.cs</Link>
-    </Compile>
-    <Compile Include="..\IntegrationEngine.Core\Jobs\SqlJob.cs">
-      <Link>SqlJob.cs</Link>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationPoint\IIntegrationPointT.cs">
+      <Link>IIntegrationPointT.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Mail\IMailClient.cs">
       <Link>IMailClient.cs</Link>
@@ -127,11 +127,35 @@
     <Compile Include="..\IntegrationEngine.Core\Mail\SmtpClientAdapter.cs">
       <Link>SmtpClientAdapter.cs</Link>
     </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMessageQueueClient.cs">
+      <Link>IMessageQueueClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMessageQueueConnection.cs">
+      <Link>IMessageQueueConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IMsmqClient.cs">
+      <Link>IMsmqClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\IRabbitMQClient.cs">
+      <Link>IRabbitMQClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\MessageQueueConnection.cs">
+      <Link>MessageQueueConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\MsmqClient.cs">
+      <Link>MsmqClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\MessageQueue\RabbitMQClient.cs">
+      <Link>RabbitMQClient.cs</Link>
+    </Compile>
     <Compile Include="..\IntegrationEngine.Core\Reports\IDatum.cs">
       <Link>IDatum.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\Reports\IReport.cs">
       <Link>IReport.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\R\IRScriptRunner.cs">
+      <Link>IRScriptRunner.cs</Link>
     </Compile>
     <Compile Include="..\IntegrationEngine.Core\R\RScriptRunner.cs">
       <Link>RScriptRunner.cs</Link>
@@ -161,6 +185,51 @@
       <Link>IRepository.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IEngineConfiguration.cs">
+      <Link>IEngineConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\WebApiConfiguration.cs">
+      <Link>WebApiConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\NLogAdapterConfiguration.cs">
+      <Link>NLogAdapterConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IntegrationPointConfigurations.cs">
+      <Link>IntegrationPointConfigurations.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\ElasticsearchConfiguration.cs">
+      <Link>ElasticsearchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\RabbitMQConfiguration.cs">
+      <Link>RabbitMQConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IElasticsearchConfiguration.cs">
+      <Link>IElasticsearchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IRabbitMQConfiguration.cs">
+      <Link>IRabbitMQConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\JsonServiceConfiguration.cs">
+      <Link>JsonServiceConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\Configuration\IJsonServiceConfiguration.cs">
+      <Link>IJsonServiceConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\ServiceStack\IJsonServiceClient.cs">
+      <Link>IJsonServiceClient.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\ServiceStack\JsonServiceClientAdapter.cs">
+      <Link>JsonServiceClientAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IIntegrationJob.cs">
+      <Link>IIntegrationJob.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IntegrationJobRunFailureException.cs">
+      <Link>IntegrationJobRunFailureException.cs</Link>
+    </Compile>
+    <Compile Include="..\IntegrationEngine.Core\IntegrationJob\IParameterizedJob.cs">
+      <Link>IParameterizedJob.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -168,7 +237,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationEngine.Model.net40\IntegrationEngine.Model.net40.csproj">
-      <Project>{dfcd19ce-a96a-4b19-8cf1-9cac560e7f42}</Project>
+      <Project>{DFCD19CE-A96A-4B19-8CF1-9CAC560E7F42}</Project>
       <Name>IntegrationEngine.Model.net40</Name>
     </ProjectReference>
   </ItemGroup>
