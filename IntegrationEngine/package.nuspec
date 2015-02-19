@@ -43,6 +43,8 @@
       <dependency id="Owin" version="1.0" />
 	    <dependency id="Quartz" version="2.3.1" />
 	    <dependency id="RabbitMQ.Client" version="3.4.3" />
+      <dependency id="ServiceStack.Common" version="3.9.71" />
+      <dependency id="ServiceStack.Text" version="3.9.71" />
 	    <dependency id="Unity" version="3.5.1404.0" />
     </dependencies>
   </metadata>

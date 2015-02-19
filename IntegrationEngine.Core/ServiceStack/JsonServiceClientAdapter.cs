@@ -1,5 +1,5 @@
-﻿using ServiceStack;
-using IntegrationEngine.Core.Configuration;
+﻿using IntegrationEngine.Core.Configuration;
+using ServiceStack.ServiceClient.Web;
 using System.Net;
 
 namespace IntegrationEngine.Core.ServiceStack
