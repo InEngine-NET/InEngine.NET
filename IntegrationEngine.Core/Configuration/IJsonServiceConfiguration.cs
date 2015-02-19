@@ -7,7 +7,6 @@ namespace IntegrationEngine.Core.Configuration
         string BaseUri { get; set; }
         string UserName { get; set; }
         string Password { get; set; }
-        bool IgnoreInvalidSslCertificate { get; set; }
         bool AlwaysSendBasicAuthHeader { get; set; }
     }
 }
