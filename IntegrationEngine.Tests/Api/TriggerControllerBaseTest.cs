@@ -94,6 +94,7 @@ namespace IntegrationEngine.Tests.Api
             };
             MockElasticRepo.Setup(x => x.Insert(triggerWithoutId)).Returns(expected);
             MockEngineScheduler.Setup(x => x.ScheduleJobWithTrigger(expected));
+            MockEngineScheduler.Setup(x => x.IsJobTypeRegistered(jobType)).Returns(true);
 
             Subject.Post(triggerWithoutId);
 
@@ -127,6 +128,27 @@ namespace IntegrationEngine.Tests.Api
             Assert.That(actual, Is.TypeOf(typeof(NotFoundResult)));
             MockElasticRepo.Verify(x => x.Delete<TriggerStub>(TriggerDocumentId), Times.Never);
             MockEngineScheduler.Verify(x => x.DeleteTrigger(It.IsAny<TriggerStub>()), Times.Never);
+        }
+
+        [Test]
+        public void ShouldValidateJobTypeAgainstSchedulersRegisteredJobs()
+        {
+            var jobTypeName = "MyIntegrationServer.MyIntegrationJob";
+            MockEngineScheduler.Setup(x => x.IsJobTypeRegistered(jobTypeName)).Returns(true);
+
+            var actual = Subject.IsValidJobType(jobTypeName);
+
+            MockEngineScheduler.Verify(x => x.IsJobTypeRegistered(jobTypeName), Times.Once);
+            Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void ShouldReturnTrueIfJobTypeNameIsNotValid()
+        {
+            var actual = Subject.IsValidJobType(null);
+
+            MockEngineScheduler.Verify(x => x.IsJobTypeRegistered(It.IsAny<string>()), Times.Never);
+            Assert.That(actual, Is.True);
         }
     }
 }

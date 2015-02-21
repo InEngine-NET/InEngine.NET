@@ -43,6 +43,7 @@ namespace IntegrationEngine
         public EngineHostCompositionRoot(IList<Assembly> assembliesWithJobs)
             : this()
         {
+            Container = new UnityContainer();
             IntegrationJobTypes = ExtractIntegrationJobTypesFromAssemblies(assembliesWithJobs);
         }
 
@@ -56,7 +57,6 @@ namespace IntegrationEngine
 
         public void Configure()
         {
-            Container = ContainerSingleton.GetContainer();
             LoadConfiguration();
             SetupLogging();
             RegisterIntegrationPoints();
@@ -180,6 +180,7 @@ namespace IntegrationEngine
                 IntegrationJobTypes = IntegrationJobTypes,
                 MessageQueueConnection = new MessageQueueConnection(config),
                 RabbitMQConfiguration = config,
+                UnityContainer = Container,
             };
 
             var threadedListenerManager = new ThreadedListenerManager() {
@@ -230,7 +231,8 @@ namespace IntegrationEngine
         public void SetupWebApi()
         {
             WebApiApplication = new WebApiApplication() { 
-                WebApiConfiguration = EngineConfiguration.WebApi
+                WebApiConfiguration = EngineConfiguration.WebApi,
+                ContainerResolver = new ContainerResolver(Container)
             };
             WebApiApplication.Start();
         }

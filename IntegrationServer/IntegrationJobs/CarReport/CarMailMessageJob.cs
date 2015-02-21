@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using RazorEngine.Configuration;
 
-namespace IntegrationServer
+namespace IntegrationServer.IntegrationJobs.CarReport
 {
     public class CarMailMessageJob : IParameterizedJob
     {

@@ -2,7 +2,7 @@
 using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Reports;
 
-namespace IntegrationServer
+namespace IntegrationServer.IntegrationJobs.CarReport
 {
     public class CarReportJob : IIntegrationJob
     {

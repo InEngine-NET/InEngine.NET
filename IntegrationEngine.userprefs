@@ -1,13 +1,6 @@
 ﻿<Properties StartupItem="IntegrationServer/IntegrationServer.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs">
-    <Files>
-      <File FileName="IntegrationServer/IntegrationJobs/CarReport/CarMailMessageJob.cs" Line="1" Column="1" />
-      <File FileName="IntegrationServer.Tests/IntegrationJobs/CarReport/CarMailMessageJobTest.cs" Line="13" Column="13" />
-      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="46" Column="46" />
-      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="52" Column="52" />
-      <File FileName="IntegrationServer/Program.cs" Line="1" Column="1" />
-    </Files>
+  <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
         <State expanded="True" selected="True" />

@@ -19,6 +19,7 @@ namespace IntegrationEngine.JobProcessor
 {
     public class RabbitMQListener : IMessageQueueListener
     {
+        public IUnityContainer UnityContainer { get; set; }
         public QueueingBasicConsumer Consumer { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
         public IRabbitMQConfiguration RabbitMQConfiguration { get; set; }
@@ -61,7 +62,7 @@ namespace IntegrationEngine.JobProcessor
                         if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                             continue;
                         var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobType));
-                        var integrationJob = ContainerSingleton.GetContainer().Resolve(type) as IIntegrationJob;
+                        var integrationJob = UnityContainer.Resolve(type) as IIntegrationJob;
                         if (integrationJob != null)
                         {
                             if (integrationJob is IParameterizedJob)

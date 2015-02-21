@@ -6,7 +6,7 @@ using RazorEngine.Templating;
 using System;
 using System.Net.Mail;
 
-namespace IntegrationServer
+namespace IntegrationServer.IntegrationJobs.SampleSqlReport
 {
     public class SampleSqlReportJob : IIntegrationJob
     {
