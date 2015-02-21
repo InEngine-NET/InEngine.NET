@@ -10,10 +10,10 @@
 | master  | [![master Windows][masterWindows]][masterAppVeyor]    | [![master Linux][masterLinux]][travis]             |
 | develop | [![develop Windows][developWindows]][developAppVeyor] | [![develop Windows][developLinux]][travis]         |
 
-[masterAppVeyor]: https://ci.appveyor.com/project/ethanhann/inengine-net/branch/master
+[masterAppVeyor]: https://ci.appveyor.com/project/inengine-net/inengine-net/branch/master
 [developAppVeyor]: https://ci.appveyor.com/project/ethanhann/inengine-net/branch/develop
 [travis]: https://travis-ci.org/ethanhann/InEngine.NET
-[masterWindows]: https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=master&svg=true
-[developWindows]: https://ci.appveyor.com/api/projects/status/github/ethanhann/inengine.net?branch=develop&svg=true
-[masterLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=master&style=flat-square
-[developLinux]: https://travis-ci.org/ethanhann/InEngine.NET.svg?branch=develop&style=flat-square
+[masterWindows]: https://ci.appveyor.com/api/projects/status/github/inengine-net/inengine.net?branch=master&svg=true
+[developWindows]: https://ci.appveyor.com/api/projects/status/github/inengine-net/inengine.net?branch=develop&svg=true
+[masterLinux]: https://travis-ci.org/InEngine-NET/InEngine.NET.svg?branch=master&style=flat-square
+[developLinux]: https://travis-ci.org/InEngine-NET/InEngine.NET.svg?branch=develop&style=flat-square
