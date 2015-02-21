@@ -2,8 +2,9 @@
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;
+using IntegrationEngine;
 
-namespace IntegrationEngine.ConsoleHost
+namespace IntegrationServer
 {
     public class Program
     {

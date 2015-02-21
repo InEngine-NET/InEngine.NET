@@ -1,25 +1,17 @@
-﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
+﻿<Properties StartupItem="IntegrationServer/IntegrationServer.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/EngineHostCompositionRoot.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationServer/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs">
     <Files>
-      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="85" Column="85" />
-      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.Core/IntegrationJob/IIntegrationJob.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.Core/IntegrationJob/IParameterizedJob.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.Core/IntegrationJob/IntegrationJobRunFailureException.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine.Core/Configuration/IJsonServiceConfiguration.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer/Program.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer/InEngineServerInstaller.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs" Line="7" Column="7" />
+      <File FileName="IntegrationServer/IntegrationPoints/FooMailClient.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer/IntegrationPoints/IFooMailClient.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True">
-          <Node name="IntegrationEngine.Tests" expanded="True">
-            <Node name="IntegrationEngine" expanded="True">
-              <Node name="Tests" expanded="True">
-                <Node name="EngineHostCompositionRootTest" expanded="True">
-                  <Node name="ShouldSetupMessageQueueListener" selected="True" />
-                </Node>
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

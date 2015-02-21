@@ -1,7 +1,7 @@
 ﻿using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.ServiceStack;
 
-namespace IntegrationEngine.ConsoleHost.IntegrationPoints
+namespace IntegrationServer.IntegrationPoints
 {
     public class ExampleJsonService : JsonServiceClientAdapter
     {

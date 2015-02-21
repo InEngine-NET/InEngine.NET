@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IntegrationEngine.ConsoleHost.IntegrationPoints
+namespace IntegrationServer.IntegrationPoints
 {
     public class BarSqlServer
     {}

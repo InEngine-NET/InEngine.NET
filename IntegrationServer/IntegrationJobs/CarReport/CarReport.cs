@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using IntegrationEngine.Core.Reports;
 
-namespace IntegrationEngine.ConsoleHost.IntegrationJobs.CarReport
+namespace IntegrationServer
 {
     public class CarReport : IReport<Car>
     {

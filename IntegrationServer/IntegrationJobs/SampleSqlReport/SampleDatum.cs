@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
+namespace IntegrationServer
 {
     public class SampleDatum : IDatum
     {

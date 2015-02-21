@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+﻿using IntegrationServer.IntegrationPoints;
 using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using RazorEngine.Configuration;
 
-namespace IntegrationEngine.ConsoleHost.Car
+namespace IntegrationServer
 {
     public class CarMailMessageJob : IParameterizedJob
     {
