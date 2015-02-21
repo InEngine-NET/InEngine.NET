@@ -4,6 +4,8 @@ using Common.Logging.NLog;
 using IntegrationEngine.Api;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.R;
+using IntegrationServer.IntegrationJobs.CarReport;
+using IntegrationServer.IntegrationJobs.SampleSqlReport;
 using IntegrationEngine.JobProcessor;
 using Microsoft.Practices.Unity;
 using Moq;
