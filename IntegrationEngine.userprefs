@@ -1,17 +1,18 @@
 ﻿<Properties StartupItem="IntegrationServer/IntegrationServer.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationServer/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs">
     <Files>
-      <File FileName="IntegrationEngine.Core/IntegrationJob/IIntegrationJob.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.Core/IntegrationJob/IParameterizedJob.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.Core/IntegrationJob/IntegrationJobRunFailureException.cs" Line="1" Column="1" />
-      <File FileName="IntegrationEngine.Core/Configuration/IJsonServiceConfiguration.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer/IntegrationJobs/CarReport/CarMailMessageJob.cs" Line="1" Column="1" />
+      <File FileName="IntegrationServer.Tests/IntegrationJobs/CarReport/CarMailMessageJobTest.cs" Line="13" Column="13" />
+      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="46" Column="46" />
+      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="52" Column="52" />
       <File FileName="IntegrationServer/Program.cs" Line="1" Column="1" />
-      <File FileName="IntegrationServer/InEngineServerInstaller.cs" Line="1" Column="1" />
-      <File FileName="IntegrationServer/IntegrationJobs/SampleSqlReport/SampleSqlReportJob.cs" Line="7" Column="7" />
-      <File FileName="IntegrationServer/IntegrationPoints/FooMailClient.cs" Line="1" Column="1" />
-      <File FileName="IntegrationServer/IntegrationPoints/IFooMailClient.cs" Line="1" Column="1" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

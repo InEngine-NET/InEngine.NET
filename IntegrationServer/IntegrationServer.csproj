@@ -105,7 +105,6 @@
     <Compile Include="IntegrationJobs\CarReport\CarReport.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarReportJob.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarMailMessageJob.cs" />
-    <Compile Include="IntegrationJobs\SampleSqlReport\SampleSqlReportJobWithIntegrationPoints.cs" />
     <Compile Include="IntegrationPoints\FooMailClient.cs" />
     <Compile Include="IntegrationPoints\BarSqlServer.cs" />
     <Compile Include="IntegrationPoints\IFooMailClient.cs" />

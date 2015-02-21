@@ -33,26 +33,42 @@ namespace IntegrationEngine
         public IList<Type> IntegrationJobTypes { get; set; }
         public ILog Log { get; set; }
         public IWebApiApplication WebApiApplication { get; set; }
+        public bool IsWebApiEnabled { get; set; }
+        public bool IsSchedulerEnabled { get; set; }
+        public bool IsThreadedListenerEnabled { get; set; }
 
         public EngineHostCompositionRoot()
         {}
 
-        public void Configure(IList<Assembly> assembliesWithJobs)
+        public EngineHostCompositionRoot(IList<Assembly> assembliesWithJobs)
+            : this()
+        {
+            IntegrationJobTypes = ExtractIntegrationJobTypesFromAssemblies(assembliesWithJobs);
+        }
+
+        public IList<Type> ExtractIntegrationJobTypesFromAssemblies(IList<Assembly> assembliesWithJobs)
+        {
+            return assembliesWithJobs
+                .SelectMany(x => x.GetTypes())
+                .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
+                .ToList();
+        }
+
+        public void Configure()
         {
             Container = ContainerSingleton.GetContainer();
-            IntegrationJobTypes = assembliesWithJobs
-                        .SelectMany(x => x.GetTypes())
-                        .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
-                        .ToList();
             LoadConfiguration();
             SetupLogging();
             RegisterIntegrationPoints();
             RegisterIntegrationJobs();
             SetupRScriptRunner();
             SetupElasticsearchRepository();
-            SetupThreadedListenerManager();
-            SetupEngineScheduler();
-            SetupWebApi();
+            if (IsThreadedListenerEnabled)
+                SetupThreadedListenerManager();
+            if (IsSchedulerEnabled)
+                SetupEngineScheduler();
+            if (IsWebApiEnabled)
+                SetupWebApi();
         }
 
         public void LoadConfiguration()

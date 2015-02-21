@@ -9,7 +9,7 @@ namespace IntegrationServer
     public class Program
     {
         public const string ServiceName = "InEngine.NET Server";
-        public static EngineHost EngineHosts { get; set; }
+        public static EngineHost EngineHost { get; set; }
         public static void Main(string[] args)
         {
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
@@ -31,13 +31,13 @@ namespace IntegrationServer
 
         private static void Start(string[] args)
         {
-            EngineHosts = new EngineHost(typeof(Program).Assembly);
-            EngineHosts.Initialize();
+            EngineHost = new EngineHost(typeof(Program).Assembly);
+            EngineHost.Initialize();
         }
 
         private static void Stop()
         {
-            EngineHosts.Dispose();
+            EngineHost.Dispose();
         }
 
         public class Service : ServiceBase
