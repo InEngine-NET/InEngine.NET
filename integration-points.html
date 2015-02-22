@@ -249,7 +249,10 @@ Built-in integration point classes are the following.</p>
 <li>IntegrationEngine.Core.MessageQueue.RabbitMQClient</li>
 <li>IntegrationEngine.Core.ServiceStack.JsonService</li>
 </ul>
-<p>The IntegrationPointName, defined in the configuration file, has to be the same name as the integration point's class name.</p>
+<p>To configure the integration point, the <em>IntegrationPointName</em>, defined in the configuration file, has to be the same
+name as the integration point's class name.
+For example, in the following code snippet the class name is &quot;MyMailClient&quot; and, in the config sample shown below the
+class, the <em>IntegrationPointName</em> is &quot;MyMailClient&quot; as well. </p>
 <pre><code class="language-csharp">using IntegrationEngine.Core.Mail;
 
 namespace MyProject.MyIntegrationPoints
