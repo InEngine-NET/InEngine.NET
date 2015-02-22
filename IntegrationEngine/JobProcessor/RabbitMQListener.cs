@@ -65,9 +65,17 @@ namespace IntegrationEngine.JobProcessor
                         var integrationJob = UnityContainer.Resolve(type) as IIntegrationJob;
                         if (integrationJob != null)
                         {
-                            if (integrationJob is IParameterizedJob)
-                                (integrationJob as IParameterizedJob).Parameters = message.Parameters;
-                            integrationJob.Run();
+                            if (integrationJob is IParameterizedJob) {
+                                var parameterizedJob = integrationJob as IParameterizedJob;
+                                parameterizedJob.Parameters = message.Parameters;
+                                Log.Info(x => x("Running job: {0} with parameters {1}", integrationJob, message.Parameters));
+                                parameterizedJob.Run();
+                            }
+                            else {
+                                Log.Info(x => x("Running job: {0}", integrationJob));
+                                integrationJob.Run();
+                            }
+                            Log.Info(x => x("Integration job ran successfully: {0}", integrationJob));
                         }
                     }
                     catch (OperationCanceledException exception)
