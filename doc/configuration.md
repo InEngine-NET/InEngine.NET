@@ -8,7 +8,7 @@ currentMenu: configuration
 __InEngine.NET__ is configured with a JSON file called IntegrationEngine.json.
 The configuration file has several sections, outlined below.
 
-### WebApi
+## WebApi
 
 The _WebApi_ section contains settings for the InEngine.NET's WebApi. 
 Namely, the hostname and port of the web API.
@@ -28,84 +28,7 @@ Note that it is not recommended to use "*" wildcard, but a list of specific doma
 }
 ```
 
-### MessageQueue
-
-The _MessageQueue_ section contains settings for connecting to a RabbitMQ server. 
-If these settings are not correct, then a connection exception will be thrown when a job is triggered.
-
-A queue called "myqueue" will not exist on a freshly installed RabbitMQ server. 
-It will need to be created.
-
-```js
-{
-    // ...
-    "MessageQueue": {
-        "QueueName": "myqueue",
-        "ExchangeName": "amq.direct",
-        "UserName": "inengine",
-        "Password": "secret",
-        "HostName": "localhost",
-        "VirtualHost": "/"
-    },
-    // ...
-}
-```
-
-### Elasticsearch
-
-The _Elasticsearch_ section contains settings for connecting to a Elasticsearch server. 
-If these settings are not correct, then a connection exception will be thrown when a job is scheduled.
-
-```js
-{
-    // ...
-    "Elasticsearch": {
-        "Protocol": "http",
-        "HostName": "localhost",
-        "Port": 9200,
-        "DefaultIndex": "integration-engine"
-    },
-    // ...
-}
-```
-
-### Mail
-
-The _Mail_ section contains settings for connecting to an SMTP server.
-If these settings are not correct, then a connection exception will be thrown when sending an email.
-
-```js
-{
-    // ...
-    "Mail": {
-        "HostName": "localhost",
-        "Port": 25
-    },
-    // ...
-}
-```
-
-### Database
-
-The _Database_ section contains settings for connecting to a either a SQL Server or MySQL server via [Entity Framework](http://msdn.microsoft.com/en-us/data/ef.aspx).
-If these settings are not correct, then a connection exception will be thrown when a SQL job runs.
-
-```js
-{
-    // ...
-    "Database": {
-        "ServerType": "SQLServer",
-        "HostName": "localhost",
-        "Port": 1433,
-        "DatabaseName": "IntegrationEngine",
-        "UserName": "inengine",
-        "Password": "secret"
-    }
-    // ..
-}
-```
-
-### NLogAdapter
+## NLogAdapter
 
 The _NLogAdapter_ section contains settings for configuring the [NLog Common.Logging adapter](http://netcommon.sourceforge.net/docs/2.1.0/reference/html/ch01.html#logging-adapters-nlog).
 
@@ -120,8 +43,85 @@ The _NLogAdapter_ section contains settings for configuring the [NLog Common.Log
 }
 ```
 
+## Integration Points
+
+Any number of integration points [Integration Points](integration-points.html) can be configured.
+All integration points should have a unique name defined in its _IntegrationPointName_ property. 
+
+### RabbitMQ
+
+The _RabbitMQ_ section contains settings for connecting to a RabbitMQ server. 
+If these settings are not correct, then a connection exception will be thrown when a job is triggered.
+
+A queue called "myqueue" will not exist on a freshly installed RabbitMQ server. 
+It will need to be created.
+
+```js
+{
+    // ...
+    "IntegrationPoints": {
+        "RabbitMQ": [
+            {
+                "IntegrationPointName": "DefaultRabbitMQ",
+                "QueueName": "myqueue",
+                "ExchangeName": "amq.direct",
+                "UserName": "inengine",
+                "Password": "secret",
+                "HostName": "localhost",
+                "VirtualHost": "/"
+            }
+        ],
+    }
+    // ...
+}
+```
+
+### Elasticsearch
+
+The _Elasticsearch_ section contains settings for connecting to a Elasticsearch server. 
+If these settings are not correct, then a connection exception will be thrown when a job is scheduled.
+
+```js
+{
+    // ...
+    "IntegrationPoints": {
+        "Elasticsearch": [
+            {
+                "IntegrationPointName": "DefaultElasticsearch",
+                "Protocol": "http",
+                "HostName": "localhost",
+                "Port": 9200,
+                "DefaultIndex": "integration-engine"
+            }
+        ]
+    }
+    // ...
+}
+```
+
+### Mail
+
+The _Mail_ section contains settings for connecting to an SMTP server.
+If these settings are not correct, then a connection exception will be thrown when sending an email.
+
+```js
+{
+    // ...
+    "IntegrationPoints": {
+        "Mail": [
+            {
+                "IntegrationPointName": "DefaultMail",
+                "HostName": "localhost",
+                "Port": 25
+            }
+        ]
+    }
+    // ...
+}
+```
+
 ## Sample Configuration
-This is a sample configuration.
+This is a sample minimum configuration.
 
 ```js
 {
@@ -130,35 +130,31 @@ This is a sample configuration.
         "Port": 9001,
         "Origins": ["*"]
     },
-    "MessageQueue": {
-        "QueueName": "myqueue",
-        "ExchangeName": "amq.direct",
-        "UserName": "inengine",
-        "Password": "secret",
-        "HostName": "localhost",
-        "VirtualHost": "/"
+    "NLogAdapter": {
+        "ConfigType": "File",
+        "ConfigFile": "IntegrationEngine.nlog.xml"
     },
-    "Elasticsearch": {
-        "Protocol": "http",
-        "HostName": "localhost",
-        "Port": 9200,
-        "DefaultIndex": "integration-engine"
-    },
-    "Mail": {
-        "HostName": "localhost",
-        "Port": 25
-    },
-    "Database": {
-        "ServerType": "SQLServer",
-        "HostName": "localhost",
-        "Port": 1433,
-        "DatabaseName": "IntegrationEngine",
-        "UserName": "inengine",
-        "Password": "secret"
-    },
-	"NLogAdapter": {
-		"ConfigType": "File",
-		"ConfigFile": "IntegrationEngine.nlog.xml"
-	}
+    "IntegrationPoints": {
+        "RabbitMQ": [
+            {
+                "IntegrationPointName": "DefaultRabbitMQ",
+                "QueueName": "myqueue",
+                "ExchangeName": "amq.direct",
+                "UserName": "inengine",
+                "Password": "secret",
+                "HostName": "localhost",
+                "VirtualHost": "/"
+            }
+        ],
+        "Elasticsearch": [
+            {
+                "IntegrationPointName": "DefaultElasticsearch",
+                "Protocol": "http",
+                "HostName": "localhost",
+                "Port": 9200,
+                "DefaultIndex": "integration-engine"
+            }
+        ]
+    }
 }
 ```

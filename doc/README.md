@@ -3,7 +3,8 @@ layout: home
 currentMenu: home
 ---
 
-## Why should you care?
+## What is this all about?
+
 __InEngine.NET__ is a set of .NET packages that allow for the creation of a code-centric data integration and asynchronous job scheduling server.
 Integration jobs are created in code, making them flexible and testable.
 

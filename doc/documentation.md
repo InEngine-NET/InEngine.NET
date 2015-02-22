@@ -11,7 +11,10 @@ currentMenu: documentation
     
     <dt><a href="integration-jobs.html">Integration Jobs</a></dt>
     <dd>Lists the built-in integration jobs in the <a href="https://www.nuget.org/packages/IntegrationEngine.Core">InEngine.NET Core</a> package, and explains their usage.</dd>
-    
+
+    <dt><a href="integration-points.html">Integration Points</a></dt>
+    <dd>Describes how to create integration points, and explains their usage.</dd>
+
     <dt><a href="web-api/cron-trigger.html">Web API</a></dt>
     <dd>Lists the available HTTP endpoints in the Web API, and explains their usage.</dd>
     
