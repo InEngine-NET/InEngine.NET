@@ -13,7 +13,7 @@ be done in a .NET application.
 
 ## Built-in Job Types
 
-__InEngine.NET__ comes with a few built-in integration jobs, defined in _IntegrationEngine.Core.Jobs_, described below.
+__InEngine.NET__ comes with a few built-in integration jobs, defined in _IntegrationEngine.Core.IntegrationJob_, described below.
 
 ### Integration Job
 
