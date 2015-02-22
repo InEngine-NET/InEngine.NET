@@ -70,8 +70,14 @@
             </li>
                     <li class="active">
                 <a href="http://inengine.net/integration-jobs.html">
-                    <span class="fa fa-fw fa-exchange"></span>
+                    <span class="fa fa-fw fa-tasks"></span>
                     <span>Integration Jobs</span>
+                </a>
+            </li>
+                    <li class="">
+                <a href="http://inengine.net/integration-points.html">
+                    <span class="fa fa-fw fa-exchange"></span>
+                    <span>Integration Points</span>
                 </a>
             </li>
                     <li class="">
@@ -160,8 +166,18 @@
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
                     <li class="active">
                         <a href="http://inengine.net/integration-jobs.html">
-                            <span class="fa fa-fw fa-exchange"></span>
+                            <span class="fa fa-fw fa-tasks"></span>
                             <span>Integration Jobs</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+                    <li>
+                <ul class="nav nav-pills nav-stacked nav-sub-items">
+                    <li class="">
+                        <a href="http://inengine.net/integration-points.html">
+                            <span class="fa fa-fw fa-exchange"></span>
+                            <span>Integration Points</span>
                         </a>
                     </li>
                 </ul>
@@ -221,12 +237,12 @@
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                                             <h1>Integration Jobs</h1>
-<p>Integration jobs can do anything, not just retrieve, transform, and persist data.
-They can also be made to send an email, run a console command, call some third party library, or anything else that can
+<p>Integration jobs contain a <em>Run</em> method, thanks to <em>IIntegrationJob</em>, that run when the job is executed by the <strong>InEngine.NET</strong> scheduler.</p>
+<p>Integration jobs utilize <a href="integration-points.html">Integration Points</a> to query and persist data.
+They can also send an email, run a console command, call some third party library, or anything else that can
 be done in a .NET application.</p>
 <h2>Built-in Job Types</h2>
-<p><strong>InEngine.NET</strong> comes with a few built-in integration jobs defined in <em>IntegrationEngine.Core.Jobs</em>.
-They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>Elasticsearch Job</strong>, <strong>Log Job</strong>, and <strong>SQL Job</strong>.</p>
+<p><strong>InEngine.NET</strong> comes with a few built-in integration jobs, defined in <em>IntegrationEngine.Core.Jobs</em>, described below.</p>
 <h3>Integration Job</h3>
 <ul>
 <li>Implement the <em>IIntegrationJob</em> interface to create a basic integration job.</li>
@@ -234,49 +250,12 @@ They are <strong>Integration Job</strong>, <strong>Mail Job</strong>, <strong>El
 <li>The interface has one argumentless method called <em>Run</em> which is executed when the job is triggered.</li>
 <li>All other jobs must implement <em>IIntegrationJob</em> directly or indirectly.</li>
 </ul>
-<h3>Elasticsearch Job</h3>
-<ul>
-<li>Implement the <em>IElasticsearchJob</em> interface to create an Elasticsearch Job.</li>
-<li>The <em>ElasticClient</em> property of the <em>IElasticsearchJob</em> is automatically instantiated and configured with the Elasticsearch settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>ElasticClient</em> is an instance of <em>Nest.ElasticClient</em>. </li>
-<li>See the NEST <a href="http://nest.azurewebsites.net/nest/quick-start.html">quick start</a> for information on how to use it.</li>
-</ul>
-<h3>Log Job</h3>
-<ul>
-<li>Implement the <em>ILogJob</em> interface to create a log job.</li>
-<li>The <em>Log</em> property of the <em>ILogJob</em> is automatically instantiated and configured with the
-<a href="http://logging.apache.org/log4net/">log4net</a> settings in the host applications App.config file.</li>
-<li>The <em>Log</em> instance can be configured to log to a variety of <a href="logging.apache.org/log4net/release/features.html#appenders">logging targets</a>.</li>
-<li>Messages and exception can be logged according to their <a href="http://logging.apache.org/log4net/release/manual/introduction.html#hierarchy">severity</a>.</li>
-</ul>
-<h3>Mail Job</h3>
-<ul>
-<li>Implement the <em>IMailJob</em> interface to create a mail job.</li>
-<li>The <em>MailClient</em> property of the <em>IMailJob</em> is automatically instantiated and configured with the mail settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>MailClient</em>'s <em>Send</em> method can be used to send a <em>System.Net.Mail.MailMessage</em>.</li>
-</ul>
 <h3>Parameterized Job</h3>
 <ul>
 <li>Implement the <em>IParameterizedJob</em> interface to create a parameterized job.</li>
-<li>The <em>Parameters</em> property of the <em>IParameterizedJob</em> is automatically instantiated and populated with the Parameters dictionary stored in the trigger that is used to schedule the job.</li>
+<li>There is no need to directly implement <em>IIntegrationJob</em> when implementing <em>IParameterizedJob</em> as it already implements <em>IIntegrationJob</em>.  </li>
+<li>The <em>Parameters</em> property of <em>IParameterizedJo db</em> is automatically instantiated and populated with the <em>Parameters</em> IDictionary stored in the trigger that is used to schedule the job.</li>
 <li><em>Parameters</em> can be used to configure the job in some way.</li>
-</ul>
-<h3>SQL Job</h3>
-<ul>
-<li>Implement the <em>ISqlJob</em> interface to create a sql job.</li>
-<li>The <em>DbContext</em> property of the <em>ISqlJob</em> is automatically instantiated and configured with the Database settings in <a href="configuration.html">IntegrationEngine.json</a>.</li>
-<li>The <em>Query</em> property of the <em>ISqlJob</em> must be populated with a valid SQL command before the <em>RunQuery<T></em> method is called.</li>
-<li>The generic parameter in the <em>RunQuery<T></em> method is a class that represents a record returned from the database.</li>
-<li>The <em>RunQuery<T></em> method returns a <em>IList<T></em> collection of records from the database.</li>
-</ul>
-<h4>Concrete SQL Job Class</h4>
-<p>There is also concrete class defined in <em>IntegrationEngine.Core.Jobs</em> called <em>SqlJob</em>. </p>
-<ul>
-<li>It implements <em>ISqlJob</em>, <em>IMailJob</em>, amd <em>ILogJob</em>.</li>
-<li>A class derived from <em>SqlJob</em> will run whatever query is assigned to its <em>Query</em> property by default.</li>
-<li>However, both the <em>RunQuery<T></em> and <em>Run</em> methods are marked as virtual and thus can be overridden.</li>
-<li>A common practice is to override the <em>Run</em> method, call <em>RunQuery<T></em>, examine the results, then send a notification email.</li>
-<li>The <em>Log</em> property can be used to log when the query fails.</li>
 </ul>
                                     </section>
 

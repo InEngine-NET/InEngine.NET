@@ -74,7 +74,7 @@
                     <span>Integration Jobs</span>
                 </a>
             </li>
-                    <li class="">
+                    <li class="active">
                 <a href="http://inengine.net/integration-points.html">
                     <span class="fa fa-fw fa-exchange"></span>
                     <span>Integration Points</span>
@@ -92,7 +92,7 @@
                     <span>C# Client Library</span>
                 </a>
             </li>
-                    <li class="active">
+                    <li class="">
                 <a href="http://inengine.net/console-client.html">
                     <span class="fa fa-fw fa-terminal"></span>
                     <span>Console Client</span>
@@ -174,7 +174,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="">
+                    <li class="active">
                         <a href="http://inengine.net/integration-points.html">
                             <span class="fa fa-fw fa-exchange"></span>
                             <span>Integration Points</span>
@@ -204,7 +204,7 @@
             </li>
                     <li>
                 <ul class="nav nav-pills nav-stacked nav-sub-items">
-                    <li class="active">
+                    <li class="">
                         <a href="http://inengine.net/console-client.html">
                             <span class="fa fa-fw fa-terminal"></span>
                             <span>Console Client</span>
@@ -236,9 +236,41 @@
                     </nav>
                 
                 <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                                            <h1>Console Client</h1>
-<p>The console client is a Windows program that allows CLI access to the <a href="web-api/cron-trigger.html">Web API</a>.
-It uses the <a href="client-library.html">InEngine.NET Client</a> library to accomplish.</p>
+                                            <h1>Integration Points</h1>
+<p>Integration points are services that are injected into <a href="integration-jobs.html">Integration Jobs</a>.</p>
+<p>Available integration points are &quot;Elasticsearch,&quot; &quot;RabbitMQ,&quot; &quot;JsonService,&quot; and &quot;Mail.&quot;
+They are <a href="configuration.html">configured</a> in the IntegrationEngine.json file.</p>
+<p>To create an integration point, create a class that extends an existing integration point class.
+Note that an &quot;integration point class&quot; is one that implements <em>IntegrationEngine.Core.IntegrationPoint.IIntegrationPoint</em>.
+Built-in integration point classes are the following.</p>
+<ul>
+<li>IntegrationEngine.Core.Elasticsearch.ElasticClientAdapter</li>
+<li>IntegrationEngine.Core.Mail.MailClient</li>
+<li>IntegrationEngine.Core.MessageQueue.RabbitMQClient</li>
+<li>IntegrationEngine.Core.ServiceStack.JsonService</li>
+</ul>
+<p>The IntegrationPointName, defined in the configuration file, has to be the same name as the integration point's class name.</p>
+<pre><code class="language-csharp">using IntegrationEngine.Core.Mail;
+
+namespace MyProject.MyIntegrationPoints
+{
+    public class MyMailClient : MailClient
+    {
+    }
+}</code></pre>
+<pre><code class="language-js">{
+    // ...
+    "IntegrationPoints": {
+        "Mail": [
+            {
+                "IntegrationPointName": "MyMailClient", // Matches the class name.
+                "HostName": "localhost",
+                "Port": 25
+            }
+        ]
+    }
+    // ...
+}</code></pre>
                                     </section>
 
             </div>
