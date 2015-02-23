@@ -14,11 +14,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Microsoft.Practices.Unity;
+using RabbitMQ.Client.Exceptions;
 
 namespace IntegrationEngine.JobProcessor
 {
     public class RabbitMQListener : IMessageQueueListener
     {
+        int _listenerId;
         public IUnityContainer UnityContainer { get; set; }
         public QueueingBasicConsumer Consumer { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
@@ -40,14 +42,15 @@ namespace IntegrationEngine.JobProcessor
                 Connection.Close();
         }
 
-        public void Listen(CancellationToken cancellationToken)
+        public void Listen(CancellationToken cancellationToken, int listenerId)
         {
-            Connection = MessageQueueConnection.GetConnection();
+            _listenerId = listenerId;
+            Connection = MessageQueueConnection.GetConnectionFactory().CreateConnection();
             using (var channel = Connection.CreateModel())
             {
                 Consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(RabbitMQConfiguration.QueueName, true, Consumer);
-                Log.Info(x => x("Waiting for messages..."));
+                Log.Info(x => x("(Id={0}) Waiting for messages...", _listenerId));
 
                 while (true)
                 {
@@ -80,7 +83,9 @@ namespace IntegrationEngine.JobProcessor
                     }
                     catch (OperationCanceledException exception)
                     { 
-                        Log.Info(x => x("Message queue listener has gracefully shutdown.", RabbitMQConfiguration.QueueName), exception);
+                        Log.Info(x => x("Message queue listener (id: {0}), listening on queue \"{1}\", has gracefully shutdown.", 
+                            _listenerId,
+                            RabbitMQConfiguration.QueueName), exception);
                         return;
                     }
                     catch (IntegrationJobRunFailureException exception)

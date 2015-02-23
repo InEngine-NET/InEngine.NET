@@ -33,9 +33,10 @@ namespace IntegrationEngine
         public IList<Type> IntegrationJobTypes { get; set; }
         public ILog Log { get; set; }
         public IWebApiApplication WebApiApplication { get; set; }
+        public IMessageQueueListenerManager MessageQueueListenerManager { get; set; }
         public bool IsWebApiEnabled { get; set; }
         public bool IsSchedulerEnabled { get; set; }
-        public bool IsThreadedListenerEnabled { get; set; }
+        public bool IsMessageQueueListenerManagerEnabled { get; set; }
 
         public EngineHostCompositionRoot()
         {}
@@ -63,8 +64,8 @@ namespace IntegrationEngine
             RegisterIntegrationJobs();
             SetupRScriptRunner();
             SetupElasticsearchRepository();
-            if (IsThreadedListenerEnabled)
-                SetupThreadedListenerManager();
+            if (IsMessageQueueListenerManagerEnabled)
+                SetupMessageQueueListenerManager();
             if (IsSchedulerEnabled)
                 SetupEngineScheduler();
             if (IsWebApiEnabled)
@@ -173,21 +174,14 @@ namespace IntegrationEngine
             });
         }
 
-        public void SetupThreadedListenerManager()
+        public async void SetupMessageQueueListenerManager()
         {
             var config = Container.Resolve<IRabbitMQConfiguration>("DefaultRabbitMQ");
-            var rabbitMqListener = new RabbitMQListener() {
-                IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueConnection = new MessageQueueConnection(config),
-                RabbitMQConfiguration = config,
-                UnityContainer = Container,
+            var messageQueueListenerFactory = new MessageQueueListenerFactory(Container, IntegrationJobTypes, config);
+            MessageQueueListenerManager = new MessageQueueListenerManager() {
+                MessageQueueListenerFactory = messageQueueListenerFactory,
             };
-
-            var threadedListenerManager = new ThreadedListenerManager() {
-                MessageQueueListener = rabbitMqListener,
-            };
-            Container.RegisterInstance<IThreadedListenerManager>(threadedListenerManager);
-            threadedListenerManager.StartListener();
+            await MessageQueueListenerManager.StartListener();
         }
             
         public void SetupEngineScheduler()
@@ -241,6 +235,8 @@ namespace IntegrationEngine
         {
             if (WebApiApplication != null)
                 WebApiApplication.Dispose();
+            if (MessageQueueListenerManager != null)
+                MessageQueueListenerManager.Dispose();
         }
     }
 }

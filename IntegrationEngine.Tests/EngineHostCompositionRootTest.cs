@@ -56,9 +56,9 @@ namespace IntegrationEngine.Tests
             Subject.Container.RegisterType<IRabbitMQConfiguration, RabbitMQConfiguration>(configName,
                 new InjectionConstructor(new ResolvedParameter<IEngineConfiguration>(), configName));
 
-            Subject.SetupThreadedListenerManager();
+            Subject.SetupMessageQueueListenerManager();
 
-            Subject.Container.Resolve<IThreadedListenerManager>();
+            Assert.That(Subject.MessageQueueListenerManager, Is.Not.Null);
         }
 
         [Test]

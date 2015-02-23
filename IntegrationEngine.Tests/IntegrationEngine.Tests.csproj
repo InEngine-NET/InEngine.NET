@@ -135,8 +135,8 @@
     <Compile Include="Api\TriggerControllerBaseTest.cs" />
     <Compile Include="Api\TriggerStub.cs" />
     <Compile Include="EngineHostCompositionRootTest.cs" />
-    <Compile Include="JobProcessor\ThreadedListenerManagerTest.cs" />
     <Compile Include="Api\WebApiApplicationTest.cs" />
+    <Compile Include="JobProcessor\MessageQueueListenerManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\configuration\IntegrationEngine.json">

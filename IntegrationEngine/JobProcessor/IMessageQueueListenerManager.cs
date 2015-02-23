@@ -14,14 +14,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace IntegrationEngine.JobProcessor
 {
-    public interface IThreadedListenerManager : IDisposable
+    public interface IMessageQueueListenerManager : IDisposable
     {
         CancellationTokenSource CancellationTokenSource { get; set; }
-        IMessageQueueListener MessageQueueListener { get; set; }
+        MessageQueueListenerFactory MessageQueueListenerFactory { get; set; }
         ILog Log { get; set; }
-        void StartListener();
+        Task StartListener();
     }
 }

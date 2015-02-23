@@ -30,7 +30,7 @@ namespace IntegrationEngine
             engineHostCompositionRoot = new EngineHostCompositionRoot(AssembliesWithJobs) {
                 IsWebApiEnabled = isWebApiEnabled,
                 IsSchedulerEnabled = isSchedulerEnabled,
-                IsThreadedListenerEnabled = isThreadedListenerEnabled,
+                IsMessageQueueListenerManagerEnabled = isThreadedListenerEnabled,
             };
             engineHostCompositionRoot.Configure();
         }

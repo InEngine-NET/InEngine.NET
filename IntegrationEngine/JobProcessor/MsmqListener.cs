@@ -33,7 +33,7 @@ namespace IntegrationEngine.JobProcessor
             }
         }
 
-        public void Listen(CancellationToken cancellationToken)
+        public void Listen(CancellationToken cancellationToken, int listenerId)
         {
             cancellationToken.ThrowIfCancellationRequested();
             Message newMessage = MSMessageQueue.Receive();
