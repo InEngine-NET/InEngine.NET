@@ -13,7 +13,7 @@ using System.Web.Http.Cors;
 using Moq;
 using System.Web.Http.Routing;
 
-namespace IntegrationEngine.Tests
+namespace IntegrationEngine.Tests.Api
 {
     public class WebApiApplicationTest : TestBase<WebApiApplication>
     {

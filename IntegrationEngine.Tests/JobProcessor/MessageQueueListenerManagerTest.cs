@@ -5,7 +5,7 @@ using Moq;
 using System;
 using System.Threading;
 
-namespace IntegrationEngine.Tests
+namespace IntegrationEngine.Tests.JobProcessor
 {
     public class MessageQueueListenerManagerTest : TestBase<MessageQueueListenerManager>
     {

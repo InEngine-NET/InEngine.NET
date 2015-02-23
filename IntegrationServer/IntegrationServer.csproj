@@ -140,9 +140,6 @@
     <None Include="RScripts\CarReport.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\configuration\IntegrationEngine.nlog.xml">

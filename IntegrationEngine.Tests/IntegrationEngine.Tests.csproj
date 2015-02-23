@@ -143,7 +143,6 @@
       <Link>IntegrationEngine.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="app.config" />
     <None Include="job_scheduling_data_2_0.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -190,7 +189,5 @@
   </Target>
   -->
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="JobProcessor\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
