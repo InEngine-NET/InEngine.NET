@@ -62,6 +62,18 @@ namespace IntegrationEngine.Tests
         }
 
         [Test]
+        public void ShouldStartMessageQueueListener()
+        {
+            var mockMessageQueueListenerManager = new Mock<IMessageQueueListenerManager>();
+            mockMessageQueueListenerManager.Setup(x => x.StartListener());
+            Subject.MessageQueueListenerManager = mockMessageQueueListenerManager.Object;
+
+            Subject.StartMessageQueueListener();
+
+            mockMessageQueueListenerManager.Verify(x => x.StartListener(), Times.Once);
+        }
+
+        [Test]
         public void ShouldSetupRScriptRunner()
         {
             Subject.Container.RegisterInstance<IElasticClient>(new ElasticClient());

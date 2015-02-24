@@ -64,8 +64,10 @@ namespace IntegrationEngine
             RegisterIntegrationJobs();
             SetupRScriptRunner();
             SetupElasticsearchRepository();
-            if (IsMessageQueueListenerManagerEnabled)
+            if (IsMessageQueueListenerManagerEnabled) {
                 SetupMessageQueueListenerManager();
+                StartMessageQueueListener();
+            }
             if (IsSchedulerEnabled)
                 SetupEngineScheduler();
             if (IsWebApiEnabled)
@@ -174,16 +176,20 @@ namespace IntegrationEngine
             });
         }
 
-        public async void SetupMessageQueueListenerManager()
+        public void SetupMessageQueueListenerManager()
         {
             var config = Container.Resolve<IRabbitMQConfiguration>("DefaultRabbitMQ");
             var messageQueueListenerFactory = new MessageQueueListenerFactory(Container, IntegrationJobTypes, config);
             MessageQueueListenerManager = new MessageQueueListenerManager() {
                 MessageQueueListenerFactory = messageQueueListenerFactory,
             };
+        }
+
+        public async void StartMessageQueueListener()
+        {
             await MessageQueueListenerManager.StartListener();
         }
-            
+
         public void SetupEngineScheduler()
         {
             var dispatcher = new Dispatcher() {
