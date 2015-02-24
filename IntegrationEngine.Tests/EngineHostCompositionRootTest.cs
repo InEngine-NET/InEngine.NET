@@ -4,16 +4,15 @@ using Common.Logging.NLog;
 using IntegrationEngine.Api;
 using IntegrationEngine.Core.Configuration;
 using IntegrationEngine.Core.R;
-using IntegrationServer.IntegrationJobs.CarReport;
-using IntegrationServer.IntegrationJobs.SampleSqlReport;
 using IntegrationEngine.JobProcessor;
 using Microsoft.Practices.Unity;
 using Moq;
 using Nest;
 using NUnit.Framework;
-using IntegrationServer;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using IntegrationEngine.Core.IntegrationJob;
 
 namespace IntegrationEngine.Tests
 {
@@ -113,17 +112,14 @@ namespace IntegrationEngine.Tests
         [Test]
         public void ShouldRegisterIntegrationJobs()
         {
-            var assembliesWithJobs = new List<Assembly> { typeof(Program).Assembly };
+            var assembliesWithJobs = new List<Assembly> { typeof(EngineHostCompositionRootTest).Assembly };
             Subject.IntegrationJobTypes = Subject.ExtractIntegrationJobTypesFromAssemblies(assembliesWithJobs);
             Subject.LoadConfiguration();
             Subject.RegisterIntegrationPoints();
 
             Subject.RegisterIntegrationJobs();
 
-            var container = Subject.Container;
-            container.Resolve<CarMailMessageJob>();
-            container.Resolve<CarReportJob>();
-            container.Resolve<SampleSqlReportJob>();
+            Assert.That(Subject.Container.IsRegistered<IntegrationJobStub>(), Is.True);
         }
     }
 }
