@@ -14,11 +14,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Microsoft.Practices.Unity;
+using RabbitMQ.Client.Exceptions;
 
 namespace IntegrationEngine.JobProcessor
 {
     public class RabbitMQListener : IMessageQueueListener
     {
+        int _listenerId;
+        public IUnityContainer UnityContainer { get; set; }
         public QueueingBasicConsumer Consumer { get; set; }
         public IList<Type> IntegrationJobTypes { get; set; }
         public IRabbitMQConfiguration RabbitMQConfiguration { get; set; }
@@ -39,14 +42,15 @@ namespace IntegrationEngine.JobProcessor
                 Connection.Close();
         }
 
-        public void Listen(CancellationToken cancellationToken)
+        public void Listen(CancellationToken cancellationToken, int listenerId)
         {
-            Connection = MessageQueueConnection.GetConnection();
+            _listenerId = listenerId;
+            Connection = MessageQueueConnection.GetConnectionFactory().CreateConnection();
             using (var channel = Connection.CreateModel())
             {
                 Consumer = new QueueingBasicConsumer(channel);
                 channel.BasicConsume(RabbitMQConfiguration.QueueName, true, Consumer);
-                Log.Info(x => x("Waiting for messages..."));
+                Log.Info(x => x("(Id={0}) Waiting for messages...", _listenerId));
 
                 while (true)
                 {
@@ -61,17 +65,27 @@ namespace IntegrationEngine.JobProcessor
                         if (IntegrationJobTypes != null && !IntegrationJobTypes.Any())
                             continue;
                         var type = IntegrationJobTypes.FirstOrDefault(t => t.FullName.Equals(message.JobType));
-                        var integrationJob = ContainerSingleton.GetContainer().Resolve(type) as IIntegrationJob;
+                        var integrationJob = UnityContainer.Resolve(type) as IIntegrationJob;
                         if (integrationJob != null)
                         {
-                            if (integrationJob is IParameterizedJob)
-                                (integrationJob as IParameterizedJob).Parameters = message.Parameters;
-                            integrationJob.Run();
+                            if (integrationJob is IParameterizedJob) {
+                                var parameterizedJob = integrationJob as IParameterizedJob;
+                                parameterizedJob.Parameters = message.Parameters;
+                                Log.Info(x => x("Running job: {0} with parameters {1}", integrationJob, message.Parameters));
+                                parameterizedJob.Run();
+                            }
+                            else {
+                                Log.Info(x => x("Running job: {0}", integrationJob));
+                                integrationJob.Run();
+                            }
+                            Log.Info(x => x("Integration job ran successfully: {0}", integrationJob));
                         }
                     }
                     catch (OperationCanceledException exception)
                     { 
-                        Log.Info(x => x("Message queue listener has gracefully shutdown.", RabbitMQConfiguration.QueueName), exception);
+                        Log.Info(x => x("Message queue listener (id: {0}), listening on queue \"{1}\", has gracefully shutdown.", 
+                            _listenerId,
+                            RabbitMQConfiguration.QueueName), exception);
                         return;
                     }
                     catch (IntegrationJobRunFailureException exception)

@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{04E1E96C-7FDD-426C-BF60-6B45820ED1E5}</ProjectGuid>
+    <ProjectGuid>{2E912FF3-B29A-441E-B32D-4647EA33F490}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>IntegrationEngine.Core.Tests</RootNamespace>
-    <AssemblyName>IntegrationEngine.Core.Tests</AssemblyName>
+    <RootNamespace>IntegrationServer.Tests</RootNamespace>
+    <AssemblyName>IntegrationServer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -37,37 +37,31 @@
     <Reference Include="BeekmanLabs.UnitTesting">
       <HintPath>..\packages\BeekmanLabs.UnitTesting.0.0.0\lib\net45\BeekmanLabs.UnitTesting.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="RabbitMQ.Client">
-      <HintPath>..\packages\RabbitMQ.Client.3.4.3\lib\net35\RabbitMQ.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Elasticsearch.Net">
-      <HintPath>..\packages\Elasticsearch.Net.1.4.1\lib\net45\Elasticsearch.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Nest">
-      <HintPath>..\packages\NEST.1.4.1\lib\net45\Nest.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageQueue\RabbitMQClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\ElasticsearchRepositoryTest.cs" />
-    <Compile Include="Mail\MailClientTest.cs" />
-    <Compile Include="Storage\DocumentStub.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationServer\IntegrationServer.csproj">
+      <Project>{C273AE91-E13F-4443-8D01-9C97016AB4AC}</Project>
+      <Name>IntegrationServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationEngine.Core\IntegrationEngine.Core.csproj">
       <Project>{3F3794D7-4078-4D26-954C-7864173EDD86}</Project>
       <Name>IntegrationEngine.Core</Name>
@@ -76,13 +70,10 @@
       <Project>{0B499FE4-0BDB-4080-BCB7-F8D4CE54A4FF}</Project>
       <Name>IntegrationEngine.Model</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <ProjectReference Include="..\IntegrationEngine\IntegrationEngine.csproj">
+      <Project>{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}</Project>
+      <Name>IntegrationEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

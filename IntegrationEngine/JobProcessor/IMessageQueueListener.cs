@@ -5,6 +5,6 @@ namespace IntegrationEngine.JobProcessor
 {
     public interface IMessageQueueListener : IDisposable
     {
-        void Listen(CancellationToken cancellationToken);
+        void Listen(CancellationToken cancellationToken, int listenerId);
     }
 }

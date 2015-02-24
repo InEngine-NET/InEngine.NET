@@ -3,7 +3,7 @@ using System.Configuration.Install;
 using System.ServiceProcess;
 
 
-namespace IntegrationEngine.ConsoleHost
+namespace IntegrationServer
 {
     [RunInstaller(true)]
     public class InEngineServerInstaller : Installer

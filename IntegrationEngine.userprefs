@@ -1,23 +1,13 @@
-﻿<Properties StartupItem="IntegrationEngine.ConsoleHost/IntegrationEngine.ConsoleHost.csproj">
+﻿<Properties StartupItem="IntegrationServer/IntegrationServer.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine/EngineHostCompositionRoot.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/Api/WebApiApplicationTest.cs">
     <Files>
-      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="85" Column="85" />
-      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="1" Column="1" />
+      <File FileName="IntegrationEngine/Api/WebApiApplication.cs" Line="6" Column="6" />
+      <File FileName="IntegrationEngine.Tests/Api/WebApiApplicationTest.cs" Line="81" Column="81" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True">
-          <Node name="IntegrationEngine.Tests" expanded="True">
-            <Node name="IntegrationEngine" expanded="True">
-              <Node name="Tests" expanded="True">
-                <Node name="EngineHostCompositionRootTest" expanded="True">
-                  <Node name="ShouldSetupMessageQueueListener" selected="True" />
-                </Node>
-              </Node>
-            </Node>
-          </Node>
-        </State>
+        <State expanded="True" selected="True" />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

@@ -43,6 +43,8 @@ namespace IntegrationEngine.Api
                 return BadRequest();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (!IsValidJobType(trigger.JobType))
+                return BadRequest(string.Format("JobType is not registered: {0}", trigger.JobType));
             var updatedTrigger = Repository.Update(trigger);
             EngineScheduler.ScheduleJobWithTrigger(updatedTrigger);
             return Ok(updatedTrigger);
@@ -54,6 +56,8 @@ namespace IntegrationEngine.Api
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (!IsValidJobType(trigger.JobType))
+                return BadRequest(string.Format("JobType is not registered: {0}", trigger.JobType));
             var triggerWithId = Repository.Insert(trigger);
             EngineScheduler.ScheduleJobWithTrigger(triggerWithId);
             return CreatedAtRoute("DefaultApi", new { id = triggerWithId.Id }, triggerWithId);
@@ -69,6 +73,22 @@ namespace IntegrationEngine.Api
             Repository.Delete<T>(trigger.Id);
             EngineScheduler.DeleteTrigger(trigger);
             return Ok(trigger);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is valid JobType given a jobTypeName.
+        /// </summary>
+        /// <returns><c>true</c> if the jobTypeName is the name of a registered JobType; otherwise, <c>false</c>.
+        /// Also, return <c>true</c> if the jobTypeName is an empty string, because returning <c>false</c>
+        /// would mean that the JobType is required which is an additional constraint - it is not
+        /// the responsibility of this method to enforce that constraint.
+        /// </returns>
+        /// <param name="jobTypeName">The fully qualified name of a JobType.</param>
+        public bool IsValidJobType(string jobTypeName)
+        {
+            if (string.IsNullOrEmpty(jobTypeName))
+                return true;
+            return EngineScheduler.IsJobTypeRegistered(jobTypeName);
         }
     }
 }

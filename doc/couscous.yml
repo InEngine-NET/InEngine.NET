@@ -31,8 +31,12 @@ menu:
                     relativeUrl: configuration.html
                 integration-jobs:
                     text: Integration Jobs
-                    iconClass: 'fa fa-fw fa-exchange'
+                    iconClass: 'fa fa-fw fa-tasks'
                     relativeUrl: integration-jobs.html
+                integration-points:
+                    text: Integration Points
+                    iconClass: 'fa fa-fw fa-exchange'
+                    relativeUrl: integration-points.html
                 web-api:
                     text: Web API
                     iconClass: 'fa fa-fw fa-cloud'

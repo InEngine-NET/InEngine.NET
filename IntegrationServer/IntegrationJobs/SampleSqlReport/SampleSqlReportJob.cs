@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+﻿using IntegrationServer.IntegrationPoints;
 using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using RazorEngine;
@@ -6,7 +6,7 @@ using RazorEngine.Templating;
 using System;
 using System.Net.Mail;
 
-namespace IntegrationEngine.ConsoleHost.IntegrationJobs.SampleSqlReport
+namespace IntegrationServer.IntegrationJobs.SampleSqlReport
 {
     public class SampleSqlReportJob : IIntegrationJob
     {

@@ -5,6 +5,21 @@ currentMenu: change-log
 
 # Change Log
 
+## 2.0.2
+
+__Fixes__
+* Configure MailClient's internal SMTP client in send method.
+
+## 2.0.1
+
+__Fixes__
+* Downgrade ServiceStack client to BSD version.
+
+## 2.0.0
+
+__Features__
+* Add support for Integration Points.
+
 ## 2.0.0-rc2
 
 __Chores__

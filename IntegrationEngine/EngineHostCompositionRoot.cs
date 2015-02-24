@@ -33,26 +33,45 @@ namespace IntegrationEngine
         public IList<Type> IntegrationJobTypes { get; set; }
         public ILog Log { get; set; }
         public IWebApiApplication WebApiApplication { get; set; }
+        public IMessageQueueListenerManager MessageQueueListenerManager { get; set; }
+        public bool IsWebApiEnabled { get; set; }
+        public bool IsSchedulerEnabled { get; set; }
+        public bool IsMessageQueueListenerManagerEnabled { get; set; }
 
         public EngineHostCompositionRoot()
         {}
 
-        public void Configure(IList<Assembly> assembliesWithJobs)
+        public EngineHostCompositionRoot(IList<Assembly> assembliesWithJobs)
+            : this()
         {
-            Container = ContainerSingleton.GetContainer();
-            IntegrationJobTypes = assembliesWithJobs
-                        .SelectMany(x => x.GetTypes())
-                        .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
-                        .ToList();
+            Container = new UnityContainer();
+            IntegrationJobTypes = ExtractIntegrationJobTypesFromAssemblies(assembliesWithJobs);
+        }
+
+        public IList<Type> ExtractIntegrationJobTypesFromAssemblies(IList<Assembly> assembliesWithJobs)
+        {
+            return assembliesWithJobs
+                .SelectMany(x => x.GetTypes())
+                .Where(x => typeof(IIntegrationJob).IsAssignableFrom(x) && x.IsClass)
+                .ToList();
+        }
+
+        public void Configure()
+        {
             LoadConfiguration();
             SetupLogging();
             RegisterIntegrationPoints();
             RegisterIntegrationJobs();
             SetupRScriptRunner();
             SetupElasticsearchRepository();
-            SetupThreadedListenerManager();
-            SetupEngineScheduler();
-            SetupWebApi();
+            if (IsMessageQueueListenerManagerEnabled) {
+                SetupMessageQueueListenerManager();
+                StartMessageQueueListener();
+            }
+            if (IsSchedulerEnabled)
+                SetupEngineScheduler();
+            if (IsWebApiEnabled)
+                SetupWebApi();
         }
 
         public void LoadConfiguration()
@@ -157,22 +176,20 @@ namespace IntegrationEngine
             });
         }
 
-        public void SetupThreadedListenerManager()
+        public void SetupMessageQueueListenerManager()
         {
             var config = Container.Resolve<IRabbitMQConfiguration>("DefaultRabbitMQ");
-            var rabbitMqListener = new RabbitMQListener() {
-                IntegrationJobTypes = IntegrationJobTypes,
-                MessageQueueConnection = new MessageQueueConnection(config),
-                RabbitMQConfiguration = config,
+            var messageQueueListenerFactory = new MessageQueueListenerFactory(Container, IntegrationJobTypes, config);
+            MessageQueueListenerManager = new MessageQueueListenerManager() {
+                MessageQueueListenerFactory = messageQueueListenerFactory,
             };
-
-            var threadedListenerManager = new ThreadedListenerManager() {
-                MessageQueueListener = rabbitMqListener,
-            };
-            Container.RegisterInstance<IThreadedListenerManager>(threadedListenerManager);
-            threadedListenerManager.StartListener();
         }
-            
+
+        public async void StartMessageQueueListener()
+        {
+            await MessageQueueListenerManager.StartListener();
+        }
+
         public void SetupEngineScheduler()
         {
             var dispatcher = new Dispatcher() {
@@ -214,7 +231,8 @@ namespace IntegrationEngine
         public void SetupWebApi()
         {
             WebApiApplication = new WebApiApplication() { 
-                WebApiConfiguration = EngineConfiguration.WebApi
+                WebApiConfiguration = EngineConfiguration.WebApi,
+                ContainerResolver = new ContainerResolver(Container)
             };
             WebApiApplication.Start();
         }
@@ -223,6 +241,8 @@ namespace IntegrationEngine
         {
             if (WebApiApplication != null)
                 WebApiApplication.Dispose();
+            if (MessageQueueListenerManager != null)
+                MessageQueueListenerManager.Dispose();
         }
     }
 }

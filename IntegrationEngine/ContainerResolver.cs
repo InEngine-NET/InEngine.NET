@@ -9,7 +9,10 @@ namespace IntegrationEngine
     {
         protected IUnityContainer container;
 
-        public ContainerResolver(IUnityContainer container)
+        public ContainerResolver()
+        {}
+
+        public ContainerResolver(IUnityContainer container) : this()
         {
             if (container == null)
                 throw new ArgumentNullException("container");

@@ -1,4 +1,4 @@
-﻿using IntegrationEngine.ConsoleHost.IntegrationPoints;
+﻿using IntegrationServer.IntegrationPoints;
 using IntegrationEngine.Core.IntegrationJob;
 using IntegrationEngine.Core.Mail;
 using System;
@@ -6,21 +6,23 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using RazorEngine.Configuration;
 
-namespace IntegrationEngine.ConsoleHost.Car
+namespace IntegrationServer.IntegrationJobs.CarReport
 {
     public class CarMailMessageJob : IParameterizedJob
     {
         public IMailClient MailClient { get; set; }
+        public ExampleJsonService ExampleJsonService { get; set; }
         public IDictionary<string, string> Parameters { get; set; }
 
         public CarMailMessageJob()
         {
         }
 
-        public CarMailMessageJob(FooMailClient mailClient)
+        public CarMailMessageJob(FooMailClient mailClient, ExampleJsonService exampleJsonService)
             : this()
         {
             MailClient = mailClient;
+            ExampleJsonService = exampleJsonService;
         } 
 
         public void Run()

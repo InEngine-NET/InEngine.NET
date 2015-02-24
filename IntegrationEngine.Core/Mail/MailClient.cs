@@ -36,6 +36,11 @@ namespace IntegrationEngine.Core.Mail
         {
             try
             {
+                if (MailConfiguration != null)
+                {
+                    SmtpClient.HostName = MailConfiguration.HostName;
+                    SmtpClient.Port = MailConfiguration.Port;
+                }
                 SmtpClient.Send(mailMessage);
             } 
             catch (Exception exception)

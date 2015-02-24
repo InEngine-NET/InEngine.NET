@@ -5,8 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{C273AE91-E13F-4443-8D01-9C97016AB4AC}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>IntegrationEngine.ConsoleHost</RootNamespace>
-    <AssemblyName>IntegrationEngine.ConsoleHost</AssemblyName>
+    <RootNamespace>IntegrationServer</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>0900f602</NuGetPackageImportStamp>
@@ -24,6 +23,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>true</Externalconsole>
     <ConsolePause>false</ConsolePause>
+    <AssemblyName>IntegrationServer</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <AssemblyName>IntegrationServer</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +48,7 @@
     <Optimize>false</Optimize>
     <ConsolePause>false</ConsolePause>
     <Externalconsole>true</Externalconsole>
+    <AssemblyName>IntegrationEngine.ConsoleHost</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -57,29 +59,42 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <WarningLevel>4</WarningLevel>
+    <AssemblyName>IntegrationEngine.ConsoleHost</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>IntegrationServer</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Owin.Host.HttpListener">
-      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Web.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="RazorEngine">
-      <HintPath>..\packages\RazorEngine.3.5.3\lib\net45\RazorEngine.dll</HintPath>
+      <HintPath>..\packages\RazorEngine.3.6.0\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
-    <Reference Include="Elasticsearch.Net">
-      <HintPath>..\packages\Elasticsearch.Net.1.4.0\lib\net45\Elasticsearch.Net.dll</HintPath>
+    <Reference Include="NLog.Targets.ElasticSearch">
+      <HintPath>..\packages\NLog.Targets.ElasticSearch.1.0.0.0\lib\net40\NLog.Targets.ElasticSearch.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="NLog.Targets.ElasticSearch">
-      <HintPath>..\packages\NLog.Targets.ElasticSearch.0.9.5.0\lib\net40\NLog.Targets.ElasticSearch.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.HttpListener">
+      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net">
+      <HintPath>..\packages\Elasticsearch.Net.1.4.1\lib\net45\Elasticsearch.Net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -89,13 +104,13 @@
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleReport.cs" />
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleDatum.cs" />
     <Compile Include="IntegrationJobs\SampleSqlReport\SampleSqlReportJob.cs" />
+    <Compile Include="IntegrationPoints\ExampleJsonService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IntegrationJobs\CarReport\Car.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarReport.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarReportJob.cs" />
     <Compile Include="IntegrationJobs\CarReport\CarMailMessageJob.cs" />
-    <Compile Include="IntegrationJobs\SampleSqlReport\SampleSqlReportJobWithIntegrationPoints.cs" />
     <Compile Include="IntegrationPoints\FooMailClient.cs" />
     <Compile Include="IntegrationPoints\BarSqlServer.cs" />
     <Compile Include="IntegrationPoints\IFooMailClient.cs" />
@@ -128,9 +143,6 @@
     <None Include="RScripts\CarReport.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\configuration\IntegrationEngine.nlog.xml">
@@ -139,7 +151,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <ItemGroup>
-    <Folder Include="IntegrationPoints\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

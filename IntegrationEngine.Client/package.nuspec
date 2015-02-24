@@ -11,7 +11,7 @@
     <iconUrl>http://inengine.net/images/inengine-logo-32.png</iconUrl>
     <releaseNotes>http://inengine.net/change-log.html</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Client of IntegrationServer, an asynchronous job scheduling server.</description>
+    <description>Client of InEngine.NET, an asynchronous job scheduling server.</description>
     <copyright>Copyright 2015</copyright>
     <tags>Integration Scheduling Server RabbitMQ Elasticsearch Quartz.NET</tags>
     <references>

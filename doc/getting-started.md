@@ -49,11 +49,14 @@ namespace MyProject
 }
 ```
 
+## Add Configuration File
+The [configuration](configuration.html) file should be called "IntegrationEngine.json" and its build action should be to "copy if newer."
+
 ## Create an Integration Job
 
 ```
 // MyIntegrationJob.cs
-using IntegrationEngine.Core.Jobs;
+using IntegrationEngine.Core.IntegrationJob;
 
 namespace MyProject
 {

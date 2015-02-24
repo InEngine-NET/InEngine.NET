@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Microsoft.Practices.Unity;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 
 namespace IntegrationEngine
 {
     public class EngineHost : IDisposable
     {
-        EngineHostCompositionRoot _engineConfiguration;
+        EngineHostCompositionRoot engineHostCompositionRoot;
+        public IUnityContainer Container { get { return engineHostCompositionRoot.Container; } }
         public IList<Assembly> AssembliesWithJobs { get; set; }
-
+       
         public EngineHost(params Assembly[] assembliesWithJobs)
         {
             AssembliesWithJobs = assembliesWithJobs.ToList();
@@ -17,14 +19,20 @@ namespace IntegrationEngine
 
         public void Dispose()
         {
-            if (_engineConfiguration != null)
-                _engineConfiguration.Dispose();
+            if (engineHostCompositionRoot != null)
+                engineHostCompositionRoot.Dispose();
         }
 
-        public void Initialize()
+        public void Initialize(bool isThreadedListenerEnabled = true, 
+                               bool isSchedulerEnabled = true, 
+                               bool isWebApiEnabled = true)
         {
-            _engineConfiguration = new EngineHostCompositionRoot();
-            _engineConfiguration.Configure(AssembliesWithJobs);
+            engineHostCompositionRoot = new EngineHostCompositionRoot(AssembliesWithJobs) {
+                IsWebApiEnabled = isWebApiEnabled,
+                IsSchedulerEnabled = isSchedulerEnabled,
+                IsMessageQueueListenerManagerEnabled = isThreadedListenerEnabled,
+            };
+            engineHostCompositionRoot.Configure();
         }
     }
 }
