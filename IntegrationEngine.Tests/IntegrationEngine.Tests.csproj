@@ -168,10 +168,6 @@
       <Project>{7D49353D-A68C-4ACA-A6A5-40B1C314C30E}</Project>
       <Name>IntegrationEngine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IntegrationServer\IntegrationServer.csproj">
-      <Project>{C273AE91-E13F-4443-8D01-9C97016AB4AC}</Project>
-      <Name>IntegrationServer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

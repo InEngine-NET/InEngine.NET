@@ -1,9 +1,11 @@
 ﻿<Properties StartupItem="IntegrationServer/IntegrationServer.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/Api/WebApiApplicationTest.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="IntegrationEngine.Tests/JobProcessor/MessageQueueListenerManagerTest.cs">
     <Files>
-      <File FileName="IntegrationEngine/Api/WebApiApplication.cs" Line="6" Column="6" />
-      <File FileName="IntegrationEngine.Tests/Api/WebApiApplicationTest.cs" Line="81" Column="81" />
+      <File FileName="IntegrationEngine.Tests/JobProcessor/MessageQueueListenerManagerTest.cs" Line="38" Column="38" />
+      <File FileName="IntegrationEngine.Tests/Scheduler/EngineSchedulerTest.cs" Line="48" Column="48" />
+      <File FileName="IntegrationEngine.Tests/EngineHostCompositionRootTest.cs" Line="74" Column="74" />
+      <File FileName="IntegrationEngine/EngineHostCompositionRoot.cs" Line="42" Column="42" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
@@ -12,7 +14,9 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/ethanhann/Projects/IntegrationEngine/IntegrationEngine/Scheduler/EngineScheduler.cs" line="163" column="41" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
