@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using IntegrationEngine.Core.IntegrationJob;
+using System.Threading.Tasks;
 
 namespace IntegrationEngine.Tests
 {
@@ -64,7 +65,8 @@ namespace IntegrationEngine.Tests
         public void ShouldStartMessageQueueListener()
         {
             var mockMessageQueueListenerManager = new Mock<IMessageQueueListenerManager>();
-            mockMessageQueueListenerManager.Setup(x => x.StartListener());
+            mockMessageQueueListenerManager.Setup(x => x.StartListener())
+                .Returns(() => Task.FromResult(default(Task)));
             Subject.MessageQueueListenerManager = mockMessageQueueListenerManager.Object;
 
             Subject.StartMessageQueueListener();
