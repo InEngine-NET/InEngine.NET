@@ -33,7 +33,7 @@ namespace IntegrationEngine.Tests.JobProcessor
         [Test]
         public void ShouldStartMultipleListeners()
         {
-            var listenerTaskCount = 3;
+            var listenerTaskCount = 10;
             Subject.ListenerTaskCount = listenerTaskCount;
 
             Subject.StartListener();
