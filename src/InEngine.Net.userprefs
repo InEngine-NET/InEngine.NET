@@ -2,26 +2,17 @@
   <MonoDevelop.Ide.ItemProperties.InEngineScheduler PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="InEngineCli/ArgumentInterpreter.cs">
     <Files>
-      <File FileName="InEngineScheduler/Jobs.cs" Line="15" Column="1" />
-      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="72" Column="28" />
-      <File FileName="InEngine.Core/AbstractCommand.cs" Line="40" Column="1" />
-      <File FileName="InEngineCli/packages.config" Line="8" Column="12" />
-      <File FileName="InEngine.Core/IOptions.cs" Line="3" Column="22" />
-      <File FileName="InEngineCli/Program.cs" Line="7" Column="1" />
+      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="46" Column="17" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="InEngine.Net" expanded="True">
-            <Node name="InEngine.Commands" expanded="True">
-              <Node name="References" expanded="True" />
-            </Node>
+            <Node name="InEngine.Commands" expanded="True" />
             <Node name="InEngine.Core" expanded="True">
-              <Node name="Exceptions" expanded="True" />
+              <Node name="Queue" expanded="True" />
             </Node>
-            <Node name="InEngineCli" expanded="True">
-              <Node name="ArgumentInterpreter.cs" selected="True" />
-            </Node>
+            <Node name="InEngineCli" expanded="True" selected="True" />
             <Node name="InEngineScheduler" expanded="True" />
           </Node>
         </State>
@@ -30,7 +21,10 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngine.Commands/CommandOptions.cs" relfile="InEngine.Commands/CommandOptions.cs" line="8" column="1" />
+      <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngineCli/ArgumentInterpreter.cs" relfile="InEngineCli/ArgumentInterpreter.cs" line="55" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
