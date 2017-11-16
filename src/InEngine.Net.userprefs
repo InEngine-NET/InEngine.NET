@@ -1,18 +1,21 @@
 ﻿<Properties StartupConfiguration="{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}|Default">
   <MonoDevelop.Ide.ItemProperties.InEngineScheduler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="InEngineCli/ArgumentInterpreter.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="InEngine.Commands/Options.cs">
     <Files>
-      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="46" Column="17" />
+      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="61" Column="1" />
+      <File FileName="InEngine.Commands/Options.cs" Line="16" Column="30" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="InEngine.Net" expanded="True">
-            <Node name="InEngine.Commands" expanded="True" />
+            <Node name="InEngine.Commands" expanded="True">
+              <Node name="Options.cs" selected="True" />
+            </Node>
             <Node name="InEngine.Core" expanded="True">
               <Node name="Queue" expanded="True" />
             </Node>
-            <Node name="InEngineCli" expanded="True" selected="True" />
+            <Node name="InEngineCli" expanded="True" />
             <Node name="InEngineScheduler" expanded="True" />
           </Node>
         </State>
@@ -23,7 +26,8 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngine.Commands/CommandOptions.cs" relfile="InEngine.Commands/CommandOptions.cs" line="8" column="1" />
-      <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngineCli/ArgumentInterpreter.cs" relfile="InEngineCli/ArgumentInterpreter.cs" line="55" column="1" />
+      <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngineCli/ArgumentInterpreter.cs" relfile="InEngineCli/ArgumentInterpreter.cs" line="61" column="1" />
+      <Breakpoint file="/Users/hanne01/InEngine.NET/src/InEngineCli/ArgumentInterpreter.cs" relfile="InEngineCli/ArgumentInterpreter.cs" line="53" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
