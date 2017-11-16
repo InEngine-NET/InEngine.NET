@@ -89,6 +89,7 @@
     <Compile Include="Queue\AbstractBrokerCommand.cs" />
     <Compile Include="IOptions.cs" />
     <Compile Include="Queue\Options.cs" />
+    <Compile Include="Plugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

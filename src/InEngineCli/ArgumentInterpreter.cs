@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using InEngine.Core;
@@ -18,6 +20,13 @@ namespace InEngineCli
 
         public void Interpret(string[] args)
         {
+            if (!args.Any())
+            {
+                Console.WriteLine("Available plugins... ");
+                FindPlugins().ForEach(x => Console.WriteLine(x.Name));
+                ExitWithSuccess();
+            }
+
             var parser = new CommandLine.Parser(with => with.IgnoreUnknownArguments = true);
             var options = new Options();
 
@@ -25,6 +34,9 @@ namespace InEngineCli
             {
                 if (options == null)
                     Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+
+                // Get plugins.
+                // If no arg is specified, list plugins
 
                 // Get possible types from plugin assembly.
                 var targetAssembly = Assembly.LoadFrom(options.PlugInName + ".dll");
@@ -60,6 +72,16 @@ namespace InEngineCli
         {
             Logger.Error(exception ?? new CommandFailedException(), "✘ fail");
             Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+        }
+
+        public List<Plugin> FindPlugins()
+        {
+            return Directory
+                .GetFiles(".", "*.dll")
+                .Select(x => Assembly.LoadFrom(x))
+                .Where(x => x.GetTypes().Any(y => y.IsClass && typeof(IOptions).IsAssignableFrom(y)))
+                .Select(x => new Plugin(x))
+                .ToList();
         }
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
