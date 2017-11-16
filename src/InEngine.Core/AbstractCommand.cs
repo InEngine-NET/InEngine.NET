@@ -30,8 +30,15 @@ namespace InEngine.Core
             throw new System.NotImplementedException();
         }
 
-        public void SetProgressBarMaxTicks(int maxTicks) => ProgressBar = new ProgressBar(maxTicks);
-        public void UpdateProgress(int tick) => ProgressBar.Refresh(tick, Name);
+        public void SetProgressBarMaxTicks(int maxTicks)
+        {
+            ProgressBar = new ProgressBar(maxTicks);
+        }
+
+        public void UpdateProgress(int tick)
+        {
+            ProgressBar.Refresh(tick, Name);   
+        }
 
         public void Execute(IJobExecutionContext context)
         {

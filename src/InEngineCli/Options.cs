@@ -7,11 +7,9 @@ namespace InEngineCli
 {
     public class Options
     {
-        [VerbOption("sample:minimal")]
-        public Minimal SampleMinimal { get; set; }
+        [Option('p', "plugin", Required = true, HelpText = "Plug-In to activate.")]
+        public string PlugInName { get; set; }
 
-        [VerbOption("sample:show-progress")]
-        public ShowProgress SampleShowProgress { get; set; }
 
         [VerbOption("queue:publish")]
         public Publish QueuePublish { get; set; }

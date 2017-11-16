@@ -1,27 +1,26 @@
 ﻿<Properties StartupConfiguration="{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}|Default">
   <MonoDevelop.Ide.ItemProperties.InEngineScheduler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="InEngine.Commands/Properties/AssemblyInfo.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="InEngineCli/ArgumentInterpreter.cs">
     <Files>
-      <File FileName="InEngine.Commands/Sample/Minimal.cs" Line="1" Column="16" />
-      <File FileName="InEngineScheduler/Jobs.cs" Line="2" Column="19" />
-      <File FileName="InEngineCli/Options.cs" Line="5" Column="1" />
-      <File FileName="InEngine.Commands/Sample/ShowProgress.cs" Line="1" Column="1" />
-      <File FileName="InEngineScheduler/InEngineServerInstaller.cs" Line="1" Column="1" />
-      <File FileName="InEngineScheduler/Program.cs" Line="22" Column="14" />
-      <File FileName="InEngine.Core/Properties/AssemblyInfo.cs" Line="12" Column="37" />
-      <File FileName="InEngine.Commands/Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="InEngineScheduler/Jobs.cs" Line="15" Column="1" />
+      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="72" Column="28" />
+      <File FileName="InEngine.Core/AbstractCommand.cs" Line="40" Column="1" />
+      <File FileName="InEngineCli/packages.config" Line="8" Column="12" />
+      <File FileName="InEngine.Core/IOptions.cs" Line="3" Column="22" />
+      <File FileName="InEngineCli/Program.cs" Line="7" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="InEngine.Net" expanded="True">
             <Node name="InEngine.Commands" expanded="True">
-              <Node name="Properties" expanded="True">
-                <Node name="AssemblyInfo.cs" selected="True" />
-              </Node>
+              <Node name="References" expanded="True" />
             </Node>
             <Node name="InEngine.Core" expanded="True">
-              <Node name="Properties" expanded="True" />
+              <Node name="Exceptions" expanded="True" />
+            </Node>
+            <Node name="InEngineCli" expanded="True">
+              <Node name="ArgumentInterpreter.cs" selected="True" />
             </Node>
             <Node name="InEngineScheduler" expanded="True" />
           </Node>
@@ -36,4 +35,9 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.InEngineCli PreferredExecutionTarget="MonoDevelop.Default" />
+  <DisabledProjects>
+    <String>DataIntegration.Core.Tests/DataIntegration.Core.Tests.csproj</String>
+    <String>DataIntegration.Commands/InEngine.Commands.csproj</String>
+    <String>DataIntegration.Core/InEngine.Core.csproj</String>
+  </DisabledProjects>
 </Properties>

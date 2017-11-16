@@ -87,6 +87,7 @@
     <Compile Include="Queue\IBrokerConfiguration.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Queue\AbstractBrokerCommand.cs" />
+    <Compile Include="IOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
