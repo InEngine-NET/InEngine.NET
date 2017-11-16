@@ -20,10 +20,11 @@ namespace InEngineCli
 
         public void Interpret(string[] args)
         {
+            var plugins = FindPlugins();
             if (!args.Any())
             {
                 Console.WriteLine("Available plugins... ");
-                FindPlugins().ForEach(x => Console.WriteLine(x.Name));
+                plugins.ForEach(x => Console.WriteLine(x.Name));
                 ExitWithSuccess();
             }
 
@@ -34,23 +35,11 @@ namespace InEngineCli
             {
                 if (options == null)
                     Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
-
-                // Get plugins.
-                // If no arg is specified, list plugins
-
-                // Get possible types from plugin assembly.
-                var targetAssembly = Assembly.LoadFrom(options.PlugInName + ".dll");
-                var types = targetAssembly.GetTypes();
-                var optionType = types.FirstOrDefault(x => x.IsClass && typeof(IOptions).IsAssignableFrom(x));
-                if (optionType == null)
-                    Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
-
-                // Create an instance of the plugin's options class.
-                var pluginOptions = targetAssembly.CreateInstance(optionType.FullName) as IOptions;
-
-                // If the plugin's args are empty, print the plugin's help screen and exit.
+                
+                var pluginOptions = plugins.FirstOrDefault(x => x.Name == options.PlugInName).MakeOptions();
                 var pluginArgs = args.Skip(1).ToArray();
                 if (!pluginArgs.ToList().Any()) {
+                    // If the plugin's args are empty, print the plugin's help screen and exit.
                     CommandLine.Parser.Default.ParseArguments(pluginArgs, pluginOptions);
                     Console.WriteLine(pluginOptions.GetUsage(""));
                     ExitWithSuccess();

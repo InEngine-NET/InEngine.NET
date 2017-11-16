@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 
 namespace InEngine.Core
@@ -11,6 +12,14 @@ namespace InEngine.Core
         public Plugin(Assembly assembly)
         {
             Assembly = assembly;
+        }
+
+        public IOptions MakeOptions()
+        {
+            var optionType = Assembly.GetTypes().FirstOrDefault(x => x.IsClass && typeof(IOptions).IsAssignableFrom(x));
+            if (optionType == null)
+                Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+            return Assembly.CreateInstance(optionType.FullName) as IOptions;
         }
     }
 }
