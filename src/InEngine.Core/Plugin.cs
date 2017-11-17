@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -14,12 +15,13 @@ namespace InEngine.Core
             Assembly = assembly;
         }
 
-        public IOptions MakeOptions()
+        public List<IOptions> MakeOptions()
         {
-            var optionType = Assembly.GetTypes().FirstOrDefault(x => x.IsClass && typeof(IOptions).IsAssignableFrom(x));
-            if (optionType == null)
-                Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
-            return Assembly.CreateInstance(optionType.FullName) as IOptions;
+            return Assembly
+                .GetTypes()
+                .Where(x => x.IsClass && typeof(IOptions).IsAssignableFrom(x))
+                .Select(x => Assembly.CreateInstance(x.FullName) as IOptions)
+                .ToList();
         }
     }
 }

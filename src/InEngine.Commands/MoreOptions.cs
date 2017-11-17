@@ -5,10 +5,13 @@ using InEngine.Core;
 
 namespace InEngine.Commands
 {
-    public class Options : IOptions
+    public class MoreOptions : IOptions
     {
-        [VerbOption("sample:minimal")]
-        public Minimal Minimal { get; set; }
+        [VerbOption("sample:show-progress")]
+        public ShowProgress ShowProgress { get; set; }
+
+        [VerbOption("sample:say-hello")]
+        public SayHello SayHello { get; set; }
 
         [HelpVerbOption]
         public string GetUsage(string verb)

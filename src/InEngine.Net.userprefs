@@ -1,21 +1,18 @@
 ﻿<Properties StartupConfiguration="{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}|Default">
   <MonoDevelop.Ide.ItemProperties.InEngineScheduler PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="InEngine.Commands/Options.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="InEngineCli/ArgumentInterpreter.cs">
     <Files>
-      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="46" Column="39" />
-      <File FileName="InEngine.Core/Plugin.cs" Line="15" Column="10" />
-      <File FileName="InEngine.Commands/Options.cs" Line="10" Column="22" />
+      <File FileName="InEngineCli/ArgumentInterpreter.cs" Line="57" Column="52" />
+      <File FileName="InEngine.Core/Plugin.cs" Line="17" Column="1" />
+      <File FileName="InEngine.Commands/MoreOptions.cs" Line="10" Column="20" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="InEngine.Net" expanded="True">
-            <Node name="InEngine.Commands" expanded="True">
-              <Node name="Options.cs" selected="True" />
-            </Node>
+            <Node name="InEngine.Commands" expanded="True" />
             <Node name="InEngine.Core" expanded="True" />
-            <Node name="InEngineCli" expanded="True" />
-            <Node name="InEngineScheduler" expanded="True" />
+            <Node name="InEngineCli" expanded="True" selected="True" />
           </Node>
         </State>
       </Pad>

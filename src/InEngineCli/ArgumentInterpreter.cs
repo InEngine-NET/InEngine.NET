@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CommandLine;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 using NLog;
@@ -35,17 +36,29 @@ namespace InEngineCli
             {
                 if (options == null)
                     Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+
+                var plugin = plugins.FirstOrDefault(x => x.Name == options.PlugInName);
+                if (plugin == null)
+                    ExitWithFailure("Plugin does not exist: " + options.PlugInName);
                 
-                var pluginOptions = plugins.FirstOrDefault(x => x.Name == options.PlugInName).MakeOptions();
+                var pluginOptionList = plugin.MakeOptions();
+
                 var pluginArgs = args.Skip(1).ToArray();
                 if (!pluginArgs.ToList().Any()) {
                     // If the plugin's args are empty, print the plugin's help screen and exit.
-                    CommandLine.Parser.Default.ParseArguments(pluginArgs, pluginOptions);
-                    Console.WriteLine(pluginOptions.GetUsage(""));
+                    foreach(var pluginOptions in pluginOptionList) {
+                        CommandLine.Parser.Default.ParseArguments(pluginArgs, pluginOptions);
+                        Console.WriteLine(pluginOptions.GetUsage(""));
+                    }
                     ExitWithSuccess();
                 }
 
-                InterpretPluginArguments(pluginArgs, pluginOptions);
+                var commandVerbName = pluginArgs.First();
+                foreach (var ops in pluginOptionList)
+                    foreach (var prop in ops.GetType().GetProperties())
+                        foreach (object attr in prop.GetCustomAttributes(true))
+                            if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
+                                    InterpretPluginArguments(pluginArgs, ops);
             }
         }
 
@@ -55,6 +68,14 @@ namespace InEngineCli
                 message = "success";
             Logger.Debug($"✔ {message}");
             Environment.Exit(0);
+        }
+
+        public void ExitWithFailure(string message = null)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                message = "fail";
+            Logger.Error($"✘ {message}");
+            Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
         }
 
         public void ExitWithFailure(Exception exception = null)
@@ -104,7 +125,7 @@ namespace InEngineCli
                 });
 
             if (!isSuccessful)
-                ExitWithFailure();
+                ExitWithFailure("Could not parse plugin arguments");
         }
     }
 }

@@ -38,6 +38,7 @@
     <Compile Include="Sample\ShowProgress.cs" />
     <Compile Include="Sample\SayHello.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="MoreOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sample\" />
