@@ -186,3 +186,6 @@ FakesAssemblies/
 
 # NuGet
 *.nupkg
+
+.DS_Store
+
