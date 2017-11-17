@@ -8,7 +8,7 @@ namespace InEngineCli
     public class Options
     {
         [Option('p', "plugin", Required = true, HelpText = "Plug-In to activate.", DefaultValue = "InEngine.Core")]
-        public string PlugInName { get; set; }
+        public string PluginName { get; set; }
 
         [HelpVerbOption]
         public string GetUsage(string verb)

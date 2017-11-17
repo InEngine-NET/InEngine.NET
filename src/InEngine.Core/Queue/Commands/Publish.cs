@@ -15,7 +15,7 @@ namespace InEngine.Core.Queue.Commands
         {
             var command = Assembly.LoadFrom(CommandAssembly).CreateInstance(CommandClass) as ICommand;
             if (command == null)
-                return new CommandResult(false, "Did not publish message. Could not load command from assembly.");
+                return new CommandResult(false, "Did not publish message. Could not load command from plugin.");
             Broker.MakeBroker(this).Publish(command);
             return new CommandResult(true, "Published");
         }

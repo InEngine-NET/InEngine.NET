@@ -29,17 +29,17 @@ namespace InEngineCli
                 ExitWithSuccess();
             }
 
-            var parser = new CommandLine.Parser(with => with.IgnoreUnknownArguments = true);
+            var parser = new Parser(with => with.IgnoreUnknownArguments = true);
             var options = new Options();
 
             if (parser.ParseArguments(args, options))
             {
                 if (options == null)
-                    Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+                    Environment.Exit(Parser.DefaultExitCodeFail);
 
-                var plugin = plugins.FirstOrDefault(x => x.Name == options.PlugInName);
+                var plugin = plugins.FirstOrDefault(x => x.Name == options.PluginName);
                 if (plugin == null)
-                    ExitWithFailure("Plugin does not exist: " + options.PlugInName);
+                    ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
                 var pluginOptionList = plugin.MakeOptions();
 
@@ -47,7 +47,7 @@ namespace InEngineCli
                 if (!pluginArgs.ToList().Any()) {
                     // If the plugin's args are empty, print the plugin's help screen and exit.
                     foreach(var pluginOptions in pluginOptionList) {
-                        CommandLine.Parser.Default.ParseArguments(pluginArgs, pluginOptions);
+                        Parser.Default.ParseArguments(pluginArgs, pluginOptions);
                         Console.WriteLine(pluginOptions.GetUsage(""));
                     }
                     ExitWithSuccess();
@@ -72,16 +72,22 @@ namespace InEngineCli
 
         public void ExitWithFailure(string message = null)
         {
-            if (string.IsNullOrWhiteSpace(message))
-                message = "fail";
-            Logger.Error($"✘ {message}");
-            Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+            Logger.Error(MakeErrorMessage(message));
+            Environment.Exit(Parser.DefaultExitCodeFail);
         }
 
         public void ExitWithFailure(Exception exception = null)
         {
-            Logger.Error(exception ?? new CommandFailedException(), "✘ fail");
-            Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+            var ex = exception ?? new Exception("Unspecified failure");
+            Logger.Error(ex, MakeErrorMessage(ex.Message));
+            Environment.Exit(Parser.DefaultExitCodeFail);
+        }
+
+        protected string MakeErrorMessage(string message = null)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                message = "fail";
+            return $"✘ {message}";
         }
 
         public List<Plugin> FindPlugins()
@@ -96,8 +102,7 @@ namespace InEngineCli
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
         {
-            var isSuccessful = CommandLine
-                .Parser
+            var isSuccessful = Parser
                 .Default
                 .ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) =>
                 {
