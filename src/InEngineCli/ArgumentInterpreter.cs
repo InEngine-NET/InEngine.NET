@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using CommandLine;
@@ -21,7 +19,7 @@ namespace InEngineCli
 
         public void Interpret(string[] args)
         {
-            var plugins = FindPlugins();
+            var plugins = Plugin.Discover<IOptions>();
             if (!args.Any())
             {
                 Console.WriteLine("Available plugins... ");
@@ -41,7 +39,7 @@ namespace InEngineCli
                 if (plugin == null)
                     ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
-                var pluginOptionList = plugin.MakeOptions();
+                var pluginOptionList = plugin.Make<IOptions>();
 
                 var pluginArgs = args.Skip(1).ToArray();
                 if (!pluginArgs.ToList().Any()) {
@@ -88,16 +86,6 @@ namespace InEngineCli
             if (string.IsNullOrWhiteSpace(message))
                 message = "fail";
             return $"✘ {message}";
-        }
-
-        public List<Plugin> FindPlugins()
-        {
-            return Directory
-                .GetFiles(".", "*.dll")
-                .Select(x => Assembly.LoadFrom(x))
-                .Where(x => x.GetTypes().Any(y => y.IsClass && typeof(IOptions).IsAssignableFrom(y)))
-                .Select(x => new Plugin(x))
-                .ToList();
         }
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)

@@ -1,6 +1,6 @@
 ﻿namespace InEngine.Core
 {
-    public interface IOptions
+    public interface IOptions : IPluginType
     {
         string GetUsage(string verb);
     }

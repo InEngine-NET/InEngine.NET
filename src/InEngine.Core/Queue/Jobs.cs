@@ -4,9 +4,9 @@ using InEngine.Core.Queue.Commands;
 
 namespace InEngine.Core.Queue
 {
-    public static class Jobs
+    public class Jobs : IJobs
     {
-        public static void Schedule(IScheduler scheduler)
+        public void Schedule(IScheduler scheduler)
         {
             var consume = new Consume();
             var jobDetails = JobBuilder

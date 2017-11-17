@@ -1,6 +1,8 @@
-﻿using InEngine.Commands.Sample;
-using QueueJobs = InEngine.Core.Queue.Jobs;
+﻿using System;
+using InEngine.Core;
 using Quartz;
+using NLog;
+
 
 namespace InEngineScheduler
 {
@@ -8,7 +10,11 @@ namespace InEngineScheduler
     {
         public static void Schedule(IScheduler scheduler)
         {
-            QueueJobs.Schedule(scheduler);
+            var logger = LogManager.GetCurrentClassLogger();
+            Plugin.Discover<IJobs>().ForEach(x => {
+                logger.Info($"Registering jobs from plugin: {x.Name}");
+                x.Make<IJobs>().ForEach(y => y.Schedule(scheduler));
+            });
         }
     }
 }

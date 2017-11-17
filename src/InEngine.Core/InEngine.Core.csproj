@@ -90,6 +90,8 @@
     <Compile Include="IOptions.cs" />
     <Compile Include="Queue\Options.cs" />
     <Compile Include="Plugin.cs" />
+    <Compile Include="IJobs.cs" />
+    <Compile Include="IPluginType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
