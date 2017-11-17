@@ -51,6 +51,9 @@
     <Compile Include="Jobs.cs" />
     <Compile Include="ServerHost.cs" />
     <Compile Include="InEngineServerInstaller.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

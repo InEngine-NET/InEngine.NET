@@ -92,6 +92,9 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="IJobs.cs" />
     <Compile Include="IPluginType.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

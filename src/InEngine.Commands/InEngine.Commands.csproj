@@ -39,6 +39,9 @@
     <Compile Include="Sample\SayHello.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="MoreOptions.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sample\" />
