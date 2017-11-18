@@ -29,15 +29,15 @@ namespace InEngine.Core.Queue
         public int RedisPort { get; set; }
         public string RedisPassword { get; set; }
 
-        public static Broker MakeBroker(IBrokerConfiguration queueCommand)
+        public static Broker Make()
         {
-            return new Broker()
-            {
-                QueueBaseName = queueCommand.QueueName,
-                RedisHost = queueCommand.RedisHost,
-                RedisDb = queueCommand.RedisDb,
-                RedisPort = queueCommand.RedisPort,
-                RedisPassword = queueCommand.RedisPassword,
+            var queueSettings = InEngineSettings.Make().Queue;
+            return new Broker() {
+                QueueBaseName = queueSettings.Name,
+                RedisHost = queueSettings.RedisHost,
+                RedisPort = queueSettings.RedisPort,
+                RedisDb = queueSettings.RedisDb,
+                RedisPassword = queueSettings.RedisPassword,
             };
         }
 

@@ -94,8 +94,7 @@ namespace InEngineCli
                 .Default
                 .ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) =>
                 {
-                    try
-                    {
+
                         if (subOptions == null)
                             ExitWithFailure(new CommandFailedException("Could not parse plugin options"));
 
@@ -110,6 +109,8 @@ namespace InEngineCli
                             ExitWithSuccess(commandResult.Message);
                         else
                             ExitWithFailure(new CommandFailedException(commandResult.Message));
+                try
+                    {
                     }
                     catch (Exception exception)
                     {

@@ -3,7 +3,7 @@ using CommandLine;
 
 namespace InEngine.Core.Queue.Commands
 {
-    public class Publish : AbstractBrokerCommand
+    public class Publish : AbstractCommand
     {
         [Option("command-assembly", DefaultValue = "InEngine.Core.dll")]
         public string CommandAssembly { get; set; }
@@ -16,7 +16,7 @@ namespace InEngine.Core.Queue.Commands
             var command = Assembly.LoadFrom(CommandAssembly).CreateInstance(CommandClass) as ICommand;
             if (command == null)
                 return new CommandResult(false, "Did not publish message. Could not load command from plugin.");
-            Broker.MakeBroker(this).Publish(command);
+            Broker.Make().Publish(command);
             return new CommandResult(true, "Published");
         }
     }
