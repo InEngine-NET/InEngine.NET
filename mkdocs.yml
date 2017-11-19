@@ -1,0 +1,13 @@
+docs_dir: docs-src
+site_dir: docs
+site_name: InEngine.NET
+repo_url: https://github.com/InEngine-NET/InEngine.NET
+site_author: Ethan Hann
+copyright: © 2017 - Ethan Hann
+
+pages:
+- Getting Started: 'index.md'
+
+extra_css:
+    - css/style.css
+

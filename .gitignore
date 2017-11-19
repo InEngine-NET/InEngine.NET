@@ -188,4 +188,5 @@ FakesAssemblies/
 *.nupkg
 
 .DS_Store
+.idea/
 
