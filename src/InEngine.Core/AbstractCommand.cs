@@ -45,5 +45,13 @@ namespace InEngine.Core
             JobExecutionContext = context;
             Run();
         }
+
+        public T GetJobContextData<T>(string key)
+        {
+            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
+                return default(T);
+            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
+            return  objectVal == null ? default(T) : (T)objectVal;
+        }
     }
 }

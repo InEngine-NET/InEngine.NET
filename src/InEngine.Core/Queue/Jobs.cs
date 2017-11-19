@@ -11,35 +11,35 @@ namespace InEngine.Core.Queue
         public void Schedule(IScheduler scheduler)
         {
             var consume = new Consume();
-            foreach (var index in Enumerable.Range(0, 16).ToList()) 
+            foreach (var index in Enumerable.Range(0, 8).ToList()) 
             {
-                var defaultQueueConsumer = JobBuilder
+                var primaryQueueConsumer = JobBuilder
                     .Create<Consume>()
-                    .WithIdentity(consume.Name + index, "defaultQueueConsumer")
+                    .WithIdentity(consume.Name + index, "primaryQueueConsumer")
                     .Build();
 
-                var expressQueueConsumer = JobBuilder
+                var secondaryQueueConsumer = JobBuilder
                     .Create<Consume>()
-                    .WithIdentity(consume.Name + index, "expressQueueConsumer")
+                    .WithIdentity(consume.Name + index, "secondaryQueueConsumer")
                     .Build();
+                secondaryQueueConsumer.JobDataMap.Add("useSecondaryQueue", true);
 
-
-                var defaultTrigger = TriggerBuilder
+                var primaryTrigger = TriggerBuilder
                     .Create()
-                    .WithIdentity($"{consume.Name}-default-{index}", "queue")
-                    .StartNow()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
-                    .Build();
-                
-                var expressTrigger = TriggerBuilder
-                    .Create()
-                    .WithIdentity($"{consume.Name}-express-{index}", "queue")
+                    .WithIdentity($"{consume.Name}-primary-{index}", "queue")
                     .StartNow()
                     .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
                     .Build();
 
-                scheduler.ScheduleJob(defaultQueueConsumer, defaultTrigger);
-                scheduler.ScheduleJob(expressQueueConsumer, expressTrigger);
+                var secondaryTrigger = TriggerBuilder
+                    .Create()
+                    .WithIdentity($"{consume.Name}-secondary-{index}", "queue")
+                    .StartNow()
+                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
+                    .Build();
+
+                scheduler.ScheduleJob(primaryQueueConsumer, primaryTrigger);
+                scheduler.ScheduleJob(secondaryQueueConsumer, secondaryTrigger);
             }
         }
     }

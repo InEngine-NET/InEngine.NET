@@ -6,17 +6,18 @@ namespace InEngine.Core.Queue.Commands
     public class Consume : AbstractCommand
     {
         [Option("all", DefaultValue = false)]
-        public bool All { get; set; }
+        public bool ShouldConsumeAll { get; set; }
 
         [Option("secondary", DefaultValue = false, HelpText = "Consume from a secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
         public override CommandResult Run()
         {
+            UseSecondaryQueue = UseSecondaryQueue || GetJobContextData<bool>("useSecondaryQueue");
             var broker = Broker.Make();
             var shouldConsume = true;
             while (shouldConsume)
-                shouldConsume = broker.Consume(UseSecondaryQueue) && All;
+                shouldConsume = broker.Consume(UseSecondaryQueue) && ShouldConsumeAll;
             return new CommandResult(true, "Consumed");
         }
     }
