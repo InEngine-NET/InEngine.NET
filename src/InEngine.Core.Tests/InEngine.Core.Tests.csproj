@@ -41,9 +41,17 @@
     <Reference Include="Quartz">
       <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Queue\Commands\PublishTest.cs" />
+    <Compile Include="Queue\Commands\ConsumeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
