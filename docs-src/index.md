@@ -5,7 +5,7 @@ It allows commands to be queued, scheduled, and ran directly.
 
 ## How to Get Started
 
-## Create a Command
+### Create a Command
 
 First, install the InEngine.Core package into your own Visual Studio project.
 
@@ -75,7 +75,7 @@ namespace InEngine.Commands
 }
 ```
 
-# Run the Command
+### Run the Command
 
 Second, download the InEngineCli tool that matches the version of the InEngine.Core package you included from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page.
 
