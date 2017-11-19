@@ -90,10 +90,8 @@ namespace InEngineCli
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
         {
-            var isSuccessful = Parser
-                .Default
-                .ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) =>
-                {
+            var isSuccessful = new Parser(with => with.IgnoreUnknownArguments = true)
+                .ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
                     try
                     {
                         if (subOptions == null)

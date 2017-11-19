@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using InEngine.Core.Exceptions;
 using NLog;
 
 namespace InEngine.Core
@@ -15,6 +16,18 @@ namespace InEngine.Core
         public Plugin(Assembly assembly)
         {
             Assembly = assembly;
+        }
+
+        public static Plugin LoadFrom(string assemblyPath)
+        {
+            try
+            {
+                return new Plugin(Assembly.LoadFrom(Path.Combine(InEngineSettings.BasePath, assemblyPath)));   
+            }
+            catch (Exception exception)
+            {
+                throw new PluginNotFoundException($"Could not load plugin: {assemblyPath}", exception);
+            }
         }
 
         public List<T> Make<T>() where T : class, IPluginType
@@ -45,6 +58,11 @@ namespace InEngine.Core
                 }
             }
             return pluginList;
+        }
+
+        public ICommand CreateCommandInstance(string fullCommandName)
+        {
+            return Assembly.CreateInstance(fullCommandName) as ICommand;   
         }
     }
 }

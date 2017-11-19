@@ -60,6 +60,9 @@
     <None Include="job_scheduling_data_2_0.xsd" />
     <None Include="NLog.xsd" />
     <None Include="NLog.config" />
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj">
