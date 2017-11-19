@@ -10,6 +10,9 @@ namespace InEngine.Commands
         [VerbOption("sample:minimal")]
         public Minimal Minimal { get; set; }
 
+        [VerbOption("sample:echo")]
+        public Echo Echo { get; set; }
+
         [HelpVerbOption]
         public string GetUsage(string verb)
         {
