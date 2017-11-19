@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core", "InEngine.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{74CA3917-E2F3-4C75-96AF-156BC52C4C5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core.Tests", "InEngine.Core.Tests\InEngine.Core.Tests.csproj", "{CC74DD78-76C9-4143-A567-527E82DA475B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{74CA3917-E2F3-4C75-96AF-156BC52C4C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74CA3917-E2F3-4C75-96AF-156BC52C4C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74CA3917-E2F3-4C75-96AF-156BC52C4C5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC74DD78-76C9-4143-A567-527E82DA475B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC74DD78-76C9-4143-A567-527E82DA475B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC74DD78-76C9-4143-A567-527E82DA475B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC74DD78-76C9-4143-A567-527E82DA475B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

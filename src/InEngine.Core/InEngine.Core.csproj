@@ -58,7 +58,6 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression" />
     <Reference Include="RedisBoost">
       <HintPath>..\packages\RedisBoost.1.6.4\lib\net40\RedisBoost.dll</HintPath>
     </Reference>
@@ -99,6 +98,10 @@
     <Reference Include="Microsoft.Extensions.Configuration.Binder">
       <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +128,9 @@
     <Compile Include="InEngineSettings.cs" />
     <Compile Include="Queue\QueueSettings.cs" />
     <Compile Include="Exceptions\RedisServerSettingsNotFoundException.cs" />
+    <Compile Include="StreamCopy.cs" />
+    <Compile Include="CommandExtensions.cs" />
+    <Compile Include="Exceptions\PluginNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -10,19 +10,24 @@ namespace InEngine.Core.Queue
     public class Broker
     {
         public string QueueBaseName { get; set; } = "InEngine:Queue";
-        public string WaitingQueueName { get { return QueueBaseName + ":Waiting"; } }
-        public string ProcessingQueueName { get { return QueueBaseName + ":Processing"; } }
+        public string PrimaryWaitingQueueName { get { return QueueBaseName + ":PrimaryWaiting"; } }
+        public string PrimaryProcessingQueueName { get { return QueueBaseName + ":PrimaryProcessing"; } }
+        public string SecondaryWaitingQueueName { get { return QueueBaseName + ":SecondaryWaiting"; } }
+        public string SecondaryProcessingQueueName { get { return QueueBaseName + ":SecondaryProcessing"; } }
+
         public IRedisClient _redis;
-        public IRedisClient Redis { 
-            get {
+        public IRedisClient Redis
+        {
+            get
+            {
                 if (_redis == null)
                 {
                     var connectionTask = RedisClient.ConnectAsync(RedisHost, RedisPort, RedisDb);
                     connectionTask.Wait();
-                    _redis = connectionTask.Result;   
+                    _redis = connectionTask.Result;
                 }
                 return _redis;
-            } 
+            }
         }
         public string RedisHost { get; set; }
         public int RedisDb { get; set; }
@@ -32,8 +37,9 @@ namespace InEngine.Core.Queue
         public static Broker Make()
         {
             var queueSettings = InEngineSettings.Make().Queue;
-            return new Broker() {
-                QueueBaseName = queueSettings.Name,
+            return new Broker()
+            {
+                QueueBaseName = queueSettings.QueueName,
                 RedisHost = queueSettings.RedisHost,
                 RedisPort = queueSettings.RedisPort,
                 RedisDb = queueSettings.RedisDb,
@@ -41,61 +47,88 @@ namespace InEngine.Core.Queue
             };
         }
 
-        public void Publish(ICommand command)
+        public void Publish(ICommand command, bool useSecondaryQueue = false)
         {
-            Redis.LPushAsync(WaitingQueueName, new Message() {
-                CommandClassName = command.GetType().FullName,
-                CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
-                SerializedCommand = JsonConvert.SerializeObject(command)
-            });
+            Redis.LPushAsync(useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName,
+                new Message()
+                {
+                    CommandClassName = command.GetType().FullName,
+                    CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
+                    SerializedCommand = JsonConvert.SerializeObject(command)
+                });
         }
 
-        public bool Consume()
+        public bool Consume(bool useSecondaryQueue = false)
         {
-            var stageMessageTask = Redis.RPopLPushAsync(WaitingQueueName, ProcessingQueueName);
+            var waitingQueueName = useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName;
+            var processingQueueName = useSecondaryQueue ? SecondaryProcessingQueueName : PrimaryProcessingQueueName;
+            var stageMessageTask = Redis.RPopLPushAsync(waitingQueueName, processingQueueName);
             stageMessageTask.Wait();
             var message = stageMessageTask.Result.As<Message>();
             if (message == null)
                 return false;
 
-            //message.CommandClassName
-            var command = Assembly.LoadFrom(message.CommandAssemblyName)
-                                  .CreateInstance(message.CommandClassName) as ICommand;
-
-            var commandType = Type.GetType(message.CommandClassName);
+            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
+            if (commandType == null)
+                throw new CommandFailedException("Consumed command failed: could not locate command type.");
             var commandInstance = JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
 
             try
             {
-                command.Run();
-                Redis.LRemAsync(ProcessingQueueName, 1, message).Wait();
+                commandInstance.Run();
+                Redis.LRemAsync(processingQueueName, 1, message).Wait();
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
             return true;
         }
 
-        public long GetWaitingQueueLength()
+        #region Primary Queue Management Methods
+        public long GetPrimaryWaitingQueueLength()
         {
-            return WaitAndReturnResult(Redis.LLenAsync(WaitingQueueName));
+            return WaitAndReturnResult(Redis.LLenAsync(PrimaryWaitingQueueName));
         }
 
-        public long GetProcessingQueueLength()
+        public long GetPrimaryProcessingQueueLength()
         {
-            return WaitAndReturnResult(Redis.LLenAsync(ProcessingQueueName));
+            return WaitAndReturnResult(Redis.LLenAsync(PrimaryProcessingQueueName));
         }
 
-        public long ClearWaitingQueue()
+        public long ClearPrimaryWaitingQueue()
         {
-            return WaitAndReturnResult(Redis.DelAsync(WaitingQueueName));
+            return WaitAndReturnResult(Redis.DelAsync(SecondaryWaitingQueueName));
         }
 
-        public long ClearProcessingQueue()
+        public long ClearPrimaryProcessingQueue()
         {
-            return WaitAndReturnResult(Redis.DelAsync(ProcessingQueueName));
+            return WaitAndReturnResult(Redis.DelAsync(SecondaryProcessingQueueName));
         }
+        #endregion
+
+        #region Secondary Queue Management Methods
+        public long GetSecondaryWaitingQueueLength()
+        {
+            return WaitAndReturnResult(Redis.LLenAsync(PrimaryWaitingQueueName));
+        }
+
+        public long GetSecondaryProcessingQueueLength()
+        {
+            return WaitAndReturnResult(Redis.LLenAsync(PrimaryProcessingQueueName));
+        }
+
+        public long ClearSecondaryWaitingQueue()
+        {
+            return WaitAndReturnResult(Redis.DelAsync(SecondaryWaitingQueueName));
+        }
+
+        public long ClearSecondaryProcessingQueue()
+        {
+            return WaitAndReturnResult(Redis.DelAsync(SecondaryProcessingQueueName));
+        }
+        #endregion
+
 
         public long WaitAndReturnResult(Task<long> task)
         {
