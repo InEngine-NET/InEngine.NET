@@ -32,12 +32,6 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="Quartz">
       <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
     </Reference>
@@ -47,6 +41,13 @@
     <Reference Include="System.Configuration" />
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
