@@ -3,7 +3,9 @@
 InEngine.NET is a background commands processing server. 
 It allows commands to be queued, scheduled, and ran directly. 
 
-## Install
+## How to Get Started
+
+## Create a Command
 
 First, install the InEngine.Core package into your own Visual Studio project.
 
@@ -27,15 +29,12 @@ dotnet add package InEngine.Core
 paket add InEngine.Core
 ```
 
-Second, download the CLI and/or the Scheduler from a release that matches the version of the InEngine.Core package you included.
-
-Releases are found on GitHub: https://github.com/InEngine-NET/InEngine.NET/releases
-
-## Create a Command
-
 Add a class that implements **InEngine.Core.ICommand** or extends **InEngine.Core.AbstractCommand**. 
+The **AbstractCommand** class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
+Minimally, the Run method should be overridden.
 
-```c#
+```csharp
+using System;
 using InEngine.Core;
 
 namespace MyCommands
@@ -44,33 +43,55 @@ namespace MyCommands
     {
         public CommandResult Run()
         {
+            Console.WriteLine("Hello, world!");
             return new CommandResult(true);
         }
     }
 }
 ```
 
-The **AbstractCommand** class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
-Minimally, the Run method should be overridden.
+Create a class that implements **InEngine.Core.IOptions** in the same assembly as the command class.
+Add VerbOptions from the CommandLine namespace.
+The help text can be auto-generated or manually specified.  
 
-
-```c#
+```csharp
+using CommandLine;
+using CommandLine.Text;
 using InEngine.Core;
 
-namespace MyCommands
+namespace InEngine.Commands
 {
-    public class MyCommand : AbstractCommand
+    public class MyOptions : IOptions
     {
-        public override CommandResult Run()
+        [VerbOption("my-command", HelpText="My example command.")]
+        public MyCommand MyCommand { get; set; }
+
+        [HelpVerbOption]
+        public string GetUsage(string verb)
         {
-            return new CommandResult(true);
+            return HelpText.AutoBuild(this, verb);
         }
     }
 }
 ```
 
+# Run the Command
 
- 
+Second, download the InEngineCli tool that matches the version of the InEngine.Core package you included from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page.
+
+Copy your project's DLLs into the same directory as InEngineCli.exe.
+
+Run your command...
+
+```bash
+InEngineCli.exe -pMyCommands my-command
+```
+
+
+
+
+
+
 
 
 
