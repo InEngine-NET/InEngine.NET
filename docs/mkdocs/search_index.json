@@ -2,8 +2,23 @@
     "docs": [
         {
             "location": "/", 
-            "text": "", 
+            "text": "What is this?\n\n\nInEngine.NET is a background commands processing server. \nIt allows commands to be queued, scheduled, and ran directly. \n\n\nInstall\n\n\nFirst, install the InEngine.Core package into your own Visual Studio project.\n\n\nPackage Manager\n\n\nInstall-Package InEngine.Core\n\n\n\n\nNuget CLI\n\n\nnuget install InEgine.Core\n\n\n\n\n.NET CLI\n\n\ndotnet add package InEngine.Core\n\n\n\n\nPaket CLI\n\n\npaket add InEngine.Core\n\n\n\n\nSecond, download the CLI and/or the Scheduler from a release that matches the version of the InEngine.Core package you included.\n\n\nReleases are found on GitHub: https://github.com/InEngine-NET/InEngine.NET/releases\n\n\nCreate a Command\n\n\nAdd a class that implements \nInEngine.Core.ICommand\n or extends \nInEngine.Core.AbstractCommand\n. \n\n\nusing InEngine.Core;\n\nnamespace MyCommands\n{\n    public class MyCommand : ICommand\n    {\n        public CommandResult Run()\n        {\n            return new CommandResult(true);\n        }\n    }\n}\n\n\n\n\nThe \nAbstractCommand\n class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.\nMinimally, the Run method should be overridden.\n\n\nusing InEngine.Core;\n\nnamespace MyCommands\n{\n    public class MyCommand : AbstractCommand\n    {\n        public override CommandResult Run()\n        {\n            return new CommandResult(true);\n        }\n    }\n}", 
             "title": "Getting Started"
+        }, 
+        {
+            "location": "/#what-is-this", 
+            "text": "InEngine.NET is a background commands processing server. \nIt allows commands to be queued, scheduled, and ran directly.", 
+            "title": "What is this?"
+        }, 
+        {
+            "location": "/#install", 
+            "text": "First, install the InEngine.Core package into your own Visual Studio project.  Package Manager  Install-Package InEngine.Core  Nuget CLI  nuget install InEgine.Core  .NET CLI  dotnet add package InEngine.Core  Paket CLI  paket add InEngine.Core  Second, download the CLI and/or the Scheduler from a release that matches the version of the InEngine.Core package you included.  Releases are found on GitHub: https://github.com/InEngine-NET/InEngine.NET/releases", 
+            "title": "Install"
+        }, 
+        {
+            "location": "/#create-a-command", 
+            "text": "Add a class that implements  InEngine.Core.ICommand  or extends  InEngine.Core.AbstractCommand .   using InEngine.Core;\n\nnamespace MyCommands\n{\n    public class MyCommand : ICommand\n    {\n        public CommandResult Run()\n        {\n            return new CommandResult(true);\n        }\n    }\n}  The  AbstractCommand  class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.\nMinimally, the Run method should be overridden.  using InEngine.Core;\n\nnamespace MyCommands\n{\n    public class MyCommand : AbstractCommand\n    {\n        public override CommandResult Run()\n        {\n            return new CommandResult(true);\n        }\n    }\n}", 
+            "title": "Create a Command"
         }
     ]
 }
