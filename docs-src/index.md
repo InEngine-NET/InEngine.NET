@@ -1,7 +1,7 @@
-# What is this?
+# InEngine.NET - Command Processing Server.
+ 
+InEngine.NET allows commands to be queued, scheduled, and run directly. 
 
-InEngine.NET is a background commands processing server. 
-It allows commands to be queued, scheduled, and ran directly. 
 
 ## How to Get Started
 

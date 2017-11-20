@@ -2,13 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "What is this?\n\n\nInEngine.NET is a background commands processing server. \nIt allows commands to be queued, scheduled, and ran directly. \n\n\nHow to Get Started\n\n\nGet started by reading up on \ncommands\n.", 
+            "text": "InEngine.NET - Command Processing Server.\n\n\nInEngine.NET allows commands to be queued, scheduled, and run directly. \n\n\nHow to Get Started\n\n\nGet started by reading up on \ncommands\n.", 
             "title": "Getting Started"
         }, 
         {
-            "location": "/#what-is-this", 
-            "text": "InEngine.NET is a background commands processing server. \nIt allows commands to be queued, scheduled, and ran directly.", 
-            "title": "What is this?"
+            "location": "/#inenginenet-command-processing-server", 
+            "text": "InEngine.NET allows commands to be queued, scheduled, and run directly.", 
+            "title": "InEngine.NET - Command Processing Server."
         }, 
         {
             "location": "/#how-to-get-started", 
