@@ -4,17 +4,31 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2017-11-19</lastmod>
+     <lastmod>2017-11-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
+        
     <url>
      <loc>/commands/</loc>
-     <lastmod>2017-11-19</lastmod>
+     <lastmod>2017-11-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>/scheduling/</loc>
+     <lastmod>2017-11-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/queuing/</loc>
+     <lastmod>2017-11-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
 </urlset>

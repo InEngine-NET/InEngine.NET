@@ -42,7 +42,6 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Sample\Echo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sample\" />

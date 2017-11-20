@@ -1,12 +1,14 @@
-﻿using InEngine.Core;
-using System;
+﻿using System;
 using CommandLine;
 
-namespace InEngine.Commands.Sample
+namespace InEngine.Core.Commands
 {
+    /// <summary>
+    /// Echo some text to the console. Useful for end-to-end testing.
+    /// </summary>
     public class Echo : AbstractCommand
     {
-        [Option("text")]
+        [Option("text", HelpText = "The text to echo.")]
         public string Text { get; set; }
 
         public override CommandResult Run()

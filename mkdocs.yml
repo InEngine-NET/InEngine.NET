@@ -10,6 +10,7 @@ pages:
 - Documentation:
   - commands.md
   - scheduling.md
+  - queuing.md
 
 extra_css:
     - css/style.css

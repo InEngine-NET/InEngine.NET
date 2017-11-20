@@ -1,16 +1,20 @@
+.navbar-brand {
+    background: no-repeat url("/images/inengine-logo-32-alt.png");
+}
+
 .navbar-default {
-    background: #2f2f2f;
+    background: #0a69fa;
 }
 
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-    background-color: #0f0f0f;
+    background-color: #0a69fa;
 }
 
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-    background-color: #0f0f0f;
+    background-color: #0a69fa;
 }
 
 a,

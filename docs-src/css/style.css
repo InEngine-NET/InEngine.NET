@@ -1,3 +1,7 @@
+.navbar-brand {
+    background: no-repeat url("/images/inengine-logo-32-alt.png");
+}
+
 .navbar-default {
     background: #0a69fa;
 }

@@ -112,7 +112,6 @@
     <Compile Include="Queue\Message.cs" />
     <Compile Include="Queue\Commands\GetLength.cs" />
     <Compile Include="Queue\Commands\Consume.cs" />
-    <Compile Include="Queue\Commands\Null.cs" />
     <Compile Include="Queue\Commands\Publish.cs" />
     <Compile Include="Queue\Commands\ClearAll.cs" />
     <Compile Include="AbstractCommand.cs" />
@@ -131,6 +130,9 @@
     <Compile Include="StreamCopy.cs" />
     <Compile Include="CommandExtensions.cs" />
     <Compile Include="Exceptions\PluginNotFoundException.cs" />
+    <Compile Include="Commands\Echo.cs" />
+    <Compile Include="Commands\Null.cs" />
+    <Compile Include="Commands\Options.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -141,6 +143,7 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Queue\" />
     <Folder Include="Queue\Commands\" />
+    <Folder Include="Commands\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
