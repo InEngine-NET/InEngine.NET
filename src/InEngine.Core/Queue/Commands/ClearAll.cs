@@ -8,7 +8,7 @@ namespace InEngine.Core.Queue.Commands
         [Option("processing-queue", HelpText = "Clear the processing queue.")]
         public bool ClearProcessingQueue { get; set; }
 
-        [Option("secondary", DefaultValue = false, HelpText = "Clear the secondary queue.")]
+        [Option("secondary", HelpText = "Clear the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
         public override CommandResult Run()

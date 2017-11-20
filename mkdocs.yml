@@ -7,6 +7,7 @@ copyright: © 2017 - Ethan Hann
 
 pages:
 - Getting Started: 'index.md'
+- commands.md
 
 extra_css:
     - css/style.css

@@ -90,30 +90,29 @@ namespace InEngineCli
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
         {
-            var isSuccessful = new Parser(with => with.IgnoreUnknownArguments = true)
-                .ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
-                    try
-                    {
-                        if (subOptions == null)
-                            ExitWithFailure(new CommandFailedException("Could not parse plugin options"));
+            var isSuccessful =Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
+                try
+                {
+                    if (subOptions == null)
+                        ExitWithFailure(new CommandFailedException("Could not parse plugin options"));
 
-                        var command = subOptions as ICommand;
+                    var command = subOptions as ICommand;
 
-                        if (command is AbstractCommand)
-                            (command as AbstractCommand).Name = verb.Normalize();
+                    if (command is AbstractCommand)
+                        (command as AbstractCommand).Name = verb.Normalize();
 
-                        var commandResult = command.Run();
+                    var commandResult = command.Run();
 
-                        if (commandResult.IsSuccessful)
-                            ExitWithSuccess(commandResult.Message);
-                        else
-                            ExitWithFailure(new CommandFailedException(commandResult.Message));
-                    }
-                    catch (Exception exception)
-                    {
-                        ExitWithFailure(exception);
-                    }
-                });
+                    if (commandResult.IsSuccessful)
+                        ExitWithSuccess(commandResult.Message);
+                    else
+                        ExitWithFailure(new CommandFailedException(commandResult.Message));
+                }
+                catch (Exception exception)
+                {
+                    ExitWithFailure(exception);
+                }
+            });
 
             if (!isSuccessful)
                 ExitWithFailure("Could not parse plugin arguments");
