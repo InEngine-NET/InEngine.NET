@@ -180,19 +180,19 @@ namespace MyCommandPlugin
 
 <h2 id="discover-commands-plugins">Discover Commands Plugins</h2>
 <p>Run InEngineCli.exe without any arguments to see a list of arguments.</p>
-<pre><code>Available plugins... 
+<pre><code class="text">Available plugins... 
 InEngine.Commands
 InEngine.Core
 </code></pre>
 
 <h2 id="discover-commands-in-a-plugin">Discover Commands in a Plugin</h2>
 <p>Run InEngineCli.exe with only the plugin specified.</p>
-<pre><code>InEngineCli.exe -pInEngine.Core
+<pre><code class="bash">InEngineCli.exe -pInEngine.Core
 </code></pre>
 
 <p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queue related commands. 
 This is the help output for the core plugin.</p>
-<pre><code>InEngine 3.1.0
+<pre><code class="text">InEngine 3.1.0
 Copyright © Ethan Hann 2017
 
   queue:publish    Publish a command message to a queue.
@@ -207,11 +207,11 @@ Copyright © Ethan Hann 2017
 
 <h2 id="print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands</h2>
 <p>Run the command with the -h or --help arguments.</p>
-<pre><code>InEngineCli.exe -pInEngine.Core queue:clear -h
+<pre><code class="bash">InEngineCli.exe -pInEngine.Core queue:clear -h
 </code></pre>
 
 <p>The <strong>InEngine.Core</strong> plugin's command to clear the InEngine.NET's queues produces this help message. </p>
-<pre><code>InEngine 3.1.0
+<pre><code class="text">InEngine 3.1.0
 Copyright © Ethan Hann 2017
 
   --processing-queue    Clear the processing queue.

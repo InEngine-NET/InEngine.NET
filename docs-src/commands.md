@@ -106,7 +106,7 @@ InEngineCli.exe -pMyCommandPlugin my-command
 
 Run InEngineCli.exe without any arguments to see a list of arguments.
 
-```
+```text
 Available plugins... 
 InEngine.Commands
 InEngine.Core
@@ -116,14 +116,14 @@ InEngine.Core
 
 Run InEngineCli.exe with only the plugin specified.
 
-```
+```bash
 InEngineCli.exe -pInEngine.Core
 ```
 
 The **InEngine.Core** library is itself a plugin that contains queue related commands. 
 This is the help output for the core plugin.
 
-```  
+```text
 InEngine 3.1.0
 Copyright © Ethan Hann 2017
 
@@ -141,13 +141,13 @@ Copyright © Ethan Hann 2017
 
 Run the command with the -h or --help arguments.
 
-```
+```bash
 InEngineCli.exe -pInEngine.Core queue:clear -h
 ```
 
 The **InEngine.Core** plugin's command to clear the InEngine.NET's queues produces this help message. 
 
-```
+```text
 InEngine 3.1.0
 Copyright © Ethan Hann 2017
 
