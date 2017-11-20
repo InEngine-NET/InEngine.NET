@@ -1,6 +1,8 @@
-﻿using System;
-namespace InEngine.Core.Queue.Commands
+﻿namespace InEngine.Core.Queue.Commands
 {
+    /// <summary>
+    /// Dummy command for testing and sample code.
+    /// </summary>
     public class Null : AbstractCommand
     {
         public override CommandResult Run()

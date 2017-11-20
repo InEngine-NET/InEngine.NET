@@ -5,9 +5,6 @@ namespace InEngine.Core.Queue.Commands
 {
     public class GetLength : AbstractCommand
     {
-        [Option("processing-queue", HelpText = "Display the number of command actively running.")]
-        public bool CheckProcessingQueue { get; set; }
-
         public override CommandResult Run()
         {
             var broker = Broker.Make();

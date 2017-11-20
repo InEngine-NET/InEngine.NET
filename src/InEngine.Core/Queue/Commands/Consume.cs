@@ -5,10 +5,10 @@ namespace InEngine.Core.Queue.Commands
 {
     public class Consume : AbstractCommand
     {
-        [Option("all", DefaultValue = false)]
+        [Option("all", HelpText = "Consume all the messages in the primary or secondary queue.")]
         public bool ShouldConsumeAll { get; set; }
 
-        [Option("secondary", DefaultValue = false, HelpText = "Consume from a secondary queue.")]
+        [Option("secondary", DefaultValue = false, HelpText = "Consume from the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
         public override CommandResult Run()

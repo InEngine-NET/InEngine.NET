@@ -65,6 +65,7 @@ namespace MyCommandPlugin
 }
 ```
 
+
 ## Run a Command
 
 Create a class that implements **InEngine.Core.IOptions** in the same assembly as the command class.
@@ -102,7 +103,7 @@ Run your command...
 InEngineCli.exe -pMyCommandPlugin my-command
 ```
 
-## Discover Commands Plugins
+## Discover Command Plugins
 
 Run InEngineCli.exe without any arguments to see a list of arguments.
 
@@ -121,10 +122,10 @@ InEngineCli.exe -pInEngine.Core
 ```
 
 The **InEngine.Core** library is itself a plugin that contains queue related commands. 
-This is the help output for the core plugin.
+As an example, this is the help output for the core plugin.
 
 ```text
-InEngine 3.1.0
+InEngine 3.x
 Copyright © Ethan Hann 2017
 
   queue:publish    Publish a command message to a queue.
@@ -148,7 +149,7 @@ InEngineCli.exe -pInEngine.Core queue:clear -h
 The **InEngine.Core** plugin's command to clear the InEngine.NET's queues produces this help message. 
 
 ```text
-InEngine 3.1.0
+InEngine 3.x
 Copyright © Ethan Hann 2017
 
   --processing-queue    Clear the processing queue.
@@ -156,3 +157,79 @@ Copyright © Ethan Hann 2017
   --secondary           Clear the secondary queue.
 ```
 
+
+## Logging
+
+The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
+
+```csharp
+using System;
+using InEngine.Core;
+
+namespace MyCommandPlugin
+{
+    public class MyCommand : ICommand
+    {
+        public override CommandResult Run()
+        {
+            Logger.Trace("Sample trace message");
+            Logger.Debug("Sample debug message");
+            Logger.Info("Sample informational message");
+            Logger.Warn("Sample warning message");
+            Logger.Error("Sample error message");
+            Logger.Fatal("Sample fatal error message");
+            return new CommandResult(true);
+        }
+    }
+}
+```
+
+Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file, something like this...
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <targets>
+        <target name="logfile" xsi:type="File" fileName="file.txt" />
+        <target name="console" xsi:type="Console" />
+    </targets>
+
+    <rules>
+        <logger name="*" minlevel="Trace" writeTo="logfile" />
+        <logger name="*" minlevel="Info" writeTo="console" />
+    </rules>
+</nlog>
+```
+
+## Progress Bar
+
+The **InEngine.Core.AbstractCommand** class provides a ProgressBar property. This is how it is used.
+
+```csharp
+using InEngine.Core;
+
+namespace MyCommandPlugin
+{
+    public class MyCommand : AbstractCommand
+    {
+        public override CommandResult Run()
+        {
+            // Define the ticks (aka steps) for the command...
+            var maxTicks = 100000;
+            SetProgressBarMaxTicks(maxTicks);
+
+            // Do some work...
+            for (var i = 0; i <= maxTicks;i++)
+            {
+                // Update the command's progress
+                UpdateProgress(i);
+            }
+
+            return new CommandResult(true);
+        }
+    }
+}
+```
+ 

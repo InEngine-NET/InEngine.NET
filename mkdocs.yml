@@ -7,8 +7,9 @@ copyright: © 2017 - Ethan Hann
 
 pages:
 - Getting Started: 'index.md'
-- commands.md
+- Documentation:
+  - commands.md
+  - scheduling.md
 
 extra_css:
     - css/style.css
-

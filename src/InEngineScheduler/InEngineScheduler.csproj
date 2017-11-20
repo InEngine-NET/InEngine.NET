@@ -63,6 +63,10 @@
     <None Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Install.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Uninstall.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj">

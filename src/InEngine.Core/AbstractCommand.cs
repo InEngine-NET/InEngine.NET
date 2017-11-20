@@ -7,7 +7,7 @@ namespace InEngine.Core
     abstract public class AbstractCommand : ICommand, IJob
     {
         public IJobExecutionContext JobExecutionContext { get; set; }
-        public Logger Logger { get; internal set; }
+        public ILogger Logger { get; internal set; }
         public ProgressBar ProgressBar { get; internal set; }
         string _name;
         public string Name
