@@ -29,11 +29,8 @@ It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler o
 ```csharp
 using System;
 using Quartz;
-using InEngine.Core.Queue.Commands;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace InEngine.Core.Queue
+namespace MyCommandPlugin
 {
     public class Jobs : IJobs
     {
