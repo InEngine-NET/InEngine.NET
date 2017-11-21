@@ -10,36 +10,50 @@ namespace InEngine.Core.Queue
     {
         public void Schedule(IScheduler scheduler)
         {
-            var consume = new Consume();
-            foreach (var index in Enumerable.Range(0, 8).ToList()) 
+            ScheduleQueueConsumerJobs(scheduler);
+            ScheduleQueueConsumerJobs(scheduler, true);
+            //foreach (var index in Enumerable.Range(0, 8).ToList()) 
+            //{
+            //    var consume = new Consume();
+            //    consume.Name = consume.Name + index; 
+            //    var primaryQueueConsumer = consume.MakeJobBuilder().Build();
+            //    var secondaryQueueConsumer = consume.MakeJobBuilder().Build();
+            //    secondaryQueueConsumer.JobDataMap.Add("useSecondaryQueue", true);
+
+            //    var primaryTrigger = consume
+            //        .MakeTriggerBuilder()
+            //        .StartNow()
+            //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
+            //        .Build();
+
+            //    var secondaryTrigger = consume
+            //        .MakeTriggerBuilder()
+            //        .StartNow()
+            //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
+            //        .Build();
+
+            //    scheduler.ScheduleJob(primaryQueueConsumer, primaryTrigger);
+            //    scheduler.ScheduleJob(secondaryQueueConsumer, secondaryTrigger);
+            //}
+        }
+
+        private void ScheduleQueueConsumerJobs(IScheduler scheduler, bool useSecondaryQueue = false)
+        {
+            foreach (var index in Enumerable.Range(0, 8).ToList())
             {
-                var primaryQueueConsumer = JobBuilder
-                    .Create<Consume>()
-                    .WithIdentity(consume.Name + index, "primaryQueueConsumer")
-                    .Build();
+                var consume = new Consume() {
+                    ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}"
+                };
+                var job = consume.MakeJobBuilder().Build();
+                job.JobDataMap.Add("useSecondaryQueue", useSecondaryQueue);
 
-                var secondaryQueueConsumer = JobBuilder
-                    .Create<Consume>()
-                    .WithIdentity(consume.Name + index, "secondaryQueueConsumer")
-                    .Build();
-                secondaryQueueConsumer.JobDataMap.Add("useSecondaryQueue", true);
-
-                var primaryTrigger = TriggerBuilder
-                    .Create()
-                    .WithIdentity($"{consume.Name}-primary-{index}", "queue")
+                var trigger = consume
+                    .MakeTriggerBuilder()
                     .StartNow()
                     .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
                     .Build();
 
-                var secondaryTrigger = TriggerBuilder
-                    .Create()
-                    .WithIdentity($"{consume.Name}-secondary-{index}", "queue")
-                    .StartNow()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
-                    .Build();
-
-                scheduler.ScheduleJob(primaryQueueConsumer, primaryTrigger);
-                scheduler.ScheduleJob(secondaryQueueConsumer, secondaryTrigger);
+                scheduler.ScheduleJob(job, trigger);
             }
         }
     }

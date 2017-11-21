@@ -2,6 +2,62 @@
 
 [Commands](commands) can be scheduled to run by leveraging the InEngineScheduler.exe program, available as a download from a recent [release](https://github.com/InEngine-NET/InEngine.NET/releases).
 
+## Scheduling a Command
+
+A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.Jobs** interface.
+
+```csharp
+
+using System;
+using Quartz;
+
+namespace MyCommandPlugin
+{
+    public class Jobs : IJobs
+    {
+        public void Schedule(IScheduler scheduler)
+        {
+            // Schedule some jobs
+        }
+    }
+}
+```
+
+This class is automatically discovered by the InEngine.NET scheduler.
+It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler object.
+
+```csharp
+using System;
+using Quartz;
+using InEngine.Core.Queue.Commands;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace InEngine.Core.Queue
+{
+    public class Jobs : IJobs
+    {
+        public void Schedule(IScheduler scheduler)
+        {
+            var myCommand = new MyCommand();
+            
+            // Generate a schedulable job with the command
+            var job = myCommand.MakeTriggerBuilder().Build();
+            
+            // Generate a trigger for the job, and set its schedule to every 10 seconds.
+            var trigger = myCommand.MakeTriggerBuilder().Build()
+                .StartNow()
+                .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever())
+                .Build();
+                
+            // Register the job and trigger with the scheduler
+            scheduler.ScheduleJob(job, trigger);
+        }
+    }
+}
+
+```
+
 ## Running the Scheduler
 
 ### Manually from the CLI
