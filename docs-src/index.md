@@ -1,4 +1,4 @@
-# InEngine.NET - Command Processing Server.
+# InEngine.NET
  
 InEngine.NET allows commands to be queued, scheduled, and run directly. 
 

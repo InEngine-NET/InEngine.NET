@@ -2,13 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "InEngine.NET - Command Processing Server.\n\n\nInEngine.NET allows commands to be queued, scheduled, and run directly. \n\n\nHow to Get Started\n\n\nGet started by reading up on \ncommands\n.", 
+            "text": "InEngine.NET\n\n\nInEngine.NET allows commands to be queued, scheduled, and run directly. \n\n\nHow to Get Started\n\n\nGet started by reading up on \ncommands\n.", 
             "title": "Getting Started"
         }, 
         {
-            "location": "/#inenginenet-command-processing-server", 
+            "location": "/#inenginenet", 
             "text": "InEngine.NET allows commands to be queued, scheduled, and run directly.", 
-            "title": "InEngine.NET - Command Processing Server."
+            "title": "InEngine.NET"
         }, 
         {
             "location": "/#how-to-get-started", 
