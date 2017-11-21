@@ -38,7 +38,7 @@ namespace MyCommandPlugin
         {
             var myCommand = new MyCommand();
             
-            // Generate a schedulable job with the command
+            // Generate a schedulable job with the command.
             var job = myCommand.MakeTriggerBuilder().Build();
             
             // Generate a trigger for the job, and set its schedule to every 10 seconds.
@@ -47,7 +47,7 @@ namespace MyCommandPlugin
                 .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever())
                 .Build();
                 
-            // Register the job and trigger with the scheduler
+            // Register the job and trigger with the scheduler.
             scheduler.ScheduleJob(job, trigger);
         }
     }
