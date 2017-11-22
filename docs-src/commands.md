@@ -157,30 +157,55 @@ Copyright © Ethan Hann 2017
   --secondary           Clear the secondary queue.
 ```
 
+## Writing Output
+
+The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console: 
+
+```csharp
+IWrite Newline();
+IWrite Info(string val);
+IWrite Warning(string val);
+IWrite Error(string val);
+IWrite Line(string val);
+```
+
+```csharp
+public CommandResult Run()
+{
+    Info("Display some information");
+}
+```
+
+Display an error message, use the Error method.
+
+```csharp
+Error("Display some information");
+```
+
+Display a warning message, use the Warning method.
+
+```csharp
+Error("Display some information");
+```
+
+Info, Error, and Warning messages are display in green, red, and yellow, respectively.
+If you want to display an uncolored line, use the Line method. 
+Line("This is a plain line.");
 
 ## Logging
 
 The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
 
 ```csharp
-using System;
-using InEngine.Core;
-
-namespace MyCommandPlugin
+public CommandResult Run()
 {
-    public class MyCommand : ICommand
-    {
-        public override CommandResult Run()
-        {
-            Logger.Trace("Sample trace message");
-            Logger.Debug("Sample debug message");
-            Logger.Info("Sample informational message");
-            Logger.Warn("Sample warning message");
-            Logger.Error("Sample error message");
-            Logger.Fatal("Sample fatal error message");
-            return new CommandResult(true);
-        }
-    }
+    Logger.Trace("Sample trace message");
+    Logger.Debug("Sample debug message");
+    Logger.Info("Sample informational message");
+    Logger.Warn("Sample warning message");
+    Logger.Error("Sample error message");
+    Logger.Fatal("Sample fatal error message");
+    return new CommandResult(true);
 }
 ```
 

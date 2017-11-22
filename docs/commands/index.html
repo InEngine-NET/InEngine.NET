@@ -103,6 +103,7 @@
             <li><a href="#discover-command-plugins">Discover Command Plugins</a></li>
             <li><a href="#discover-commands-in-a-plugin">Discover Commands in a Plugin</a></li>
             <li><a href="#print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands</a></li>
+            <li><a href="#writing-output">Writing Output</a></li>
             <li><a href="#logging">Logging</a></li>
             <li><a href="#progress-bar">Progress Bar</a></li>
     </ul>
@@ -235,26 +236,43 @@ Copyright © Ethan Hann 2017
   --secondary           Clear the secondary queue.
 </code></pre>
 
+<h2 id="writing-output">Writing Output</h2>
+<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides some helper functions to output text to the console: </p>
+<pre><code class="csharp">IWrite Newline();
+IWrite Info(string val);
+IWrite Warning(string val);
+IWrite Error(string val);
+IWrite Line(string val);
+</code></pre>
+
+<pre><code class="csharp">public CommandResult Run()
+{
+    Info(&quot;Display some information&quot;);
+}
+</code></pre>
+
+<p>Display an error message, use the Error method.</p>
+<pre><code class="csharp">Error(&quot;Display some information&quot;);
+</code></pre>
+
+<p>Display a warning message, use the Warning method.</p>
+<pre><code class="csharp">Error(&quot;Display some information&quot;);
+</code></pre>
+
+<p>Info, Error, and Warning messages are display in green, red, and yellow, respectively.
+If you want to display an uncolored line, use the Line method. 
+Line("This is a plain line.");</p>
 <h2 id="logging">Logging</h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a Logger property. It implements the <strong>NLog.ILogger</strong> interface.</p>
-<pre><code class="csharp">using System;
-using InEngine.Core;
-
-namespace MyCommandPlugin
+<pre><code class="csharp">public CommandResult Run()
 {
-    public class MyCommand : ICommand
-    {
-        public override CommandResult Run()
-        {
-            Logger.Trace(&quot;Sample trace message&quot;);
-            Logger.Debug(&quot;Sample debug message&quot;);
-            Logger.Info(&quot;Sample informational message&quot;);
-            Logger.Warn(&quot;Sample warning message&quot;);
-            Logger.Error(&quot;Sample error message&quot;);
-            Logger.Fatal(&quot;Sample fatal error message&quot;);
-            return new CommandResult(true);
-        }
-    }
+    Logger.Trace(&quot;Sample trace message&quot;);
+    Logger.Debug(&quot;Sample debug message&quot;);
+    Logger.Info(&quot;Sample informational message&quot;);
+    Logger.Warn(&quot;Sample warning message&quot;);
+    Logger.Error(&quot;Sample error message&quot;);
+    Logger.Fatal(&quot;Sample fatal error message&quot;);
+    return new CommandResult(true);
 }
 </code></pre>
 
