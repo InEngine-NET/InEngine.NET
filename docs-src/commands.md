@@ -170,7 +170,7 @@ IWrite Line(string val);
 ```
 
 ```csharp
-public CommandResult Run()
+public override CommandResult Run()
 {
     Info("Display some information");
 }
@@ -197,7 +197,7 @@ Line("This is a plain line.");
 The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
 
 ```csharp
-public CommandResult Run()
+public override CommandResult Run()
 {
     Logger.Trace("Sample trace message");
     Logger.Debug("Sample debug message");
@@ -233,28 +233,20 @@ Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configu
 The **InEngine.Core.AbstractCommand** class provides a ProgressBar property. This is how it is used.
 
 ```csharp
-using InEngine.Core;
-
-namespace MyCommandPlugin
+public override CommandResult Run()
 {
-    public class MyCommand : AbstractCommand
+    // Define the ticks (aka steps) for the command...
+    var maxTicks = 100000;
+    SetProgressBarMaxTicks(maxTicks);
+
+    // Do some work...
+    for (var i = 0; i <= maxTicks;i++)
     {
-        public override CommandResult Run()
-        {
-            // Define the ticks (aka steps) for the command...
-            var maxTicks = 100000;
-            SetProgressBarMaxTicks(maxTicks);
-
-            // Do some work...
-            for (var i = 0; i <= maxTicks;i++)
-            {
-                // Update the command's progress
-                UpdateProgress(i);
-            }
-
-            return new CommandResult(true);
-        }
+        // Update the command's progress
+        UpdateProgress(i);
     }
+
+    return new CommandResult(true);
 }
 ```
  

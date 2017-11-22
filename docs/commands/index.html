@@ -245,7 +245,7 @@ IWrite Error(string val);
 IWrite Line(string val);
 </code></pre>
 
-<pre><code class="csharp">public CommandResult Run()
+<pre><code class="csharp">public override CommandResult Run()
 {
     Info(&quot;Display some information&quot;);
 }
@@ -264,7 +264,7 @@ If you want to display an uncolored line, use the Line method.
 Line("This is a plain line.");</p>
 <h2 id="logging">Logging</h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a Logger property. It implements the <strong>NLog.ILogger</strong> interface.</p>
-<pre><code class="csharp">public CommandResult Run()
+<pre><code class="csharp">public override CommandResult Run()
 {
     Logger.Trace(&quot;Sample trace message&quot;);
     Logger.Debug(&quot;Sample debug message&quot;);
@@ -295,28 +295,20 @@ Line("This is a plain line.");</p>
 
 <h2 id="progress-bar">Progress Bar</h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a ProgressBar property. This is how it is used.</p>
-<pre><code class="csharp">using InEngine.Core;
-
-namespace MyCommandPlugin
+<pre><code class="csharp">public override CommandResult Run()
 {
-    public class MyCommand : AbstractCommand
+    // Define the ticks (aka steps) for the command...
+    var maxTicks = 100000;
+    SetProgressBarMaxTicks(maxTicks);
+
+    // Do some work...
+    for (var i = 0; i &lt;= maxTicks;i++)
     {
-        public override CommandResult Run()
-        {
-            // Define the ticks (aka steps) for the command...
-            var maxTicks = 100000;
-            SetProgressBarMaxTicks(maxTicks);
-
-            // Do some work...
-            for (var i = 0; i &lt;= maxTicks;i++)
-            {
-                // Update the command's progress
-                UpdateProgress(i);
-            }
-
-            return new CommandResult(true);
-        }
+        // Update the command's progress
+        UpdateProgress(i);
     }
+
+    return new CommandResult(true);
 }
 </code></pre></div>
         </div>
