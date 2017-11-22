@@ -197,9 +197,21 @@ namespace MyCommandPlugin
 
 <h2 id="discover-command-plugins">Discover Command Plugins</h2>
 <p>Run InEngineCli.exe without any arguments to see a list of arguments.</p>
-<pre><code class="text">Available plugins... 
-InEngine.Commands
-InEngine.Core
+<pre><code class="text">
+  ___       _____             _              _   _ _____ _____ 
+ |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
+  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
+ |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
+                        |___/ 
+
+Usage:
+  -p[&lt;plugin_name&gt;] [&lt;command_name&gt;]
+
+Plugins:
+  InEngine.Commands
+  InEngine.Core
+
 </code></pre>
 
 <h2 id="discover-commands-in-a-plugin">Discover Commands in a Plugin</h2>
@@ -209,17 +221,23 @@ InEngine.Core
 
 <p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queue related commands. 
 As an example, this is the help output for the core plugin.</p>
-<pre><code class="text">InEngine 3.x
-Copyright © Ethan Hann 2017
+<pre><code class="text">
+  ___       _____             _              _   _ _____ _____ 
+ |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
+  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
+ |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
+                        |___/ 
 
-  queue:publish    Publish a command message to a queue.
+Plugin: InEngine.Core
 
-  queue:consume    Consume one or more command messages from the queue.
-
-  queue:length     Get the number of messages in the primary and secondary 
-                   queues.
-
-  queue:clear      Clear the primary and secondary queues.
+Commands:
+  null  A null operation command. Literally does nothing.
+  echo  Echo some text to the console. Useful for end-to-end testing.
+  queue:publish Publish a command message to a queue.
+  queue:consume Consume one or more command messages from the queue.
+  queue:length  Get the number of messages in the primary and secondary queues.
+  queue:clear   Clear the primary and secondary queues.
 </code></pre>
 
 <h2 id="print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands</h2>

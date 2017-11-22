@@ -108,9 +108,21 @@ InEngineCli.exe -pMyCommandPlugin my-command
 Run InEngineCli.exe without any arguments to see a list of arguments.
 
 ```text
-Available plugins... 
-InEngine.Commands
-InEngine.Core
+
+  ___       _____             _              _   _ _____ _____ 
+ |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
+  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
+ |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
+                        |___/ 
+
+Usage:
+  -p[<plugin_name>] [<command_name>]
+
+Plugins:
+  InEngine.Commands
+  InEngine.Core
+
 ```
 
 ## Discover Commands in a Plugin
@@ -125,17 +137,23 @@ The **InEngine.Core** library is itself a plugin that contains queue related com
 As an example, this is the help output for the core plugin.
 
 ```text
-InEngine 3.x
-Copyright © Ethan Hann 2017
 
-  queue:publish    Publish a command message to a queue.
+  ___       _____             _              _   _ _____ _____ 
+ |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
+  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
+ |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
+                        |___/ 
 
-  queue:consume    Consume one or more command messages from the queue.
+Plugin: InEngine.Core
 
-  queue:length     Get the number of messages in the primary and secondary 
-                   queues.
-
-  queue:clear      Clear the primary and secondary queues.
+Commands:
+  null	A null operation command. Literally does nothing.
+  echo	Echo some text to the console. Useful for end-to-end testing.
+  queue:publish	Publish a command message to a queue.
+  queue:consume	Consume one or more command messages from the queue.
+  queue:length	Get the number of messages in the primary and secondary queues.
+  queue:clear	Clear the primary and secondary queues.
 ```
 
 ## Print Help Text for a Plugin's Commands
