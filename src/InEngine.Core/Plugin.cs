@@ -12,6 +12,7 @@ namespace InEngine.Core
     {
         public Assembly Assembly { get; set; }
         public string Name { get { return Assembly.GetName().Name; } }
+        public string Version { get { return Assembly.GetName().Version.ToString(); } }
 
         public Plugin(Assembly assembly)
         {

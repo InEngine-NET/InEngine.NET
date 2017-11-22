@@ -7,13 +7,12 @@ namespace InEngine.Commands
 {
     public class MoreOptions : IOptions
     {
-        [VerbOption("sample:show-progress")]
+        [VerbOption("sample:show-progress", HelpText = "A sample command to demonstrate the progress bar.")]
         public ShowProgress ShowProgress { get; set; }
 
-        [VerbOption("sample:say-hello")]
+        [VerbOption("sample:say-hello", HelpText = "A sample command to say \"hello\".")]
         public SayHello SayHello { get; set; }
 
-        [HelpVerbOption]
         public string GetUsage(string verb)
         {
             return HelpText.AutoBuild(this, verb);

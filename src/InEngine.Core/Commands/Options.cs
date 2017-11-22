@@ -11,10 +11,9 @@ namespace InEngine.Core.Commands
         [VerbOption("echo", HelpText= "Echo some text to the console. Useful for end-to-end testing.")]
         public Echo Echo { get; set; }
 
-        [HelpVerbOption]
         public string GetUsage(string verb)
         {
-            return HelpText.AutoBuild(this, verb);
+            return null;
         }
     }
 }

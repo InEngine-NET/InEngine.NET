@@ -7,7 +7,7 @@ namespace InEngine.Commands.Sample
     {
         public override CommandResult Run()
         {
-            Console.WriteLine("hello...");
+            Console.WriteLine("hello");
             return new CommandResult(true);
         }
     }

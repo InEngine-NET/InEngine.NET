@@ -1,28 +1,43 @@
 ﻿using System;
 using System.Linq;
 using CommandLine;
+using CommandLine.Text;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 using NLog;
+using InEngine.Core.IO;
 
 namespace InEngineCli
 {
     public class ArgumentInterpreter
     {
         public Logger Logger { get; set; }
-
+        public string CliLogo { get; set; }
         public ArgumentInterpreter()
         {
             Logger = LogManager.GetCurrentClassLogger();
+            CliLogo = @"
+  ___       _____             _              _   _ _____ _____ 
+ |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
+  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
+ |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
+                        |___/ 
+";
         }
 
         public void Interpret(string[] args)
         {
+            var write = new Write();
             var plugins = Plugin.Discover<IOptions>();
             if (!args.Any())
             {
-                Console.WriteLine("Available plugins... ");
-                plugins.ForEach(x => Console.WriteLine(x.Name));
+                write.Info(CliLogo);
+                write.Warning("Usage:");
+                write.Line($"  -p[<plugin_name>] [<command_name>]");
+                write.Newline();
+                write.Warning("Plugins:");
+                plugins.ForEach(x => Console.WriteLine($"  {x.Name}"));
                 ExitWithSuccess();
             }
 
@@ -39,13 +54,30 @@ namespace InEngineCli
                     ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
                 var pluginOptionList = plugin.Make<IOptions>();
-
                 var pluginArgs = args.Skip(1).ToArray();
                 if (!pluginArgs.ToList().Any()) {
+                    write.Info(CliLogo);
+
+                    write.WarningText("Plugin: ");
+                    write.LineText($"{plugin.Name}");
+                    write.Newline().Newline();
+                    write.Warning("Commands:");
                     // If the plugin's args are empty, print the plugin's help screen and exit.
                     foreach(var pluginOptions in pluginOptionList) {
                         Parser.Default.ParseArguments(pluginArgs, pluginOptions);
-                        Console.WriteLine(pluginOptions.GetUsage(""));
+
+                        var verbs = pluginOptions
+                            .GetType()
+                            .GetProperties()
+                            .SelectMany(x => x.GetCustomAttributes(true))
+                            .Where(x => x is BaseOptionAttribute)
+                            .ToList();
+
+                        verbs.ForEach(x => {
+                            var optionAttribute = (x as BaseOptionAttribute);
+                            Console.WriteLine($"  {optionAttribute.LongName}\t{optionAttribute.HelpText}");
+                        });
+
                     }
                     ExitWithSuccess();
                 }
@@ -70,6 +102,7 @@ namespace InEngineCli
         public void ExitWithFailure(string message = null)
         {
             Logger.Error(MakeErrorMessage(message));
+            new Write().Error(message);
             Environment.Exit(Parser.DefaultExitCodeFail);
         }
 
@@ -77,6 +110,7 @@ namespace InEngineCli
         {
             var ex = exception ?? new Exception("Unspecified failure");
             Logger.Error(ex, MakeErrorMessage(ex.Message));
+            new Write().Error(ex.Message);
             Environment.Exit(Parser.DefaultExitCodeFail);
         }
 
@@ -92,7 +126,10 @@ namespace InEngineCli
             var isSuccessful =Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
                 try
                 {
-                    if (subOptions == null)
+                    var lastArg = pluginArgs.ToList().LastOrDefault();
+                    if (subOptions == null && (lastArg == "-h" || lastArg == "--help"))
+                        ExitWithSuccess();
+                    else if (subOptions == null)
                         ExitWithFailure(new CommandFailedException("Could not parse plugin options"));
 
                     var command = subOptions as ICommand;
