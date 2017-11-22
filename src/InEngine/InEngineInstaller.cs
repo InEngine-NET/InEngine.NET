@@ -2,12 +2,12 @@
 using System.Configuration.Install;
 using System.ServiceProcess;
 
-namespace InEngineScheduler
+namespace InEngine
 {
     [RunInstaller(true)]
-    public class InEngineServerInstaller : Installer
+    public class InEngineInstaller : Installer
     {
-        public InEngineServerInstaller()
+        public InEngineInstaller()
         {
             Installers.Add(new ServiceProcessInstaller() {
                 Account = ServiceAccount.LocalSystem,
@@ -16,7 +16,7 @@ namespace InEngineScheduler
             });
 
             Installers.Add(new ServiceInstaller() {
-                DisplayName = "InEngine.NET Server",
+                DisplayName = "InEngine.NET",
                 StartType = ServiceStartMode.Automatic,
                 ServiceName = Program.ServiceName
             });

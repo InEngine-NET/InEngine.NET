@@ -37,13 +37,13 @@ Note that all queue commands reside in the **InEngine.Core** plugin.
 This is an example of how to publish a command from the CLI by specifying the commands assembly, class name, and arguments:
 
 ```bash
-InEngineCli.exe -pInEngine.Core queue:publish --command-assembly=MyCommandPlugin.dll --command-class=MyCommand --args "text=bar"
+inengine.exe -pInEngine.Core queue:publish --command-assembly=MyCommandPlugin.dll --command-class=MyCommand --args "text=bar"
 ```
 
 There is an "Echo" command in the *InEngine.Core* package. It is useful for end-to-end testing with the queue feature.
  
 ```bash
-InEngineCli.exe -pInEngine.Core queue:publish --command-assembly=InEngine.Core.dll --command-class=InEngine.Core.Commands.Echo --args "text=foo"
+inengine.exe -pInEngine.Core queue:publish --command-assembly=InEngine.Core.dll --command-class=InEngine.Core.Commands.Echo --args "text=foo"
 ```
 
 ### Consuming Commands
@@ -67,13 +67,13 @@ Commands can be consumed from the command line as well with this simple command:
 #### From the Command Line
 
 ```bash
-InEngineCli.exe -pInEngine.Core queue:consume
+inengine.exe -pInEngine.Core queue:consume
 ```
 
 use the **--secondary** switch to consume the secondary queue instead of the primary queue:
 
 ```bash
-InEngineCli.exe -pInEngine.Core queue:consume --secondary
+inengine.exe -pInEngine.Core queue:consume --secondary
 ```
 
 #### With the Scheduler

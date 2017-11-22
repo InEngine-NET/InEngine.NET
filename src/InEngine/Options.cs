@@ -1,14 +1,15 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using InEngine.Commands.Sample;
-using InEngine.Core.Queue.Commands;
 
-namespace InEngineCli
+namespace InEngine
 {
     public class Options
     {
-        [Option('p', "plugin", Required = true, HelpText = "Plug-In to activate.", DefaultValue = "InEngine.Core")]
+        [Option('p', "plugin", HelpText = "Plug-In to activate.")]
         public string PluginName { get; set; }
+
+        [Option('s', "scheduler", HelpText = "Run the scheduler.", MutuallyExclusiveSet = "PluginName")]
+        public bool ShouldRunScheduler { get; set; }
 
         [HelpVerbOption]
         public string GetUsage(string verb)

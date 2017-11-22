@@ -93,19 +93,19 @@ namespace MyCommandPlugin
 }
 ```
 
-Download the InEngineCli tool that matches the version of the InEngine.Core package you included from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page.
+Download the InEngine binary distribution, from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page, that matches the version of the InEngine.Core package you included.
 
-Copy your project's DLLs into the same directory as InEngineCli.exe.
+Copy your project's DLLs into the same directory as inengine.exe.
 
 Run your command...
 
 ```bash
-InEngineCli.exe -pMyCommandPlugin my-command
+inengine.exe -pMyCommandPlugin my-command
 ```
 
 ## Discover Command Plugins
 
-Run InEngineCli.exe without any arguments to see a list of arguments.
+Run inengine.exe without any arguments to see a list of plugins.
 
 ```text
 
@@ -127,10 +127,10 @@ Plugins:
 
 ## Discover Commands in a Plugin
 
-Run InEngineCli.exe with only the plugin specified.
+Run inengine.exe with only the plugin specified.
 
 ```bash
-InEngineCli.exe -pInEngine.Core
+inengine.exe -pInEngine.Core
 ```
 
 The **InEngine.Core** library is itself a plugin that contains queue related commands. 
@@ -161,10 +161,10 @@ Commands:
 Run the command with the -h or --help arguments.
 
 ```bash
-InEngineCli.exe -pInEngine.Core queue:clear -h
+inengine.exe -pInEngine.Core queue:clear -h
 ```
 
-The **InEngine.Core** plugin's command to clear the InEngine.NET's queues produces this help message. 
+The **InEngine.Core** plugin's command to clear the InEngine.NET queues produces this help message. 
 
 ```text
 InEngine 3.x

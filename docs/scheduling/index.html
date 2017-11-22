@@ -105,7 +105,7 @@
                 <div class="col-md-9" role="main">
 
 <h1 id="scheduling">Scheduling</h1>
-<p><a href="../commands">Commands</a> can be scheduled to run by leveraging the InEngineScheduler.exe program, available as a download from a recent <a href="https://github.com/InEngine-NET/InEngine.NET/releases">release</a>.</p>
+<p><a href="../commands">Commands</a> can be scheduled to run by leveraging the inengine.exe program, available as a download from a recent <a href="https://github.com/InEngine-NET/InEngine.NET/releases">release</a>.</p>
 <h2 id="scheduling-a-command">Scheduling a Command</h2>
 <p>A job schedule is created by adding a class to your plugin assembly that implements the <strong>InEngine.Core.Jobs</strong> interface.</p>
 <pre><code class="csharp">
@@ -156,12 +156,12 @@ namespace MyCommandPlugin
 
 <h2 id="running-the-scheduler">Running the Scheduler</h2>
 <h3 id="manually-from-the-cli">Manually from the CLI</h3>
-<p>Running the scheduler from the CommandLine is useful for debugging or local development. Simply run <em>InEngineScheduler.exe</em> from the command line.</p>
-<pre><code class="bash">InEngineScheduler.exe
+<p>Running the scheduler from the CommandLine is useful for debugging or local development. Simply run <em>inengine.exe</em> from the command line.</p>
+<pre><code class="bash">inengine.exe
 </code></pre>
 
 <p>It can also be run on Mac/Linux with Mono.</p>
-<pre><code class="bash">mono InEngineScheduler.exe
+<pre><code class="bash">mono inengine.exe
 </code></pre>
 
 <h3 id="on-windows-as-a-service">On Windows as a Service</h3>
@@ -187,7 +187,7 @@ namespace MyCommandPlugin
 <pre><code class="ini">[program:inengine-scheudler]
 process_name=%(program_name)s_%(process_num)02d
 directory=/path/to/scheduler
-command=mono InEngineScheduler.exe
+command=mono inengine.exe
 autostart=true
 autorestart=true
 user=InEngine

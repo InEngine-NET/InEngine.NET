@@ -1,1 +1,0 @@
-﻿New-Service -Name "InEngineNETScheduler" -BinaryPathName (Resolve-Path .\).Path + "\InEngineScheduler.exe" -DependsOn NetLogon -DisplayName "InEngine.NET Scheduler" -StartupType Manual -Description "Runs InEngine.NET's scheduled jobs."

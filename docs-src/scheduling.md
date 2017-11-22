@@ -1,6 +1,6 @@
 # Scheduling
 
-[Commands](commands) can be scheduled to run by leveraging the InEngineScheduler.exe program, available as a download from a recent [release](https://github.com/InEngine-NET/InEngine.NET/releases).
+[Commands](commands) can be scheduled to run by leveraging the inengine.exe program, available as a download from a recent [release](https://github.com/InEngine-NET/InEngine.NET/releases).
 
 ## Scheduling a Command
 
@@ -59,16 +59,16 @@ namespace MyCommandPlugin
 
 ### Manually from the CLI
 
-Running the scheduler from the CommandLine is useful for debugging or local development. Simply run *InEngineScheduler.exe* from the command line.
+Running the scheduler from the CommandLine is useful for debugging or local development. Simply run *inengine.exe* from the command line.
 
 ```bash
-InEngineScheduler.exe
+inengine.exe
 ```
 
 It can also be run on Mac/Linux with Mono.
 
 ```bash
-mono InEngineScheduler.exe
+mono inengine.exe
 ``` 
 
 ### On Windows as a Service
@@ -109,7 +109,7 @@ Supervisor configuration files are stored in the **/etc/supervisor/conf.d** dire
 [program:inengine-scheudler]
 process_name=%(program_name)s_%(process_num)02d
 directory=/path/to/scheduler
-command=mono InEngineScheduler.exe
+command=mono inengine.exe
 autostart=true
 autorestart=true
 user=InEngine

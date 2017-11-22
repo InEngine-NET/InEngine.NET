@@ -4,7 +4,7 @@ using Quartz;
 using NLog;
 
 
-namespace InEngineScheduler
+namespace InEngine
 {
     public static class Jobs
     {

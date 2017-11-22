@@ -2,13 +2,22 @@
 using System.IO;
 using System.ServiceProcess;
 
-namespace InEngineScheduler
+namespace InEngine
 {
     class Program
     {
-        public const string ServiceName = "InEngine Server";
+        public const string ServiceName = "InEngine.NET";
         public static ServerHost ServerHost { get; set; }
-        public static void Main(string[] args)
+
+        static void Main(string[] args)
+        {
+            new ArgumentInterpreter().Interpret(args);
+        }
+
+        /// <summary>
+        /// Start the scheduler as a service or as a CLI program in the foreground.
+        /// </summary>
+        public static void RunScheduler()
         {
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
             if (!Environment.UserInteractive && !isRunningUnderMono)
@@ -20,10 +29,11 @@ namespace InEngineScheduler
             }
             else
             {
-                Start(args);
+                var serverHost = new ServerHost();
+                serverHost.Start();
                 Console.WriteLine("Press any key to stop...");
                 Console.ReadLine();
-                Stop();
+                serverHost.Dispose();
             }
         }
 

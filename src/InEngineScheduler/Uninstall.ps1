@@ -1,1 +1,0 @@
-﻿(Get-WmiObject win32_service -Filter "name='InEngineNETScheduler'").delete()

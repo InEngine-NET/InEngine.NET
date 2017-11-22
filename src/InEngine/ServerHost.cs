@@ -2,7 +2,7 @@
 using Quartz;
 using Quartz.Impl;
 
-namespace InEngineScheduler
+namespace InEngine
 {
     public class ServerHost : IDisposable
     {
