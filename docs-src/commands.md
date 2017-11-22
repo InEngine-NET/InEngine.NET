@@ -54,7 +54,7 @@ using InEngine.Core;
 
 namespace MyCommandPlugin
 {
-    public class MyCommand : ICommand
+    public class MyCommand : AbstractCommand
     {
         public override CommandResult Run()
         {
