@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BeekmanLabs.UnitTesting;
 using InEngine.Core.Commands;
@@ -62,11 +63,11 @@ namespace InEngine.Core.Tests.Queue.Commands
         {
             Subject.CommandAssembly = "foo";
             Subject.CommandClass = "bar";
-            var expectedMessage = "Could not load plugin: " + Subject.CommandAssembly;
+            var expectedMessage = "Plugin not found at ";
 
             var result = Assert.Throws<PluginNotFoundException>(() => { Subject.Run(); });
 
-            Assert.AreEqual(expectedMessage, result.Message);
+            Assert.IsTrue(result.Message.StartsWith(expectedMessage, StringComparison.InvariantCulture));
         }
     }
 }

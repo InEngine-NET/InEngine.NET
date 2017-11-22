@@ -10,36 +10,17 @@ namespace InEngine.Core.Queue
     {
         public void Schedule(IScheduler scheduler)
         {
-            ScheduleQueueConsumerJobs(scheduler);
-            ScheduleQueueConsumerJobs(scheduler, true);
-            //foreach (var index in Enumerable.Range(0, 8).ToList()) 
-            //{
-            //    var consume = new Consume();
-            //    consume.Name = consume.Name + index; 
-            //    var primaryQueueConsumer = consume.MakeJobBuilder().Build();
-            //    var secondaryQueueConsumer = consume.MakeJobBuilder().Build();
-            //    secondaryQueueConsumer.JobDataMap.Add("useSecondaryQueue", true);
-
-            //    var primaryTrigger = consume
-            //        .MakeTriggerBuilder()
-            //        .StartNow()
-            //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
-            //        .Build();
-
-            //    var secondaryTrigger = consume
-            //        .MakeTriggerBuilder()
-            //        .StartNow()
-            //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
-            //        .Build();
-
-            //    scheduler.ScheduleJob(primaryQueueConsumer, primaryTrigger);
-            //    scheduler.ScheduleJob(secondaryQueueConsumer, secondaryTrigger);
-            //}
+            var queueSettings = InEngineSettings.Make().Queue;
+            ScheduleQueueConsumerJobs(scheduler, queueSettings.PrimaryQueueConsumers);
+            ScheduleQueueConsumerJobs(scheduler, queueSettings.SecondaryQueueConsumers, true);
         }
 
-        private void ScheduleQueueConsumerJobs(IScheduler scheduler, bool useSecondaryQueue = false)
+        private void ScheduleQueueConsumerJobs(IScheduler scheduler, int consumers, bool useSecondaryQueue = false)
         {
-            foreach (var index in Enumerable.Range(0, 8).ToList())
+            if (consumers < 0) {
+                throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");
+            }
+            foreach (var index in Enumerable.Range(0, consumers).ToList())
             {
                 var consume = new Consume() {
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}"
