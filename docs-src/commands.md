@@ -28,7 +28,7 @@ paket add InEngine.Core
 
 Adding a class that implements **InEngine.Core.ICommand** is the simplest way to create a command.
 
-```csharp
+```c#
 using System;
 using InEngine.Core;
 
@@ -48,7 +48,7 @@ namespace MyCommandPlugin
 Extending the **InEngine.Core.AbstractCommand** class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
 Minimally, the Run method should be overridden.
 
-```csharp
+```c#
 using System;
 using InEngine.Core;
 
@@ -72,7 +72,7 @@ Create a class that implements **InEngine.Core.IOptions** in the same assembly a
 Add a VerbOptions attribute from the CommandLine namespace that defines the name of the command and optional help text.
 The help text can be auto-generated from the attribute or manually specified in the GetUsage method.  
 
-```csharp
+```c#
 using CommandLine;
 using CommandLine.Text;
 using InEngine.Core;
@@ -179,7 +179,7 @@ Copyright © Ethan Hann 2017
 
 The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console: 
 
-```csharp
+```c#
 IWrite Newline();
 IWrite Info(string val);
 IWrite Warning(string val);
@@ -187,7 +187,7 @@ IWrite Error(string val);
 IWrite Line(string val);
 ```
 
-```csharp
+```c#
 public override CommandResult Run()
 {
     Info("Display some information");
@@ -196,13 +196,13 @@ public override CommandResult Run()
 
 Display an error message, use the Error method.
 
-```csharp
+```c#
 Error("Display some information");
 ```
 
 Display a warning message, use the Warning method.
 
-```csharp
+```c#
 Error("Display some information");
 ```
 
@@ -214,7 +214,7 @@ Line("This is a plain line.");
 
 The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
 
-```csharp
+```c#
 public override CommandResult Run()
 {
     Logger.Trace("Sample trace message");
@@ -250,7 +250,7 @@ Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configu
 
 The **InEngine.Core.AbstractCommand** class provides a ProgressBar property. This is how it is used.
 
-```csharp
+```c#
 public override CommandResult Run()
 {
     // Define the ticks (aka steps) for the command...

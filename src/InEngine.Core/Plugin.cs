@@ -21,13 +21,14 @@ namespace InEngine.Core
 
         public static Plugin LoadFrom(string assemblyPath)
         {
+            var path = Path.Combine(InEngineSettings.BasePath, assemblyPath);
             try
             {
-                return new Plugin(Assembly.LoadFrom(Path.Combine(InEngineSettings.BasePath, assemblyPath)));   
+                return new Plugin(Assembly.LoadFrom(path));   
             }
             catch (Exception exception)
             {
-                throw new PluginNotFoundException($"Could not load plugin: {assemblyPath}", exception);
+                throw new PluginNotFoundException($"Plugin not found at {path}", exception);
             }
         }
 

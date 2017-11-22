@@ -7,6 +7,7 @@ namespace InEngine.Core
     public class InEngineSettings
     {
         public static string BasePath { get; set; } = Directory.GetCurrentDirectory();
+        public static string ConfigurationFile { get; set; } = "appsettings.json";
         public QueueSettings Queue { get; set; }
 
         public static InEngineSettings Make()
@@ -14,7 +15,7 @@ namespace InEngine.Core
             var inEngineSettings = new InEngineSettings();
             new ConfigurationBuilder()
                 .SetBasePath(BasePath)
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile(ConfigurationFile)
                 .Build()
                 .GetSection("InEngine")
                 .Bind(inEngineSettings);

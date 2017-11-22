@@ -1,9 +1,11 @@
 docs_dir: docs-src
 site_dir: docs
 site_name: InEngine.NET
+repo_name: 'InEngine.NET'
 repo_url: https://github.com/InEngine-NET/InEngine.NET
 site_author: Ethan Hann
 copyright: © 2017 - Ethan Hann
+edit_uri: ''
 
 pages:
 - Getting Started: 'index.md'
@@ -11,6 +13,24 @@ pages:
   - commands.md
   - scheduling.md
   - queuing.md
+  - configuration.md
 
 extra_css:
     - css/style.css
+
+theme:
+  name: 'material'
+  favicon: 'images/favicon.ico'
+  logo: 'images/inengine-logo-32-alt.png'
+  palette:
+    primary: 'blue'
+    accent: 'blue'
+  feature:
+    tabs: false
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true

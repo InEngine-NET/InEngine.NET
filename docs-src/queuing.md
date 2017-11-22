@@ -27,7 +27,7 @@ It is highly recommended to <a href="https://redis.io/topics/security#authentica
 
 [Commands](commands) can be published programmatically with the **InEngine.Core.Queue.Broker** class:
 
-```csharp
+```c#
 Broker.Make().Publish(new MyCommand());
 ```
 
@@ -51,13 +51,13 @@ inengine.exe -pInEngine.Core queue:publish --command-assembly=InEngine.Core.dll 
 #### Programmatically
 Consuming a command is also accomplished with the Broker class:
 
-```csharp
+```c#
 Broker.Make().Consume();
 ```
 
 Both methods take an optional second argument to indicate if the secondary queue should be used instead of the primary queue.
 
-```csharp
+```c#
 // Uses secondary queue.
 Broker.Make().Consume(true);
 ```
@@ -70,7 +70,7 @@ Commands can be consumed from the command line as well with this simple command:
 inengine.exe -pInEngine.Core queue:consume
 ```
 
-use the **--secondary** switch to consume the secondary queue instead of the primary queue:
+Use the **--secondary** switch to consume the secondary queue instead of the primary queue:
 
 ```bash
 inengine.exe -pInEngine.Core queue:consume --secondary
@@ -80,3 +80,18 @@ inengine.exe -pInEngine.Core queue:consume --secondary
 
 The InEngine scheduler is needed to consume queued messages in the background. 
 There are a variety of [ways to run the scheduler](scheduling/#running-the-scheduler).
+
+
+## Primary and Secondary Queue
+
+Other than the fact that the primary queue is used by default, there is difference between the primary and secondary queues. 
+However, it is often desirable to have more than 1 queue. 
+For example, long running jobs might be sent to the secondary queue, 
+while jobs that are expected to finish after only a few moments are sent to the primary queue.
+
+What about 3, 4, 900 queues? This gets to be a pain to manage and, practically speaking, is probably unnecessary.
+If it is desirable, different [configuration files](configuration) can be used to run multiple instances of InEngine.NET.
+
+ 
+  
+

@@ -34,7 +34,10 @@ namespace InEngine
         public void Interpret(string[] args)
         {
             var plugins = Plugin.Discover<IOptions>();
-            var parser = new Parser(with => with.IgnoreUnknownArguments = true);
+            var parser = new Parser(with => {
+                with.IgnoreUnknownArguments = true;
+                with.MutuallyExclusive = true;
+            });
             var options = new Options();
 
             if (parser.ParseArguments(args, options))
@@ -44,6 +47,8 @@ namespace InEngine
 
                 if (!args.Any())
                     PrintInEngineHelpTextAndExit(plugins, options);
+
+                InEngineSettings.ConfigurationFile = options.ConfigurationFile;
 
                 if (options.ShouldRunScheduler) 
                 {
@@ -56,12 +61,17 @@ namespace InEngine
                     ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
                 var pluginOptionList = plugin.Make<IOptions>();
+
                 var pluginArgs = args.Skip(1).ToArray();
 
                 if (!pluginArgs.ToList().Any()) {
                     PrintPluginHelpTextAndExit(plugin, pluginOptionList, pluginArgs);
                 }
 
+                if (new[] { "-p", "--plugin-name", "-c", "--configuration" }.Any(c => pluginArgs.First().StartsWith("-p", StringComparison.OrdinalIgnoreCase)))
+                    pluginArgs = pluginArgs.Skip(1).ToArray();
+
+                // Need to remove plugin options    
                 var commandVerbName = pluginArgs.First();
                 foreach (var ops in pluginOptionList)
                     foreach (var prop in ops.GetType().GetProperties())

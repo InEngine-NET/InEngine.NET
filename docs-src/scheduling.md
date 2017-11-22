@@ -6,7 +6,7 @@
 
 A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.Jobs** interface.
 
-```csharp
+```c#
 
 using System;
 using Quartz;
@@ -26,7 +26,7 @@ namespace MyCommandPlugin
 This class is automatically discovered by the InEngine.NET scheduler.
 It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler object.
 
-```csharp
+```c#
 using System;
 using Quartz;
 
