@@ -1,11 +1,12 @@
 ﻿using System;
+using InEngine.Core.IO;
 using Konsole;
 using NLog;
 using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : ICommand, IJob
+    abstract public class AbstractCommand : ICommand, IJob, IWrite
     {
         public IJobExecutionContext JobExecutionContext { get; set; }
         public ILogger Logger { get; internal set; }
@@ -22,12 +23,14 @@ namespace InEngine.Core
         }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
+        public Write Write { get; set; }
 
         protected AbstractCommand()
         {
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
+            Write = new Write();;
         }
 
         public virtual CommandResult Run()
@@ -74,6 +77,63 @@ namespace InEngine.Core
             return TriggerBuilder
                 .Create()
                 .WithIdentity($"{Name}:trigger:{ScheduleId}", SchedulerGroup);
+        }
+        #endregion
+
+        #region Console output
+        public IWrite Info(string val)
+        {
+            return Write.Info(val);
+        }
+
+        public IWrite Warning(string val)
+        {
+            return Write.Warning(val);
+        }
+
+        public IWrite Error(string val)
+        {
+            return Write.Error(val);
+        }
+
+        public IWrite Line(string val)
+        {
+            return Write.Line(val);
+        }
+
+        public IWrite ColoredLine(string val, ConsoleColor consoleColor)
+        {
+            return Write.ColoredLine(val, consoleColor);
+        }
+
+        public IWrite InfoText(string val)
+        {
+            return Write.InfoText(val);
+        }
+
+        public IWrite WarningText(string val)
+        {
+            return Write.WarningText(val);
+        }
+
+        public IWrite ErrorText(string val)
+        {
+            return Write.ErrorText(val);
+        }
+
+        public IWrite LineText(string val)
+        {
+            return Write.LineText(val);
+        }
+
+        public IWrite ColoredText(string val, ConsoleColor consoleColor)
+        {
+            return Write.ColoredText(val, consoleColor);
+        }
+
+        public IWrite Newline()
+        {
+            return Write.Newline();
         }
         #endregion
     }

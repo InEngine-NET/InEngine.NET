@@ -2,80 +2,73 @@
 
 namespace InEngine.Core.IO
 {
-    public class Write
+    public class Write : IWrite
     {
         public ConsoleColor InfoColor { get; set; } = ConsoleColor.Green;
         public ConsoleColor WarningColor { get; set; } = ConsoleColor.Yellow;
         public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
         public ConsoleColor LineColor { get; set; } = ConsoleColor.White;
 
-        public Write Newline()
+        public IWrite Newline()
         {
             Console.WriteLine();
             return this;
         }
 
-        public Write Info(string val)
+        public IWrite Info(string val)
         {
-            ColoredLine(val, InfoColor);
-            return this;
+            return ColoredLine(val, InfoColor);
         }
 
-        public Write Error(string val)
+        public IWrite Error(string val)
         {
-            ColoredLine(val, ErrorColor);
-            return this;
+            return ColoredLine(val, ErrorColor);
         }
 
-        public Write Warning(string val)
+        public IWrite Warning(string val)
         {
-            ColoredLine(val, WarningColor);
-            return this;
+            return ColoredLine(val, WarningColor);
         }
 
-        public Write Line(string val)
+        public IWrite Line(string val)
         {
-            ColoredLine(val, LineColor);
-            return this;
+            return ColoredLine(val, LineColor);
         }
 
-        public static void ColoredLine(string val, ConsoleColor consoleColor)
+        public IWrite ColoredLine(string val, ConsoleColor consoleColor)
         {
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(val);
             Console.ResetColor();
-        }
-
-
-        public Write InfoText(string val)
-        {
-            ColoredText(val, InfoColor);
             return this;
         }
 
-        public Write ErrorText(string val)
+        public IWrite InfoText(string val)
         {
-            ColoredText(val, ErrorColor);
-            return this;
+            return ColoredText(val, InfoColor);
         }
 
-        public Write WarningText(string val)
+        public IWrite ErrorText(string val)
         {
-            ColoredText(val, WarningColor);
-            return this;
+            return ColoredText(val, ErrorColor);
         }
 
-        public Write LineText(string val)
+        public IWrite WarningText(string val)
         {
-            ColoredText(val, LineColor);
-            return this;
+            return ColoredText(val, WarningColor);
         }
 
-        public static void ColoredText(string val, ConsoleColor consoleColor)
+        public IWrite LineText(string val)
+        {
+            return ColoredText(val, LineColor);
+        }
+
+        public IWrite ColoredText(string val, ConsoleColor consoleColor)
         {
             Console.ForegroundColor = consoleColor;
             Console.Write(val);
             Console.ResetColor();
+            return this;
         }
     }
 }

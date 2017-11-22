@@ -4,10 +4,17 @@ namespace InEngine.Core.IO
 {
     public interface IWrite
     {
-        void Info(string val);
-        void Warning(string val);
-        void Error(string val);
-        void Text(string val);
-        void Line(string val, ConsoleColor consoleColor = ConsoleColor.White);
+        IWrite Newline();
+        IWrite Info(string val);
+        IWrite Warning(string val);
+        IWrite Error(string val);
+        IWrite Line(string val);
+        IWrite ColoredLine(string val, ConsoleColor consoleColor);
+
+        IWrite InfoText(string val);
+        IWrite WarningText(string val);
+        IWrite ErrorText(string val);
+        IWrite LineText(string val);
+        IWrite ColoredText(string val, ConsoleColor consoleColor);
     }
 }
