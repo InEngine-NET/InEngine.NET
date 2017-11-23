@@ -127,12 +127,8 @@ namespace InEngine
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
 
-                    var commandResult = command.Run();
-
-                    if (commandResult.IsSuccessful)
-                        ExitWithSuccess(commandResult.Message);
-                    else
-                        ExitWithFailure(new CommandFailedException(commandResult.Message));
+                    command.Run();
+                    ExitWithSuccess();
                 }
                 catch (Exception exception)
                 {

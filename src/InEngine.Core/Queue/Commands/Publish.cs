@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CommandLine;
+using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Queue.Commands
 {
@@ -19,17 +20,16 @@ namespace InEngine.Core.Queue.Commands
 
         public ICommand Command { get; set; }
 
-        public override CommandResult Run()
+        public override void Run()
         {
             var command = Command ?? Plugin.LoadFrom(CommandAssembly).CreateCommandInstance(CommandClass);
             if (command == null)
-                return new CommandResult(false, "Did not publish message. Could not load command from plugin.");
+                throw new CommandFailedException("Did not publish message. Could not load command from plugin.");
 
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
             Broker.Make().Publish(command, UseSecondaryQueue);
-            return new CommandResult(true, "Published");
         }
     }
 }

@@ -15,18 +15,19 @@ namespace InEngine.Core.Queue
         public string SecondaryWaitingQueueName { get { return QueueBaseName + ":SecondaryWaiting"; } }
         public string SecondaryProcessingQueueName { get { return QueueBaseName + ":SecondaryProcessing"; } }
 
-        public ConnectionMultiplexer _redis;
-        public ConnectionMultiplexer Redis
+        public ConnectionMultiplexer _connectionMultiplexer;
+        public IDatabase Redis
         {
             get
             {
-                if (_redis == null)
+                if (_connectionMultiplexer == null || !_connectionMultiplexer.IsConnected)
                 {
                     var redisConfig = ConfigurationOptions.Parse($"{RedisHost}:{RedisPort}");
                     redisConfig.Password = string.IsNullOrWhiteSpace(RedisPassword) ? null : RedisPassword;
-                    _redis = ConnectionMultiplexer.Connect(redisConfig);
+                    redisConfig.AbortOnConnectFail = false;
+                    _connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig);
                 }
-                return _redis;
+                return _connectionMultiplexer.GetDatabase(RedisDb);
             }
         }
         public string RedisHost { get; set; }
@@ -49,7 +50,7 @@ namespace InEngine.Core.Queue
 
         public void Publish(ICommand command, bool useSecondaryQueue = false)
         {
-            Redis.GetDatabase(RedisDb).ListLeftPush(
+            Redis.ListLeftPush(
                 useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName,
                 new Message() {
                     CommandClassName = command.GetType().FullName,
@@ -64,7 +65,7 @@ namespace InEngine.Core.Queue
             var waitingQueueName = useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName;
             var processingQueueName = useSecondaryQueue ? SecondaryProcessingQueueName : PrimaryProcessingQueueName;
 
-            var stageMessageTask = Redis.GetDatabase(RedisDb).ListRightPopLeftPush(waitingQueueName, processingQueueName);
+            var stageMessageTask = Redis.ListRightPopLeftPush(waitingQueueName, processingQueueName);
             var serializedMessage = stageMessageTask.ToString();
             if (serializedMessage == null)
                 return false;
@@ -80,7 +81,7 @@ namespace InEngine.Core.Queue
             try
             {
                 commandInstance.Run();
-                Redis.GetDatabase(RedisDb).ListRemove(processingQueueName, serializedMessage, 1);
+                Redis.ListRemove(processingQueueName, serializedMessage, 1);
             }
             catch (Exception exception)
             {
@@ -92,44 +93,44 @@ namespace InEngine.Core.Queue
         #region Primary Queue Management Methods
         public long GetPrimaryWaitingQueueLength()
         {
-            return Redis.GetDatabase(RedisDb).ListLength(PrimaryWaitingQueueName);
+            return Redis.ListLength(PrimaryWaitingQueueName);
         }
 
         public long GetPrimaryProcessingQueueLength()
         {
-            return Redis.GetDatabase(RedisDb).ListLength(PrimaryProcessingQueueName);
+            return Redis.ListLength(PrimaryProcessingQueueName);
         }
 
         public bool ClearPrimaryWaitingQueue()
         {
-            return Redis.GetDatabase(RedisDb).KeyDelete(PrimaryWaitingQueueName);
+            return Redis.KeyDelete(PrimaryWaitingQueueName);
         }
 
         public bool ClearPrimaryProcessingQueue()
         {
-            return Redis.GetDatabase(RedisDb).KeyDelete(PrimaryProcessingQueueName);
+            return Redis.KeyDelete(PrimaryProcessingQueueName);
         }
         #endregion
 
         #region Secondary Queue Management Methods
         public long GetSecondaryWaitingQueueLength()
         {
-            return Redis.GetDatabase(RedisDb).ListLength(SecondaryWaitingQueueName);
+            return Redis.ListLength(SecondaryWaitingQueueName);
         }
 
         public long GetSecondaryProcessingQueueLength()
         {
-            return Redis.GetDatabase(RedisDb).ListLength(SecondaryProcessingQueueName);
+            return Redis.ListLength(SecondaryProcessingQueueName);
         }
 
         public bool ClearSecondaryWaitingQueue()
         {
-            return Redis.GetDatabase(RedisDb).KeyDelete(SecondaryWaitingQueueName);
+            return Redis.KeyDelete(SecondaryWaitingQueueName);
         }
 
         public bool ClearSecondaryProcessingQueue()
         {
-            return Redis.GetDatabase(RedisDb).KeyDelete(SecondaryProcessingQueueName);
+            return Redis.KeyDelete(SecondaryProcessingQueueName);
         }
         #endregion
     }

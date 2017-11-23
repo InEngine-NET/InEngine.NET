@@ -11,9 +11,8 @@ namespace InEngine.Commands.Sample
      */
     public class Minimal : ICommand
     {
-        public CommandResult Run()
+        public void Run()
         {
-            return new CommandResult(true);
         }
     }
 }

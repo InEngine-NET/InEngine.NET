@@ -5,10 +5,9 @@ namespace InEngine.Commands.Sample
 {
     public class SayHello : AbstractCommand
     {
-        public override CommandResult Run()
+        public override void Run()
         {
             Console.WriteLine("hello");
-            return new CommandResult(true);
         }
     }
 }

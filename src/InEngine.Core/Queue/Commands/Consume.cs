@@ -11,14 +11,13 @@ namespace InEngine.Core.Queue.Commands
         [Option("secondary", DefaultValue = false, HelpText = "Consume from the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
-        public override CommandResult Run()
+        public override void Run()
         {
             UseSecondaryQueue = UseSecondaryQueue || GetJobContextData<bool>("useSecondaryQueue");
             var broker = Broker.Make();
             var shouldConsume = true;
             while (shouldConsume)
                 shouldConsume = broker.Consume(UseSecondaryQueue) && ShouldConsumeAll;
-            return new CommandResult(true, "Consumed");
         }
     }
 }

@@ -22,15 +22,11 @@ namespace InEngine.Core.Tests.Queue.Commands
         [Test]
         public void ShouldConsumePrimaryQueue()
         {
-            var expectedMessage = "Consumed";
             new Publish() {
-                Command = new Null()
+                Command = new AlwaysSucceed()
             }.Run();
 
-            var result = Subject.Run();
-
-            Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(expectedMessage, result.Message);
+            Subject.Run();
         }
 
         [Test]
@@ -38,32 +34,25 @@ namespace InEngine.Core.Tests.Queue.Commands
         {
             var expectedMessage = "Consumed";
             new Publish() {
-                Command = new Null()
+                Command = new AlwaysSucceed()
             }.Run();
             Subject.UseSecondaryQueue = true;
 
-            var result = Subject.Run();
-
-            Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(expectedMessage, result.Message);
+            Subject.Run();
         }
 
         [Test]
         public void ShouldConsumeSecondaryQueueBasedOnJobContextData()
         {
-            var expectedMessage = "Consumed";
             new Publish() {
-                Command = new Null()
+                Command = new AlwaysSucceed()
             }.Run();
             var jobExecutionConext = new Mock<IJobExecutionContext>();
             var jobDataMap = new JobDataMap { { "useSecondaryQueue", true } };
             jobExecutionConext.SetupGet(p => p.JobDetail.JobDataMap).Returns(jobDataMap);
             Subject.JobExecutionContext = jobExecutionConext.Object;
 
-            var result = Subject.Run();
-
-            Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(expectedMessage, result.Message);
+            Subject.Run();
         }
     }
 }

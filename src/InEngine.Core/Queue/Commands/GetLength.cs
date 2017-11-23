@@ -5,7 +5,7 @@ namespace InEngine.Core.Queue.Commands
 {
     public class GetLength : AbstractCommand
     {
-        public override CommandResult Run()
+        public override void Run()
         {
             var broker = Broker.Make();
             Console.WriteLine("[Primary Queue] Pending Messages: " + broker.GetPrimaryWaitingQueueLength());
@@ -13,8 +13,6 @@ namespace InEngine.Core.Queue.Commands
 
             Console.WriteLine("[Secondary Queue] Pending Messages: " + broker.GetSecondaryWaitingQueueLength());
             Console.WriteLine("[Secondary Queue] Processing Queue: " + broker.GetSecondaryProcessingQueueLength());
-
-            return new CommandResult(true);
         }
     }
 }

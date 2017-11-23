@@ -2,6 +2,6 @@
 {
     public interface ICommand
     {
-        CommandResult Run();
+        void Run();
     }
 }

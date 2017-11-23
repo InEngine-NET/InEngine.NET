@@ -25,7 +25,7 @@ namespace InEngine.Core.Queue
                 var consume = new Consume() {
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}"
                 };
-                var job = consume.MakeJobBuilder().Build();
+                var job = consume.MakeJobBuilder().RequestRecovery(true).Build();
                 job.JobDataMap.Add("useSecondaryQueue", useSecondaryQueue);
 
                 var trigger = consume

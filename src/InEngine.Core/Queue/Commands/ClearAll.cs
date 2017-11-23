@@ -11,7 +11,7 @@ namespace InEngine.Core.Queue.Commands
         [Option("secondary", HelpText = "Clear the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
-        public override CommandResult Run()
+        public override void Run()
         {
             var broker = Broker.Make();
             if (UseSecondaryQueue) {
@@ -23,8 +23,6 @@ namespace InEngine.Core.Queue.Commands
                                   broker.ClearPrimaryProcessingQueue() : 
                                   broker.ClearPrimaryWaitingQueue());
             }
-
-            return new CommandResult(true);
         }
     }
 }

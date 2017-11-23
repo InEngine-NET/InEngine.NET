@@ -36,10 +36,10 @@ namespace MyCommandPlugin
 {
     public class MyCommand : ICommand
     {
-        public CommandResult Run()
+        public void Run()
         {
             Console.WriteLine("Hello, world!");
-            return new CommandResult(true);
+            return new void(true);
         }
     }
 }
@@ -56,10 +56,10 @@ namespace MyCommandPlugin
 {
     public class MyCommand : AbstractCommand
     {
-        public override CommandResult Run()
+        public override void Run()
         {
             Console.WriteLine("Hello, world!");
-            return new CommandResult(true);
+            return new void(true);
         }
     }
 }
@@ -188,7 +188,7 @@ IWrite Line(string val);
 ```
 
 ```c#
-public override CommandResult Run()
+public override void Run()
 {
     Info("Display some information");
 }
@@ -215,7 +215,7 @@ Line("This is a plain line.");
 The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
 
 ```c#
-public override CommandResult Run()
+public override void Run()
 {
     Logger.Trace("Sample trace message");
     Logger.Debug("Sample debug message");
@@ -223,7 +223,7 @@ public override CommandResult Run()
     Logger.Warn("Sample warning message");
     Logger.Error("Sample error message");
     Logger.Fatal("Sample fatal error message");
-    return new CommandResult(true);
+    return new void(true);
 }
 ```
 
@@ -251,7 +251,7 @@ Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configu
 The **InEngine.Core.AbstractCommand** class provides a ProgressBar property. This is how it is used.
 
 ```c#
-public override CommandResult Run()
+public override void Run()
 {
     // Define the ticks (aka steps) for the command...
     var maxTicks = 100000;
@@ -264,7 +264,7 @@ public override CommandResult Run()
         UpdateProgress(i);
     }
 
-    return new CommandResult(true);
+    return new void(true);
 }
 ```
  

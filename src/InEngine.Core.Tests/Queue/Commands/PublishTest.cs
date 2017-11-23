@@ -21,41 +21,31 @@ namespace InEngine.Core.Tests.Queue.Commands
         [Test]
         public void ShouldPublishCommandObject()
         {
-            var expectedMessage = "Published";
-            Subject.Command = new Null();
+            Subject.Command = new AlwaysSucceed();
 
-            var result = Subject.Run();
-
-            Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(expectedMessage, result.Message);
+            Subject.Run();
         }
 
         [Test]
         public void ShouldPublishCommandByArgs()
         {
-            var expectedMessage = "Published";
-            var nullCommand = new Null();
+            var nullCommand = new AlwaysSucceed();
             Subject.CommandAssembly = nullCommand.GetType().Assembly.GetName().Name + ".dll";
             Subject.CommandClass = nullCommand.GetType().FullName;
 
-            var result = Subject.Run();
-
-            Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(expectedMessage, result.Message);
+            Subject.Run();
         }
 
         [Test]
         public void ShouldPublishManyCommands()
         {
-            //var expectedMessage = "Published";
-            Subject.Command = new Null();
-            var results = new List<CommandResult>();
 
-            foreach(var i in Enumerable.Range(0, 200).ToList())
-                results.Add(Subject.Run());
-
-            //Assert.IsTrue(result.IsSuccessful);
-            //Assert.AreEqual(expectedMessage, result.Message);
+            foreach (var i in Enumerable.Range(0, 200).ToList()) {
+                Subject.Command = new Echo() {
+                    Text = $"test job: {i}"
+                };
+                Subject.Run();   
+            }
         }
 
         [Test]

@@ -3,11 +3,10 @@
     /// <summary>
     /// Dummy command for testing and sample code.
     /// </summary>
-    public class Null : AbstractCommand
+    public class AlwaysSucceed : AbstractCommand
     {
-        public override CommandResult Run()
+        public override void Run()
         {
-            return new CommandResult(true);
         }
     }
 }

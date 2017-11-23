@@ -12,7 +12,7 @@ namespace InEngine.Commands.Sample
          * Note that the override keyword is necessary in the Run method 
          * signature as the base class method is virtual.
          */
-        public override CommandResult Run()
+        public override void Run()
         {
             // Define the ticks (aka steps) for the command...
             var maxTicks = 100000;
@@ -24,8 +24,6 @@ namespace InEngine.Commands.Sample
                 // Update the command's progress
                 UpdateProgress(i);
             }
-
-            return new CommandResult(true);
         }
     }
 }

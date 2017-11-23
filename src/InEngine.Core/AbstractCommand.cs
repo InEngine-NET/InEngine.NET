@@ -6,7 +6,7 @@ using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : ICommand, IJob, IWrite
+    abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
         public IJobExecutionContext JobExecutionContext { get; set; }
         public ILogger Logger { get; internal set; }
@@ -33,10 +33,13 @@ namespace InEngine.Core
             Write = new Write();;
         }
 
-        public virtual CommandResult Run()
+        public virtual void Run()
         {
             throw new NotImplementedException();
         }
+
+        public virtual void Failed(Exception exception)
+        {}
 
         #region ProgressBar
         public void SetProgressBarMaxTicks(int maxTicks)
@@ -54,7 +57,14 @@ namespace InEngine.Core
         public void Execute(IJobExecutionContext context)
         {
             JobExecutionContext = context;
-            Run();
+            try
+            {
+                Run();
+            }
+            catch (Exception exception)
+            {
+                Failed(exception);
+            }
         }
 
         public T GetJobContextData<T>(string key)

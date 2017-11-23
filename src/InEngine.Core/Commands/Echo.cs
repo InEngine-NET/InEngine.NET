@@ -11,10 +11,9 @@ namespace InEngine.Core.Commands
         [Option("text", HelpText = "The text to echo.")]
         public string Text { get; set; }
 
-        public override CommandResult Run()
+        public override void Run()
         {
-            Console.WriteLine(Text);
-            return new CommandResult(true);
+            Write.Line(Text);
         }
     }
 }
