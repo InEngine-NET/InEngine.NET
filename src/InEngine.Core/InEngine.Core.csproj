@@ -58,9 +58,6 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="RedisBoost">
-      <HintPath>..\packages\RedisBoost.1.6.4\lib\net40\RedisBoost.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
@@ -102,6 +99,9 @@
       <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="StackExchange.Redis">
+      <HintPath>..\packages\StackExchange.Redis.1.2.4\lib\net46\StackExchange.Redis.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -135,6 +135,7 @@
     <Compile Include="Commands\Options.cs" />
     <Compile Include="IO\Write.cs" />
     <Compile Include="IO\IWrite.cs" />
+    <Compile Include="JsonExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

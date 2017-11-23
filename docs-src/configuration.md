@@ -7,6 +7,8 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
 {
   "InEngine": {
     "Queue": {
+      "PrimaryQueueConsumers":  16,
+      "SecondaryQueueConsumers": -1,
       "QueueName": "InEngine:Queue",
       "RedisHost": "localhost",
       "RedisPort": 6379,
@@ -15,6 +17,7 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
     }
   }
 }
+
 ```
 
 The -c, --configuration argument can also be used to specify an alternate configuration file.
