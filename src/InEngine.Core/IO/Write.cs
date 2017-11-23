@@ -58,7 +58,7 @@ namespace InEngine.Core.IO
             return ColoredText(val, WarningColor);
         }
 
-        public IWrite LineText(string val)
+        public IWrite Text(string val)
         {
             return ColoredText(val, LineColor);
         }

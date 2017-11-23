@@ -14,7 +14,7 @@ namespace InEngine.Core.IO
         IWrite InfoText(string val);
         IWrite WarningText(string val);
         IWrite ErrorText(string val);
-        IWrite LineText(string val);
+        IWrite Text(string val);
         IWrite ColoredText(string val, ConsoleColor consoleColor);
     }
 }

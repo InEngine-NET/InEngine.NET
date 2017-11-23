@@ -131,9 +131,9 @@ namespace InEngine.Core
             return Write.ErrorText(val);
         }
 
-        public IWrite LineText(string val)
+        public IWrite Text(string val)
         {
-            return Write.LineText(val);
+            return Write.Text(val);
         }
 
         public IWrite ColoredText(string val, ConsoleColor consoleColor)

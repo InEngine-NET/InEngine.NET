@@ -8,11 +8,20 @@ namespace InEngine.Core.Queue.Commands
         public override void Run()
         {
             var broker = Broker.Make();
-            Console.WriteLine("[Primary Queue] Pending Messages: " + broker.GetPrimaryWaitingQueueLength());
-            Console.WriteLine("[Primary Queue] Processing Queue: " + broker.GetPrimaryProcessingQueueLength());
+            var leftPadding = 15;
+            Warning("Primary Queue:");
+            InfoText("Pending".PadLeft(leftPadding));
+            Line(broker.GetPrimaryWaitingQueueLength().ToString().PadLeft(10));
+            InfoText("In-progress".PadLeft(leftPadding));
+            Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
+            Newline();
 
-            Console.WriteLine("[Secondary Queue] Pending Messages: " + broker.GetSecondaryWaitingQueueLength());
-            Console.WriteLine("[Secondary Queue] Processing Queue: " + broker.GetSecondaryProcessingQueueLength());
+            Warning("Secondary Queue:");
+            InfoText("Pending".PadLeft(leftPadding));
+            Line(broker.GetSecondaryWaitingQueueLength().ToString().PadLeft(10));
+            InfoText("In-progress".PadLeft(leftPadding));
+            Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
+            Newline();
         }
     }
 }

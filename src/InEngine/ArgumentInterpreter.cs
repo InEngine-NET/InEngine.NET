@@ -173,7 +173,7 @@ namespace InEngine
         {
             Write.Info(CliLogo);
             Write.Warning("Usage:");
-            Write.LineText(options.GetUsage(""));
+            Write.Text(options.GetUsage(""));
             Write.Newline();
             Write.Warning("Plugins:");
             plugins.ForEach(x => Console.WriteLine($"  {x.Name}"));
