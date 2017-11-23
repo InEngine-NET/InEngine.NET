@@ -501,10 +501,10 @@
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCommand</span> <span class="p">:</span> <span class="n">ICommand</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+        <span class="k">public</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
         <span class="p">{</span>
             <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span>
-            <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">void</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -520,10 +520,10 @@ Minimally, the Run method should be overridden.</p>
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCommand</span> <span class="p">:</span> <span class="n">AbstractCommand</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+        <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
         <span class="p">{</span>
             <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span>
-            <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">void</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -633,7 +633,7 @@ Copyright © Ethan Hann 2017
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">Info</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
 <span class="p">}</span>
@@ -655,7 +655,7 @@ If you want to display an uncolored line, use the Line method.
 Line("This is a plain line.");</p>
 <h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a Logger property. It implements the <strong>NLog.ILogger</strong> interface.</p>
-<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">Logger</span><span class="p">.</span><span class="n">Trace</span><span class="p">(</span><span class="s">&quot;Sample trace message&quot;</span><span class="p">);</span>
     <span class="n">Logger</span><span class="p">.</span><span class="n">Debug</span><span class="p">(</span><span class="s">&quot;Sample debug message&quot;</span><span class="p">);</span>
@@ -663,7 +663,7 @@ Line("This is a plain line.");</p>
     <span class="n">Logger</span><span class="p">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">&quot;Sample warning message&quot;</span><span class="p">);</span>
     <span class="n">Logger</span><span class="p">.</span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Sample error message&quot;</span><span class="p">);</span>
     <span class="n">Logger</span><span class="p">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">&quot;Sample fatal error message&quot;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">void</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -688,7 +688,7 @@ Line("This is a plain line.");</p>
 
 <h2 id="progress-bar">Progress Bar<a class="headerlink" href="#progress-bar" title="Permanent link">&para;</a></h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a ProgressBar property. This is how it is used.</p>
-<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="c1">// Define the ticks (aka steps) for the command...</span>
     <span class="kt">var</span> <span class="n">maxTicks</span> <span class="p">=</span> <span class="m">100000</span><span class="p">;</span>
@@ -701,7 +701,7 @@ Line("This is a plain line.");</p>
         <span class="n">UpdateProgress</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">void</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
                 
