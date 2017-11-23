@@ -15,36 +15,35 @@ namespace InEngine.Core.Queue
         public string SecondaryWaitingQueueName { get { return QueueBaseName + ":SecondaryWaiting"; } }
         public string SecondaryProcessingQueueName { get { return QueueBaseName + ":SecondaryProcessing"; } }
 
+        private static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
+            var queueSettings = InEngineSettings.Make().Queue;
+            var redisConfig = ConfigurationOptions.Parse($"{queueSettings.RedisHost}:{queueSettings.RedisPort}");
+            redisConfig.Password = string.IsNullOrWhiteSpace(queueSettings.RedisPassword) ? 
+                null : 
+                queueSettings.RedisPassword;
+            redisConfig.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(redisConfig); 
+        });
+
+        public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
+            
         public ConnectionMultiplexer _connectionMultiplexer;
         public IDatabase Redis
         {
             get
             {
-                if (_connectionMultiplexer == null || !_connectionMultiplexer.IsConnected)
-                {
-                    var redisConfig = ConfigurationOptions.Parse($"{RedisHost}:{RedisPort}");
-                    redisConfig.Password = string.IsNullOrWhiteSpace(RedisPassword) ? null : RedisPassword;
-                    redisConfig.AbortOnConnectFail = false;
-                    _connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig);
-                }
-                return _connectionMultiplexer.GetDatabase(RedisDb);
+                return Connection.GetDatabase(RedisDb);
             }
         }
-        public string RedisHost { get; set; }
-        public int RedisDb { get; set; }
-        public int RedisPort { get; set; }
-        public string RedisPassword { get; set; }
+        public static string RedisHost { get; set; }
+        public static int RedisDb { get; set; }
+        public static int RedisPort { get; set; }
+        public static string RedisPassword { get; set; }
 
         public static Broker Make()
         {
-            var queueSettings = InEngineSettings.Make().Queue;
-            return new Broker()
-            {
-                QueueBaseName = queueSettings.QueueName,
-                RedisHost = queueSettings.RedisHost,
-                RedisPort = queueSettings.RedisPort,
-                RedisDb = queueSettings.RedisDb,
-                RedisPassword = queueSettings.RedisPassword,
+            return new Broker() {
+                QueueBaseName = InEngineSettings.Make().Queue.QueueName
             };
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using CommandLine;
+using Quartz;
 
 namespace InEngine.Core.Queue.Commands
 {
@@ -18,6 +19,11 @@ namespace InEngine.Core.Queue.Commands
             var shouldConsume = true;
             while (shouldConsume)
                 shouldConsume = broker.Consume(UseSecondaryQueue) && ShouldConsumeAll;
+        }
+
+        public override void Failed(Exception exception)
+        {
+            Write.Error(exception.Message);
         }
     }
 }

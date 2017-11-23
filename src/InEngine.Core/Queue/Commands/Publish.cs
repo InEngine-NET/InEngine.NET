@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
 
@@ -30,6 +31,11 @@ namespace InEngine.Core.Queue.Commands
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
             Broker.Make().Publish(command, UseSecondaryQueue);
+        }
+
+        public override void Failed(Exception exception)
+        {
+            Write.Error(exception.Message);
         }
     }
 }
