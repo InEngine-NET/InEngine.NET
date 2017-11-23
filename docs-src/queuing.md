@@ -89,9 +89,7 @@ However, it is often desirable to have more than 1 queue.
 For example, long running jobs might be sent to the secondary queue, 
 while jobs that are expected to finish after only a few moments are sent to the primary queue.
 
-What about 3, 4, 900 queues? This gets to be a pain to manage and, practically speaking, is probably unnecessary.
+What about 3, 4, or 900 queues? Numerous queues gets to be a pain to manage and, practically speaking, is probably unnecessary.
 If it is desirable, different [configuration files](configuration) can be used to run multiple instances of InEngine.NET.
-
- 
-  
+Simply create a new config file with a new QueueName setting and point inengine.exe at it.
 
