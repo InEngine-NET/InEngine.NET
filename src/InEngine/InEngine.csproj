@@ -93,7 +93,9 @@
     </None>
     <None Include="job_scheduling_data_2_0.xsd" />
     <None Include="Plugins\.gitkeep" />
-    <None Include="inengine" />
+    <None Include="inengine">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Commands\InEngine.Commands.csproj">
