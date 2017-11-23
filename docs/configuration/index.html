@@ -29,22 +29,22 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="/images/favicon.ico">
+      <link rel="shortcut icon" href="../images/favicon.ico">
       <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.0">
     
     
       
-        <title>InEngine.NET</title>
+        <title>Configuration - InEngine.NET</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/application.5d3fffba.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.5d3fffba.css">
       
-        <link rel="stylesheet" href="/assets/stylesheets/application-palette.fbd935c7.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.fbd935c7.css">
       
     
     
-      <script src="/assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
       
@@ -54,7 +54,7 @@
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
     
-      <link rel="stylesheet" href="/css/style.css">
+      <link rel="stylesheet" href="../css/style.css">
     
     
   </head>
@@ -81,9 +81,9 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="/" title="InEngine.NET" class="md-header-nav__button md-logo">
+        <a href=".." title="InEngine.NET" class="md-header-nav__button md-logo">
           
-            <img src="/images/inengine-logo-32-alt.png" width="24" height="24">
+            <img src="../images/inengine-logo-32-alt.png" width="24" height="24">
           
         </a>
       </div>
@@ -98,7 +98,7 @@
                 InEngine.NET
               </span>
               <span class="md-header-nav__topic">
-                
+                Configuration
               </span>
             
           
@@ -177,7 +177,7 @@
   <label class="md-nav__title md-nav__title--site" for="drawer">
     <span class="md-nav__button md-logo">
       
-        <img src="/images/inengine-logo-32-alt.png" width="24" height="24">
+        <img src="../images/inengine-logo-32-alt.png" width="24" height="24">
       
     </span>
     InEngine.NET
@@ -213,7 +213,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/" title="Getting Started" class="md-nav__link">
+    <a href=".." title="Getting Started" class="md-nav__link">
       Getting Started
     </a>
   </li>
@@ -223,10 +223,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Documentation
@@ -244,7 +246,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/commands/" title="Commands" class="md-nav__link">
+    <a href="../commands/" title="Commands" class="md-nav__link">
       Commands
     </a>
   </li>
@@ -256,7 +258,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/scheduling/" title="Scheduling" class="md-nav__link">
+    <a href="../scheduling/" title="Scheduling" class="md-nav__link">
       Scheduling
     </a>
   </li>
@@ -268,7 +270,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/queuing/" title="Queuing" class="md-nav__link">
+    <a href="../queuing/" title="Queuing" class="md-nav__link">
       Queuing
     </a>
   </li>
@@ -278,11 +280,20 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="/configuration/" title="Configuration" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+    <a href="./" title="Configuration" class="md-nav__link md-nav__link--active">
       Configuration
     </a>
+    
   </li>
 
         
@@ -298,12 +309,87 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
+                
+                
+                <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<p>Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution. The -c, --configuration argument can also be used to specify an alternate configuration file.</p>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;Queue&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span>  <span class="mi">16</span><span class="p">,</span>
+      <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="nt">&quot;QueueName&quot;</span><span class="p">:</span> <span class="s2">&quot;InEngine:Queue&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;RedisHost&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;RedisPort&quot;</span><span class="p">:</span> <span class="mi">6379</span><span class="p">,</span>
+      <span class="nt">&quot;RedisDb&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;RedisPassword&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
+
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PrimaryQueueConsumers</td>
+<td>The number of consumers to schedule for the primary queue.</td>
+</tr>
+<tr>
+<td>SecondaryQueueConsumers</td>
+<td>The number of consumers to schedule for the secondary queue.</td>
+</tr>
+<tr>
+<td>QueueName</td>
+<td>The base name of the queue, used to form the Redis Queue keys.</td>
+</tr>
+<tr>
+<td>RedisHost</td>
+<td>The Redis hostname to connect to.</td>
+</tr>
+<tr>
+<td>RedisPort</td>
+<td>Redis's port.</td>
+</tr>
+<tr>
+<td>RedisDb</td>
+<td>The Redis database - 0-15</td>
+</tr>
+<tr>
+<td>RedisPassword</td>
+<td>The Redis auth password</td>
+</tr>
+</tbody>
+</table>
+                
+                  
+                
+              
               
                 
               
@@ -314,6 +400,27 @@
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../queuing/" title="Queuing" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Queuing
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -338,9 +445,9 @@
       
     </div>
     
-      <script src="/assets/javascripts/application.6cdc17f0.js"></script>
+      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
       
-      <script>app.initialize({version:"0.17.2",url:{base:""}})</script>
+      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
       
     
     

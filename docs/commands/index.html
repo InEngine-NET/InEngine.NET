@@ -1,206 +1,572 @@
+
+
+
+
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
         <meta name="author" content="Ethan Hann">
-        
-        <link rel="shortcut icon" href="../img/favicon.ico">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../images/favicon.ico">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.0">
+    
+    
+      
         <title>Commands - InEngine.NET</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="../css/highlight.css">
-        <link href="../css/style.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-	
-	<script src="../js/jquery-1.10.2.min.js"></script>
-        <script src="../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../js/highlight.pack.js"></script> 
-    </head>
-
-    <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-
-        <!-- Collapsed navigation -->
-        <div class="navbar-header">
-            <!-- Expander button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="..">InEngine.NET</a>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.5d3fffba.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.fbd935c7.css">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../css/style.css">
+    
+    
+  </head>
+  
+    
+    
+    
+      <body data-md-color-primary="blue" data-md-color-accent="blue">
+    
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="InEngine.NET" class="md-header-nav__button md-logo">
+          
+            <img src="../images/inengine-logo-32-alt.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                InEngine.NET
+              </span>
+              <span class="md-header-nav__topic">
+                Commands
+              </span>
+            
+          
         </div>
-
-        <!-- Expanded navigation -->
-        <div class="navbar-collapse collapse">
-                <!-- Main navigation -->
-                <ul class="nav navbar-nav">
-                    <li >
-                        <a href="..">Getting Started</a>
-                    </li>
-                    <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            
-<li class="active">
-    <a href="./">Commands</a>
-</li>
-                            
-<li >
-    <a href="../scheduling/">Scheduling</a>
-</li>
-                            
-<li >
-    <a href="../queuing/">Queuing</a>
-</li>
-                        </ul>
-                    </li>
-                </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
-                        <i class="fa fa-search"></i> Search
-                    </a>
-                </li>
-                    <li >
-                        <a rel="next" href="..">
-                            <i class="fa fa-arrow-left"></i> Previous
-                        </a>
-                    </li>
-                    <li >
-                        <a rel="prev" href="../scheduling/">
-                            Next <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/InEngine-NET/InEngine.NET">
-                                <i class="fa fa-github"></i>GitHub
-                        </a>
-                    </li>
-            </ul>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
         </div>
+      </div>
     </div>
+  </div>
 </div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
 
-        <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#commands">Commands</a></li>
-            <li><a href="#create-a-command">Create a Command</a></li>
-            <li><a href="#run-a-command">Run a Command</a></li>
-            <li><a href="#discover-command-plugins">Discover Command Plugins</a></li>
-            <li><a href="#discover-commands-in-a-plugin">Discover Commands in a Plugin</a></li>
-            <li><a href="#print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands</a></li>
-            <li><a href="#writing-output">Writing Output</a></li>
-            <li><a href="#logging">Logging</a></li>
-            <li><a href="#progress-bar">Progress Bar</a></li>
+
+  
+
+
+  <a href="https://github.com/InEngine-NET/InEngine.NET" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      InEngine.NET
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <img src="../images/inengine-logo-32-alt.png" width="24" height="24">
+      
+    </span>
+    InEngine.NET
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/InEngine-NET/InEngine.NET" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      InEngine.NET
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Commands
+      </label>
+    
+    <a href="./" title="Commands" class="md-nav__link md-nav__link--active">
+      Commands
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-command" title="Create a Command" class="md-nav__link">
+    Create a Command
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-command" title="Run a Command" class="md-nav__link">
+    Run a Command
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-command-plugins" title="Discover Command Plugins" class="md-nav__link">
+    Discover Command Plugins
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-commands-in-a-plugin" title="Discover Commands in a Plugin" class="md-nav__link">
+    Discover Commands in a Plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#print-help-text-for-a-plugins-commands" title="Print Help Text for a Plugin's Commands" class="md-nav__link">
+    Print Help Text for a Plugin's Commands
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-output" title="Writing Output" class="md-nav__link">
+    Writing Output
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging" title="Logging" class="md-nav__link">
+    Logging
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-bar" title="Progress Bar" class="md-nav__link">
+    Progress Bar
+  </a>
+  
+</li>
+      
+      
+      
     </ul>
-</div></div>
-                <div class="col-md-9" role="main">
+  
+</nav>
+    
+  </li>
 
-<h1 id="commands">Commands</h1>
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../scheduling/" title="Scheduling" class="md-nav__link">
+      Scheduling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../queuing/" title="Queuing" class="md-nav__link">
+      Queuing
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../configuration/" title="Configuration" class="md-nav__link">
+      Configuration
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-command" title="Create a Command" class="md-nav__link">
+    Create a Command
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-command" title="Run a Command" class="md-nav__link">
+    Run a Command
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-command-plugins" title="Discover Command Plugins" class="md-nav__link">
+    Discover Command Plugins
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-commands-in-a-plugin" title="Discover Commands in a Plugin" class="md-nav__link">
+    Discover Commands in a Plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#print-help-text-for-a-plugins-commands" title="Print Help Text for a Plugin's Commands" class="md-nav__link">
+    Print Help Text for a Plugin's Commands
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-output" title="Writing Output" class="md-nav__link">
+    Writing Output
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging" title="Logging" class="md-nav__link">
+    Logging
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-bar" title="Progress Bar" class="md-nav__link">
+    Progress Bar
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h1>
 <p>Commands are the fundamental abstraction used to run custom logic.</p>
-<h2 id="create-a-command">Create a Command</h2>
+<h2 id="create-a-command">Create a Command<a class="headerlink" href="#create-a-command" title="Permanent link">&para;</a></h2>
 <p>The InEngine.Core package is required. Install it into your own Visual Studio project.</p>
 <p><strong>Package Manager</strong></p>
-<pre><code class="bash">Install-Package InEngine.Core
-</code></pre>
+<div class="codehilite"><pre><span></span>Install-Package InEngine.Core
+</pre></div>
+
 
 <p><strong>Nuget CLI</strong></p>
-<pre><code class="bash">nuget install InEgine.Core
-</code></pre>
+<div class="codehilite"><pre><span></span>nuget install InEgine.Core
+</pre></div>
+
 
 <p><strong>.NET CLI</strong></p>
-<pre><code class="bash">dotnet add package InEngine.Core
-</code></pre>
+<div class="codehilite"><pre><span></span>dotnet add package InEngine.Core
+</pre></div>
+
 
 <p><strong>Paket CLI</strong></p>
-<pre><code class="bash">paket add InEngine.Core
-</code></pre>
+<div class="codehilite"><pre><span></span>paket add InEngine.Core
+</pre></div>
+
 
 <p>Adding a class that implements <strong>InEngine.Core.ICommand</strong> is the simplest way to create a command.</p>
-<pre><code class="csharp">using System;
-using InEngine.Core;
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
 
-namespace MyCommandPlugin
-{
-    public class MyCommand : ICommand
-    {
-        public CommandResult Run()
-        {
-            Console.WriteLine(&quot;Hello, world!&quot;);
-            return new CommandResult(true);
-        }
-    }
-}
-</code></pre>
+<span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCommand</span> <span class="p">:</span> <span class="n">ICommand</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
 
 <p>Extending the <strong>InEngine.Core.AbstractCommand</strong> class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
 Minimally, the Run method should be overridden.</p>
-<pre><code class="csharp">using System;
-using InEngine.Core;
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
 
-namespace MyCommandPlugin
-{
-    public class MyCommand : AbstractCommand
-    {
-        public override CommandResult Run()
-        {
-            Console.WriteLine(&quot;Hello, world!&quot;);
-            return new CommandResult(true);
-        }
-    }
-}
-</code></pre>
+<span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCommand</span> <span class="p">:</span> <span class="n">AbstractCommand</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
-<h2 id="run-a-command">Run a Command</h2>
+
+<h2 id="run-a-command">Run a Command<a class="headerlink" href="#run-a-command" title="Permanent link">&para;</a></h2>
 <p>Create a class that implements <strong>InEngine.Core.IOptions</strong> in the same assembly as the command class.
 Add a VerbOptions attribute from the CommandLine namespace that defines the name of the command and optional help text.
 The help text can be auto-generated from the attribute or manually specified in the GetUsage method.  </p>
-<pre><code class="csharp">using CommandLine;
-using CommandLine.Text;
-using InEngine.Core;
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">CommandLine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">CommandLine.Text</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
 
-namespace MyCommandPlugin
-{
-    public class MyOptions : IOptions
-    {
-        [VerbOption(&quot;my-command&quot;, HelpText=&quot;My example command.&quot;)]
-        public MyCommand MyCommand { get; set; }
+<span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyOptions</span> <span class="p">:</span> <span class="n">IOptions</span>
+    <span class="p">{</span>
+<span class="na">        [VerbOption(&quot;my-command&quot;, HelpText=&quot;My example command.&quot;)]</span>
+        <span class="k">public</span> <span class="n">MyCommand</span> <span class="n">MyCommand</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-        [HelpVerbOption]
-        public string GetUsage(string verb)
-        {
-            return HelpText.AutoBuild(this, verb);
-        }
-    }
-}
-</code></pre>
+<span class="na">        [HelpVerbOption]</span>
+        <span class="k">public</span> <span class="kt">string</span> <span class="nf">GetUsage</span><span class="p">(</span><span class="kt">string</span> <span class="n">verb</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">HelpText</span><span class="p">.</span><span class="n">AutoBuild</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">verb</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
-<p>Download the InEngineCli tool that matches the version of the InEngine.Core package you included from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">GitHub Releases</a> page.</p>
-<p>Copy your project's DLLs into the same directory as InEngineCli.exe.</p>
+
+<p>Download the InEngine binary distribution, from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">GitHub Releases</a> page, that matches the version of the InEngine.Core package you included.</p>
+<p>Copy your project's DLLs into the same directory as inengine.exe.</p>
 <p>Run your command...</p>
-<pre><code class="bash">InEngineCli.exe -pMyCommandPlugin my-command
-</code></pre>
+<div class="codehilite"><pre><span></span>inengine.exe -pMyCommandPlugin my-command
+</pre></div>
 
-<h2 id="discover-command-plugins">Discover Command Plugins</h2>
-<p>Run InEngineCli.exe without any arguments to see a list of arguments.</p>
-<pre><code class="text">
-  ___       _____             _              _   _ _____ _____ 
+
+<h2 id="discover-command-plugins">Discover Command Plugins<a class="headerlink" href="#discover-command-plugins" title="Permanent link">&para;</a></h2>
+<p>Run inengine.exe without any arguments to see a list of plugins.</p>
+<div class="codehilite"><pre><span></span>  ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
-  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || &#39;_ \|  _| | &#39;_ \ / _` | | &#39;_ \ / _ \ |  \| |  _|   | |  
   | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
  |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
                         |___/ 
@@ -211,20 +577,20 @@ Usage:
 Plugins:
   InEngine.Commands
   InEngine.Core
+</pre></div>
 
-</code></pre>
 
-<h2 id="discover-commands-in-a-plugin">Discover Commands in a Plugin</h2>
-<p>Run InEngineCli.exe with only the plugin specified.</p>
-<pre><code class="bash">InEngineCli.exe -pInEngine.Core
-</code></pre>
+<h2 id="discover-commands-in-a-plugin">Discover Commands in a Plugin<a class="headerlink" href="#discover-commands-in-a-plugin" title="Permanent link">&para;</a></h2>
+<p>Run inengine.exe with only the plugin specified.</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core
+</pre></div>
+
 
 <p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queue related commands. 
 As an example, this is the help output for the core plugin.</p>
-<pre><code class="text">
-  ___       _____             _              _   _ _____ _____ 
+<div class="codehilite"><pre><span></span>  ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
-  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
+  | || &#39;_ \|  _| | &#39;_ \ / _` | | &#39;_ \ / _ \ |  \| |  _|   | |  
   | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
  |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
                         |___/ 
@@ -238,130 +604,186 @@ Commands:
   queue:consume Consume one or more command messages from the queue.
   queue:length  Get the number of messages in the primary and secondary queues.
   queue:clear   Clear the primary and secondary queues.
-</code></pre>
+</pre></div>
 
-<h2 id="print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands</h2>
+
+<h2 id="print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands<a class="headerlink" href="#print-help-text-for-a-plugins-commands" title="Permanent link">&para;</a></h2>
 <p>Run the command with the -h or --help arguments.</p>
-<pre><code class="bash">InEngineCli.exe -pInEngine.Core queue:clear -h
-</code></pre>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:clear -h
+</pre></div>
 
-<p>The <strong>InEngine.Core</strong> plugin's command to clear the InEngine.NET's queues produces this help message. </p>
-<pre><code class="text">InEngine 3.x
+
+<p>The <strong>InEngine.Core</strong> plugin's command to clear the InEngine.NET queues produces this help message. </p>
+<div class="codehilite"><pre><span></span>InEngine 3.x
 Copyright © Ethan Hann 2017
 
   --processing-queue    Clear the processing queue.
 
   --secondary           Clear the secondary queue.
-</code></pre>
+</pre></div>
 
-<h2 id="writing-output">Writing Output</h2>
+
+<h2 id="writing-output">Writing Output<a class="headerlink" href="#writing-output" title="Permanent link">&para;</a></h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides some helper functions to output text to the console: </p>
-<pre><code class="csharp">IWrite Newline();
-IWrite Info(string val);
-IWrite Warning(string val);
-IWrite Error(string val);
-IWrite Line(string val);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="n">IWrite</span> <span class="nf">Newline</span><span class="p">();</span>
+<span class="n">IWrite</span> <span class="nf">Info</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
+<span class="n">IWrite</span> <span class="nf">Warning</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
+<span class="n">IWrite</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
+<span class="n">IWrite</span> <span class="nf">Line</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
+</pre></div>
 
-<pre><code class="csharp">public override CommandResult Run()
-{
-    Info(&quot;Display some information&quot;);
-}
-</code></pre>
+
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Info</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
 
 <p>Display an error message, use the Error method.</p>
-<pre><code class="csharp">Error(&quot;Display some information&quot;);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+</pre></div>
+
 
 <p>Display a warning message, use the Warning method.</p>
-<pre><code class="csharp">Error(&quot;Display some information&quot;);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+</pre></div>
+
 
 <p>Info, Error, and Warning messages are display in green, red, and yellow, respectively.
 If you want to display an uncolored line, use the Line method. 
 Line("This is a plain line.");</p>
-<h2 id="logging">Logging</h2>
+<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a Logger property. It implements the <strong>NLog.ILogger</strong> interface.</p>
-<pre><code class="csharp">public override CommandResult Run()
-{
-    Logger.Trace(&quot;Sample trace message&quot;);
-    Logger.Debug(&quot;Sample debug message&quot;);
-    Logger.Info(&quot;Sample informational message&quot;);
-    Logger.Warn(&quot;Sample warning message&quot;);
-    Logger.Error(&quot;Sample error message&quot;);
-    Logger.Fatal(&quot;Sample fatal error message&quot;);
-    return new CommandResult(true);
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Trace</span><span class="p">(</span><span class="s">&quot;Sample trace message&quot;</span><span class="p">);</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Debug</span><span class="p">(</span><span class="s">&quot;Sample debug message&quot;</span><span class="p">);</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;Sample informational message&quot;</span><span class="p">);</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">&quot;Sample warning message&quot;</span><span class="p">);</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Sample error message&quot;</span><span class="p">);</span>
+    <span class="n">Logger</span><span class="p">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">&quot;Sample fatal error message&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
 
 <p>Setup an <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file, something like this...</p>
-<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
-&lt;nlog xmlns=&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;
-      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
+      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
 
-    &lt;targets&gt;
-        &lt;target name=&quot;logfile&quot; xsi:type=&quot;File&quot; fileName=&quot;file.txt&quot; /&gt;
-        &lt;target name=&quot;console&quot; xsi:type=&quot;Console&quot; /&gt;
-    &lt;/targets&gt;
+    <span class="nt">&lt;targets&gt;</span>
+        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;file.txt&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;console&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;Console&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/targets&gt;</span>
 
-    &lt;rules&gt;
-        &lt;logger name=&quot;*&quot; minlevel=&quot;Trace&quot; writeTo=&quot;logfile&quot; /&gt;
-        &lt;logger name=&quot;*&quot; minlevel=&quot;Info&quot; writeTo=&quot;console&quot; /&gt;
-    &lt;/rules&gt;
-&lt;/nlog&gt;
-</code></pre>
+    <span class="nt">&lt;rules&gt;</span>
+        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Trace&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Info&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;console&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/rules&gt;</span>
+<span class="nt">&lt;/nlog&gt;</span>
+</pre></div>
 
-<h2 id="progress-bar">Progress Bar</h2>
+
+<h2 id="progress-bar">Progress Bar<a class="headerlink" href="#progress-bar" title="Permanent link">&para;</a></h2>
 <p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a ProgressBar property. This is how it is used.</p>
-<pre><code class="csharp">public override CommandResult Run()
-{
-    // Define the ticks (aka steps) for the command...
-    var maxTicks = 100000;
-    SetProgressBarMaxTicks(maxTicks);
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">CommandResult</span> <span class="nf">Run</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Define the ticks (aka steps) for the command...</span>
+    <span class="kt">var</span> <span class="n">maxTicks</span> <span class="p">=</span> <span class="m">100000</span><span class="p">;</span>
+    <span class="n">SetProgressBarMaxTicks</span><span class="p">(</span><span class="n">maxTicks</span><span class="p">);</span>
 
-    // Do some work...
-    for (var i = 0; i &lt;= maxTicks;i++)
-    {
-        // Update the command's progress
-        UpdateProgress(i);
-    }
+    <span class="c1">// Do some work...</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span> <span class="n">maxTicks</span><span class="p">;</span><span class="n">i</span><span class="p">++)</span>
+    <span class="p">{</span>
+        <span class="c1">// Update the command&#39;s progress</span>
+        <span class="n">UpdateProgress</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    return new CommandResult(true);
-}
-</code></pre></div>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">CommandResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
         </div>
-
-        <footer class="col-md-12">
-            <hr>
-                <p>© 2017 - Ethan Hann</p>
-            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script>var base_url = '..';</script>
-        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
-        <script src="../js/base.js"></script><div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href=".." title="Getting Started" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
-            <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form role="form">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results"></div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Getting Started
+              </span>
             </div>
-            <div class="modal-footer">
+          </a>
+        
+        
+          <a href="../scheduling/" title="Scheduling" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Scheduling
+              </span>
             </div>
-        </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
     </div>
-</div>
-
-    </body>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            © 2017 - Ethan Hann
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
+      
+      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
 </html>
