@@ -15,7 +15,7 @@ namespace InEngine.Core.Queue.Commands
             InfoText("In-progress".PadLeft(leftPadding));
             Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
             ErrorText("Failed".PadLeft(leftPadding));
-            Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
+            Line(broker.GetPrimaryFailedQueueLength().ToString().PadLeft(10));
             Newline();
 
             Warning("Secondary Queue:");
@@ -24,7 +24,7 @@ namespace InEngine.Core.Queue.Commands
             InfoText("In-progress".PadLeft(leftPadding));
             Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
             ErrorText("Failed".PadLeft(leftPadding));
-            Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
+            Line(broker.GetSecondaryFailedQueueLength().ToString().PadLeft(10));
             Newline();
         }
     }
