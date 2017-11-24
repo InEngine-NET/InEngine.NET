@@ -10,12 +10,13 @@ namespace InEngine.Core.Queue
     public class Broker
     {
         public string QueueBaseName { get; set; } = "InEngine:Queue";
-        public string PrimaryWaitingQueueName { get { return QueueBaseName + ":PrimaryWaiting"; } }
-        public string PrimaryProcessingQueueName { get { return QueueBaseName + ":PrimaryProcessing"; } }
-        public string SecondaryWaitingQueueName { get { return QueueBaseName + ":SecondaryWaiting"; } }
-        public string SecondaryProcessingQueueName { get { return QueueBaseName + ":SecondaryProcessing"; } }
-
-        private static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
+        public string PrimaryWaitingQueueName { get { return QueueBaseName + ":Primary:Waiting"; } }
+        public string PrimaryProcessingQueueName { get { return QueueBaseName + ":Primary:Processing"; } }
+        public string PrimaryFailedQueueName { get { return QueueBaseName + ":Primary:Failed"; } }
+        public string SecondaryWaitingQueueName { get { return QueueBaseName + ":Secondary:Waiting"; } }
+        public string SecondaryProcessingQueueName { get { return QueueBaseName + ":Secondary:Processing"; } }
+        public string SecondaryFailedQueueName { get { return QueueBaseName + ":Secondary:Failed"; } }
+        public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
             var queueSettings = InEngineSettings.Make().Queue;
             var redisConfig = ConfigurationOptions.Parse($"{queueSettings.RedisHost}:{queueSettings.RedisPort}");
             redisConfig.Password = string.IsNullOrWhiteSpace(queueSettings.RedisPassword) ? 
@@ -24,9 +25,7 @@ namespace InEngine.Core.Queue
             redisConfig.AbortOnConnectFail = false;
             return ConnectionMultiplexer.Connect(redisConfig); 
         });
-
         public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
-            
         public ConnectionMultiplexer _connectionMultiplexer;
         public IDatabase Redis
         {
@@ -63,6 +62,7 @@ namespace InEngine.Core.Queue
         {
             var waitingQueueName = useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName;
             var processingQueueName = useSecondaryQueue ? SecondaryProcessingQueueName : PrimaryProcessingQueueName;
+            var failedQueueName = useSecondaryQueue ? SecondaryFailedQueueName : PrimaryFailedQueueName;
 
             var stageMessageTask = Redis.ListRightPopLeftPush(waitingQueueName, processingQueueName);
             var serializedMessage = stageMessageTask.ToString();
@@ -80,12 +80,26 @@ namespace InEngine.Core.Queue
             try
             {
                 commandInstance.Run();
+            }
+            catch (Exception exception)
+            {
+                Redis.ListRemove(processingQueueName, serializedMessage, 1);
+                Redis.ListLeftPush(
+                    failedQueueName,
+                    commandInstance.SerializeToJson()
+                );
+                throw new CommandFailedException("Consumed command failed.", exception);
+            }
+
+            try
+            {
                 Redis.ListRemove(processingQueueName, serializedMessage, 1);
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException("Consumed command failed.", exception);
+                throw new CommandFailedException($"Failed to remove completed message from queue: {processingQueueName}", exception);
             }
+
             return true;
         }
 
