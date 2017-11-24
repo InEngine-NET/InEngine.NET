@@ -43,9 +43,14 @@ namespace InEngine.Core
 
         public static List<Plugin> Discover<T>() where T : IPluginType
         {
-            var discoveredAssemblies = Directory
-                .GetFiles(".", "*.dll")
-                .Select(x => Assembly.LoadFrom(x));
+            var logger = LogManager.GetCurrentClassLogger();
+            var discoveredAssemblies = InEngineSettings.Make().PluginDirectories.SelectMany(x => {
+                if (!Directory.Exists(x)) {
+                    logger.Warn("Plugin directory does not exist: " + x);
+                    return new List<Assembly>();
+                }
+                return Directory.GetFiles(x, "*.dll").Select(y => Assembly.LoadFrom(y));                
+            });
             var pluginList = new List<Plugin>();
             foreach (var assembly in discoveredAssemblies)
             {
@@ -56,10 +61,10 @@ namespace InEngine.Core
                 }
                 catch (Exception exception)
                 {
-                    LogManager.GetCurrentClassLogger().Error(exception, "Error discovering plugins");
+                    logger.Error(exception, "Error discovering plugins");
                 }
             }
-            return pluginList;
+            return pluginList.OrderBy(x => x.Name).ToList();
         }
 
         public ICommand CreateCommandInstance(string fullCommandName)

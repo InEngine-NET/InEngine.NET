@@ -8,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Quartz;
 
-namespace InEngine.Core.Tests.Queue.Commands
+namespace InEngine.Core.Test.Queue.Commands
 {
     [TestFixture]
     public class ConsumeTest : TestBase<Consume>
@@ -22,7 +22,8 @@ namespace InEngine.Core.Tests.Queue.Commands
         [Test]
         public void ShouldConsumePrimaryQueue()
         {
-            new Publish() {
+            new Publish()
+            {
                 Command = new AlwaysSucceed()
             }.Run();
 
@@ -32,8 +33,8 @@ namespace InEngine.Core.Tests.Queue.Commands
         [Test]
         public void ShouldConsumeSecondaryQueue()
         {
-            var expectedMessage = "Consumed";
-            new Publish() {
+            new Publish()
+            {
                 Command = new AlwaysSucceed()
             }.Run();
             Subject.UseSecondaryQueue = true;
@@ -44,7 +45,8 @@ namespace InEngine.Core.Tests.Queue.Commands
         [Test]
         public void ShouldConsumeSecondaryQueueBasedOnJobContextData()
         {
-            new Publish() {
+            new Publish()
+            {
                 Command = new AlwaysSucceed()
             }.Run();
             var jobExecutionConext = new Mock<IJobExecutionContext>();

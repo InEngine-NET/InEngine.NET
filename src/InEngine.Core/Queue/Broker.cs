@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
@@ -10,12 +12,11 @@ namespace InEngine.Core.Queue
     public class Broker
     {
         public string QueueBaseName { get; set; } = "InEngine:Queue";
-        public string PrimaryWaitingQueueName { get { return QueueBaseName + ":PrimaryWaiting"; } }
-        public string PrimaryProcessingQueueName { get { return QueueBaseName + ":PrimaryProcessing"; } }
-        public string SecondaryWaitingQueueName { get { return QueueBaseName + ":SecondaryWaiting"; } }
-        public string SecondaryProcessingQueueName { get { return QueueBaseName + ":SecondaryProcessing"; } }
-
-        private static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
+        public string QueueName { get; internal set; } = "Primary";
+        public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
+        public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
+        public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
+        public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
             var queueSettings = InEngineSettings.Make().Queue;
             var redisConfig = ConfigurationOptions.Parse($"{queueSettings.RedisHost}:{queueSettings.RedisPort}");
             redisConfig.Password = string.IsNullOrWhiteSpace(queueSettings.RedisPassword) ? 
@@ -24,9 +25,7 @@ namespace InEngine.Core.Queue
             redisConfig.AbortOnConnectFail = false;
             return ConnectionMultiplexer.Connect(redisConfig); 
         });
-
         public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
-            
         public ConnectionMultiplexer _connectionMultiplexer;
         public IDatabase Redis
         {
@@ -35,101 +34,142 @@ namespace InEngine.Core.Queue
                 return Connection.GetDatabase(RedisDb);
             }
         }
-        public static string RedisHost { get; set; }
-        public static int RedisDb { get; set; }
-        public static int RedisPort { get; set; }
-        public static string RedisPassword { get; set; }
+        public bool UseCompression { get; set; }
+        public int RedisDb { get; set; }
 
-        public static Broker Make()
+        public Broker()
+        {}
+
+        public Broker(bool useSecondaryQueue) : this()
         {
-            return new Broker() {
-                QueueBaseName = InEngineSettings.Make().Queue.QueueName
+            if (useSecondaryQueue)
+                QueueName = "Secondary";
+        }
+
+        public static Broker Make(bool useSecondaryQueue = false)
+        {
+            var queueSettings = InEngineSettings.Make().Queue;
+            return new Broker(useSecondaryQueue)
+            {
+                QueueBaseName = queueSettings.QueueName,
+                UseCompression = queueSettings.UseCompression,
+                RedisDb = queueSettings.RedisDb
             };
         }
 
-        public void Publish(ICommand command, bool useSecondaryQueue = false)
+        public void Publish(ICommand command)
         {
+            var serializedCommand = JsonConvert.SerializeObject(command);
             Redis.ListLeftPush(
-                useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName,
+                PendingQueueName,
                 new Message() {
+                    IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
-                    SerializedCommand = JsonConvert.SerializeObject(command)
-                }.SerializeToJson()
+                    SerializedCommand = UseCompression ? serializedCommand.Compress() : serializedCommand
+            }.SerializeToJson()
             );
         }
 
-        public bool Consume(bool useSecondaryQueue = false)
+        public bool Consume()
         {
-            var waitingQueueName = useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName;
-            var processingQueueName = useSecondaryQueue ? SecondaryProcessingQueueName : PrimaryProcessingQueueName;
-
-            var stageMessageTask = Redis.ListRightPopLeftPush(waitingQueueName, processingQueueName);
+            var stageMessageTask = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
             var serializedMessage = stageMessageTask.ToString();
             if (serializedMessage == null)
                 return false;
             var message = serializedMessage.DeserializeFromJson<Message>();
             if (message == null)
                 return false;
-
-            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
-            if (commandType == null)
-                throw new CommandFailedException("Consumed command failed: could not locate command type.");
-            var commandInstance = JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
+            var commandInstance = ExtractCommandInstanceFromMessage(message);
 
             try
             {
                 commandInstance.Run();
-                Redis.ListRemove(processingQueueName, serializedMessage, 1);
             }
             catch (Exception exception)
             {
+                Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
+                Redis.ListLeftPush(FailedQueueName, stageMessageTask);
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
+
+            try
+            {
+                Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
+            }
+            catch (Exception exception)
+            {
+                throw new CommandFailedException($"Failed to remove completed message from queue: {InProgressQueueName}", exception);
+            }
+
             return true;
         }
 
-        #region Primary Queue Management Methods
-        public long GetPrimaryWaitingQueueLength()
+        public static ICommand ExtractCommandInstanceFromMessage(Message message)
         {
-            return Redis.ListLength(PrimaryWaitingQueueName);
+            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
+            if (commandType == null)
+                throw new CommandFailedException("Could not locate command type.");
+            if (message.IsCompressed)
+                return JsonConvert.DeserializeObject(message.SerializedCommand.Decompress(), commandType) as ICommand;
+            return JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
         }
 
-        public long GetPrimaryProcessingQueueLength()
+        #region Queue Management Methods
+        public long GetPendingQueueLength()
         {
-            return Redis.ListLength(PrimaryProcessingQueueName);
+            return Redis.ListLength(PendingQueueName);
         }
 
-        public bool ClearPrimaryWaitingQueue()
+        public long GetInProgressQueueLength()
         {
-            return Redis.KeyDelete(PrimaryWaitingQueueName);
+            return Redis.ListLength(InProgressQueueName);
         }
 
-        public bool ClearPrimaryProcessingQueue()
+        public long GetFailedQueueLength()
         {
-            return Redis.KeyDelete(PrimaryProcessingQueueName);
-        }
-        #endregion
-
-        #region Secondary Queue Management Methods
-        public long GetSecondaryWaitingQueueLength()
-        {
-            return Redis.ListLength(SecondaryWaitingQueueName);
+            return Redis.ListLength(FailedQueueName);
         }
 
-        public long GetSecondaryProcessingQueueLength()
+        public bool ClearPendingQueue()
         {
-            return Redis.ListLength(SecondaryProcessingQueueName);
+            return Redis.KeyDelete(PendingQueueName);
         }
 
-        public bool ClearSecondaryWaitingQueue()
+        public bool ClearInProgressQueue()
         {
-            return Redis.KeyDelete(SecondaryWaitingQueueName);
+            return Redis.KeyDelete(InProgressQueueName);
         }
 
-        public bool ClearSecondaryProcessingQueue()
+        public bool ClearFailedQueue()
         {
-            return Redis.KeyDelete(SecondaryProcessingQueueName);
+            return Redis.KeyDelete(FailedQueueName);
+        }
+
+        public void RepublishFailedMessages()
+        {
+            Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
+        }
+
+        public List<Message> PeekPendingMessages(long from, long to)
+        {
+            return GetMessages(PendingQueueName, from, to);
+        }
+
+        public List<Message> PeekInProgressMessages(long from, long to)
+        {
+            return GetMessages(InProgressQueueName, from, to);
+        }
+
+        public List<Message> PeekFailedMessages(long from, long to)
+        {
+            return GetMessages(FailedQueueName, from, to);
+        }
+
+        public List<Message> GetMessages(string queueName, long from, long to)
+        {
+            var redisValues = Redis.ListRange(queueName, from, to).ToStringArray();
+            return redisValues.Select(x => x.DeserializeFromJson<Message>()).ToList();
         }
         #endregion
     }
