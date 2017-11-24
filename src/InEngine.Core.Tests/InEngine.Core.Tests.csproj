@@ -1,74 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC74DD78-76C9-4143-A567-527E82DA475B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>InEngine.Core.Tests</RootNamespace>
-    <AssemblyName>InEngine.Core.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFrameworks>net47;net462</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="BeekmanLabs.UnitTesting">
-      <HintPath>..\packages\BeekmanLabs.UnitTesting.0.0.0\lib\net45\BeekmanLabs.UnitTesting.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Quartz">
-      <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Core">
-      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Queue\Commands\PublishTest.cs" />
-    <Compile Include="Queue\Commands\ConsumeTest.cs" />
+    <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="job_scheduling_data_2_0.xsd" />
-    <None Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="BeekmanLabs.UnitTesting" Version="0.0.0" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="Quartz" Version="2.6.1" />
+    <PackageReference Include="Moq" Version="4.7.145" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Queue\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj">
-      <Project>{1C604C4F-3F98-483C-89E3-C951BE03366A}</Project>
-      <Name>InEngine.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
+

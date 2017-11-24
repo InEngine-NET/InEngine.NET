@@ -42,7 +42,7 @@ namespace InEngine.Core.Tests.Queue.Commands
 
             foreach (var i in Enumerable.Range(0, 200).ToList()) {
                 Subject.Command = new Echo() {
-                    Text = $"test job: {i}"
+                    VerbatimText = $"test job: {i}"
                 };
                 Subject.Run();   
             }
