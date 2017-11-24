@@ -8,11 +8,11 @@
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="NLog" Version="4.4.12" />
     <PackageReference Include="Quartz" Version="2.6.1" />
-    <PackageReference Include="Goblinfactory.Konsole.ProgressBar.Core" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.4" />
+    <PackageReference Include="Goblinfactory.Konsole" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs">

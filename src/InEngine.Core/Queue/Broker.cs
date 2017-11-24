@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
@@ -74,11 +76,7 @@ namespace InEngine.Core.Queue
             var message = serializedMessage.DeserializeFromJson<Message>();
             if (message == null)
                 return false;
-
-            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
-            if (commandType == null)
-                throw new CommandFailedException("Consumed command failed: could not locate command type.");
-            var commandInstance = JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
+            var commandInstance = ExtractCommandInstanceFromMessage(message);
 
             try
             {
@@ -101,6 +99,14 @@ namespace InEngine.Core.Queue
             }
 
             return true;
+        }
+
+        public ICommand ExtractCommandInstanceFromMessage(Message message)
+        {
+            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
+            if (commandType == null)
+                throw new CommandFailedException("Could not locate command type.");
+            return JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
         }
 
         #region Queue Management Methods
@@ -137,6 +143,26 @@ namespace InEngine.Core.Queue
         public void RepublishFailedMessages()
         {
             Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
+        }
+
+        public List<Message> PeekPendingMessages(long from, long to)
+        {
+            return GetMessages(PendingQueueName, from, to);
+        }
+
+        public List<Message> PeekInProgressMessages(long from, long to)
+        {
+            return GetMessages(InProgressQueueName, from, to);
+        }
+
+        public List<Message> PeekFailedMessages(long from, long to)
+        {
+            return GetMessages(FailedQueueName, from, to);
+        }
+
+        public List<Message> GetMessages(string queueName, long from, long to)
+        {
+            return Redis.ListRange(queueName, from, to).ToStringArray().Select(x => x.DeserializeFromJson<Message>()).ToList();
         }
         #endregion
     }

@@ -6,8 +6,8 @@ namespace InEngine.Core.Queue.Commands
 {
     public class RepublishFailed : AbstractCommand
     {
-        [Option("count", DefaultValue = 3, HelpText = "The maximum number of messages to republish.")]
-        public int Count { get; set; }
+        [Option("limit", DefaultValue = 100, HelpText = "The maximum number of messages to republish.")]
+        public int Limit { get; set; }
 
         [Option("secondary", DefaultValue = false, HelpText = "Republish failed secondary queue messages.")]
         public bool UseSecondaryQueue { get; set; }
@@ -15,7 +15,7 @@ namespace InEngine.Core.Queue.Commands
         public override void Run()
         {
             var broker = Broker.Make(UseSecondaryQueue);
-            Enumerable.Range(0, Count)
+            Enumerable.Range(0, Limit)
                       .ToList()
                       .ForEach(x => broker.RepublishFailedMessages());
         }
