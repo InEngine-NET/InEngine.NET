@@ -15,7 +15,6 @@ namespace InEngine.Core.Queue.Commands
         {
             var leftPadding = 15;
             Warning($"{broker.QueueName} Queue:");
-            broker = Broker.Make(true);
             InfoText("Pending".PadLeft(leftPadding));
             Line(broker.GetPendingQueueLength().ToString().PadLeft(10));
             InfoText("In-progress".PadLeft(leftPadding));
