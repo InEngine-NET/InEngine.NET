@@ -34,10 +34,8 @@ namespace InEngine.Core.Queue
                 return Connection.GetDatabase(RedisDb);
             }
         }
-        public static string RedisHost { get; set; }
-        public static int RedisDb { get; set; }
-        public static int RedisPort { get; set; }
-        public static string RedisPassword { get; set; }
+        public bool UseCompression { get; set; }
+        public int RedisDb { get; set; }
 
         public Broker()
         {}
@@ -50,20 +48,26 @@ namespace InEngine.Core.Queue
 
         public static Broker Make(bool useSecondaryQueue = false)
         {
-            return new Broker(useSecondaryQueue) {
-                QueueBaseName = InEngineSettings.Make().Queue.QueueName
+            var queueSettings = InEngineSettings.Make().Queue;
+            return new Broker(useSecondaryQueue)
+            {
+                QueueBaseName = queueSettings.QueueName,
+                UseCompression = queueSettings.UseCompression,
+                RedisDb = queueSettings.RedisDb
             };
         }
 
         public void Publish(ICommand command)
         {
+            var serializedCommand = JsonConvert.SerializeObject(command);
             Redis.ListLeftPush(
                 PendingQueueName,
                 new Message() {
+                    IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
-                    SerializedCommand = JsonConvert.SerializeObject(command)
-                }.SerializeToJson()
+                    SerializedCommand = UseCompression ? serializedCommand.Compress() : serializedCommand
+            }.SerializeToJson()
             );
         }
 
@@ -106,6 +110,8 @@ namespace InEngine.Core.Queue
             var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
             if (commandType == null)
                 throw new CommandFailedException("Could not locate command type.");
+            if (message.IsCompressed)
+                return JsonConvert.DeserializeObject(message.SerializedCommand.Decompress(), commandType) as ICommand;
             return JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
         }
 
@@ -162,7 +168,8 @@ namespace InEngine.Core.Queue
 
         public List<Message> GetMessages(string queueName, long from, long to)
         {
-            return Redis.ListRange(queueName, from, to).ToStringArray().Select(x => x.DeserializeFromJson<Message>()).ToList();
+            var redisValues = Redis.ListRange(queueName, from, to).ToStringArray();
+            return redisValues.Select(x => x.DeserializeFromJson<Message>()).ToList();
         }
         #endregion
     }

@@ -7,5 +7,6 @@ namespace InEngine.Core.Queue
         public string CommandClassName { get; set; }
         public string SerializedCommand { get; set; }
         public DateTime QueuedAt { get; set; } = DateTime.UtcNow;
+        public bool IsCompressed { get; set; }
     }
 }

@@ -93,3 +93,13 @@ What about 3, 4, or 900 queues? Numerous queues gets to be a pain to manage and,
 If it is desirable, different [configuration files](configuration) can be used to run multiple instances of InEngine.NET.
 Simply create a new config file with a new QueueName setting and point inengine.exe at it.
 
+## Message Compression
+
+Messages can be compressed when saved in the queue. 
+It is important to understand the trade-offs of this feature before enabling it.
+Compressing messages takes more CPU resources and might negatively impact queueing throughput if the queued commands do not have a lot of internal state.
+Put simply, if the commands are too small to benefit from being compressed, then compressing them wastes resources.
+ 
+If the commands have a lot of internal state, then this feature will reduce the queue's memory consumption.
+Also, in a high-throughput scenario, where network bandwidth is limited, this feature can greatly reduce the amount of bandwidth used.
+
