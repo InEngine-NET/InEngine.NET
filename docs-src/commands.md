@@ -39,7 +39,6 @@ namespace MyCommandPlugin
         public void Run()
         {
             Console.WriteLine("Hello, world!");
-            return new void(true);
         }
     }
 }
@@ -59,7 +58,6 @@ namespace MyCommandPlugin
         public override void Run()
         {
             Console.WriteLine("Hello, world!");
-            return new void(true);
         }
     }
 }
@@ -223,7 +221,6 @@ public override void Run()
     Logger.Warn("Sample warning message");
     Logger.Error("Sample error message");
     Logger.Fatal("Sample fatal error message");
-    return new void(true);
 }
 ```
 
@@ -263,8 +260,6 @@ public override void Run()
         // Update the command's progress
         UpdateProgress(i);
     }
-
-    return new void(true);
 }
 ```
  
