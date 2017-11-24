@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine", "InEngine\InEngi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core.Tests", "InEngine.Core.Tests\InEngine.Core.Tests.csproj", "{3D3DCE12-4219-426E-AFAC-56871B21452A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core.Test", "InEngine.Core.Test\InEngine.Core.Test.csproj", "{030204D0-6469-4A46-827E-122B0215F47E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D3DCE12-4219-426E-AFAC-56871B21452A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D3DCE12-4219-426E-AFAC-56871B21452A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D3DCE12-4219-426E-AFAC-56871B21452A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D3DCE12-4219-426E-AFAC-56871B21452A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{030204D0-6469-4A46-827E-122B0215F47E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{030204D0-6469-4A46-827E-122B0215F47E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{030204D0-6469-4A46-827E-122B0215F47E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{030204D0-6469-4A46-827E-122B0215F47E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

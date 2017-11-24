@@ -7,7 +7,7 @@ using InEngine.Core.Exceptions;
 using InEngine.Core.Queue.Commands;
 using NUnit.Framework;
 
-namespace InEngine.Core.Tests.Queue.Commands
+namespace InEngine.Core.Test.Queue.Commands
 {
     [TestFixture]
     public class PublishTest : TestBase<Publish>
@@ -40,11 +40,13 @@ namespace InEngine.Core.Tests.Queue.Commands
         public void ShouldPublishManyCommands()
         {
 
-            foreach (var i in Enumerable.Range(0, 200).ToList()) {
-                Subject.Command = new Echo() {
+            foreach (var i in Enumerable.Range(0, 200).ToList())
+            {
+                Subject.Command = new Echo()
+                {
                     VerbatimText = $"test job: {i}"
                 };
-                Subject.Run();   
+                Subject.Run();
             }
         }
 

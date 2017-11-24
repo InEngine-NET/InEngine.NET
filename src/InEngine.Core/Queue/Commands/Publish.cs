@@ -7,10 +7,10 @@ namespace InEngine.Core.Queue.Commands
 {
     public class Publish : AbstractCommand
     {
-        [Option("command-assembly", DefaultValue = "InEngine.Core.dll")]
+        [Option("command-assembly", Required = true, HelpText = "The name of a command plugin, e.g. InEngine.Core.dll")]
         public string CommandAssembly { get; set; }
 
-        [Option("command-class", DefaultValue = "InEngine.Core.Queue.Commands.Null")]
+        [Option("command-class", Required = true, DefaultValue = "The name of a command class, e.g. InEngine.Core.Commands.AlwaysSucceed")]
         public string CommandClass { get; set; }
 
         [OptionArray("args", HelpText = "The list of arguments for the published command.")]
