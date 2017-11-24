@@ -67,14 +67,6 @@ namespace InEngine.Core
             }
         }
 
-        public T GetJobContextData<T>(string key)
-        {
-            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
-                return default(T);
-            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
-            return objectVal == null ? default(T) : (T)objectVal;
-        }
-
         public JobBuilder MakeJobBuilder()
         {
             return JobBuilder
@@ -88,6 +80,20 @@ namespace InEngine.Core
                 .Create()
                 .WithIdentity($"{Name}:trigger:{ScheduleId}", SchedulerGroup);
         }
+
+        public T GetJobContextData<T>(string key)
+        {
+            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
+                return default(T);
+            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
+            return objectVal == null ? default(T) : (T)objectVal;
+        }
+
+        public void AddJobContextData<T>(string key, T val)
+        {
+            JobExecutionContext.MergedJobDataMap.Add(key, val);
+        }
+
         #endregion
 
         #region Console output
