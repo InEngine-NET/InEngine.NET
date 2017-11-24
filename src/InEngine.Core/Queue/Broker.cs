@@ -101,7 +101,7 @@ namespace InEngine.Core.Queue
             return true;
         }
 
-        public ICommand ExtractCommandInstanceFromMessage(Message message)
+        public static ICommand ExtractCommandInstanceFromMessage(Message message)
         {
             var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
             if (commandType == null)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
 using Konsole;
@@ -38,20 +40,33 @@ namespace InEngine.Core.Queue.Commands
             var from = Offset;
             var to = Offset + Limit - 1;
             if (PendingQueue) {
-                Warning("Pending:");
-                var konsoleForm = new Form(120, new ThinBoxStyle());
-                broker.PeekPendingMessages(from, to).ForEach(x => {
-                    var message = x as Message;
-                    if (JsonFormat)
-                        Line(message.SerializeToJson());
-                    else
-                        konsoleForm.Write(broker.ExtractCommandInstanceFromMessage(message));
-                });
+                PrintMessages(broker.PeekPendingMessages(from, to), "Pending");
             }
-            if (InProgressQueue)
-                Info($"In-progress: {broker.PeekInProgressMessages(from, to).ToString()}");
-            if (FailedQueue)
-                Info($"Failed: {broker.PeekFailedMessages(from, to).ToString()}");
+            if (InProgressQueue) {
+                PrintMessages(broker.PeekInProgressMessages(from, to), "In-progress");
+            }
+            if (FailedQueue) {
+                PrintMessages(broker.PeekFailedMessages(from, to), "Failed");
+            }
+        }
+
+        public void PrintMessages(List<Message> messages, string queueName)
+        {
+            WarningText($"{queueName}:");
+            if (!messages.Any()) {
+                Line(" no messages available.");
+            }
+         
+            Newline();
+
+            var konsoleForm = new Form(120, new ThinBoxStyle());
+            messages.ForEach(x => {
+                var message = x as Message;
+                if (JsonFormat)
+                    Line(message.SerializeToJson());
+                else
+                    konsoleForm.Write(Broker.ExtractCommandInstanceFromMessage(message));
+            });
         }
     }
 }
