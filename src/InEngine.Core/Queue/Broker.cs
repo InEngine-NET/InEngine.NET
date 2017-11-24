@@ -114,6 +114,11 @@ namespace InEngine.Core.Queue
             return Redis.ListLength(PrimaryProcessingQueueName);
         }
 
+        public long GetPrimaryFailedQueueLength()
+        {
+            return Redis.ListLength(PrimaryFailedQueueName);
+        }
+
         public bool ClearPrimaryWaitingQueue()
         {
             return Redis.KeyDelete(PrimaryWaitingQueueName);
@@ -134,6 +139,11 @@ namespace InEngine.Core.Queue
         public long GetSecondaryProcessingQueueLength()
         {
             return Redis.ListLength(SecondaryProcessingQueueName);
+        }
+
+        public long GetSecondaryFailedQueueLength()
+        {
+            return Redis.ListLength(SecondaryFailedQueueName);
         }
 
         public bool ClearSecondaryWaitingQueue()

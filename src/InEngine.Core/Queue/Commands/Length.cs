@@ -3,7 +3,7 @@ using CommandLine;
 
 namespace InEngine.Core.Queue.Commands
 {
-    public class GetLength : AbstractCommand
+    public class Length : AbstractCommand
     {
         public override void Run()
         {
@@ -14,12 +14,16 @@ namespace InEngine.Core.Queue.Commands
             Line(broker.GetPrimaryWaitingQueueLength().ToString().PadLeft(10));
             InfoText("In-progress".PadLeft(leftPadding));
             Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
+            ErrorText("Failed".PadLeft(leftPadding));
+            Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
             Newline();
 
             Warning("Secondary Queue:");
             InfoText("Pending".PadLeft(leftPadding));
             Line(broker.GetSecondaryWaitingQueueLength().ToString().PadLeft(10));
             InfoText("In-progress".PadLeft(leftPadding));
+            Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
+            ErrorText("Failed".PadLeft(leftPadding));
             Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
             Newline();
         }
