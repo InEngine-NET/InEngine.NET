@@ -9,11 +9,11 @@ namespace InEngine.Core.Commands
     public class Echo : AbstractCommand
     {
         [Option("text", HelpText = "The text to echo.")]
-        public string Text { get; set; }
+        public string VerbatimText { get; set; }
 
         public override void Run()
         {
-            Write.Line(Text);
+            Write.Line(VerbatimText);
         }
     }
 }
