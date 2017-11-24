@@ -84,10 +84,7 @@ namespace InEngine.Core.Queue
             catch (Exception exception)
             {
                 Redis.ListRemove(processingQueueName, serializedMessage, 1);
-                Redis.ListLeftPush(
-                    failedQueueName,
-                    commandInstance.SerializeToJson()
-                );
+                Redis.ListLeftPush(failedQueueName, stageMessageTask);
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
 
@@ -128,6 +125,11 @@ namespace InEngine.Core.Queue
         {
             return Redis.KeyDelete(PrimaryProcessingQueueName);
         }
+
+        public bool ClearPrimaryFailedQueue()
+        {
+            return Redis.KeyDelete(PrimaryFailedQueueName);
+        }
         #endregion
 
         #region Secondary Queue Management Methods
@@ -155,6 +157,20 @@ namespace InEngine.Core.Queue
         {
             return Redis.KeyDelete(SecondaryProcessingQueueName);
         }
+
+
+        public bool ClearSecondaryFailedQueue()
+        {
+            return Redis.KeyDelete(SecondaryFailedQueueName);
+        }
         #endregion
+
+        public void RepublishFailedMessages(bool useSecondaryQueue)
+        {
+            Redis.ListRightPopLeftPush(
+                useSecondaryQueue ? SecondaryFailedQueueName : PrimaryFailedQueueName,
+                useSecondaryQueue ? SecondaryWaitingQueueName : PrimaryWaitingQueueName
+            );
+        }
     }
 }

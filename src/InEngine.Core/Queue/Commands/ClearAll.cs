@@ -5,6 +5,9 @@ namespace InEngine.Core.Queue.Commands
 {
     public class ClearAll : AbstractCommand
     {
+        [Option("failed-queue", HelpText = "Clear the failed queue.")]
+        public bool ClearFailedQueue { get; set; }
+
         [Option("processing-queue", HelpText = "Clear the processing queue.")]
         public bool ClearProcessingQueue { get; set; }
 
@@ -15,13 +18,19 @@ namespace InEngine.Core.Queue.Commands
         {
             var broker = Broker.Make();
             if (UseSecondaryQueue) {
-                Console.WriteLine(ClearProcessingQueue ? 
-                                  broker.ClearSecondaryProcessingQueue() : 
-                                  broker.ClearSecondaryWaitingQueue());    
+                if (ClearProcessingQueue)
+                    Info(broker.ClearSecondaryProcessingQueue().ToString());
+                else if (ClearFailedQueue)
+                    Info(broker.ClearSecondaryFailedQueue().ToString());
+                else
+                    Info(broker.ClearSecondaryWaitingQueue().ToString());
             } else {
-                Console.WriteLine(ClearProcessingQueue ? 
-                                  broker.ClearPrimaryProcessingQueue() : 
-                                  broker.ClearPrimaryWaitingQueue());
+                if (ClearProcessingQueue)
+                    Info(broker.ClearPrimaryProcessingQueue().ToString());
+                else if (ClearFailedQueue)
+                    Info(broker.ClearPrimaryFailedQueue().ToString());
+                else
+                    Info(broker.ClearPrimaryWaitingQueue().ToString());
             }
         }
     }
