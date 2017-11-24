@@ -14,10 +14,10 @@ namespace InEngine.Core.Queue.Commands
 
         public override void Run()
         {
-            var broker = Broker.Make();
+            var broker = Broker.Make(UseSecondaryQueue);
             Enumerable.Range(0, Count)
                       .ToList()
-                      .ForEach(x => broker.RepublishFailedMessages(UseSecondaryQueue));
+                      .ForEach(x => broker.RepublishFailedMessages());
         }
     }
 }

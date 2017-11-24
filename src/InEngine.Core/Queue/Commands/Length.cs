@@ -7,24 +7,21 @@ namespace InEngine.Core.Queue.Commands
     {
         public override void Run()
         {
-            var broker = Broker.Make();
-            var leftPadding = 15;
-            Warning("Primary Queue:");
-            InfoText("Pending".PadLeft(leftPadding));
-            Line(broker.GetPrimaryWaitingQueueLength().ToString().PadLeft(10));
-            InfoText("In-progress".PadLeft(leftPadding));
-            Line(broker.GetPrimaryProcessingQueueLength().ToString().PadLeft(10));
-            ErrorText("Failed".PadLeft(leftPadding));
-            Line(broker.GetPrimaryFailedQueueLength().ToString().PadLeft(10));
-            Newline();
+            PrintUsage(Broker.Make());
+            PrintUsage(Broker.Make(true));
+        }
 
-            Warning("Secondary Queue:");
+        public void PrintUsage(Broker broker)
+        {
+            var leftPadding = 15;
+            Warning($"{broker.QueueName} Queue:");
+            broker = Broker.Make(true);
             InfoText("Pending".PadLeft(leftPadding));
-            Line(broker.GetSecondaryWaitingQueueLength().ToString().PadLeft(10));
+            Line(broker.GetPendingQueueLength().ToString().PadLeft(10));
             InfoText("In-progress".PadLeft(leftPadding));
-            Line(broker.GetSecondaryProcessingQueueLength().ToString().PadLeft(10));
+            Line(broker.GetInProgressQueueLength().ToString().PadLeft(10));
             ErrorText("Failed".PadLeft(leftPadding));
-            Line(broker.GetSecondaryFailedQueueLength().ToString().PadLeft(10));
+            Line(broker.GetFailedQueueLength().ToString().PadLeft(10));
             Newline();
         }
     }

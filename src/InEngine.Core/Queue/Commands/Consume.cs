@@ -15,10 +15,10 @@ namespace InEngine.Core.Queue.Commands
         public override void Run()
         {
             UseSecondaryQueue = UseSecondaryQueue || GetJobContextData<bool>("useSecondaryQueue");
-            var broker = Broker.Make();
+            var broker = Broker.Make(UseSecondaryQueue);
             var shouldConsume = true;
             while (shouldConsume)
-                shouldConsume = broker.Consume(UseSecondaryQueue) && ShouldConsumeAll;
+                shouldConsume = broker.Consume() && ShouldConsumeAll;
         }
 
         public override void Failed(Exception exception)
