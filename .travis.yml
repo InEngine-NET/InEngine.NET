@@ -1,6 +1,7 @@
 sudo: required
 services: docker
 before_install:
+  - cd src
   - docker run -d -p 6379:6379 redislabs/redisearch:latest --protected-mode no --loadmodule /var/lib/redis/modules/redisearch.so
 language: csharp
 solution: InEngine.Net.sln
@@ -9,6 +10,6 @@ sudo: false
 cache: apt
 
 script:
-  - xbuild /p:Configuration=Release ./src
+  - xbuild /p:Configuration=Release
   - mono src/packages/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe ./src/InEngine.Core.Test/bin/Release/InEngine.Core.Test.dll
 
