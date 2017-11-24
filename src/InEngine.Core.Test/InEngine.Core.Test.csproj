@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net47;net462</TargetFrameworks>
+    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   
@@ -11,12 +11,6 @@
     <Description>Plugin-based queuing and scheduling command server.</Description>
     <Copyright>Copyright © 2017 Ethan Hann</Copyright>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BeekmanLabs.UnitTesting" Version="0.0.0" />
     <PackageReference Include="Moq" Version="4.7.145" />

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net47;net462</TargetFrameworks>
+    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -11,7 +11,7 @@
     <Description>Plugin-based queuing and scheduling command server.</Description>
     <Copyright>Copyright © 2017 Ethan Hann</Copyright>
 	<Product>InEngine.NET</Product>
-	<PackageVersion>3.4.0-beta1</PackageVersion>
+	<PackageVersion>3.4.0-beta2</PackageVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
@@ -51,11 +51,6 @@
     <None Update="Plugins\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>
 
