@@ -1,8 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net47;net462</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Version>3.4.0</Version>
+    <FileVersion>3.4.0</FileVersion>
+    <Authors>Ethan Hann</Authors>
+    <Description>Plugin-based queuing and scheduling command server.</Description>
+    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+	<Product>InEngine.NET</Product>
+	<PackageVersion>3.4.0-beta2</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
+    <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj" />
@@ -37,11 +51,6 @@
     <None Update="Plugins\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>
 

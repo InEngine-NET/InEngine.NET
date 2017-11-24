@@ -1,19 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C82B03A2-0186-467D-9FBA-AA79F7A64E6E}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
-		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core", "InEngine.Core\InEngine.Core.csproj", "{1C604C4F-3F98-483C-89E3-C951BE03366A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine.Core", "InEngine.Core\InEngine.Core.csproj", "{1C604C4F-3F98-483C-89E3-C951BE03366A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine", "InEngine\InEngine.csproj", "{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine", "InEngine\InEngine.csproj", "{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core.Test", "InEngine.Core.Test\InEngine.Core.Test.csproj", "{030204D0-6469-4A46-827E-122B0215F47E}"
 EndProject
@@ -43,31 +42,27 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D862B98A-64C2-474B-9E9D-9D8AA2F4EBEC}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
-		$0.TextStylePolicy = $1
+		$0.TextStylePolicy = $11
 		$1.TabsToSpaces = True
 		$1.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $2
 		$2.scope = text/x-csharp
-		$0.TextStylePolicy = $3
 		$3.TabsToSpaces = True
 		$3.EolMarker = Unix
 		$3.scope = text/plain
-		$0.TextStylePolicy = $4
 		$4.inheritsSet = null
 		$4.scope = application/config+xml
-		$0.XmlFormattingPolicy = $5
+		$0.XmlFormattingPolicy = $7
 		$5.inheritsSet = null
 		$5.scope = application/config+xml
-		$0.TextStylePolicy = $6
 		$6.TabsToSpaces = True
 		$6.scope = application/xml
-		$0.XmlFormattingPolicy = $7
 		$7.scope = application/xml
-		$0.TextStylePolicy = $8
 		$8.TabWidth = 2
 		$8.TabsToSpaces = True
 		$8.IndentWidth = 2
@@ -78,10 +73,8 @@ Global
 		$9.BracePositions = SemiExpanded
 		$9.FormatOnPaste = True
 		$9.scope = text/x-json
-		$0.TextStylePolicy = $10
 		$10.inheritsSet = null
 		$10.scope = text/x-web
-		$0.TextStylePolicy = $11
 		$11.inheritsSet = null
 		$11.scope = text/x-vs
 	EndGlobalSection

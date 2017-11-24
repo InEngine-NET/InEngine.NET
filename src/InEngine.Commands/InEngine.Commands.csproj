@@ -1,13 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net47;net462</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
+  <PropertyGroup>
+    <Version>3.4.0</Version>
+    <FileVersion>3.4.0</FileVersion>
+    <Authors>Ethan Hann</Authors>
+    <Description>Plugin-based queuing and scheduling command server.</Description>
+    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj" />
   </ItemGroup>
