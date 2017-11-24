@@ -1,7 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net47;net462</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Version>3.4.0</Version>
+    <FileVersion>3.4.0</FileVersion>
+    <Authors>Ethan Hann</Authors>
+    <Description>Plugin-based queuing and scheduling command server.</Description>
+    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <PackageId>InEngine.Core</PackageId>
+    <PackageVersion>3.4.0-beta1</PackageVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
+    <PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
+    <Product>InEngine.NET</Product>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
