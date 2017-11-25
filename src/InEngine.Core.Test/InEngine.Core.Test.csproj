@@ -23,5 +23,10 @@
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj" />
 	<ProjectReference Include="..\InEngine.Commands\InEngine.Commands.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
 
