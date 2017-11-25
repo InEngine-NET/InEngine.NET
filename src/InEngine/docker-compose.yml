@@ -1,0 +1,6 @@
+﻿version: '3'
+services:
+  inengine:
+    image: inengine
+  redis:
+    image: "redis:alpine"
