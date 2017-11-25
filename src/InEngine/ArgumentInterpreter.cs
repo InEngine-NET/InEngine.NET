@@ -52,6 +52,7 @@ namespace InEngine
 
                 if (options.ShouldRunScheduler) 
                 {
+                    Write.Info(CliLogo);
                     Program.RunScheduler();
                     ExitWithSuccess();
                 }
