@@ -113,7 +113,7 @@ namespace InEngine
 
         public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
         {
-            var isSuccessful =Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
+            var isSuccessful = Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
                 try
                 {
                     var lastArg = pluginArgs.ToList().LastOrDefault();
@@ -152,18 +152,16 @@ namespace InEngine
             foreach (var pluginOptions in pluginOptionList)
             {
                 Parser.Default.ParseArguments(pluginArgs, pluginOptions);
-
-                var verbs = pluginOptions
+                pluginOptions
                     .GetType()
                     .GetProperties()
                     .SelectMany(x => x.GetCustomAttributes(true))
                     .Where(x => x is BaseOptionAttribute)
-                    .ToList();
-
-                verbs.ForEach(x => {
-                    var optionAttribute = (x as BaseOptionAttribute);
-                    Console.WriteLine($"  {optionAttribute.LongName}\t{optionAttribute.HelpText}");
-                });
+                    .ToList()
+                    .ForEach(x => {
+                        var optionAttribute = (x as BaseOptionAttribute);
+                        Console.WriteLine($"  {optionAttribute.LongName}\t{optionAttribute.HelpText}");
+                    });
 
             }
             ExitWithSuccess();

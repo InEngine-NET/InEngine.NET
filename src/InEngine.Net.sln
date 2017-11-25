@@ -8,11 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine.Core", "InEngine.Core\InEngine.Core.csproj", "{1C604C4F-3F98-483C-89E3-C951BE03366A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core", "InEngine.Core\InEngine.Core.csproj", "{1C604C4F-3F98-483C-89E3-C951BE03366A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine", "InEngine\InEngine.csproj", "{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine", "InEngine\InEngine.csproj", "{DF1A45FD-4887-4D65-8BAD-EE17B70FE79D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Commands", "InEngine.Commands\InEngine.Commands.csproj", "{5EDAF024-3BD1-4D22-A6E5-9EF808DB14C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InEngine.Core.Test", "InEngine.Core.Test\InEngine.Core.Test.csproj", "{030204D0-6469-4A46-827E-122B0215F47E}"
 EndProject
@@ -48,34 +48,5 @@ Global
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
 		$0.TextStylePolicy = $11
-		$1.TabsToSpaces = True
-		$1.scope = text/x-csharp
-		$0.CSharpFormattingPolicy = $2
-		$2.scope = text/x-csharp
-		$3.TabsToSpaces = True
-		$3.EolMarker = Unix
-		$3.scope = text/plain
-		$4.inheritsSet = null
-		$4.scope = application/config+xml
-		$0.XmlFormattingPolicy = $7
-		$5.inheritsSet = null
-		$5.scope = application/config+xml
-		$6.TabsToSpaces = True
-		$6.scope = application/xml
-		$7.scope = application/xml
-		$8.TabWidth = 2
-		$8.TabsToSpaces = True
-		$8.IndentWidth = 2
-		$8.NoTabsAfterNonTabs = True
-		$8.scope = text/x-json
-		$0.JSONFormattingPolicy = $9
-		$9.AutoStructureCompletion = True
-		$9.BracePositions = SemiExpanded
-		$9.FormatOnPaste = True
-		$9.scope = text/x-json
-		$10.inheritsSet = null
-		$10.scope = text/x-web
-		$11.inheritsSet = null
-		$11.scope = text/x-vs
 	EndGlobalSection
 EndGlobal

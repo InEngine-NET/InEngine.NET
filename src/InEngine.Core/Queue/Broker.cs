@@ -168,8 +168,9 @@ namespace InEngine.Core.Queue
 
         public List<Message> GetMessages(string queueName, long from, long to)
         {
-            var redisValues = Redis.ListRange(queueName, from, to).ToStringArray();
-            return redisValues.Select(x => x.DeserializeFromJson<Message>()).ToList();
+            return Redis.ListRange(queueName, from, to)
+                        .ToStringArray()
+                        .Select(x => x.DeserializeFromJson<Message>()).ToList();
         }
         #endregion
     }

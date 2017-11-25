@@ -30,7 +30,7 @@ namespace InEngine.Core.Test.Queue.Commands
         public void ShouldPublishCommandByArgs()
         {
             var nullCommand = new AlwaysSucceed();
-            Subject.CommandAssembly = nullCommand.GetType().Assembly.GetName().Name + ".dll";
+            Subject.CommandPlugin = nullCommand.GetType().Assembly.GetName().Name + ".dll";
             Subject.CommandClass = nullCommand.GetType().FullName;
 
             Subject.Run();
@@ -53,7 +53,7 @@ namespace InEngine.Core.Test.Queue.Commands
         [Test]
         public void ShouldFailWhenCommandDoesNotExist()
         {
-            Subject.CommandAssembly = "foo";
+            Subject.CommandPlugin = "foo";
             Subject.CommandClass = "bar";
             var expectedMessage = "Plugin not found at ";
 

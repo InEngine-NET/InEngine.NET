@@ -7,23 +7,36 @@ namespace InEngine.Core.Queue.Commands
 {
     public class Publish : AbstractCommand
     {
-        [Option("command-assembly", Required = true, HelpText = "The name of a command plugin, e.g. InEngine.Core.dll")]
-        public string CommandAssembly { get; set; }
+        [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core.dll")]
+        public string CommandPlugin { get; set; }
 
-        [Option("command-class", Required = true, DefaultValue = "The name of a command class, e.g. InEngine.Core.Commands.AlwaysSucceed")]
+        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo")]
+        public string CommandVerb { get; set; }
+
+        [Option("command-class", HelpText = "A command class name, e.g. InEngine.Core.Commands.AlwaysSucceed. Takes precedence over --command-verb if both are specified.")]
         public string CommandClass { get; set; }
 
-        [OptionArray("args", HelpText = "The list of arguments for the published command.")]
+        [OptionArray("args", HelpText = "An optional list of arguments to publish with the command.")]
         public string[] Arguments { get; set; }
 
-        [Option("secondary", DefaultValue = false, HelpText = "Publish to a secondary queue.")]
+        [Option("secondary", DefaultValue = false, HelpText = "Publish the command to the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
         public ICommand Command { get; set; }
 
         public override void Run()
         {
-            var command = Command ?? Plugin.LoadFrom(CommandAssembly).CreateCommandInstance(CommandClass);
+            var command = Command;
+
+            if (command == null && !string.IsNullOrWhiteSpace(CommandPlugin)) {
+                var plugin = Plugin.LoadFrom(CommandPlugin);
+                if (!string.IsNullOrWhiteSpace(CommandClass))
+                    command = plugin.CreateCommandFromClass(CommandClass);
+                else if (!string.IsNullOrWhiteSpace(CommandVerb)) {
+                    command = plugin.CreateCommandFromVerb(CommandVerb);
+                }
+            }
+
             if (command == null)
                 throw new CommandFailedException("Did not publish message. Could not load command from plugin.");
 

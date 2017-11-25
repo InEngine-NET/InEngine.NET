@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CommandLine;
 using InEngine.Core.Exceptions;
 using NLog;
 
@@ -67,9 +68,28 @@ namespace InEngine.Core
             return pluginList.OrderBy(x => x.Name).ToList();
         }
 
-        public ICommand CreateCommandInstance(string fullCommandName)
+        public ICommand CreateCommandFromClass(string fullCommandName)
         {
-            return Assembly.CreateInstance(fullCommandName) as ICommand;   
+            return Assembly.CreateInstance(fullCommandName) as ICommand;
+        }
+
+        public ICommand CreateCommandFromVerb(string verbName)
+        {
+            var commandClassNames = new List<string>();
+            var optionsList = Make<IOptions>();
+
+            foreach (var options in optionsList)
+                foreach (var property in options.GetType().GetProperties())
+                    foreach (var attribute in property.GetCustomAttributes(true))
+                        if (attribute is VerbOptionAttribute && (attribute as VerbOptionAttribute).LongName == verbName)
+                            commandClassNames.Add(property.PropertyType.FullName);
+
+            var commandCount = commandClassNames.Count();
+            if (commandCount > 1)
+                throw new AmbiguousCommandException(verbName);
+            if (commandCount == 0)
+                throw new CommandNotFoundException(verbName);
+            return Assembly.CreateInstance(commandClassNames.First()) as ICommand;   
         }
     }
 }
