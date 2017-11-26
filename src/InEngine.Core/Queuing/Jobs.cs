@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using InEngine.Core.Queue.Commands;
+using InEngine.Core.Queuing.Commands;
 using InEngine.Core.Scheduling;
 
-namespace InEngine.Core.Queue
+namespace InEngine.Core.Queuing
 {
     public class Jobs : IJobs
     {

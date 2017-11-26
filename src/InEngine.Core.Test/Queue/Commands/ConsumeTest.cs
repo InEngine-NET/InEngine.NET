@@ -1,6 +1,6 @@
 ﻿using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
-using InEngine.Core.Queue.Commands;
+using InEngine.Core.Queuing.Commands;
 using Moq;
 using NUnit.Framework;
 using Quartz;

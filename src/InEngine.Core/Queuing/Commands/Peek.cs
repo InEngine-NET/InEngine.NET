@@ -7,7 +7,7 @@ using Konsole;
 using Konsole.Forms;
 using Newtonsoft.Json;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Peek : AbstractCommand
     {

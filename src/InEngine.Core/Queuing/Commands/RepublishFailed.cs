@@ -2,7 +2,7 @@
 using System.Linq;
 using CommandLine;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class RepublishFailed : AbstractCommand
     {

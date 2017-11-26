@@ -3,7 +3,7 @@ using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Publish : AbstractCommand
     {

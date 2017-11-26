@@ -4,7 +4,7 @@ using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
-using InEngine.Core.Queue.Commands;
+using InEngine.Core.Queuing.Commands;
 using NUnit.Framework;
 
 namespace InEngine.Core.Test.Queue.Commands
