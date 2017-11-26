@@ -9,7 +9,7 @@ namespace InEngine.Core.Scheduling
     {
         public IScheduler Scheduler { get; set; } = StdSchedulerFactory.GetDefaultScheduler();
 
-        public Recurrence Job(AbstractCommand command)
+        public Occurence Job(AbstractCommand command)
         {
             var jobDetail = MakeJobBuilder(command).Build();
 
@@ -18,7 +18,7 @@ namespace InEngine.Core.Scheduling
                    .ToList()
                    .ForEach(x => jobDetail.JobDataMap.Add(x.Name, x.GetValue(command)));
 
-            return new Recurrence() {
+            return new Occurence() {
                 JobDetail = jobDetail,
                 Command = command
             };
