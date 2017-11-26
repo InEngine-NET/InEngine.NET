@@ -1,7 +1,6 @@
 ﻿using System;
 using InEngine.Core.IO;
 using Konsole;
-using NLog;
 using Quartz;
 
 namespace InEngine.Core
@@ -9,18 +8,8 @@ namespace InEngine.Core
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
         public IJobExecutionContext JobExecutionContext { get; set; }
-        public ILogger Logger { get; internal set; }
         public ProgressBar ProgressBar { get; internal set; }
-        string _name;
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                Logger = LogManager.GetLogger(_name);
-            }
-        }
+        public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
         public Write Write { get; set; }
@@ -65,20 +54,6 @@ namespace InEngine.Core
             {
                 Failed(exception);
             }
-        }
-
-        public JobBuilder MakeJobBuilder()
-        {
-            return JobBuilder
-                .Create(GetType())
-                .WithIdentity($"{Name}:job:{ScheduleId}", SchedulerGroup);
-        }
-
-        public TriggerBuilder MakeTriggerBuilder()
-        {
-            return TriggerBuilder
-                .Create()
-                .WithIdentity($"{Name}:trigger:{ScheduleId}", SchedulerGroup);
         }
 
         public T GetJobContextData<T>(string key)

@@ -31,17 +31,14 @@ namespace InEngine.Core.Commands
                 } 
             };
             var commandWithArguments = $"{Command} {Arguments}";
-            Logger.Debug($"Starting process for command: {commandWithArguments}");
             process.Start();
-            Logger.Debug($"Command ({commandWithArguments}) started with process ID {process.Id}.");
             if (process.WaitForExit(Timeout * 1000)) {
-                Logger.Debug($"Process for command {commandWithArguments} with PID {process.Id} ended with exit code {process.ExitCode}.");
                 return;
             }
-            Logger.Debug($"The command ({commandWithArguments}) has timed out and is about to be killed...");
+            Error($"The command ({commandWithArguments}) has timed out and is about to be killed...");
             process.Kill();
-            Logger.Debug($"The command ({commandWithArguments}) has been killed.");
-            throw new CommandFailedException($"The command timed out after {Timeout} second(s).");
+            Error($"The command ({commandWithArguments}) has been killed.");
+            throw new CommandFailedException($"The command ({commandWithArguments}) timed out after {Timeout} second(s).");
         }
     }
 }

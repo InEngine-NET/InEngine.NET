@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using CommandLine;
 using InEngine.Core.Exceptions;
-using NLog;
 
 namespace InEngine.Core
 {
@@ -45,16 +44,13 @@ namespace InEngine.Core
         public static List<Plugin> Load<T>() where T : IPluginType
         {
             var pluginList = new List<Plugin>();
-            var logger = LogManager.GetCurrentClassLogger();
-
-            logger.Debug("Loading core plugin...");
             try
             {
                 pluginList.Add(new Plugin(Assembly.GetExecutingAssembly()));    
             } 
             catch (Exception exception)
             {
-                logger.Error(exception, "Error loading InEngine.Core plugin.");
+                throw new PluginNotFoundException("Could not load InEngine.Core plugin.", exception);
             }
                     
             var assemblies = InEngineSettings
@@ -70,7 +66,7 @@ namespace InEngine.Core
                 }
                 catch (Exception exception)
                 {
-                    logger.Error(exception, "Error loading plugins.");
+                    throw new PluginNotFoundException($"Could not load {assembly.GetName().Name} plugin.", exception);
                 }
             }
             if (!pluginList.Any())
