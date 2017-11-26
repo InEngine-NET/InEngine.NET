@@ -6,7 +6,7 @@ using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Commands
 {
-    public class RuntimeProcess : AbstractCommand
+    public class SystemProcess : AbstractCommand
     {
         [Option('c', "command", Required = true, HelpText = "The name of the CLI program/command to run.")]
         public string Command { get; set; }

@@ -8,8 +8,8 @@ namespace InEngine.Core.Commands
         [VerbOption("echo", HelpText= "Echo some text to the console. Useful for end-to-end testing.")]
         public Echo Echo { get; set; }
 
-        [VerbOption("process", HelpText = "Launch an arbitrary process.")]
-        public RuntimeProcess Process { get; set; }
+        [VerbOption("proc", HelpText = "Launch an arbitrary process.")]
+        public SystemProcess SystemProcess { get; set; }
 
         [HelpVerbOption]
         public string GetUsage(string verb)

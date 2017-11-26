@@ -9,7 +9,7 @@ namespace InEngine.Core
     {
         public static string BasePath { get; set; } = Directory.GetCurrentDirectory();
         public static string ConfigurationFile { get; set; } = "appsettings.json";
-        public List<string> PluginDirectories { get; set; }
+        public List<string> Plugins { get; set; } = new List<string>();
         public QueueSettings Queue { get; set; }
 
         public static InEngineSettings Make()

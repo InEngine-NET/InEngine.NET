@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Linq;
 using CommandLine;
-using CommandLine.Text;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 using NLog;
 using InEngine.Core.IO;
-using System.ServiceProcess;
-using System.IO;
 using System.Collections.Generic;
 
 namespace InEngine
@@ -33,7 +30,7 @@ namespace InEngine
 
         public void Interpret(string[] args)
         {
-            var plugins = Plugin.Discover<IOptions>();
+            var plugins = Plugin.Load<IOptions>();
             var parser = new Parser(with => {
                 with.IgnoreUnknownArguments = true;
                 with.MutuallyExclusive = true;
@@ -159,9 +156,9 @@ namespace InEngine
                     .ToList()
                     .ForEach(x => {
                         var optionAttribute = (x as BaseOptionAttribute);
-                        Console.WriteLine($"  {optionAttribute.LongName}\t{optionAttribute.HelpText}");
+                        Write.Text($"  {optionAttribute.LongName}".PadRight(20));
+                        Write.Line(optionAttribute.HelpText);
                     });
-
             }
             ExitWithSuccess();
         }

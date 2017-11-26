@@ -42,18 +42,26 @@ namespace InEngine.Core
                 .ToList();
         }
 
-        public static List<Plugin> Discover<T>() where T : IPluginType
+        public static List<Plugin> Load<T>() where T : IPluginType
         {
-            var logger = LogManager.GetCurrentClassLogger();
-            var discoveredAssemblies = InEngineSettings.Make().PluginDirectories.SelectMany(x => {
-                if (!Directory.Exists(x)) {
-                    logger.Warn("Plugin directory does not exist: " + x);
-                    return new List<Assembly>();
-                }
-                return Directory.GetFiles(x, "*.dll").Select(y => Assembly.LoadFrom(y));                
-            });
             var pluginList = new List<Plugin>();
-            foreach (var assembly in discoveredAssemblies)
+            var logger = LogManager.GetCurrentClassLogger();
+
+            logger.Debug("Loading core plugin...");
+            try
+            {
+                pluginList.Add(new Plugin(Assembly.GetExecutingAssembly()));    
+            } 
+            catch (Exception exception)
+            {
+                logger.Error(exception, "Error loading InEngine.Core plugin.");
+            }
+                    
+            var assemblies = InEngineSettings
+                .Make()
+                .Plugins
+                .Select(x => Assembly.LoadFrom($"{x}.dll"));
+            foreach (var assembly in assemblies)
             {
                 try
                 {
@@ -62,9 +70,11 @@ namespace InEngine.Core
                 }
                 catch (Exception exception)
                 {
-                    logger.Error(exception, "Error discovering plugins");
+                    logger.Error(exception, "Error loading plugins.");
                 }
             }
+            if (!pluginList.Any())
+                throw new PluginNotFoundException("There are no plugins available.");
             return pluginList.OrderBy(x => x.Name).ToList();
         }
 
