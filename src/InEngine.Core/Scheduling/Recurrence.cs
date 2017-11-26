@@ -14,97 +14,108 @@ namespace InEngine.Core.Scheduling
         {
             return TriggerBuilder
                 .Create()
-                .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);
+                .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);            
+        }
+
+        public ITrigger MakeTrigger(AbstractCommand command, Action<DailyTimeIntervalScheduleBuilder> action)
+        {
+            return MakeTriggerBuilder(command)
+                .WithDailyTimeIntervalSchedule(action)
+                .Build();
+        }
+
+        public ITrigger MakeTrigger(AbstractCommand command, string cronExpression)
+        {
+            return MakeTriggerBuilder(command)
+                .WithCronSchedule(cronExpression)
+                .Build();
+        }
+
+        public ITrigger MakeTrigger(AbstractCommand command, Action<SimpleScheduleBuilder> action)
+        {
+            return MakeTriggerBuilder(command)
+                .WithSimpleSchedule(action)
+                .Build();
         }
 
         public void EverySecond()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInSeconds(1).RepeatForever())
+            );
         }
 
         public void EveryMinute()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInMinutes(1).RepeatForever())
+            );
         }
 
         public void EveryFiveMinutes()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(5).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInMinutes(5).RepeatForever())
+            );
         }
 
         public void EveryTenMinutes()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(10).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInMinutes(10).RepeatForever())
+            );
         }
 
         public void EveryFifteenMinutes()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(15).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInMinutes(15).RepeatForever())
+            );
         }
 
         public void EveryThirtyMinutes()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(30).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInMinutes(30).RepeatForever())
+            );
         }
 
         public void Hourly()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInHours(1).RepeatForever())
+            );
         }
 
         public void HourlyAt(int minutesAfterTheHour)
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithCronSchedule($"0 {minutesAfterTheHour} * * * ?")
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, $"0 {minutesAfterTheHour} * * * ?")
+            );
         }
 
         public void Daily()
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInHours(24).RepeatForever())
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail,
+                MakeTrigger(Command, x => x.WithIntervalInHours(24).RepeatForever())
+            );
         }
 
         public void DailyAt(TimeOfDay timeOfDay)
         {
-            var trigger = MakeTriggerBuilder(Command)
-                .StartNow()
-                .WithDailyTimeIntervalSchedule(x => x.StartingDailyAt(timeOfDay))
-                .Build();
-            Scheduler.ScheduleJob(JobDetail, trigger);
+            Scheduler.ScheduleJob(
+                JobDetail, 
+                MakeTrigger(Command, x => x.StartingDailyAt(timeOfDay))
+            );
         }
     }
 }
