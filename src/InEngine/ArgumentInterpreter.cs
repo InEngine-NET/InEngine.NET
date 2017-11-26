@@ -43,7 +43,7 @@ namespace InEngine
             if (parser.ParseArguments(args, options))
             {
                 if (options == null)
-                    Environment.Exit(Parser.DefaultExitCodeFail);
+                    ExitWithFailure("Could not parse arguments.");
 
                 if (!args.Any())
                     PrintInEngineHelpTextAndExit(plugins, options);
@@ -53,6 +53,7 @@ namespace InEngine
                 if (options.ShouldRunScheduler) 
                 {
                     Write.Info(CliLogo);
+                    Write.Line("Starting the scheduler...").Newline();
                     Program.RunScheduler();
                     ExitWithSuccess();
                 }
@@ -87,14 +88,14 @@ namespace InEngine
             if (string.IsNullOrWhiteSpace(message))
                 message = "success";
             Logger.Debug($"✔ {message}");
-            Environment.Exit(0);
+            Environment.Exit(ExitCodes.success);
         }
 
         public void ExitWithFailure(string message = null)
         {
             Logger.Error(MakeErrorMessage(message));
             Write.Error(message);
-            Environment.Exit(Parser.DefaultExitCodeFail);
+            Environment.Exit(ExitCodes.fail);
         }
 
         public void ExitWithFailure(Exception exception = null)
@@ -102,7 +103,7 @@ namespace InEngine
             var ex = exception ?? new Exception("Unspecified failure");
             Logger.Error(ex, MakeErrorMessage(ex.Message));
             Write.Error(ex.Message);
-            Environment.Exit(Parser.DefaultExitCodeFail);
+            Environment.Exit(ExitCodes.fail);
         }
 
         protected string MakeErrorMessage(string message = null)
@@ -121,13 +122,10 @@ namespace InEngine
                     if (subOptions == null && (lastArg == "-h" || lastArg == "--help"))
                         ExitWithSuccess();
                     else if (subOptions == null)
-                        ExitWithFailure(new CommandFailedException("Could not parse plugin options"));
-
+                        ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
                     var command = subOptions as ICommand;
-
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
-
                     command.Run();
                     ExitWithSuccess();
                 }
@@ -138,7 +136,7 @@ namespace InEngine
             });
 
             if (!isSuccessful)
-                ExitWithFailure("Could not parse plugin arguments");
+                ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
         }
 
         public void PrintPluginHelpTextAndExit(Plugin plugin, List<IOptions> pluginOptionList, string[] pluginArgs)
