@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using InEngine.Core.IO;
 using Konsole;
 using Quartz;
@@ -7,7 +8,6 @@ namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
-        public IJobExecutionContext JobExecutionContext { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
         public string SchedulerGroup { get; set; }
@@ -45,7 +45,13 @@ namespace InEngine.Core
         #region Scheduling
         public void Execute(IJobExecutionContext context)
         {
-            JobExecutionContext = context;
+            var properties = GetType().GetProperties();
+            context.MergedJobDataMap.ToList().ForEach(x => {
+                var property = properties.FirstOrDefault(y => y.Name == x.Key);
+                if (property != null)
+                    property.SetValue(this, x.Value);                
+            });
+
             try
             {
                 Run();
@@ -54,19 +60,6 @@ namespace InEngine.Core
             {
                 Failed(exception);
             }
-        }
-
-        public T GetJobContextData<T>(string key)
-        {
-            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
-                return default(T);
-            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
-            return objectVal == null ? default(T) : (T)objectVal;
-        }
-
-        public void AddJobContextData<T>(string key, T val)
-        {
-            JobExecutionContext.MergedJobDataMap.Add(key, val);
         }
 
         #endregion

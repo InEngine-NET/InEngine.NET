@@ -49,7 +49,6 @@ namespace InEngine.Core.Test.Queue.Commands
             var jobExecutionConext = new Mock<IJobExecutionContext>();
             var jobDataMap = new JobDataMap { { "useSecondaryQueue", true } };
             jobExecutionConext.SetupGet(p => p.JobDetail.JobDataMap).Returns(jobDataMap);
-            Subject.JobExecutionContext = jobExecutionConext.Object;
 
             Subject.Run();
         }
