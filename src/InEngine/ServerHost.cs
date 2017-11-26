@@ -1,4 +1,5 @@
 ﻿using System;
+using InEngine.Core.Scheduling;
 using Quartz;
 using Quartz.Impl;
 
@@ -6,24 +7,24 @@ namespace InEngine
 {
     public class ServerHost : IDisposable
     {
-        public IScheduler Scheduler { get; set; }
+        public Schedule Schedule { get; set; }
 
         public ServerHost()
         {
-            Scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            Schedule = new Schedule();
             Common.Logging.LogManager.Adapter = new Common.Logging.Simple.ConsoleOutLoggerFactoryAdapter { Level = Common.Logging.LogLevel.Info };
-            Jobs.Schedule(Scheduler);
+            Jobs.Schedule(Schedule);
         }
 
         public void Dispose()
         {
-            if (Scheduler != null && Scheduler.IsStarted)
-                Scheduler.Shutdown();
+            if (Schedule != null)
+                Schedule.Shutdown();
         }
 
         public void Start()
         {
-            Scheduler.Start();
+            Schedule.Start();
         }
     }
 }

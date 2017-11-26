@@ -13,6 +13,10 @@ namespace InEngine.Commands
         [VerbOption("sample:say-hello", HelpText = "A sample command to say \"hello\".")]
         public SayHello SayHello { get; set; }
 
+        [VerbOption("sample:minimal")]
+        public Minimal Minimal { get; set; }
+
+        [HelpVerbOption]
         public string GetUsage(string verb)
         {
             return HelpText.AutoBuild(this, verb);

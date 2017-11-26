@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using InEngine.Core.Queue.Commands;
+using InEngine.Core.Queuing.Commands;
 
-namespace InEngine.Core.Queue
+namespace InEngine.Core.Queuing
 {
     public class Options : IOptions
     {

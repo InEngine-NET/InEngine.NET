@@ -1,7 +1,7 @@
 ﻿using System;
 using CommandLine;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Length : AbstractCommand
     {

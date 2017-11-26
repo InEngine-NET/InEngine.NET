@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BeekmanLabs.UnitTesting;
-using InEngine.Core.Commands;
-using InEngine.Core.Exceptions;
-using InEngine.Core.Queue.Commands;
+﻿using BeekmanLabs.UnitTesting;
+using InEngine.Commands;
+using InEngine.Core.Queuing.Commands;
 using Moq;
 using NUnit.Framework;
 using Quartz;
@@ -52,7 +49,6 @@ namespace InEngine.Core.Test.Queue.Commands
             var jobExecutionConext = new Mock<IJobExecutionContext>();
             var jobDataMap = new JobDataMap { { "useSecondaryQueue", true } };
             jobExecutionConext.SetupGet(p => p.JobDetail.JobDataMap).Returns(jobDataMap);
-            Subject.JobExecutionContext = jobExecutionConext.Object;
 
             Subject.Run();
         }

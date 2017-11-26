@@ -1,29 +1,19 @@
 ﻿using System;
+using System.Linq;
 using InEngine.Core.IO;
+using InEngine.Core.Scheduling;
 using Konsole;
-using NLog;
 using Quartz;
 
 namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
-        public IJobExecutionContext JobExecutionContext { get; set; }
-        public ILogger Logger { get; internal set; }
+        public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
-        string _name;
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                Logger = LogManager.GetLogger(_name);
-            }
-        }
+        public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
-        public Write Write { get; set; }
 
         protected AbstractCommand()
         {
@@ -56,7 +46,13 @@ namespace InEngine.Core
         #region Scheduling
         public void Execute(IJobExecutionContext context)
         {
-            JobExecutionContext = context;
+            var properties = GetType().GetProperties();
+            context.MergedJobDataMap.ToList().ForEach(x => {
+                var property = properties.FirstOrDefault(y => y.Name == x.Key);
+                if (property != null)
+                    property.SetValue(this, x.Value);                
+            });
+
             try
             {
                 Run();
@@ -65,33 +61,6 @@ namespace InEngine.Core
             {
                 Failed(exception);
             }
-        }
-
-        public JobBuilder MakeJobBuilder()
-        {
-            return JobBuilder
-                .Create(GetType())
-                .WithIdentity($"{Name}:job:{ScheduleId}", SchedulerGroup);
-        }
-
-        public TriggerBuilder MakeTriggerBuilder()
-        {
-            return TriggerBuilder
-                .Create()
-                .WithIdentity($"{Name}:trigger:{ScheduleId}", SchedulerGroup);
-        }
-
-        public T GetJobContextData<T>(string key)
-        {
-            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
-                return default(T);
-            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
-            return objectVal == null ? default(T) : (T)objectVal;
-        }
-
-        public void AddJobContextData<T>(string key, T val)
-        {
-            JobExecutionContext.MergedJobDataMap.Add(key, val);
         }
 
         #endregion

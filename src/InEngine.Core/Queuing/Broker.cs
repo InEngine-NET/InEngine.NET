@@ -7,7 +7,7 @@ using InEngine.Core.Exceptions;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace InEngine.Core.Queue
+namespace InEngine.Core.Queuing
 {
     public class Broker
     {

@@ -1,8 +1,7 @@
 ﻿using System;
 using CommandLine;
-using Quartz;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Consume : AbstractCommand
     {
@@ -14,7 +13,6 @@ namespace InEngine.Core.Queue.Commands
 
         public override void Run()
         {
-            UseSecondaryQueue = UseSecondaryQueue || GetJobContextData<bool>("useSecondaryQueue");
             var broker = Broker.Make(UseSecondaryQueue);
             var shouldConsume = true;
             while (shouldConsume)
