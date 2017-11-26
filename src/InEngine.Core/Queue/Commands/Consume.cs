@@ -1,6 +1,5 @@
 ﻿using System;
 using CommandLine;
-using Quartz;
 
 namespace InEngine.Core.Queue.Commands
 {

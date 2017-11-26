@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Quartz;
 using Quartz.Impl;
 
@@ -15,6 +14,8 @@ namespace InEngine.Core.Scheduling
 
             command.GetType()
                    .GetProperties()
+                   .ToList()
+                   .Where(x => !x.GetCustomAttributes(typeof(DoNotAutoWireAttribute), true).Any())
                    .ToList()
                    .ForEach(x => jobDetail.JobDataMap.Add(x.Name, x.GetValue(command)));
 

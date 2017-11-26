@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using InEngine.Core.IO;
+using InEngine.Core.Scheduling;
 using Konsole;
 using Quartz;
 
@@ -8,11 +9,11 @@ namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
+        public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
-        public Write Write { get; set; }
 
         protected AbstractCommand()
         {
