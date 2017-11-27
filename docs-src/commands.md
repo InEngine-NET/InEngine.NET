@@ -44,7 +44,8 @@ namespace MyCommandPlugin
 }
 ```
 
-Extending the **InEngine.Core.AbstractCommand** class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
+A command that implements ICommand can be run directly or [queued](queuing), but it cannot be [scheduled](scheduling).
+Extending the **InEngine.Core.AbstractCommand** class adds extra functionality, like a progress bar, and the ability to schedule the command using the scheduler.
 Minimally, the Run method should be overridden.
 
 ```c#
@@ -63,12 +64,12 @@ namespace MyCommandPlugin
 }
 ```
 
-
 ## Run a Command
 
 Create a class that implements **InEngine.Core.IOptions** in the same assembly as the command class.
-Add a VerbOptions attribute from the CommandLine namespace that defines the name of the command and optional help text.
-The help text can be auto-generated from the attribute or manually specified in the GetUsage method.  
+Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. 
+Optional help text can also be specified in the VerbOption attribute.
+The help text can be auto-generated from the attribute or manually specified in the GetUsage method if desired.
 
 ```c#
 using CommandLine;
@@ -93,20 +94,20 @@ namespace MyCommandPlugin
 
 Download the InEngine binary distribution, from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page, that matches the version of the InEngine.Core package you included.
 
-Copy your project's DLLs into the same directory as inengine.exe.
+Copy your project's DLLs into the Plugins subdirectory included in the binary distribution. 
+Add your plugin to the ["Plugins" list in appsettings.config](configuration) at the root of the binary distribution.
 
-Run your command...
+Run your command:
 
 ```bash
 inengine.exe -pMyCommandPlugin my-command
 ```
 
-## Discover Command Plugins
+## View Available Plugins
 
-Run inengine.exe without any arguments to see a list of plugins.
+Run inengine.exe without any arguments to see a list of plugins:
 
 ```text
-
   ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
   | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
@@ -115,27 +116,33 @@ Run inengine.exe without any arguments to see a list of plugins.
                         |___/ 
 
 Usage:
-  -p[<plugin_name>] [<command_name>]
+InEngine 3.x
+Copyright © 2017 Ethan Hann
+
+  p, plugin           Plug-In to activate.
+
+  s, scheduler        Run the scheduler.
+
+  c, configuration    (Default: ./appsettings.json) The path to the 
+                      configuration file.
+
 
 Plugins:
-  InEngine.Commands
   InEngine.Core
-
 ```
 
-## Discover Commands in a Plugin
+## View Commands in a Plugin
 
-Run inengine.exe with only the plugin specified.
+Run inengine.exe with only the plugin specified:
 
 ```bash
 inengine.exe -pInEngine.Core
 ```
 
-The **InEngine.Core** library is itself a plugin that contains queue related commands. 
+The **InEngine.Core** library is itself a plugin that contains queue-related and other commands. 
 As an example, this is the help output for the core plugin.
 
 ```text
-
   ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
   | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
@@ -143,15 +150,20 @@ As an example, this is the help output for the core plugin.
  |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
                         |___/ 
 
-Plugin: InEngine.Core
+Plugin: 
+  Name:    InEngine.Core
+  Version: 3.x
+
 
 Commands:
-  null	A null operation command. Literally does nothing.
-  echo	Echo some text to the console. Useful for end-to-end testing.
-  queue:publish	Publish a command message to a queue.
-  queue:consume	Consume one or more command messages from the queue.
-  queue:length	Get the number of messages in the primary and secondary queues.
-  queue:clear	Clear the primary and secondary queues.
+  queue:publish     Publish a command message to a queue.
+  queue:consume     Consume one or more command messages from the queue.
+  queue:length      Get the number of messages in the primary and secondary queues.
+  queue:flush       Clear the primary or secondary queues.
+  queue:republish   Republish failed messages to the queue.
+  queue:peek        Peek at messages in the primary or secondary queues.
+  echo              Echo some text to the console. Useful for end-to-end testing.
+  proc              Launch an arbitrary process.
 ```
 
 ## Print Help Text for a Plugin's Commands
@@ -159,72 +171,83 @@ Commands:
 Run the command with the -h or --help arguments.
 
 ```bash
-inengine.exe -pInEngine.Core queue:clear -h
+inengine.exe -pInEngine.Core queue:publish -h
 ```
 
 The **InEngine.Core** plugin's command to clear the InEngine.NET queues produces this help message. 
 
 ```text
 InEngine 3.x
-Copyright © Ethan Hann 2017
+Copyright © 2017 Ethan Hann
 
-  --processing-queue    Clear the processing queue.
+  --command-plugin    Required. The name of a command plugin file, e.g. 
+                      InEngine.Core.dll
 
-  --secondary           Clear the secondary queue.
+  --command-verb      A plugin command verb, e.g. echo
+
+  --command-class     A command class name, e.g. 
+                      InEngine.Core.Commands.AlwaysSucceed. Takes precedence 
+                      over --command-verb if both are specified.
+
+  --args              An optional list of arguments to publish with the 
+                      command.
+
+  --secondary         (Default: False) Publish the command to the secondary 
+                      queue.
 ```
 
 ## Writing Output
 
-The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console: 
-
-```c#
-IWrite Newline();
-IWrite Info(string val);
-IWrite Warning(string val);
-IWrite Error(string val);
-IWrite Line(string val);
-```
+The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console, for example:
 
 ```c#
 public override void Run()
 {
-    Info("Display some information");
+    Line("Display some information");
 }
 ```
 
-Display an error message, use the Error method.
+All of these commands append a newline to the end of the specified text:
 
 ```c#
-Error("Display some information");
+Line("This is some text");                  // Text color is white
+Info("Something good happened");            // Text color is green
+Warning("Something not so good happened");  // Text color is yellow
+Error("Something bad happened");            // Text color is red
 ```
 
-Display a warning message, use the Warning method.
+These commands are similar, but they do not append a newline:
 
 ```c#
-Error("Display some information");
+Text("This is some text");                      // Text color is white
+InfoText("Something good happened");            // Text color is green
+WarningText("Something not so good happened");  // Text color is yellow
+ErrorText("Something bad happened");            // Text color is red
 ```
 
-Info, Error, and Warning messages are display in green, red, and yellow, respectively.
-If you want to display an uncolored line, use the Line method. 
-Line("This is a plain line.");
+You can also display newlines:
+ 
+```c#
+Newline();      // 1 newline
+Newline(5);     // 5 newlines
+Newline(10);    // 10 newlines
+```
+
+The methods can be chained together:
+
+```c#
+InfoText("You have this many things: ")
+    .Line("23")
+    .NewLine(2)
+    .InfoText("You have this many other things: ")
+    .Line("34")
+    .NewLine(2); 
+```
 
 ## Logging
 
-The **InEngine.Core.AbstractCommand** class provides a Logger property. It implements the **NLog.ILogger** interface.
-
-```c#
-public override void Run()
-{
-    Logger.Trace("Sample trace message");
-    Logger.Debug("Sample debug message");
-    Logger.Info("Sample informational message");
-    Logger.Warn("Sample warning message");
-    Logger.Error("Sample error message");
-    Logger.Fatal("Sample fatal error message");
-}
-```
-
-Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file, something like this...
+Any exceptions thrown by a command will be logged with NLog provided NLog is configured. 
+The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file needs to be setup with something like this: 
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -245,7 +268,8 @@ Setup an [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configu
 
 ## Progress Bar
 
-The **InEngine.Core.AbstractCommand** class provides a ProgressBar property. This is how it is used.
+The **InEngine.Core.AbstractCommand** class provides a ProgressBar property to show command progress in a terminal.
+This is how it is used:
 
 ```c#
 public override void Run()

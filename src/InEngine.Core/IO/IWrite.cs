@@ -4,7 +4,7 @@ namespace InEngine.Core.IO
 {
     public interface IWrite
     {
-        IWrite Newline();
+        IWrite Newline(int count = 1);
         IWrite Info(string val);
         IWrite Warning(string val);
         IWrite Error(string val);

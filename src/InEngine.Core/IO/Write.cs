@@ -9,9 +9,10 @@ namespace InEngine.Core.IO
         public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
         public ConsoleColor LineColor { get; set; } = ConsoleColor.White;
 
-        public IWrite Newline()
+        public IWrite Newline(int count = 1)
         {
-            Console.WriteLine();
+            for (var i = 0; i < count; i++)
+                Console.WriteLine();
             return this;
         }
 

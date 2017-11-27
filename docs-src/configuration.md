@@ -6,7 +6,11 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
 ```json
 {
   "InEngine": {
+    "Plugins": [
+      "path/to/MyCommandPlugin"
+    ],
     "Queue": {
+      "UseCompression": false,
       "PrimaryQueueConsumers":  16,
       "SecondaryQueueConsumers": 4,
       "QueueName": "InEngine:Queue",
@@ -20,15 +24,23 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
 
 ```
 
-| Setting                   | Description               |
-| ------------------------- | ------------------------- |
-| PrimaryQueueConsumers     | The number of consumers to schedule for the primary queue.        |
-| SecondaryQueueConsumers   | The number of consumers to schedule for the secondary queue.      |
-| QueueName                 | The base name of the queue, used to form the Redis Queue keys.    |
-| RedisHost                 | The Redis hostname to connect to.                                 |
-| RedisPort                 | Redis's port.                                                     |
-| RedisDb                   | The Redis database - 0-15                                         |
-| RedisPassword             | The Redis auth password                                           |
+
+## Top-level Settings
+
+| Setting                   | Type              | Description                                                                       |
+| ------------------------- | ----------------- | --------------------------------------------------------------------------------- |
+| Plugins                   | array of strings  | A list of paths of plugin assemblies, with ".dll" omitted from the assembly name. |
 
 
+## Queue Settings
 
+| Setting                   | Type      | Description                                                           |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| UseCompression            | bool      | A situation performance optimization that compresses queued messages. |
+| PrimaryQueueConsumers     | string    | The number of consumers to schedule for the secondary queue.          |
+| SecondaryQueueConsumers   | string    | The number of consumers to schedule for the secondary queue.          |
+| QueueName                 | string    | The base name of the queue, used to form the Redis Queue keys.        |
+| RedisHost                 | string    | The Redis hostname to connect to.                                     |
+| RedisPort                 | integer   | Redis's port.                                                         |
+| RedisDb                   | integer   | The Redis database - 0-15                                             |
+| RedisPassword             | string    | The Redis auth password                                               |

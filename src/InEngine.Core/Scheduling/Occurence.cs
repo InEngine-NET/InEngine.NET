@@ -84,9 +84,9 @@ namespace InEngine.Core.Scheduling
             RegisterJob(x => x.WithIntervalInHours(24).RepeatForever());
         }
 
-        public void DailyAt(TimeOfDay timeOfDay)
+        public void DailyAt(int hours, int minutes, int seconds = 0)
         {
-            RegisterJob(x => x.StartingDailyAt(timeOfDay));
+            RegisterJob(x => x.StartingDailyAt(new TimeOfDay(hours, minutes, seconds)));
         }
     }
 }

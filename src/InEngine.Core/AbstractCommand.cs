@@ -116,9 +116,9 @@ namespace InEngine.Core
             return Write.ColoredText(val, consoleColor);
         }
 
-        public IWrite Newline()
+        public IWrite Newline(int count = 1)
         {
-            return Write.Newline();
+            return Write.Newline(count);
         }
         #endregion
     }

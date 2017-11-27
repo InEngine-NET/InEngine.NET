@@ -10,7 +10,7 @@ namespace InEngine.Core.Queuing.Commands
         [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core.dll")]
         public string CommandPlugin { get; set; }
 
-        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo")]
+        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo.")]
         public string CommandVerb { get; set; }
 
         [Option("command-class", HelpText = "A command class name, e.g. InEngine.Core.Commands.AlwaysSucceed. Takes precedence over --command-verb if both are specified.")]
