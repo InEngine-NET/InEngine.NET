@@ -103,6 +103,16 @@ Run your command:
 inengine.exe -pMyCommandPlugin my-command
 ```
 
+### Executing Arbitrary Processes
+
+It isn't necessary to create C# classes to utilize InEngine.NET.
+Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's **proc** command.
+The command lists directory contents using "ls" with the "-lhp" switches:
+
+```bash
+inengine.exe -pInEngine.Core proc -c"/bin/ls" -a"-lhp"
+```
+
 ## View Available Plugins
 
 Run inengine.exe without any arguments to see a list of plugins:

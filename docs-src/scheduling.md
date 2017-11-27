@@ -156,14 +156,13 @@ Running the scheduler from the CommandLine is useful for debugging or local deve
 inengine.exe -s
 ```
 
-It can also be run on Mac/Linux with Mono.
+It can also be run on Mac and Linux with Mono via a shell wrapper script:
 
 ```bash
-mono inengine.exe -s
+./inengine -s
 ``` 
 
 ### On Windows as a Service
-
 
 #### Installing
 Run the Install.ps1 PowerShell script in the scheduler directory to install the scheduler in place. 
