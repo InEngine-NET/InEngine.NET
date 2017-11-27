@@ -1,1 +1,1 @@
-﻿(Get-WmiObject win32_service -Filter "name='InEngine.NET'").delete()
+﻿(Get-WdmiObject win32_service -Filter "name='InEngine.NET'").delete()
