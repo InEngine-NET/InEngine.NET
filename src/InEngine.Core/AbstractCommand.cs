@@ -9,6 +9,7 @@ namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
+        public LifecycleActions LifecycleActions { get; set; }
         public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
@@ -20,7 +21,8 @@ namespace InEngine.Core
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
-            Write = new Write();;
+            Write = new Write();
+            LifecycleActions = new LifecycleActions();
         }
 
         public virtual void Run()
@@ -55,7 +57,9 @@ namespace InEngine.Core
 
             try
             {
+                LifecycleActions.BeforeAction?.Invoke(this);
                 Run();
+                LifecycleActions.AfterAction?.Invoke(this);
             }
             catch (Exception exception)
             {

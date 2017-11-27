@@ -13,7 +13,7 @@ namespace InEngine
         {
             Schedule = new Schedule();
             Common.Logging.LogManager.Adapter = new Common.Logging.Simple.ConsoleOutLoggerFactoryAdapter { Level = Common.Logging.LogLevel.Info };
-            Jobs.Schedule(Schedule);
+            Schedule.Initialize();
         }
 
         public void Dispose()
