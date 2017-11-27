@@ -292,6 +292,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#command-state" title="Command State" class="md-nav__link">
+    Command State
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#running-the-scheduler" title="Running the Scheduler" class="md-nav__link">
     Running the Scheduler
   </a>
@@ -438,6 +445,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#command-state" title="Command State" class="md-nav__link">
+    Command State
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#running-the-scheduler" title="Running the Scheduler" class="md-nav__link">
     Running the Scheduler
   </a>
@@ -536,7 +550,7 @@
                 <h1 id="scheduling">Scheduling<a class="headerlink" href="#scheduling" title="Permanent link">&para;</a></h1>
 <p><a href="../commands">Commands</a> can be scheduled to run by leveraging the inengine.exe program, available as a download from a recent <a href="https://github.com/InEngine-NET/InEngine.NET/releases">release</a>.</p>
 <h2 id="scheduling-a-command">Scheduling a Command<a class="headerlink" href="#scheduling-a-command" title="Permanent link">&para;</a></h2>
-<p>A job schedule is created by adding a class to your plugin assembly that implements the <strong>InEngine.Core.Jobs</strong> interface.</p>
+<p>A job schedule is created by adding a class to your plugin assembly that implements the <strong>InEngine.Core.IJobs</strong> interface.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">Quartz</span><span class="p">;</span>
 
@@ -554,7 +568,7 @@
 
 
 <p>This class is automatically discovered by the InEngine.NET scheduler.
-It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler object.</p>
+It will call the Jobs.Schedule method with an initialized <strong>InEngine.Scheduling.Schedule</strong> object.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">Quartz</span><span class="p">;</span>
 
@@ -562,21 +576,97 @@ It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler o
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">class</span> <span class="nc">Jobs</span> <span class="p">:</span> <span class="n">IJobs</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">IScheduler</span> <span class="n">scheduler</span><span class="p">)</span>
+        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">Schedule</span> <span class="n">schedule</span><span class="p">)</span>
         <span class="p">{</span>
-            <span class="kt">var</span> <span class="n">myCommand</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MyCommand</span><span class="p">();</span>
+            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
-            <span class="c1">// Generate a schedulable job with the command.</span>
-            <span class="kt">var</span> <span class="n">job</span> <span class="p">=</span> <span class="n">myCommand</span><span class="p">.</span><span class="n">MakeTriggerBuilder</span><span class="p">().</span><span class="n">Build</span><span class="p">();</span>
 
-            <span class="c1">// Generate a trigger for the job, and set its schedule to every 10 seconds.</span>
-            <span class="kt">var</span> <span class="n">trigger</span> <span class="p">=</span> <span class="n">myCommand</span><span class="p">.</span><span class="n">MakeTriggerBuilder</span><span class="p">().</span><span class="n">Build</span><span class="p">()</span>
-                <span class="p">.</span><span class="n">StartNow</span><span class="p">()</span>
-                <span class="p">.</span><span class="n">WithSimpleSchedule</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">WithIntervalInSeconds</span><span class="p">(</span><span class="m">10</span><span class="p">).</span><span class="n">RepeatForever</span><span class="p">())</span>
-                <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+<p>Run a command on a custom cron schedule (in this example every 15 seconds):</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Cron</span><span class="p">(</span><span class="s">&quot;15 * * * * ?&quot;</span><span class="p">);</span>
+</pre></div>
 
-            <span class="c1">// Register the job and trigger with the scheduler.</span>
-            <span class="n">scheduler</span><span class="p">.</span><span class="n">ScheduleJob</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">trigger</span><span class="p">);</span>
+
+<p>Run a command every second:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EverySecond</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command every minute:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryMinute</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command every 5 minutes:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command every 10 minutes:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command every 15 minutes:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFifteenMinutes</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command every 30 minutes:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryThirtyMinutes</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command hourly:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Hourly</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command hourly at a certain number of minutes past the hour (27 minutes in this example):</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">HourlyAt</span><span class="p">(</span><span class="m">27</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Run a command daily:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Daily</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Run a command daily at a specific time (at 10:30pm in this example):</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">DailyAt</span><span class="p">(</span><span class="m">22</span><span class="p">,</span> <span class="m">30</span><span class="p">);</span>
+</pre></div>
+
+
+<h2 id="command-state">Command State<a class="headerlink" href="#command-state" title="Permanent link">&para;</a></h2>
+<p>Commands can have properties like any C# class.
+When running from the command line these properties are usually initialized with command line arguments.
+When run by the scheduler, the properties are specified when the command is scheduled.
+For example, this command's <strong>Foo</strong> property will be auto-wired to "bar" when the command is later executed by the scheduler. </p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span>
+    <span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Foo</span> <span class="p">=</span> <span class="s">&quot;bar&quot;</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+</pre></div>
+
+
+<p>If it is not desirable to auto-wire a property for some reason, simply decorate the property in the command class with the <strong>InEngine.Core.Scheduling.DoNotAutoWireAttribute</strong> class. </p>
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCommand</span> <span class="p">:</span> <span class="n">AbstractCommand</span>
+    <span class="p">{</span>
+<span class="na">        [DoNotAutoWire]</span>
+        <span class="k">public</span> <span class="kt">string</span> <span class="n">Foo</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+        <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="c1">// Foo will be null here even if it is initialized before being scheduled. </span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -585,31 +675,34 @@ It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler o
 
 <h2 id="running-the-scheduler">Running the Scheduler<a class="headerlink" href="#running-the-scheduler" title="Permanent link">&para;</a></h2>
 <h3 id="manually-from-the-cli">Manually from the CLI<a class="headerlink" href="#manually-from-the-cli" title="Permanent link">&para;</a></h3>
-<p>Running the scheduler from the CommandLine is useful for debugging or local development. Simply run <em>inengine.exe</em> from the command line.</p>
-<div class="codehilite"><pre><span></span>inengine.exe
+<p>Running the scheduler from the CommandLine is useful for debugging or local development:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -s
 </pre></div>
 
 
-<p>It can also be run on Mac/Linux with Mono.</p>
-<div class="codehilite"><pre><span></span>mono inengine.exe
+<p>It can also be run on Mac and Linux with Mono via a shell wrapper script:</p>
+<div class="codehilite"><pre><span></span>./inengine -s
 </pre></div>
 
 
 <h3 id="on-windows-as-a-service">On Windows as a Service<a class="headerlink" href="#on-windows-as-a-service" title="Permanent link">&para;</a></h3>
 <h4 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h4>
-<p>Run the Install.ps1 PowerShell script in the scheduler directory to install the scheduler in place. The script needs to be run as an administrator. The script will register the service at the location where the script is run. </p>
+<p>Run the Install.ps1 PowerShell script in the scheduler directory to install the scheduler in place. 
+The script needs to be run as an administrator. 
+The script will register the service at the location where the script is run.</p>
 <div class="codehilite"><pre><span></span>ps Install.ps1
 </pre></div>
 
 
 <h4 id="uninstalling">Uninstalling<a class="headerlink" href="#uninstalling" title="Permanent link">&para;</a></h4>
-<p>Simply run the <strong>Uninstall.ps1</strong> script with elevated permissions to unregister the service.</p>
+<p>Simply run the <strong>Uninstall.ps1</strong> script with elevated permissions to remove the service.</p>
 <div class="codehilite"><pre><span></span>ps Uninstall.ps1
 </pre></div>
 
 
 <h3 id="on-linux-with-supervisor">On Linux with Supervisor<a class="headerlink" href="#on-linux-with-supervisor" title="Permanent link">&para;</a></h3>
-<p>Supervisor is a process control system for Linux. It has extensive <a href="http://supervisord.org/index.html">documentation</a>, but the following should be enough to get started.</p>
+<p>Supervisor is a process control system for Linux. 
+It has extensive <a href="http://supervisord.org/index.html">documentation</a>, but the following should be enough to get started.</p>
 <h4 id="installing-supervisor">Installing Supervisor<a class="headerlink" href="#installing-supervisor" title="Permanent link">&para;</a></h4>
 <p>This command installs Supervisor on Ubuntu:</p>
 <div class="codehilite"><pre><span></span>sudo apt-get install supervisor
@@ -621,7 +714,7 @@ It will call the Jobs.Schedule method with an initialized Quartz.NET scheduler o
 <div class="codehilite"><pre><span></span><span class="k">[program:inengine-scheudler]</span>
 <span class="na">process_name</span><span class="o">=</span><span class="s">%(program_name)s_%(process_num)02d</span>
 <span class="na">directory</span><span class="o">=</span><span class="s">/path/to/scheduler</span>
-<span class="na">command</span><span class="o">=</span><span class="s">mono inengine.exe</span>
+<span class="na">command</span><span class="o">=</span><span class="s">mono inengine.exe -s</span>
 <span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
 <span class="na">autorestart</span><span class="o">=</span><span class="s">true</span>
 <span class="na">user</span><span class="o">=</span><span class="s">InEngine</span>

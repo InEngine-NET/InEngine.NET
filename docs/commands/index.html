@@ -284,18 +284,31 @@
     Run a Command
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executing-arbitrary-processes" title="Executing Arbitrary Processes" class="md-nav__link">
+    Executing Arbitrary Processes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#discover-command-plugins" title="Discover Command Plugins" class="md-nav__link">
-    Discover Command Plugins
+  <a href="#view-available-plugins" title="View Available Plugins" class="md-nav__link">
+    View Available Plugins
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#discover-commands-in-a-plugin" title="Discover Commands in a Plugin" class="md-nav__link">
-    Discover Commands in a Plugin
+  <a href="#view-commands-in-a-plugin" title="View Commands in a Plugin" class="md-nav__link">
+    View Commands in a Plugin
   </a>
   
 </li>
@@ -410,18 +423,31 @@
     Run a Command
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executing-arbitrary-processes" title="Executing Arbitrary Processes" class="md-nav__link">
+    Executing Arbitrary Processes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#discover-command-plugins" title="Discover Command Plugins" class="md-nav__link">
-    Discover Command Plugins
+  <a href="#view-available-plugins" title="View Available Plugins" class="md-nav__link">
+    View Available Plugins
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#discover-commands-in-a-plugin" title="Discover Commands in a Plugin" class="md-nav__link">
-    Discover Commands in a Plugin
+  <a href="#view-commands-in-a-plugin" title="View Commands in a Plugin" class="md-nav__link">
+    View Commands in a Plugin
   </a>
   
 </li>
@@ -510,7 +536,8 @@
 </pre></div>
 
 
-<p>Extending the <strong>InEngine.Core.AbstractCommand</strong> class adds extra functionality, like a logger, a progress bar, and the ability to schedule the command using the scheduler.
+<p>A command that implements ICommand can be run directly or <a href="../queuing">queued</a>, but it cannot be <a href="../scheduling">scheduled</a>.
+Extending the <strong>InEngine.Core.AbstractCommand</strong> class adds extra functionality, like a progress bar, and the ability to schedule the command using the scheduler.
 Minimally, the Run method should be overridden.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
@@ -530,8 +557,9 @@ Minimally, the Run method should be overridden.</p>
 
 <h2 id="run-a-command">Run a Command<a class="headerlink" href="#run-a-command" title="Permanent link">&para;</a></h2>
 <p>Create a class that implements <strong>InEngine.Core.IOptions</strong> in the same assembly as the command class.
-Add a VerbOptions attribute from the CommandLine namespace that defines the name of the command and optional help text.
-The help text can be auto-generated from the attribute or manually specified in the GetUsage method.  </p>
+Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. 
+Optional help text can also be specified in the VerbOption attribute.
+The help text can be auto-generated from the attribute or manually specified in the GetUsage method if desired.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">CommandLine</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">CommandLine.Text</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
@@ -554,14 +582,23 @@ The help text can be auto-generated from the attribute or manually specified in 
 
 
 <p>Download the InEngine binary distribution, from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">GitHub Releases</a> page, that matches the version of the InEngine.Core package you included.</p>
-<p>Copy your project's DLLs into the same directory as inengine.exe.</p>
-<p>Run your command...</p>
+<p>Copy your project's DLLs into the Plugins subdirectory included in the binary distribution. 
+Add your plugin to the <a href="../configuration">"Plugins" list in appsettings.config</a> at the root of the binary distribution.</p>
+<p>Run your command:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -pMyCommandPlugin my-command
 </pre></div>
 
 
-<h2 id="discover-command-plugins">Discover Command Plugins<a class="headerlink" href="#discover-command-plugins" title="Permanent link">&para;</a></h2>
-<p>Run inengine.exe without any arguments to see a list of plugins.</p>
+<h3 id="executing-arbitrary-processes">Executing Arbitrary Processes<a class="headerlink" href="#executing-arbitrary-processes" title="Permanent link">&para;</a></h3>
+<p>It isn't necessary to create C# classes to utilize InEngine.NET.
+Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's <strong>proc</strong> command.
+The command lists directory contents using "ls" with the "-lhp" switches:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core proc -c<span class="s2">&quot;/bin/ls&quot;</span> -a<span class="s2">&quot;-lhp&quot;</span>
+</pre></div>
+
+
+<h2 id="view-available-plugins">View Available Plugins<a class="headerlink" href="#view-available-plugins" title="Permanent link">&para;</a></h2>
+<p>Run inengine.exe without any arguments to see a list of plugins:</p>
 <div class="codehilite"><pre><span></span>  ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
   | || &#39;_ \|  _| | &#39;_ \ / _` | | &#39;_ \ / _ \ |  \| |  _|   | |  
@@ -570,21 +607,29 @@ The help text can be auto-generated from the attribute or manually specified in 
                         |___/ 
 
 Usage:
-  -p[&lt;plugin_name&gt;] [&lt;command_name&gt;]
+InEngine 3.x
+Copyright © 2017 Ethan Hann
+
+  p, plugin           Plug-In to activate.
+
+  s, scheduler        Run the scheduler.
+
+  c, configuration    (Default: ./appsettings.json) The path to the 
+                      configuration file.
+
 
 Plugins:
-  InEngine.Commands
   InEngine.Core
 </pre></div>
 
 
-<h2 id="discover-commands-in-a-plugin">Discover Commands in a Plugin<a class="headerlink" href="#discover-commands-in-a-plugin" title="Permanent link">&para;</a></h2>
-<p>Run inengine.exe with only the plugin specified.</p>
+<h2 id="view-commands-in-a-plugin">View Commands in a Plugin<a class="headerlink" href="#view-commands-in-a-plugin" title="Permanent link">&para;</a></h2>
+<p>Run inengine.exe with only the plugin specified:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core
 </pre></div>
 
 
-<p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queue related commands. 
+<p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queue-related and other commands. 
 As an example, this is the help output for the core plugin.</p>
 <div class="codehilite"><pre><span></span>  ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
@@ -593,98 +638,113 @@ As an example, this is the help output for the core plugin.</p>
  |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
                         |___/ 
 
-Plugin: InEngine.Core
+Plugin: 
+  Name:    InEngine.Core
+  Version: 3.x
+
 
 Commands:
-  null  A null operation command. Literally does nothing.
-  echo  Echo some text to the console. Useful for end-to-end testing.
-  queue:publish Publish a command message to a queue.
-  queue:consume Consume one or more command messages from the queue.
-  queue:length  Get the number of messages in the primary and secondary queues.
-  queue:clear   Clear the primary and secondary queues.
+  queue:publish     Publish a command message to a queue.
+  queue:consume     Consume one or more command messages from the queue.
+  queue:length      Get the number of messages in the primary and secondary queues.
+  queue:flush       Clear the primary or secondary queues.
+  queue:republish   Republish failed messages to the queue.
+  queue:peek        Peek at messages in the primary or secondary queues.
+  echo              Echo some text to the console. Useful for end-to-end testing.
+  proc              Launch an arbitrary process.
 </pre></div>
 
 
 <h2 id="print-help-text-for-a-plugins-commands">Print Help Text for a Plugin's Commands<a class="headerlink" href="#print-help-text-for-a-plugins-commands" title="Permanent link">&para;</a></h2>
 <p>Run the command with the -h or --help arguments.</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:clear -h
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish -h
 </pre></div>
 
 
 <p>The <strong>InEngine.Core</strong> plugin's command to clear the InEngine.NET queues produces this help message. </p>
 <div class="codehilite"><pre><span></span>InEngine 3.x
-Copyright © Ethan Hann 2017
+Copyright © 2017 Ethan Hann
 
-  --processing-queue    Clear the processing queue.
+  --command-plugin    Required. The name of a command plugin file, e.g. 
+                      InEngine.Core.dll
 
-  --secondary           Clear the secondary queue.
+  --command-verb      A plugin command verb, e.g. echo
+
+  --command-class     A command class name, e.g. 
+                      InEngine.Core.Commands.AlwaysSucceed. Takes precedence 
+                      over --command-verb if both are specified.
+
+  --args              An optional list of arguments to publish with the 
+                      command.
+
+  --secondary         (Default: False) Publish the command to the secondary 
+                      queue.
 </pre></div>
 
 
 <h2 id="writing-output">Writing Output<a class="headerlink" href="#writing-output" title="Permanent link">&para;</a></h2>
-<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides some helper functions to output text to the console: </p>
-<div class="codehilite"><pre><span></span><span class="n">IWrite</span> <span class="nf">Newline</span><span class="p">();</span>
-<span class="n">IWrite</span> <span class="nf">Info</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
-<span class="n">IWrite</span> <span class="nf">Warning</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
-<span class="n">IWrite</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
-<span class="n">IWrite</span> <span class="nf">Line</span><span class="p">(</span><span class="kt">string</span> <span class="n">val</span><span class="p">);</span>
-</pre></div>
-
-
+<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides some helper functions to output text to the console, for example:</p>
 <div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
 <span class="p">{</span>
-    <span class="n">Info</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+    <span class="n">Line</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<p>Display an error message, use the Error method.</p>
-<div class="codehilite"><pre><span></span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+<p>All of these commands append a newline to the end of the specified text:</p>
+<div class="codehilite"><pre><span></span><span class="n">Line</span><span class="p">(</span><span class="s">&quot;This is some text&quot;</span><span class="p">);</span>                  <span class="c1">// Text color is white</span>
+<span class="n">Info</span><span class="p">(</span><span class="s">&quot;Something good happened&quot;</span><span class="p">);</span>            <span class="c1">// Text color is green</span>
+<span class="n">Warning</span><span class="p">(</span><span class="s">&quot;Something not so good happened&quot;</span><span class="p">);</span>  <span class="c1">// Text color is yellow</span>
+<span class="n">Error</span><span class="p">(</span><span class="s">&quot;Something bad happened&quot;</span><span class="p">);</span>            <span class="c1">// Text color is red</span>
 </pre></div>
 
 
-<p>Display a warning message, use the Warning method.</p>
-<div class="codehilite"><pre><span></span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Display some information&quot;</span><span class="p">);</span>
+<p>These commands are similar, but they do not append a newline:</p>
+<div class="codehilite"><pre><span></span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;This is some text&quot;</span><span class="p">);</span>                      <span class="c1">// Text color is white</span>
+<span class="n">InfoText</span><span class="p">(</span><span class="s">&quot;Something good happened&quot;</span><span class="p">);</span>            <span class="c1">// Text color is green</span>
+<span class="n">WarningText</span><span class="p">(</span><span class="s">&quot;Something not so good happened&quot;</span><span class="p">);</span>  <span class="c1">// Text color is yellow</span>
+<span class="n">ErrorText</span><span class="p">(</span><span class="s">&quot;Something bad happened&quot;</span><span class="p">);</span>            <span class="c1">// Text color is red</span>
 </pre></div>
 
 
-<p>Info, Error, and Warning messages are display in green, red, and yellow, respectively.
-If you want to display an uncolored line, use the Line method. 
-Line("This is a plain line.");</p>
+<p>You can also display newlines:</p>
+<div class="codehilite"><pre><span></span><span class="n">Newline</span><span class="p">();</span>      <span class="c1">// 1 newline</span>
+<span class="n">Newline</span><span class="p">(</span><span class="m">5</span><span class="p">);</span>     <span class="c1">// 5 newlines</span>
+<span class="n">Newline</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>    <span class="c1">// 10 newlines</span>
+</pre></div>
+
+
+<p>The methods can be chained together:</p>
+<div class="codehilite"><pre><span></span><span class="n">InfoText</span><span class="p">(</span><span class="s">&quot;You have this many things: &quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Line</span><span class="p">(</span><span class="s">&quot;23&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">NewLine</span><span class="p">(</span><span class="m">2</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">InfoText</span><span class="p">(</span><span class="s">&quot;You have this many other things: &quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Line</span><span class="p">(</span><span class="s">&quot;34&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">NewLine</span><span class="p">(</span><span class="m">2</span><span class="p">);</span> 
+</pre></div>
+
+
 <h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
-<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a Logger property. It implements the <strong>NLog.ILogger</strong> interface.</p>
-<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Trace</span><span class="p">(</span><span class="s">&quot;Sample trace message&quot;</span><span class="p">);</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Debug</span><span class="p">(</span><span class="s">&quot;Sample debug message&quot;</span><span class="p">);</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;Sample informational message&quot;</span><span class="p">);</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">&quot;Sample warning message&quot;</span><span class="p">);</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Sample error message&quot;</span><span class="p">);</span>
-    <span class="n">Logger</span><span class="p">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">&quot;Sample fatal error message&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>Setup an <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file, something like this...</p>
+<p>Any exceptions thrown by a command will be logged provided NLog is configured to record errors. 
+The <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file needs to be setup with something like this: </p>
 <div class="codehilite"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
 <span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
       <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
 
     <span class="nt">&lt;targets&gt;</span>
-        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;file.txt&quot;</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;console&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;Console&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;inengine.log&quot;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/targets&gt;</span>
 
     <span class="nt">&lt;rules&gt;</span>
-        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Trace&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Info&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;console&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Error&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/rules&gt;</span>
 <span class="nt">&lt;/nlog&gt;</span>
 </pre></div>
 
 
 <h2 id="progress-bar">Progress Bar<a class="headerlink" href="#progress-bar" title="Permanent link">&para;</a></h2>
-<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a ProgressBar property. This is how it is used.</p>
+<p>The <strong>InEngine.Core.AbstractCommand</strong> class provides a ProgressBar property to show command progress in a terminal.
+This is how it is used:</p>
 <div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Run</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="c1">// Define the ticks (aka steps) for the command...</span>
