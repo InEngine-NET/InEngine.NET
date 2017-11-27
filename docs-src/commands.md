@@ -256,7 +256,7 @@ InfoText("You have this many things: ")
 
 ## Logging
 
-Any exceptions thrown by a command will be logged with NLog provided NLog is configured. 
+Any exceptions thrown by a command will be logged provided NLog is configured to record errors. 
 The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file needs to be setup with something like this: 
 
 ```xml
@@ -265,13 +265,11 @@ The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuratio
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <targets>
-        <target name="logfile" xsi:type="File" fileName="file.txt" />
-        <target name="console" xsi:type="Console" />
+        <target name="logfile" xsi:type="File" fileName="inengine.log" />
     </targets>
 
     <rules>
-        <logger name="*" minlevel="Trace" writeTo="logfile" />
-        <logger name="*" minlevel="Info" writeTo="console" />
+        <logger name="*" minlevel="Error" writeTo="logfile" />
     </rules>
 </nlog>
 ```
