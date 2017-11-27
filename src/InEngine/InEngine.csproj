@@ -26,7 +26,6 @@
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="NLog" Version="4.4.12" />
-    <PackageReference Include="Quartz" Version="2.6.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ServiceProcess" />
