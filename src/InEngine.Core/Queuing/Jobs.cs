@@ -23,7 +23,10 @@ namespace InEngine.Core.Queuing
                 schedule.Job(new Consume() {
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}",
                     UseSecondaryQueue = useSecondaryQueue
-                }).EverySecond();
+                })
+                .EverySecond()
+                .Before(x => Console.Write("Before..."))
+                .After(x => Console.Write("After..."));
         }
     }
 }

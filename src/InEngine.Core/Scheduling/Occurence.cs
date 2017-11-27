@@ -6,7 +6,7 @@ namespace InEngine.Core.Scheduling
 {
     public class Occurence
     {
-        public IScheduler Scheduler { get; set; } = StdSchedulerFactory.GetDefaultScheduler();
+        public Schedule Schedule { get; set; }
         public AbstractCommand Command { get; set; }
         public IJobDetail JobDetail { get; set; }
 
@@ -16,22 +16,22 @@ namespace InEngine.Core.Scheduling
                 throw new ArgumentNullException(command.GetType().Name, "The command to schedule cannot be null.");
             return TriggerBuilder
                 .Create()
-                .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);            
+                .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);
         }
 
         public void RegisterJob(Action<DailyTimeIntervalScheduleBuilder> action)
         {
-            Scheduler.ScheduleJob(JobDetail, MakeTriggerBuilder(Command).WithDailyTimeIntervalSchedule(action).Build());
+            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithDailyTimeIntervalSchedule(action).Build());
         }
 
         public void RegisterJob(string cronExpression)
         {
-            Scheduler.ScheduleJob(JobDetail, MakeTriggerBuilder(Command).WithCronSchedule(cronExpression).Build());
+            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithCronSchedule(cronExpression).Build());
         }
 
         public void RegisterJob(Action<SimpleScheduleBuilder> action)
         {
-            Scheduler.ScheduleJob(JobDetail, MakeTriggerBuilder(Command).WithSimpleSchedule(action).Build());
+            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithSimpleSchedule(action).Build());
         }
 
         public void Cron(string cronExpression)
@@ -39,9 +39,13 @@ namespace InEngine.Core.Scheduling
             RegisterJob(cronExpression);
         }
 
-        public void EverySecond()
+        public LifecycleActions EverySecond()
         {
             RegisterJob(x => x.WithIntervalInSeconds(1).RepeatForever());
+            return new LifecycleActions()
+            {
+                Command = Command
+            };
         }
 
         public void EveryMinute()
