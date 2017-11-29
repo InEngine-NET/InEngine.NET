@@ -20,13 +20,14 @@ namespace InEngine.Core.Queuing
                 throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");
 
             foreach (var index in Enumerable.Range(0, consumers).ToList())
-                schedule.Job(new Consume() {
+                schedule.Job(new Consume()
+                {
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}",
                     UseSecondaryQueue = useSecondaryQueue
                 })
-                .EverySecond()
-                .Before(x => Console.Write("Before..."))
-                .After(x => Console.Write("After..."));
+                        .EverySecond();
+                //.Before(x => Console.Write("Before..."))
+                //.After(x => Console.Write("After..."));
         }
     }
 }

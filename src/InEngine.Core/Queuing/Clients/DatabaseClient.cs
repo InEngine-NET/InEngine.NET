@@ -237,6 +237,8 @@ namespace InEngine.Core.Queuing.Clients
             {
                 return context.Messages
                               .Where(x => x.QueueName == QueueName && x.Status == status)
+                              .Skip(Convert.ToInt32(from))
+                              .Take(Convert.ToInt32(to - from))
                               .Select(x => x as IMessage)
                               .ToList();
             }

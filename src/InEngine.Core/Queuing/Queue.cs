@@ -33,13 +33,9 @@ namespace InEngine.Core.Queuing
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                 };
-            }
-            else
-            { 
-                queue.QueueClient = new InMemoryClient() {
-                    QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression,
-                };
+            } 
+            else {
+                throw new Exception("Unspecified or unknown queue driver.");
             }
 
             queue.QueueClient.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
