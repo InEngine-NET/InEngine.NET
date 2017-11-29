@@ -36,7 +36,7 @@ namespace InEngine.Core.Queuing.Clients
             var message = PendingQueue[QueueName].Dequeue();
             if (message == null)
                 return false;
-            InProgressMessages.Add(message);
+            InProgressMessages[QueueName].Add(message);
             var commandInstance = Queue.ExtractCommandInstanceFromMessage(message);
             try
             {
