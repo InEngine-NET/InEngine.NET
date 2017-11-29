@@ -33,6 +33,13 @@ namespace InEngine.Core.Queuing
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                 };
+            }
+            else if (queueDriverName == "file")
+            { 
+                queue.QueueClient = new FileClient() {
+                    QueueBaseName = queueSettings.QueueName,
+                    UseCompression = queueSettings.UseCompression,
+                };
             } 
             else {
                 throw new Exception("Unspecified or unknown queue driver.");

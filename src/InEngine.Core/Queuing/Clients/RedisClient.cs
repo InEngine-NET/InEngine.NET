@@ -39,22 +39,21 @@ namespace InEngine.Core.Queuing.Clients
 
         public void Publish(ICommand command)
         {
-            var serializedCommand = JsonConvert.SerializeObject(command);
             Redis.ListLeftPush(
                 PendingQueueName,
                 new Message() {
                     IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
-                    SerializedCommand = UseCompression ? serializedCommand.Compress() : serializedCommand
-            }.SerializeToJson()
+                    SerializedCommand = command.SerializeToJson(UseCompression)
+                }.SerializeToJson()
             );
         }
 
         public bool Consume()
         {
-            var stageMessageTask = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
-            var serializedMessage = stageMessageTask.ToString();
+            var rawRedisMessageValue = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
+            var serializedMessage = rawRedisMessageValue.ToString();
             if (serializedMessage == null)
                 return false;
             var message = serializedMessage.DeserializeFromJson<Message>();
@@ -69,7 +68,7 @@ namespace InEngine.Core.Queuing.Clients
             catch (Exception exception)
             {
                 Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
-                Redis.ListLeftPush(FailedQueueName, stageMessageTask);
+                Redis.ListLeftPush(FailedQueueName, rawRedisMessageValue);
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
 
