@@ -13,7 +13,7 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             var shouldConsume = true;
             while (shouldConsume)
                 shouldConsume = broker.Consume() && ShouldConsumeAll;

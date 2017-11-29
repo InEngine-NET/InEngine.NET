@@ -21,7 +21,7 @@ namespace InEngine.Core.Queuing.Commands
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             if (PendingQueue)
                 Info($"Pending: {broker.ClearPendingQueue().ToString()}");
             if (InProgressQueue)

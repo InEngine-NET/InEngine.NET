@@ -36,7 +36,7 @@ namespace InEngine.Core.Queuing.Commands
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             var from = Offset;
             var to = Offset + Limit - 1;
             if (PendingQueue) {
@@ -50,7 +50,7 @@ namespace InEngine.Core.Queuing.Commands
             }
         }
 
-        public void PrintMessages(List<Message> messages, string queueName)
+        public void PrintMessages(List<IMessage> messages, string queueName)
         {
             WarningText($"{queueName}:");
             if (!messages.Any()) {
@@ -61,11 +61,11 @@ namespace InEngine.Core.Queuing.Commands
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
             messages.ForEach(x => {
-                var message = x as Message;
+                var message = x as IMessage;
                 if (JsonFormat)
                     Line(message.SerializeToJson());
                 else
-                    konsoleForm.Write(Broker.ExtractCommandInstanceFromMessage(message));
+                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(message));
             });
         }
     }
