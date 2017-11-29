@@ -11,9 +11,6 @@ namespace InEngine.Core.Queuing
         public IQueueClient QueueClient { get; set; }
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
         public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
-        public string PendingQueueName { get => QueueClient.PendingQueueName; }
-        public string InProgressQueueName { get => QueueClient.InProgressQueueName; }
-        public string FailedQueueName { get => QueueClient.FailedQueueName; }
         public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
 
         public static Queue Make(bool useSecondaryQueue = false)
@@ -51,12 +48,12 @@ namespace InEngine.Core.Queuing
 
         public void Publish(ICommand command)
         {
-            throw new NotImplementedException();
+            QueueClient.Publish(command);
         }
 
         public bool Consume()
         {
-            throw new NotImplementedException();
+            return QueueClient.Consume();
         }
 
         public static ICommand ExtractCommandInstanceFromMessage(IMessage message)
@@ -71,57 +68,52 @@ namespace InEngine.Core.Queuing
 
         public long GetPendingQueueLength()
         {
-            throw new NotImplementedException();
+            return QueueClient.GetPendingQueueLength();
         }
 
         public long GetInProgressQueueLength()
         {
-            throw new NotImplementedException();
+            return QueueClient.GetInProgressQueueLength();
         }
 
         public long GetFailedQueueLength()
         {
-            throw new NotImplementedException();
+            return QueueClient.GetFailedQueueLength();
         }
 
         public bool ClearPendingQueue()
         {
-            throw new NotImplementedException();
+            return QueueClient.ClearPendingQueue();
         }
 
         public bool ClearInProgressQueue()
         {
-            throw new NotImplementedException();
+            return QueueClient.ClearInProgressQueue();
         }
 
         public bool ClearFailedQueue()
         {
-            throw new NotImplementedException();
+            return QueueClient.ClearFailedQueue();
         }
 
         public void RepublishFailedMessages()
         {
-            throw new NotImplementedException();
+            QueueClient.RepublishFailedMessages();
         }
 
         public List<IMessage> PeekPendingMessages(long from, long to)
         {
-            throw new NotImplementedException();
+            return QueueClient.PeekPendingMessages(from, to);
         }
 
         public List<IMessage> PeekInProgressMessages(long from, long to)
         {
-            throw new NotImplementedException();
+            return QueueClient.PeekInProgressMessages(from, to);
         }
 
         public List<IMessage> PeekFailedMessages(long from, long to)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<IMessage> GetMessages(string queueName, long from, long to)
-        {
-            throw new NotImplementedException();
+            return QueueClient.PeekFailedMessages(from, to);
         }
     }
 }

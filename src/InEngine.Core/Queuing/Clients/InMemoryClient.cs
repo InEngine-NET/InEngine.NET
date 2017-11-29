@@ -11,9 +11,6 @@ namespace InEngine.Core.Queuing.Clients
     {
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
-        public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
-        public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
-        public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
         public bool UseCompression { get; set; }
 
         public IDictionary<string,Queue<IMessage>> PendingQueue { get; set; }
@@ -55,7 +52,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException($"Failed to remove completed message from queue: {InProgressQueueName}", exception);
+                throw new CommandFailedException($"Failed to remove completed message from queue.", exception);
             }
 
             return true;

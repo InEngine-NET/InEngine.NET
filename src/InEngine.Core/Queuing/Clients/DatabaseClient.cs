@@ -13,9 +13,6 @@ namespace InEngine.Core.Queuing.Clients
     {
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
-        public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
-        public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
-        public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
         public bool UseCompression { get; set; }
 
         public void Publish(ICommand command)
@@ -130,7 +127,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException($"Failed to remove completed message from queue: {InProgressQueueName}", exception);
+                throw new CommandFailedException($"Failed to remove completed message from queue", exception);
             }
 
             return true;
@@ -201,7 +198,7 @@ namespace InEngine.Core.Queuing.Clients
                         {
                             context.Database.UseTransaction(transaction);
                             var messageModels = context.Messages
-                                                       .Where(x => x.Status == MessageStatus.Pending && x.QueueName == QueueName)
+                                                       .Where(x => x.QueueName == QueueName && x.Status == MessageStatus.Pending)
                                                         .OrderBy(x => x.QueuedAt);
                             foreach(var messageModel in messageModels)
                                 messageModel.Status = MessageStatus.InProgress;
@@ -221,24 +218,27 @@ namespace InEngine.Core.Queuing.Clients
 
         public List<IMessage> PeekPendingMessages(long from, long to)
         {
-            return GetMessages(PendingQueueName, from, to);
+            return GetMessages(MessageStatus.Pending, from, to);
         }
 
         public List<IMessage> PeekInProgressMessages(long from, long to)
         {
-            return GetMessages(InProgressQueueName, from, to);
+            return GetMessages(MessageStatus.InProgress, from, to);
         }
 
         public List<IMessage> PeekFailedMessages(long from, long to)
         {
-            return GetMessages(FailedQueueName, from, to);
+            return GetMessages(MessageStatus.Failed, from, to);
         }
 
-        public List<IMessage> GetMessages(string queueName, long from, long to)
+        public List<IMessage> GetMessages(string status, long from, long to)
         {
             using (var context = new QueueDbContext(QueueBaseName))
             {
-                return context.Messages.Select(x => x as IMessage).ToList();
+                return context.Messages
+                              .Where(x => x.QueueName == QueueName && x.Status == status)
+                              .Select(x => x as IMessage)
+                              .ToList();
             }
         }
     }

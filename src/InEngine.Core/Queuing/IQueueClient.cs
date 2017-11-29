@@ -7,9 +7,6 @@ namespace InEngine.Core.Queuing
     {
         string QueueBaseName { get; set; }
         string QueueName { get; set; }
-        string PendingQueueName { get; }
-        string InProgressQueueName { get; }
-        string FailedQueueName { get; }
         bool UseCompression { get; set; }
         void Publish(ICommand command);
         bool Consume();
