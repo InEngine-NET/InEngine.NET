@@ -124,17 +124,17 @@ Queued commands can be viewed in JSON which maybe useful for debugging:
 inengine.exe -pInEngine.Core queue:peek --pending --json
 ```  
 
-By default, up to 10 messages will be retrieved, but the number is configurable:
+By default, up to the first 10 messages will be retrieved, but the range is configurable:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --limit=100
+inengine.exe -pInEngine.Core queue:peek --pending --to=100
 ```
 
-The a paginated slice of the queue can be retrieved using the offset argument.
+A slice of the queue can be retrieved using the from argument.
 For example, this queue:peek call retrieves the 100-200 queued commands:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --limit=100 --offset=100
+inengine.exe -pInEngine.Core queue:peek --pending --from=100 --to=200
 ```
 
 ## Handling Failed Commands

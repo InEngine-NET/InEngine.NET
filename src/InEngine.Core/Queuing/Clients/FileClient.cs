@@ -62,7 +62,7 @@ namespace InEngine.Core.Queuing.Clients
         {
             var fileInfo = new DirectoryInfo(PendingQueuePath)
                 .GetFiles()
-                .OrderByDescending(x => x.LastWriteTimeUtc)
+                .OrderBy(x => x.LastWriteTimeUtc)
                 .FirstOrDefault();
             if (fileInfo == null)
                 return false;
@@ -164,11 +164,18 @@ namespace InEngine.Core.Queuing.Clients
 
         public List<IMessage> PeekMessages(string queuePath, long from, long to)
         {
-            return new DirectoryInfo(queuePath)
+            var maxResults = Convert.ToInt32(to + from);
+            var files = new DirectoryInfo(queuePath)
                 .GetFiles()
-                .ToList()
-                .GetRange(Convert.ToInt32(from), Convert.ToInt32(to - from))
-                .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<IMessage>())
+                .OrderBy(x => x.LastWriteTimeUtc)
+                .ToList();
+
+            if (files.Count() <= maxResults)
+                return files.Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<Message>() as IMessage).ToList();
+
+            return files
+                .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
+                .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<Message>() as IMessage)
                 .ToList();
         }
     }
