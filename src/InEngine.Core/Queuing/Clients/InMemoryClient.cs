@@ -16,15 +16,14 @@ namespace InEngine.Core.Queuing.Clients
         public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
         public bool UseCompression { get; set; }
 
-        // todo make these into dictionaries for primary and secondary queues
-        public Queue<IMessage> PendingQueue { get; set; }
-        public List<IMessage> InProgressMessages { get; set; }
-        public List<IMessage> FailedMessages { get; set; }
+        public IDictionary<string,Queue<IMessage>> PendingQueue { get; set; }
+        public IDictionary<string,List<IMessage>> InProgressMessages { get; set; }
+        public IDictionary<string,List<IMessage>> FailedMessages { get; set; }
 
         public void Publish(ICommand command)
         {
             var serializedCommand = JsonConvert.SerializeObject(command);
-            PendingQueue.Enqueue(new Message {
+            PendingQueue[QueueName].Enqueue(new Message {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
                 CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
@@ -34,7 +33,7 @@ namespace InEngine.Core.Queuing.Clients
 
         public bool Consume()
         {
-            var message = PendingQueue.Dequeue();
+            var message = PendingQueue[QueueName].Dequeue();
             if (message == null)
                 return false;
             InProgressMessages.Add(message);
@@ -45,14 +44,14 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                InProgressMessages.Remove(message);
-                FailedMessages.Add(message);
+                InProgressMessages[QueueName].Remove(message);
+                FailedMessages[QueueName].Add(message);
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
 
             try
             {
-                InProgressMessages.Remove(message);
+                InProgressMessages[QueueName].Remove(message);
             }
             catch (Exception exception)
             {
@@ -64,41 +63,41 @@ namespace InEngine.Core.Queuing.Clients
 
         public long GetPendingQueueLength()
         {
-            return PendingQueue.Count;
+            return PendingQueue[QueueName].Count;
         }
 
         public long GetInProgressQueueLength()
         {
-            return InProgressMessages.Count;
+            return InProgressMessages[QueueName].Count;
         }
 
         public long GetFailedQueueLength()
         {
-            return FailedMessages.Count;
+            return FailedMessages[QueueName].Count;
         }
 
         public bool ClearPendingQueue()
         {
-            PendingQueue.Clear();
+            PendingQueue[QueueName].Clear();
             return true;
         }
 
         public bool ClearInProgressQueue()
         {
-            InProgressMessages.Clear();
+            InProgressMessages[QueueName].Clear();
             return true;
         }
 
         public bool ClearFailedQueue()
         {
-            FailedMessages.Clear();
+            FailedMessages[QueueName].Clear();
             return true;
         }
 
         public void RepublishFailedMessages()
         {
-            FailedMessages.ForEach(x => PendingQueue.Enqueue(x));
-            FailedMessages.Clear();
+            FailedMessages[QueueName].ForEach(x => PendingQueue[QueueName].Enqueue(x));
+            FailedMessages[QueueName].Clear();
         }
 
         public List<IMessage> PeekPendingMessages(long from, long to)
@@ -108,12 +107,12 @@ namespace InEngine.Core.Queuing.Clients
 
         public List<IMessage> PeekInProgressMessages(long from, long to)
         {
-            return InProgressMessages.GetRange(Convert.ToInt32(from), Convert.ToInt32(to));
+            return InProgressMessages[QueueName].GetRange(Convert.ToInt32(from), Convert.ToInt32(to));
         }
 
         public List<IMessage> PeekFailedMessages(long from, long to)
         {
-            return FailedMessages.GetRange(Convert.ToInt32(from), Convert.ToInt32(to));
+            return FailedMessages[QueueName].GetRange(Convert.ToInt32(from), Convert.ToInt32(to));
         }
     }
 }
