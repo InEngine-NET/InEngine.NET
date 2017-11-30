@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
+using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Scheduling;
 using Konsole;
 using Quartz;
+using RestSharp;
 
 namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
-        public LifecycleActions LifecycleActions { get; set; }
+        public ExecutionLifeCycle ExecutionLifeCycle { get; set; }
         public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
@@ -22,7 +24,7 @@ namespace InEngine.Core
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
-            LifecycleActions = new LifecycleActions();
+            ExecutionLifeCycle = new ExecutionLifeCycle();
         }
 
         public virtual void Run()
@@ -57,9 +59,9 @@ namespace InEngine.Core
 
             try
             {
-                LifecycleActions.BeforeAction?.Invoke(this);
+                ExecutionLifeCycle.FirePreActions(this);
                 Run();
-                LifecycleActions.AfterAction?.Invoke(this);
+                ExecutionLifeCycle.FirePostActions(this);
             }
             catch (Exception exception)
             {
@@ -123,6 +125,16 @@ namespace InEngine.Core
         public IWrite Newline(int count = 1)
         {
             return Write.Newline(count);
+        }
+
+        public string FlushBuffer()
+        {
+            return Write.FlushBuffer();
+        }
+
+        public void ToFile(string path, string text, bool shouldAppend = false)
+        {
+            Write.ToFile(path, text, shouldAppend);
         }
         #endregion
     }

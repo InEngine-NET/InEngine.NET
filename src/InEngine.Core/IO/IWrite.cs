@@ -16,5 +16,8 @@ namespace InEngine.Core.IO
         IWrite ErrorText(string val);
         IWrite Text(string val);
         IWrite ColoredText(string val, ConsoleColor consoleColor);
+
+        string FlushBuffer();
+        void ToFile(string path, string text, bool shouldAppend = false);
     }
 }

@@ -11,6 +11,7 @@ namespace InEngine.Core
         public static string ConfigurationFile { get; set; } = "appsettings.json";
         public List<string> Plugins { get; set; } = new List<string>();
         public QueueSettings Queue { get; set; }
+        public MailSettings Mail { get; set; }
 
         public static InEngineSettings Make()
         {
