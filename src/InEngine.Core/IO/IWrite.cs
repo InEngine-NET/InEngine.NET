@@ -4,7 +4,7 @@ namespace InEngine.Core.IO
 {
     public interface IWrite
     {
-        IWrite Newline();
+        IWrite Newline(int count = 1);
         IWrite Info(string val);
         IWrite Warning(string val);
         IWrite Error(string val);
@@ -16,5 +16,8 @@ namespace InEngine.Core.IO
         IWrite ErrorText(string val);
         IWrite Text(string val);
         IWrite ColoredText(string val, ConsoleColor consoleColor);
+
+        string FlushBuffer();
+        void ToFile(string path, string text, bool shouldAppend = false);
     }
 }

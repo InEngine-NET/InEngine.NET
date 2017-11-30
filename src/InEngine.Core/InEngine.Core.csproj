@@ -9,23 +9,33 @@
     <Description>Plugin-based queuing and scheduling command server.</Description>
     <Copyright>Copyright © 2017 Ethan Hann</Copyright>
     <PackageId>InEngine.Core</PackageId>
-    <PackageVersion>3.4.0-beta2</PackageVersion>
+    <PackageVersion>3.4.0-beta3</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
     <PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
+	<PackageIconUrl>http://inengine.net/images/inengine-logo-32.png</PackageIconUrl>
     <Product>InEngine.NET</Product>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="NLog" Version="4.4.12" />
     <PackageReference Include="Quartz" Version="2.6.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.4" />
     <PackageReference Include="Goblinfactory.Konsole" Version="3.1.0" />
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
+    <PackageReference Include="RestSharp" Version="106.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scheduling\" />
+    <Folder Include="Queuing\Clients\" />
+    <Folder Include="Queuing\Clients\Database\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
 </Project>
 

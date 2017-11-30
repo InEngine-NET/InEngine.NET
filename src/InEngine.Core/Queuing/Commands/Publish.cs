@@ -3,14 +3,14 @@ using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Publish : AbstractCommand
     {
         [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core.dll")]
         public string CommandPlugin { get; set; }
 
-        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo")]
+        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo.")]
         public string CommandVerb { get; set; }
 
         [Option("command-class", HelpText = "A command class name, e.g. InEngine.Core.Commands.AlwaysSucceed. Takes precedence over --command-verb if both are specified.")]
@@ -43,7 +43,7 @@ namespace InEngine.Core.Queue.Commands
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
-            Broker.Make(UseSecondaryQueue).Publish(command);
+            Queue.Make(UseSecondaryQueue).Publish(command);
         }
 
         public override void Failed(Exception exception)

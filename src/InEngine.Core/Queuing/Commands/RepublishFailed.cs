@@ -2,7 +2,7 @@
 using System.Linq;
 using CommandLine;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class RepublishFailed : AbstractCommand
     {
@@ -14,7 +14,7 @@ namespace InEngine.Core.Queue.Commands
 
         public override void Run()
         {
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             Enumerable.Range(0, Limit)
                       .ToList()
                       .ForEach(x => broker.RepublishFailedMessages());

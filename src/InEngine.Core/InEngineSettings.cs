@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using InEngine.Core.Queue;
+using InEngine.Core.Queuing;
 using Microsoft.Extensions.Configuration;
 
 namespace InEngine.Core
@@ -9,8 +9,9 @@ namespace InEngine.Core
     {
         public static string BasePath { get; set; } = Directory.GetCurrentDirectory();
         public static string ConfigurationFile { get; set; } = "appsettings.json";
-        public List<string> PluginDirectories { get; set; }
+        public List<string> Plugins { get; set; } = new List<string>();
         public QueueSettings Queue { get; set; }
+        public MailSettings Mail { get; set; }
 
         public static InEngineSettings Make()
         {

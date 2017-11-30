@@ -290,9 +290,43 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Configuration
+      </label>
+    
     <a href="./" title="Configuration" class="md-nav__link md-nav__link--active">
       Configuration
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
+    Top-level Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
+    Queue Settings
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -319,6 +353,27 @@
     
   
   
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
+    Top-level Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
+    Queue Settings
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -334,7 +389,11 @@
 <p>Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution. The -c, --configuration argument can also be used to specify an alternate configuration file.</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;path/to/MyCommandPlugin&quot;</span>
+    <span class="p">],</span>
     <span class="nt">&quot;Queue&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;UseCompression&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
       <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span>  <span class="mi">16</span><span class="p">,</span>
       <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
       <span class="nt">&quot;QueueName&quot;</span><span class="p">:</span> <span class="s2">&quot;InEngine:Queue&quot;</span><span class="p">,</span>
@@ -348,40 +407,71 @@
 </pre></div>
 
 
+<h2 id="top-level-settings">Top-level Settings<a class="headerlink" href="#top-level-settings" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>Setting</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>Plugins</td>
+<td>array of strings</td>
+<td>A list of paths of plugin assemblies, with ".dll" omitted from the assembly name.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="queue-settings">Queue Settings<a class="headerlink" href="#queue-settings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UseCompression</td>
+<td>bool</td>
+<td>A situation performance optimization that compresses queued messages.</td>
+</tr>
+<tr>
 <td>PrimaryQueueConsumers</td>
-<td>The number of consumers to schedule for the primary queue.</td>
+<td>string</td>
+<td>The number of consumers to schedule for the secondary queue.</td>
 </tr>
 <tr>
 <td>SecondaryQueueConsumers</td>
+<td>string</td>
 <td>The number of consumers to schedule for the secondary queue.</td>
 </tr>
 <tr>
 <td>QueueName</td>
+<td>string</td>
 <td>The base name of the queue, used to form the Redis Queue keys.</td>
 </tr>
 <tr>
 <td>RedisHost</td>
+<td>string</td>
 <td>The Redis hostname to connect to.</td>
 </tr>
 <tr>
 <td>RedisPort</td>
+<td>integer</td>
 <td>Redis's port.</td>
 </tr>
 <tr>
 <td>RedisDb</td>
+<td>integer</td>
 <td>The Redis database - 0-15</td>
 </tr>
 <tr>
 <td>RedisPassword</td>
+<td>string</td>
 <td>The Redis auth password</td>
 </tr>
 </tbody>

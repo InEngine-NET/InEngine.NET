@@ -1,7 +1,8 @@
 ﻿using System;
+using InEngine.Core;
 using InEngine.Core.Exceptions;
 
-namespace InEngine.Core.Commands
+namespace InEngine.Commands
 {
     /// <summary>
     /// Dummy command for testing and sample code.

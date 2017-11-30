@@ -1,17 +1,21 @@
 ﻿using CommandLine;
-using InEngine.Commands.Sample;
+using CommandLine.Text;
 using InEngine.Core;
 
 namespace InEngine.Commands
 {
     public class Options : IOptions
     {
-        [VerbOption("sample:minimal")]
-        public Minimal Minimal { get; set; }
+        [VerbOption("fail", HelpText = "Always fail. Useful for end-to-end testing.")]
+        public AlwaysFail AlwaysFail { get; set; }
 
+        [VerbOption("succeed", HelpText = "A null operation command. Literally does nothing.")]
+        public AlwaysSucceed Null { get; set; }
+
+        [HelpVerbOption]
         public string GetUsage(string verb)
         {
-            return "\tsample:minimal \t\tA minimal implementation of a command.";
+            return HelpText.AutoBuild(this, verb);
         }
     }
 }

@@ -1,36 +1,30 @@
 ﻿using System;
+using System.Linq;
+using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
+using InEngine.Core.Scheduling;
 using Konsole;
-using NLog;
 using Quartz;
+using RestSharp;
 
 namespace InEngine.Core
 {
     abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
     {
-        public IJobExecutionContext JobExecutionContext { get; set; }
-        public ILogger Logger { get; internal set; }
+        public ExecutionLifeCycle ExecutionLifeCycle { get; set; }
+        public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
-        string _name;
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                Logger = LogManager.GetLogger(_name);
-            }
-        }
+        public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
-        public Write Write { get; set; }
 
         protected AbstractCommand()
         {
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
-            Write = new Write();;
+            Write = new Write();
+            ExecutionLifeCycle = new ExecutionLifeCycle();
         }
 
         public virtual void Run()
@@ -56,42 +50,23 @@ namespace InEngine.Core
         #region Scheduling
         public void Execute(IJobExecutionContext context)
         {
-            JobExecutionContext = context;
+            var properties = GetType().GetProperties();
+            context.MergedJobDataMap.ToList().ForEach(x => {
+                var property = properties.FirstOrDefault(y => y.Name == x.Key);
+                if (property != null)
+                    property.SetValue(this, x.Value);                
+            });
+
             try
             {
+                ExecutionLifeCycle.FirePreActions(this);
                 Run();
+                ExecutionLifeCycle.FirePostActions(this);
             }
             catch (Exception exception)
             {
                 Failed(exception);
             }
-        }
-
-        public JobBuilder MakeJobBuilder()
-        {
-            return JobBuilder
-                .Create(GetType())
-                .WithIdentity($"{Name}:job:{ScheduleId}", SchedulerGroup);
-        }
-
-        public TriggerBuilder MakeTriggerBuilder()
-        {
-            return TriggerBuilder
-                .Create()
-                .WithIdentity($"{Name}:trigger:{ScheduleId}", SchedulerGroup);
-        }
-
-        public T GetJobContextData<T>(string key)
-        {
-            if (JobExecutionContext == null || JobExecutionContext.MergedJobDataMap == null)
-                return default(T);
-            var objectVal = JobExecutionContext.MergedJobDataMap.Get(key);
-            return objectVal == null ? default(T) : (T)objectVal;
-        }
-
-        public void AddJobContextData<T>(string key, T val)
-        {
-            JobExecutionContext.MergedJobDataMap.Add(key, val);
         }
 
         #endregion
@@ -147,9 +122,19 @@ namespace InEngine.Core
             return Write.ColoredText(val, consoleColor);
         }
 
-        public IWrite Newline()
+        public IWrite Newline(int count = 1)
         {
-            return Write.Newline();
+            return Write.Newline(count);
+        }
+
+        public string FlushBuffer()
+        {
+            return Write.FlushBuffer();
+        }
+
+        public void ToFile(string path, string text, bool shouldAppend = false)
+        {
+            Write.ToFile(path, text, shouldAppend);
         }
         #endregion
     }

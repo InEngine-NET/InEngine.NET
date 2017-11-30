@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using InEngine.Core.Exceptions;
 
-namespace InEngine.Core.Queue.Commands
+namespace InEngine.Core.Queuing.Commands
 {
     public class Flush : AbstractCommand
     {
@@ -21,7 +21,7 @@ namespace InEngine.Core.Queue.Commands
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             if (PendingQueue)
                 Info($"Pending: {broker.ClearPendingQueue().ToString()}");
             if (InProgressQueue)

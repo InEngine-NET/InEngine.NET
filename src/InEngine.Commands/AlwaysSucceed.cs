@@ -1,4 +1,6 @@
-﻿namespace InEngine.Core.Commands
+﻿using InEngine.Core;
+
+namespace InEngine.Commands
 {
     /// <summary>
     /// Dummy command for testing and sample code.

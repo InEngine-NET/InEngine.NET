@@ -304,14 +304,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-with-queues" title="Working with Queues" class="md-nav__link">
-    Working with Queues
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#publishing-commands" title="Publishing Commands" class="md-nav__link">
     Publishing Commands
   </a>
@@ -320,8 +312,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programmatically" title="Programmatically" class="md-nav__link">
-    Programmatically
+  <a href="#from-code" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -337,8 +329,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#consuming-commands" title="Consuming Commands" class="md-nav__link">
     Consuming Commands
   </a>
@@ -347,8 +339,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programmatically_1" title="Programmatically" class="md-nav__link">
-    Programmatically
+  <a href="#from-code_1" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -371,9 +363,38 @@
     </nav>
   
 </li>
+      
+        <li class="md-nav__item">
+  <a href="#examining-the-queue" title="Examining the Queue" class="md-nav__link">
+    Examining the Queue
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-queue-lengths" title="Viewing Queue Lengths" class="md-nav__link">
+    Viewing Queue Lengths
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peek-at-commands" title="Peek at Commands" class="md-nav__link">
+    Peek at Commands
+  </a>
+  
+</li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-failed-commands" title="Handling Failed Commands" class="md-nav__link">
+    Handling Failed Commands
+  </a>
   
 </li>
       
@@ -445,14 +466,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-with-queues" title="Working with Queues" class="md-nav__link">
-    Working with Queues
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#publishing-commands" title="Publishing Commands" class="md-nav__link">
     Publishing Commands
   </a>
@@ -461,8 +474,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programmatically" title="Programmatically" class="md-nav__link">
-    Programmatically
+  <a href="#from-code" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -478,8 +491,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#consuming-commands" title="Consuming Commands" class="md-nav__link">
     Consuming Commands
   </a>
@@ -488,8 +501,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programmatically_1" title="Programmatically" class="md-nav__link">
-    Programmatically
+  <a href="#from-code_1" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -512,9 +525,38 @@
     </nav>
   
 </li>
+      
+        <li class="md-nav__item">
+  <a href="#examining-the-queue" title="Examining the Queue" class="md-nav__link">
+    Examining the Queue
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#viewing-queue-lengths" title="Viewing Queue Lengths" class="md-nav__link">
+    Viewing Queue Lengths
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peek-at-commands" title="Peek at Commands" class="md-nav__link">
+    Peek at Commands
+  </a>
+  
+</li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-failed-commands" title="Handling Failed Commands" class="md-nav__link">
+    Handling Failed Commands
+  </a>
   
 </li>
       
@@ -548,8 +590,9 @@
                 
                 
                 <h1 id="queuing">Queuing<a class="headerlink" href="#queuing" title="Permanent link">&para;</a></h1>
+<p>InEngine.NET's queue functionality allows for commands to be run in the background with a simple publish/consume model. </p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Redis is required to use the InEngine.NET Queue feature. 
+<p>Redis is required to use the InEngine.NET queue feature. 
 It can be installed on Ubuntu with this command:</p>
 <div class="codehilite"><pre><span></span>sudo apt-get install redis-server
 </pre></div>
@@ -564,67 +607,132 @@ It can be installed on Ubuntu with this command:</p>
 It is highly recommended to <a href="https://redis.io/topics/security#authentication-feature">set a password</a> for Redis.
 </div>
 
-<h2 id="working-with-queues">Working with Queues<a class="headerlink" href="#working-with-queues" title="Permanent link">&para;</a></h2>
-<h3 id="publishing-commands">Publishing Commands<a class="headerlink" href="#publishing-commands" title="Permanent link">&para;</a></h3>
-<h4 id="programmatically">Programmatically<a class="headerlink" href="#programmatically" title="Permanent link">&para;</a></h4>
-<p><a href="../commands">Commands</a> can be published programmatically with the <strong>InEngine.Core.Queue.Broker</strong> class:</p>
+<h2 id="publishing-commands">Publishing Commands<a class="headerlink" href="#publishing-commands" title="Permanent link">&para;</a></h2>
+<h3 id="from-code">From Code<a class="headerlink" href="#from-code" title="Permanent link">&para;</a></h3>
+<p><a href="../commands">Commands</a> can be published programmatically with the <strong>InEngine.Core.Queuing.Broker</strong> class:</p>
 <div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
 </pre></div>
 
 
-<h4 id="from-the-command-line">From the Command Line<a class="headerlink" href="#from-the-command-line" title="Permanent link">&para;</a></h4>
+<p>Or publish to the secondary queue:</p>
+<div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+</pre></div>
+
+
+<h3 id="from-the-command-line">From the Command Line<a class="headerlink" href="#from-the-command-line" title="Permanent link">&para;</a></h3>
 <p>Commands can be published from the command line as well.
 Note that all queue commands reside in the <strong>InEngine.Core</strong> plugin.
-This is an example of how to publish a command from the CLI by specifying the commands assembly, class name, and arguments:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-assembly<span class="o">=</span>MyCommandPlugin.dll --command-class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
+This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>MyCommandPlugin.dll --command-class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
 </pre></div>
 
 
 <p>There is an "Echo" command in the <em>InEngine.Core</em> package. It is useful for end-to-end testing with the queue feature.</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-assembly<span class="o">=</span>InEngine.Core.dll --command-class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>InEngine.Core.dll --command-class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
 </pre></div>
 
 
-<h3 id="consuming-commands">Consuming Commands<a class="headerlink" href="#consuming-commands" title="Permanent link">&para;</a></h3>
-<h4 id="programmatically_1">Programmatically<a class="headerlink" href="#programmatically_1" title="Permanent link">&para;</a></h4>
+<p>The command verb can also be specified instead of the full class name:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>InEngine.Core.dll --command-verb<span class="o">=</span>echo--args <span class="s2">&quot;text=foo&quot;</span>
+</pre></div>
+
+
+<h2 id="consuming-commands">Consuming Commands<a class="headerlink" href="#consuming-commands" title="Permanent link">&para;</a></h2>
+<h3 id="from-code_1">From Code<a class="headerlink" href="#from-code_1" title="Permanent link">&para;</a></h3>
 <p>Consuming a command is also accomplished with the Broker class:</p>
 <div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Consume</span><span class="p">();</span>
 </pre></div>
 
 
-<p>Both methods take an optional second argument to indicate if the secondary queue should be used instead of the primary queue.</p>
+<p>The make method takes an optional second argument to indicate if the secondary queue should be used instead of the primary queue.</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Uses secondary queue.</span>
-<span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Consume</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Consume</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Commands can be consumed from the command line as well with this simple command:</p>
-<h4 id="from-the-command-line_1">From the Command Line<a class="headerlink" href="#from-the-command-line_1" title="Permanent link">&para;</a></h4>
+<h3 id="from-the-command-line_1">From the Command Line<a class="headerlink" href="#from-the-command-line_1" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:consume
 </pre></div>
 
 
-<p>Use the <strong>--secondary</strong> switch to consume the secondary queue instead of the primary queue:</p>
+<p>Use the <strong>--secondary</strong> argument to consume the secondary queue instead of the primary queue:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:consume --secondary
 </pre></div>
 
 
-<h4 id="with-the-scheduler">With the Scheduler<a class="headerlink" href="#with-the-scheduler" title="Permanent link">&para;</a></h4>
+<h3 id="with-the-scheduler">With the Scheduler<a class="headerlink" href="#with-the-scheduler" title="Permanent link">&para;</a></h3>
 <p>The InEngine scheduler is needed to consume queued messages in the background. 
 There are a variety of <a href="../scheduling/#running-the-scheduler">ways to run the scheduler</a>.</p>
+<h2 id="examining-the-queue">Examining the Queue<a class="headerlink" href="#examining-the-queue" title="Permanent link">&para;</a></h2>
+<h3 id="viewing-queue-lengths">Viewing Queue Lengths<a class="headerlink" href="#viewing-queue-lengths" title="Permanent link">&para;</a></h3>
+<p>The <strong>queue:length</strong> command shows a quick summary of pending, in-progress, and failed commands in the primary and secondary queues:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:length
+</pre></div>
+
+
+<h3 id="peek-at-commands">Peek at Commands<a class="headerlink" href="#peek-at-commands" title="Permanent link">&para;</a></h3>
+<p>The <strong>queue:peek</strong> command allows for queued commands to be inspected:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --in-progress --failed
+</pre></div>
+
+
+<p>It is of course possible to peek in the secondary queues:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --secondary
+</pre></div>
+
+
+<p>Queued commands can be viewed in JSON which maybe useful for debugging:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --json
+</pre></div>
+
+
+<p>By default, up to 10 messages will be retrieved, but the number is configurable:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --limit<span class="o">=</span><span class="m">100</span>
+</pre></div>
+
+
+<p>The a paginated slice of the queue can be retrieved using the offset argument.
+For example, this queue:peek call retrieves the 100-200 queued commands:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --limit<span class="o">=</span><span class="m">100</span> --offset<span class="o">=</span><span class="m">100</span>
+</pre></div>
+
+
+<h2 id="handling-failed-commands">Handling Failed Commands<a class="headerlink" href="#handling-failed-commands" title="Permanent link">&para;</a></h2>
+<p>Commands that throw an exception are put in a special "failed" queue. 
+They can be republished with the <strong>queue:republish</strong> command:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish
+</pre></div>
+
+
+<p>Failed secondary queue commands can be republished as well:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish --secondary
+</pre></div>
+
+
+<p>By default, only 100 failed commands are republished at a time.
+The is configurable:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish --limit<span class="o">=</span><span class="m">1000</span>
+</pre></div>
+
+
 <h2 id="primary-and-secondary-queue">Primary and Secondary Queue<a class="headerlink" href="#primary-and-secondary-queue" title="Permanent link">&para;</a></h2>
-<p>Other than the fact that the primary queue is used by default, there is difference between the primary and secondary queues. 
-However, it is often desirable to have more than 1 queue. 
+<p>Other than the fact that the primary queue is used by default, there is no difference between the primary and secondary queues. 
+However, it is often desirable to use two queues. 
 For example, long running jobs might be sent to the secondary queue, 
 while jobs that are expected to finish after only a few moments are sent to the primary queue.</p>
-<p>What about 3, 4, or 900 queues? Numerous queues gets to be a pain to manage and, practically speaking, is probably unnecessary.
+<p>What about 3, 4, or 900 queues? Managing numerous queues gets to be a pain and, practically speaking, is probably unnecessary.
 If it is desirable, different <a href="../configuration">configuration files</a> can be used to run multiple instances of InEngine.NET.
-Simply create a new config file with a new QueueName setting and point inengine.exe at it.</p>
+Simply create a new config file with a new QueueName setting and point inengine.exe at it with the -c argument:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -cMyCustomSettingsFile.json -pInEngine.Core queue:consume
+</pre></div>
+
+
 <h2 id="message-compression">Message Compression<a class="headerlink" href="#message-compression" title="Permanent link">&para;</a></h2>
 <p>Messages can be compressed when saved in the queue. 
 It is important to understand the trade-offs of this feature before enabling it.
-Compressing messages takes more CPU resources and might negatively impact queueing throughput if the queued commands do not have a lot of internal state.
-Put simply, if the commands are too small to benefit from being compressed, then compressing them wastes resources.</p>
+If the queued commands are too small to benefit from being compressed, then compressing them wastes resources.
+Compressing messages takes more CPU resources and might negatively impact queue throughput if the queued commands do not have a lot of internal state.</p>
 <p>If the commands have a lot of internal state, then this feature will reduce the queue's memory consumption.
 Also, in a high-throughput scenario, where network bandwidth is limited, this feature can greatly reduce the amount of bandwidth used.</p>
                 
