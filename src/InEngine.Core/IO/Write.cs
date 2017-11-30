@@ -8,7 +8,8 @@ namespace InEngine.Core.IO
 {
     public class Write : IWrite
     {
-        static Mutex mutexLock = new Mutex();
+        static Mutex consoleOutputLock = new Mutex();
+        static Mutex fileOutputLock = new Mutex();
 
         public ConsoleColor InfoColor { get; set; } = ConsoleColor.Green;
         public ConsoleColor WarningColor { get; set; } = ConsoleColor.Yellow;
@@ -45,11 +46,11 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredLine(string val, ConsoleColor consoleColor)
         {
-            mutexLock.WaitOne();
+            consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(val);
             Console.ResetColor();
-            mutexLock.ReleaseMutex();
+            consoleOutputLock.ReleaseMutex();
             Buffer.Add(val);
             return this;
         }
@@ -76,11 +77,11 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredText(string val, ConsoleColor consoleColor)
         {
-            mutexLock.WaitOne();
+            consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.Write(val);
             Console.ResetColor();
-            mutexLock.ReleaseMutex();
+            consoleOutputLock.ReleaseMutex();
             Buffer.Add(val);
             return this;
         }
@@ -94,12 +95,14 @@ namespace InEngine.Core.IO
 
         public void ToFile(string path, string text, bool shouldAppend = false)
         {
+            fileOutputLock.WaitOne();
             if (!File.Exists(path))
                 File.Create(path);
             if (shouldAppend)
                 File.AppendAllText(path, text);
             else
                 File.WriteAllText(path, text);
+            fileOutputLock.ReleaseMutex();
         }
     }
 }
