@@ -1,6 +1,5 @@
 ﻿using System;
 using Quartz;
-using Quartz.Impl;
 
 namespace InEngine.Core.Scheduling
 {
@@ -19,78 +18,80 @@ namespace InEngine.Core.Scheduling
                 .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);
         }
 
-        public void RegisterJob(Action<DailyTimeIntervalScheduleBuilder> action)
+        public LifecycleActions RegisterJob(Action<DailyTimeIntervalScheduleBuilder> action)
         {
-            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithDailyTimeIntervalSchedule(action).Build());
+            return new LifecycleActions { 
+                JobRegistration = Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithDailyTimeIntervalSchedule(action).Build()) 
+            };
         }
 
-        public void RegisterJob(string cronExpression)
+        public LifecycleActions RegisterJob(string cronExpression)
         {
-            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithCronSchedule(cronExpression).Build());
+            return new LifecycleActions {
+                JobRegistration = Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithCronSchedule(cronExpression).Build())
+            };
         }
 
-        public void RegisterJob(Action<SimpleScheduleBuilder> action)
+        public LifecycleActions RegisterJob(Action<SimpleScheduleBuilder> action)
         {
-            Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithSimpleSchedule(action).Build());
+            return new LifecycleActions {
+                JobRegistration = Schedule.RegisterJob(Command, JobDetail, MakeTriggerBuilder(Command).WithSimpleSchedule(action).Build())
+            };
         }
 
-        public void Cron(string cronExpression)
+        public LifecycleActions Cron(string cronExpression)
         {
-            RegisterJob(cronExpression);
+            return RegisterJob(cronExpression);
         }
 
         public LifecycleActions EverySecond()
         {
-            RegisterJob(x => x.WithIntervalInSeconds(1).RepeatForever());
-            return new LifecycleActions()
-            {
-                Command = Command
-            };
+            return RegisterJob(x => x.WithIntervalInSeconds(1).RepeatForever());
         }
 
-        public void EveryMinute()
+        public LifecycleActions EveryMinute()
         {
-            RegisterJob(x => x.WithIntervalInMinutes(1).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInMinutes(1).RepeatForever());
         }
 
-        public void EveryFiveMinutes()
+        public LifecycleActions EveryFiveMinutes()
         {
-            RegisterJob(x => x.WithIntervalInMinutes(5).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInMinutes(5).RepeatForever());
         }
 
-        public void EveryTenMinutes()
+        public LifecycleActions EveryTenMinutes()
         {
-            RegisterJob(x => x.WithIntervalInMinutes(10).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInMinutes(10).RepeatForever());
         }
 
-        public void EveryFifteenMinutes()
+        public LifecycleActions EveryFifteenMinutes()
         {
-            RegisterJob(x => x.WithIntervalInMinutes(15).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInMinutes(15).RepeatForever());
         }
 
-        public void EveryThirtyMinutes()
+        public LifecycleActions EveryThirtyMinutes()
         {
-            RegisterJob(x => x.WithIntervalInMinutes(30).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInMinutes(30).RepeatForever());
         }
 
-        public void Hourly()
+        public LifecycleActions Hourly()
         {
-            RegisterJob(x => x.WithIntervalInHours(1).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInHours(1).RepeatForever());
         }
 
-        public void HourlyAt(int minutesAfterTheHour)
+        public LifecycleActions HourlyAt(int minutesAfterTheHour)
         {
-            RegisterJob($"0 {minutesAfterTheHour} * * * ?");
+            return RegisterJob($"0 {minutesAfterTheHour} * * * ?");
         }
 
-        public void Daily()
+        public LifecycleActions Daily()
         {
-            RegisterJob(x => x.WithIntervalInHours(24).RepeatForever());
+            return RegisterJob(x => x.WithIntervalInHours(24).RepeatForever());
         }
 
-        public void DailyAt(int hours, int minutes, int seconds = 0)
+        public LifecycleActions DailyAt(int hours, int minutes, int seconds = 0)
         {
-            RegisterJob(x => x.StartingDailyAt(new TimeOfDay(hours, minutes, seconds)));
+            return RegisterJob(x => x.StartingDailyAt(new TimeOfDay(hours, minutes, seconds)));
         }
     }
 }
