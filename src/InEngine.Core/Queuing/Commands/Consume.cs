@@ -21,7 +21,7 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Failed(Exception exception)
         {
-            Write.Error(exception.Message);
+            Error(exception.Message);
         }
     }
 }
