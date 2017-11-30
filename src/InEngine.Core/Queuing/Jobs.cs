@@ -14,7 +14,7 @@ namespace InEngine.Core.Queuing
             ScheduleQueueConsumerJobs(schedule, queueSettings.SecondaryQueueConsumers, true);
         }
 
-        private void ScheduleQueueConsumerJobs(Schedule schedule, int consumers, bool useSecondaryQueue = false)
+        void ScheduleQueueConsumerJobs(Schedule schedule, int consumers, bool useSecondaryQueue = false)
         {
             if (consumers < 0)
                 throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");
@@ -25,8 +25,7 @@ namespace InEngine.Core.Queuing
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}",
                     UseSecondaryQueue = useSecondaryQueue
                 })
-                .EverySecond()
-                        .WriteOutputTo("tmp/somefile");
+                .EverySecond();
         }
     }
 }
