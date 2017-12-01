@@ -1,13 +1,12 @@
 # Scheduling
 
-[Commands](commands) can be scheduled to run by leveraging the inengine.exe program, available as a download from a recent [release](https://github.com/InEngine-NET/InEngine.NET/releases).
+[Commands](commands) can be run at certain times on recurring schedules.
 
 ## Scheduling a Command
 
 A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.IJobs** interface.
 
 ```c#
-
 using System;
 using Quartz;
 
