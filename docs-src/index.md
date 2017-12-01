@@ -47,3 +47,19 @@ Use the core plugin's **queue:consume** command of course:
 ```bash
 inengine.exe -pInEngine.Core queue:consume
 ``` 
+
+But what if I want to run some non-.NET code?
+
+Use the core plugin's **proc** command to execute any program you like.
+
+Create a hello world python script called **helloworld.py**:
+
+```python
+print 'Hello, world!'
+```
+
+Now execute it with the **proc** command:
+
+```bash
+inengine -pInEngine.Core proc --command=/usr/bin/python --args=helloworld.py
+```
