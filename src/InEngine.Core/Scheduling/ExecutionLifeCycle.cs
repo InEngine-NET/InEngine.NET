@@ -70,11 +70,13 @@ namespace InEngine.Core.Scheduling
             try
             {
                 if (ShouldEmailOutput)
-                    new IO.Mail()
-                    {
+                    new IO.Mail() {
                         Host = MailSettings.Host,
                         Port = MailSettings.Port,
-                }.Send(MailSettings.From, EmailOutputToAddress, emailSubject, commandOutput);
+                        Username = MailSettings.Username,
+                        Password = MailSettings.Password,
+                    }
+                    .Send(MailSettings.From, EmailOutputToAddress, emailSubject, commandOutput);
             }
             catch (Exception exception)
             {
