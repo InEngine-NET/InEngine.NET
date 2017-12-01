@@ -1,4 +1,4 @@
-InEngine.NET allows commands to be queued, scheduled, and run directly.
+InEngine.NET allows commands to be [queued](queuing), [scheduled](scheduling), and run directly.
 
 ## How does it work?
 
@@ -32,6 +32,18 @@ Now run a command in a container:
 docker run --rm inengine -pInEngine.Core echo --text"Hello, world"
 ``` 
 
-You can get started with either the  
-Get started by reading up on [commands](commands), then [scheduling](scheduling) and [queuing](queuing).
+Want to queue our example echo command to run in (possibly) another server?
 
+Use the core plugin's **queue:publish** command:
+
+```bash
+inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --command-verb=echo --args "text=Hello, world"
+``` 
+
+How do we consume that queued echo command?
+
+Use the core plugin's **queue:consume** command of course:
+
+```bash
+inengine.exe -pInEngine.Core queue:consume
+``` 
