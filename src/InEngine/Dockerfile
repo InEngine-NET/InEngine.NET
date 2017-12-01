@@ -1,5 +1,6 @@
 FROM mono:latest
-WORKDIR /container
-ADD . /container
+
+WORKDIR /inengine
+ADD . /inengine
 
 ENTRYPOINT ["mono", "./InEngine.exe"]
