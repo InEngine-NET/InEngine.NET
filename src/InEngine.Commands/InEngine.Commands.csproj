@@ -3,8 +3,8 @@
     <TargetFrameworks>net47;net462;net461</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>3.4.0</Version>
-    <FileVersion>3.4.0</FileVersion>
+    <Version>3.5.0</Version>
+    <FileVersion>3.5.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
     <Copyright>Copyright © 2017 Ethan Hann</Copyright>

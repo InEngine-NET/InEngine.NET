@@ -5,13 +5,13 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>3.4.0</Version>
-    <FileVersion>3.4.0</FileVersion>
+    <Version>3.5.0</Version>
+    <FileVersion>3.5.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
     <Copyright>Copyright © 2017 Ethan Hann</Copyright>
 	<Product>InEngine.NET</Product>
-	<PackageVersion>3.4.0-beta3</PackageVersion>
+	<PackageVersion>3.5.0-alpha1</PackageVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
