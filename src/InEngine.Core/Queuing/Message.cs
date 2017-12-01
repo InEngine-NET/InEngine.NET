@@ -1,8 +1,9 @@
 ﻿using System;
 namespace InEngine.Core.Queuing
 {
-    public class Message
+    public class Message : IMessage
     {
+        public int Id { get; set; }
         public string CommandAssemblyName { get; set; }
         public string CommandClassName { get; set; }
         public string SerializedCommand { get; set; }

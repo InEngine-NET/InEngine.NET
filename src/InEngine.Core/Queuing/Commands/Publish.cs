@@ -43,7 +43,7 @@ namespace InEngine.Core.Queuing.Commands
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
-            Broker.Make(UseSecondaryQueue).Publish(command);
+            Queue.Make(UseSecondaryQueue).Publish(command);
         }
 
         public override void Failed(Exception exception)

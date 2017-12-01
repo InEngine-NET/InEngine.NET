@@ -1,13 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace InEngine.Core.IO
 {
     public class Write : IWrite
     {
+        static Mutex consoleOutputLock = new Mutex();
+        static Mutex fileOutputLock = new Mutex();
+
         public ConsoleColor InfoColor { get; set; } = ConsoleColor.Green;
         public ConsoleColor WarningColor { get; set; } = ConsoleColor.Yellow;
         public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
         public ConsoleColor LineColor { get; set; } = ConsoleColor.White;
+        public List<string> Buffer { get; set; } = new List<string>();
 
         public IWrite Newline(int count = 1)
         {
@@ -38,9 +46,12 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredLine(string val, ConsoleColor consoleColor)
         {
+            consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(val);
             Console.ResetColor();
+            consoleOutputLock.ReleaseMutex();
+            Buffer.Add(val);
             return this;
         }
 
@@ -66,10 +77,32 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredText(string val, ConsoleColor consoleColor)
         {
+            consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.Write(val);
             Console.ResetColor();
+            consoleOutputLock.ReleaseMutex();
+            Buffer.Add(val);
             return this;
+        }
+
+        public string FlushBuffer()
+        {
+            var str = string.Join("\n", Buffer);
+            Buffer.Clear();
+            return str;
+        }
+
+        public void ToFile(string path, string text, bool shouldAppend = false)
+        {
+            fileOutputLock.WaitOne();
+            if (!File.Exists(path))
+                File.Create(path);
+            if (shouldAppend)
+                File.AppendAllText(path, text);
+            else
+                File.WriteAllText(path, text);
+            fileOutputLock.ReleaseMutex();
         }
     }
 }

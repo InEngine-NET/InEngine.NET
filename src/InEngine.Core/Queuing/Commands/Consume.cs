@@ -13,15 +13,15 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
-            var broker = Broker.Make(UseSecondaryQueue);
+            var queue = Queue.Make(UseSecondaryQueue);
             var shouldConsume = true;
             while (shouldConsume)
-                shouldConsume = broker.Consume() && ShouldConsumeAll;
+                shouldConsume = queue.Consume() && ShouldConsumeAll;
         }
 
         public override void Failed(Exception exception)
         {
-            Write.Error(exception.Message);
+            Error(exception.Message);
         }
     }
 }

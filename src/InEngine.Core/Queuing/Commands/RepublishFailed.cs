@@ -14,7 +14,7 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
-            var broker = Broker.Make(UseSecondaryQueue);
+            var broker = Queue.Make(UseSecondaryQueue);
             Enumerable.Range(0, Limit)
                       .ToList()
                       .ForEach(x => broker.RepublishFailedMessages());

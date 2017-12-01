@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.ServiceProcess;
+using Mono.Unix;
+using Mono.Unix.Native;
 
 namespace InEngine
 {
@@ -20,7 +22,19 @@ namespace InEngine
         public static void RunScheduler()
         {
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
-            if (!Environment.UserInteractive && !isRunningUnderMono)
+
+            if (isRunningUnderMono) {
+                var serverHost = new ServerHost();
+                serverHost.Start();
+                Console.WriteLine("CTRL+C to exit.");
+                UnixSignal.WaitAny(new[] {
+                    new UnixSignal(Signum.SIGINT),
+                    new UnixSignal(Signum.SIGTERM),
+                    new UnixSignal(Signum.SIGQUIT),
+                    new UnixSignal(Signum.SIGHUP)
+                });
+            }
+            else if (!Environment.UserInteractive && !isRunningUnderMono)
             {
                 // Set current working directory as services use the system directory by default.
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);

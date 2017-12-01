@@ -4,14 +4,16 @@ namespace InEngine.Core
 {
     public static class JsonExtensions
     {
-        public static string SerializeToJson<T>(this T message) where T : class
+        public static string SerializeToJson<T>(this T message, bool compress = false) where T : class
         {
-            return JsonConvert.SerializeObject(message);
+            var serializedMessage = JsonConvert.SerializeObject(message);
+            return compress ? serializedMessage.Compress() : serializedMessage;
         }
 
-        public static T DeserializeFromJson<T>(this string payload)
+        public static T DeserializeFromJson<T>(this string payload, bool decompress = false)
         {
-            return JsonConvert.DeserializeObject<T>(payload);
+            var serializedMessage = decompress ? payload.Decompress() : payload;
+            return JsonConvert.DeserializeObject<T>(serializedMessage);
         }
     }
 }

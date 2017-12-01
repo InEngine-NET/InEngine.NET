@@ -7,12 +7,12 @@ using InEngine.Core.Exceptions;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing.Clients
 {
-    public class Broker
+    public class RedisClient : IQueueClient
     {
-        public string QueueBaseName { get; set; } = "InEngine:Queue";
-        public string QueueName { get; internal set; } = "Primary";
+        public string QueueBaseName { get; set; } = "InEngineQueue";
+        public string QueueName { get; set; } = "Primary";
         public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
         public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
         public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
@@ -37,50 +37,29 @@ namespace InEngine.Core.Queuing
         public bool UseCompression { get; set; }
         public int RedisDb { get; set; }
 
-        public Broker()
-        {}
-
-        public Broker(bool useSecondaryQueue) : this()
-        {
-            if (useSecondaryQueue)
-                QueueName = "Secondary";
-        }
-
-        public static Broker Make(bool useSecondaryQueue = false)
-        {
-            var queueSettings = InEngineSettings.Make().Queue;
-            return new Broker(useSecondaryQueue)
-            {
-                QueueBaseName = queueSettings.QueueName,
-                UseCompression = queueSettings.UseCompression,
-                RedisDb = queueSettings.RedisDb
-            };
-        }
-
         public void Publish(ICommand command)
         {
-            var serializedCommand = JsonConvert.SerializeObject(command);
             Redis.ListLeftPush(
                 PendingQueueName,
                 new Message() {
                     IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
-                    SerializedCommand = UseCompression ? serializedCommand.Compress() : serializedCommand
-            }.SerializeToJson()
+                    SerializedCommand = command.SerializeToJson(UseCompression)
+                }.SerializeToJson()
             );
         }
 
         public bool Consume()
         {
-            var stageMessageTask = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
-            var serializedMessage = stageMessageTask.ToString();
+            var rawRedisMessageValue = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
+            var serializedMessage = rawRedisMessageValue.ToString();
             if (serializedMessage == null)
                 return false;
             var message = serializedMessage.DeserializeFromJson<Message>();
             if (message == null)
                 return false;
-            var commandInstance = ExtractCommandInstanceFromMessage(message);
+            var commandInstance = Queue.ExtractCommandInstanceFromMessage(message);
 
             try
             {
@@ -89,7 +68,7 @@ namespace InEngine.Core.Queuing
             catch (Exception exception)
             {
                 Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
-                Redis.ListLeftPush(FailedQueueName, stageMessageTask);
+                Redis.ListLeftPush(FailedQueueName, rawRedisMessageValue);
                 throw new CommandFailedException("Consumed command failed.", exception);
             }
 
@@ -105,17 +84,6 @@ namespace InEngine.Core.Queuing
             return true;
         }
 
-        public static ICommand ExtractCommandInstanceFromMessage(Message message)
-        {
-            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
-            if (commandType == null)
-                throw new CommandFailedException("Could not locate command type.");
-            if (message.IsCompressed)
-                return JsonConvert.DeserializeObject(message.SerializedCommand.Decompress(), commandType) as ICommand;
-            return JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
-        }
-
-        #region Queue Management Methods
         public long GetPendingQueueLength()
         {
             return Redis.ListLength(PendingQueueName);
@@ -151,27 +119,26 @@ namespace InEngine.Core.Queuing
             Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
         }
 
-        public List<Message> PeekPendingMessages(long from, long to)
+        public List<IMessage> PeekPendingMessages(long from, long to)
         {
             return GetMessages(PendingQueueName, from, to);
         }
 
-        public List<Message> PeekInProgressMessages(long from, long to)
+        public List<IMessage> PeekInProgressMessages(long from, long to)
         {
             return GetMessages(InProgressQueueName, from, to);
         }
 
-        public List<Message> PeekFailedMessages(long from, long to)
+        public List<IMessage> PeekFailedMessages(long from, long to)
         {
             return GetMessages(FailedQueueName, from, to);
         }
 
-        public List<Message> GetMessages(string queueName, long from, long to)
+        public List<IMessage> GetMessages(string queueName, long from, long to)
         {
             return Redis.ListRange(queueName, from, to)
                         .ToStringArray()
-                        .Select(x => x.DeserializeFromJson<Message>()).ToList();
+                        .Select(x => x.DeserializeFromJson<IMessage>()).ToList();
         }
-        #endregion
     }
 }

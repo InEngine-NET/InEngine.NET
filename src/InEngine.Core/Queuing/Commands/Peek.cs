@@ -11,11 +11,11 @@ namespace InEngine.Core.Queuing.Commands
 {
     public class Peek : AbstractCommand
     {
-        [Option("offset", DefaultValue = 0, HelpText = "The maximum number of messages to peek.")]
-        public long Offset { get; set; }
+        [Option("from", DefaultValue = 0, HelpText = "The first message to peek at (0-indexed).")]
+        public long From { get; set; }
 
-        [Option("limit", DefaultValue = 10, HelpText = "The maximum number of messages to peek.")]
-        public long Limit { get; set; }
+        [Option("to", DefaultValue = 10, HelpText = "The last message to peek at.")]
+        public long To { get; set; }
 
         [Option("json", HelpText = "View the messages as JSON.")]
         public bool JsonFormat { get; set; }
@@ -34,23 +34,28 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
+            if (From < 0)
+                throw new ArgumentException("--from cannot be negative");
+            if (To < 0)
+                throw new ArgumentException("--to cannot be negative");
+            if (To < From)
+                throw new ArgumentException("--from cannot be greater than --to");
+            
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var broker = Broker.Make(UseSecondaryQueue);
-            var from = Offset;
-            var to = Offset + Limit - 1;
+            var broker = Queue.Make(UseSecondaryQueue);
             if (PendingQueue) {
-                PrintMessages(broker.PeekPendingMessages(from, to), "Pending");
+                PrintMessages(broker.PeekPendingMessages(From, To), "Pending");
             }
             if (InProgressQueue) {
-                PrintMessages(broker.PeekInProgressMessages(from, to), "In-progress");
+                PrintMessages(broker.PeekInProgressMessages(From, To), "In-progress");
             }
             if (FailedQueue) {
-                PrintMessages(broker.PeekFailedMessages(from, to), "Failed");
+                PrintMessages(broker.PeekFailedMessages(From, To), "Failed");
             }
         }
 
-        public void PrintMessages(List<Message> messages, string queueName)
+        public void PrintMessages(List<IMessage> messages, string queueName)
         {
             WarningText($"{queueName}:");
             if (!messages.Any()) {
@@ -61,11 +66,11 @@ namespace InEngine.Core.Queuing.Commands
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
             messages.ForEach(x => {
-                var message = x as Message;
+                var message = x as IMessage;
                 if (JsonFormat)
                     Line(message.SerializeToJson());
                 else
-                    konsoleForm.Write(Broker.ExtractCommandInstanceFromMessage(message));
+                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(message));
             });
         }
     }
