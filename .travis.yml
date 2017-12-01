@@ -11,5 +11,5 @@ cache: apt
 
 script:
   - xbuild /p:Configuration=Release
-  - mono src/packages/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe ./src/InEngine.Core.Test/bin/Release/InEngine.Core.Test.dll
+  - mono ./packages/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe ./InEngine.Core.Test/bin/Release/InEngine.Core.Test.dll
 
