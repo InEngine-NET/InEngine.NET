@@ -27,7 +27,7 @@ namespace InEngine.Core.Test.Queuing
         [Test]
         public void ShouldPublishCommand()
         {
-            var command = Fake.It();
+            var command = new AlwaysSucceed();
             MockQueueClient.Setup(x => x.Publish(command));
 
             Subject.Publish(command);
