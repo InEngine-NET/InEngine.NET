@@ -25,16 +25,16 @@ It is highly recommended to <a href="https://redis.io/topics/security#authentica
 
 ### From Code
 
-[Commands](commands) can be published programmatically with the **InEngine.Core.Queuing.Broker** class:
+[Commands](commands) can be published programmatically with the **InEngine.Core.Queuing.Queue** class:
 
 ```c#
-Broker.Make().Publish(new MyCommand());
+Queue.Make().Publish(new MyCommand());
 ```
 
 Or publish to the secondary queue:
 
 ```c#
-Broker.Make(true).Publish(new MyCommand());
+Queue.Make(true).Publish(new MyCommand());
 ```
 
 ### From the Command Line
@@ -62,17 +62,17 @@ inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --
 ## Consuming Commands
 
 ### From Code
-Consuming a command is also accomplished with the Broker class:
+Consuming a command is also accomplished with the Queue class:
 
 ```c#
-Broker.Make().Consume();
+Queue.Make().Consume();
 ```
 
 The make method takes an optional second argument to indicate if the secondary queue should be used instead of the primary queue.
 
 ```c#
 // Uses secondary queue.
-Broker.Make(true).Consume();
+Queue.Make(true).Consume();
 ```
 
 Commands can be consumed from the command line as well with this simple command:
