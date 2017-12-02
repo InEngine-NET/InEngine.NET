@@ -21,13 +21,13 @@ namespace InEngine.Core.Queuing.Commands
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");
-            var broker = Queue.Make(UseSecondaryQueue);
+            var queue = Queue.Make(UseSecondaryQueue);
             if (PendingQueue)
-                Info($"Pending: {broker.ClearPendingQueue().ToString()}");
+                Info($"Pending: {queue.ClearPendingQueue().ToString()}");
             if (InProgressQueue)
-                Info($"In-progress: {broker.ClearInProgressQueue().ToString()}");
+                Info($"In-progress: {queue.ClearInProgressQueue().ToString()}");
             if (FailedQueue)
-                Info($"Failed: {broker.ClearFailedQueue().ToString()}");
+                Info($"Failed: {queue.ClearFailedQueue().ToString()}");
         }
     }
 }
