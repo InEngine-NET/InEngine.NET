@@ -26,7 +26,7 @@ theme:
     primary: 'blue'
     accent: 'blue'
   feature:
-    tabs: false
+    tabs: true
 
 markdown_extensions:
   - admonition
