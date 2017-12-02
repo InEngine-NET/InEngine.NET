@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using Quartz;
 using Quartz.Impl;
@@ -29,6 +30,11 @@ namespace InEngine.Core.Scheduling
                 JobDetail = jobDetail,
                 Command = command
             };
+        }
+
+        public Occurence Job(Action action)
+        {
+            return Job(new Lambda() { Action = action });
         }
 
         public JobRegistration RegisterJob(AbstractCommand command, IJobDetail jobDetail, ITrigger trigger)
