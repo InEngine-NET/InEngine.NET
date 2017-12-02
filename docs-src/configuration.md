@@ -13,7 +13,8 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
       "UseCompression": false,
       "PrimaryQueueConsumers":  16,
       "SecondaryQueueConsumers": 4,
-      "QueueName": "InEngine:Queue",
+      "QueueDriver": "redis",
+      "QueueName": "InEngineQueue",
       "RedisHost": "localhost",
       "RedisPort": 6379,
       "RedisDb": 0,
@@ -39,6 +40,7 @@ Configuration is accomplished by modifying the appsettings.json file that comes 
 | UseCompression            | bool      | A situation performance optimization that compresses queued messages. |
 | PrimaryQueueConsumers     | string    | The number of consumers to schedule for the secondary queue.          |
 | SecondaryQueueConsumers   | string    | The number of consumers to schedule for the secondary queue.          |
+| QueueDriver               | string    | The driver to use to interact with a queue data store.                |
 | QueueName                 | string    | The base name of the queue, used to form the Redis Queue keys.        |
 | RedisHost                 | string    | The Redis hostname to connect to.                                     |
 | RedisPort                 | integer   | Redis's port.                                                         |

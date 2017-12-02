@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace InEngine.Core.Queuing.Clients
@@ -27,13 +25,7 @@ namespace InEngine.Core.Queuing.Clients
         });
         public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
         public ConnectionMultiplexer _connectionMultiplexer;
-        public IDatabase Redis
-        {
-            get
-            {
-                return Connection.GetDatabase(RedisDb);
-            }
-        }
+        public IDatabase Redis { get { return Connection.GetDatabase(RedisDb); } }
         public bool UseCompression { get; set; }
         public int RedisDb { get; set; }
 

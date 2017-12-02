@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using Newtonsoft.Json;
@@ -20,38 +21,46 @@ namespace InEngine.Core.Queuing
             var queue = new Queue();
 
             if (queueDriverName == "redis")
-            {
-                queue.QueueClient = new RedisClient() {
+                queue.QueueClient = new RedisClient()
+                {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                     RedisDb = queueSettings.RedisDb
                 };
-            }
             else if (queueDriverName == "database")
-            { 
                 queue.QueueClient = new DatabaseClient() {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                 };
-            }
             else if (queueDriverName == "file")
-            { 
                 queue.QueueClient = new FileClient() {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                 };
-            } 
-            else {
+            else if (queueDriverName == "sync")
+                queue.QueueClient = new SyncClient();
+            else
                 throw new Exception("Unspecified or unknown queue driver.");
-            }
 
             queue.QueueClient.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
             return queue;
         }
 
+        public void Publish(Action action)
+        {
+            QueueClient.Publish(new Lambda() {
+                Action = action
+            });
+        }
+
         public void Publish(ICommand command)
         {
             QueueClient.Publish(command);
+        }
+
+        public void Publish(IList<AbstractCommand> commands)
+        {
+            QueueClient.Publish(new Chain() { Commands = commands });
         }
 
         public bool Consume()
