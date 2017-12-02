@@ -8,26 +8,6 @@ A job schedule is created by adding a class to your plugin assembly that impleme
 
 ```c#
 using System;
-using Quartz;
-
-namespace MyCommandPlugin
-{
-    public class Jobs : IJobs
-    {
-        public void Schedule(IScheduler scheduler)
-        {
-            // Schedule some jobs
-        }
-    }
-}
-```
-
-This class is automatically discovered by the InEngine.NET scheduler.
-It will call the Jobs.Schedule method with an initialized **InEngine.Scheduling.Schedule** object.
-
-```c#
-using System;
-using Quartz;
 
 namespace MyCommandPlugin
 {
@@ -35,7 +15,38 @@ namespace MyCommandPlugin
     {
         public void Schedule(Schedule schedule)
         {
+            // Schedule some jobs
+        }
+    }
+}
+```
+
+The InEngine.NET scheduler automatically discovers this class.
+It will call the Jobs.Schedule method with an initialized **InEngine.Scheduling.Schedule** object.
+
+```c#
+using System;
+
+namespace MyCommandPlugin
+{
+    public class Jobs : IJobs
+    {
+        public void Schedule(Schedule schedule)
+        {
+            /* 
+             * Run MyCommand every five minutes. 
+             */
             schedule.Job(new MyCommand()).EveryFiveMinutes();
+            
+            /* 
+             * Run a lambda expression every ten minutes. 
+             */
+            schedule.Job(() => Console.WriteLine("Hello, world!")).EveryTenMinutes();
+            
+            /* 
+             * Run a parameterless method every five minutes. 
+             */
+            schedule.Job(() => Foo.Bar).EverySecond();
         }
     }
 }
@@ -219,10 +230,22 @@ sudo supervisorctl reread
 sudo supervisorctl update
 ```
 
-Now, simply start the InEngine Scheduler.
+Now, simply start the scheduler workers with the **supervisorctl** program:
 
 ```bash
 sudo supervisorctl start inengine-scheduler:*
 ```
 
+### In a Container with Docker
 
+Install [Docker](https://www.docker.com/what-docker) first, then pull the **ethanhann/inengine** image:
+
+```bash
+docker pull ethanhann/inengine:latest
+```
+
+Now run the scheduler:
+
+```bash
+docker run --rm inengine -s
+``` 

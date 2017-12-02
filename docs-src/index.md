@@ -1,4 +1,4 @@
-InEngine.NET allows commands to be [queued](queuing), [scheduled](scheduling), and run directly.
+InEngine.NET is a plugin-based software application that allows commands to be [queued](queuing), [scheduled](scheduling), and run directly.
 
 ## How does it work?
 
@@ -12,7 +12,7 @@ Then run a command the **echo** command from the core plugin:
 ```bash
 inengine.exe -pInEngine.Core echo --text"Hello, world"
 ```
-Or if you\'re a Linux or Mac OS X fan (like me!), use the **inengine** shell script ([Mono](http://www.mono-project.com/download/) required.):
+Or if you're a Linux or Mac OS X fan (like me!), use the **inengine** shell script ([Mono](http://www.mono-project.com/download/) is required):
 
 ```bash
 inengine -pInEngine.Core echo --text"Hello, world"
