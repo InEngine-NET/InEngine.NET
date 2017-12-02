@@ -2,10 +2,22 @@
 
 InEngine.NET's queue functionality allows for commands to be run in the background with a simple publish/consume model. 
 
-## Prerequisites
+## Queue Drivers
 
-Redis is required to use the InEngine.NET queue feature. 
-It can be installed on Ubuntu with this command:
+To make use of queue features, a queue driver must be specified in [appsettings.json](configuration).
+These are the available drivers...
+
+### File
+
+The file driver writes queued messages to the file system. 
+It is useful for testing and development, but probably not suitable for production.
+
+### Redis
+
+Redis is suitable for production use. 
+InEngine.NET utilizes Redis' durable queue features which mean messages will not be lost if InEngine.NET unexpectedly fails. 
+
+Redis can be installed on Ubuntu with this command:
 
 ```bash
 sudo apt-get install redis-server
@@ -19,11 +31,17 @@ sudo service redis start
 
 <div class="alert alert-info">
 It is highly recommended to <a href="https://redis.io/topics/security#authentication-feature">set a password</a> for Redis.
-</div>
+</div> 
+
+### Sync
+
+The sync driver causes the publish command to run a published command synchronously.
+All other queue commands and methods are not supported and will throw an exception if called.
+This driver can be useful for plugin development and testing.
 
 ## Publishing Commands
 
-### From Code
+### With C# Classes
 
 [Commands](commands) can be published programmatically with the **InEngine.Core.Queuing.Queue** class:
 
@@ -31,10 +49,60 @@ It is highly recommended to <a href="https://redis.io/topics/security#authentica
 Queue.Make().Publish(new MyCommand());
 ```
 
-Or publish to the secondary queue:
+Or publish to the secondary queue by passing true to the Make method:
 
 ```c#
 Queue.Make(true).Publish(new MyCommand());
+```
+
+!!! note "Do I have to use Queue.Make()?"
+    Queue.Make() is a factory method that autoloads the queue settings from appsettings.json, creates the appropriate queue driver, and returns an instance of Queue.
+    You can create your own Queue object an initialize it if you want.
+    At the very least you can assign the object returned by Queue.Make() to a local variable or load it into a DI container for later use.
+
+### With Lambda Expressions
+
+Lambda expressions, aka anonymous functions, can be queued.
+The disadvantage to queuing lambdas is that the helpful functionality available in **InEngine.Core.AbstractCommand** is not available.  
+
+This is how you queue a lambda:
+
+```c#
+Queue.Make().Publish(() => Console.WriteLine("Hello, world!"));
+```
+
+Here is a neat shortcut for commands without parameters:
+
+```c#
+Queue.Make().Publish(() => Foo.Bar());
+// Can be rewritten as...
+Queue.Make().Publish(Foo.Bar);
+```
+
+### Sequentially In a Chain
+
+Chained commands run in the order specified.
+This is useful for when order matters.
+
+Also, if one command in the chain fails, then subsequent commands are not run at all.
+This affords the opportunity to add additional code that records which command failed, then resuming the command chain where it left off.
+
+Here is a an example of how to chain an imaginary file transfer command together:
+
+```c#
+Subject.Publish(new[] {
+    new MyFileTransfer(filePath1),
+    new MyFileTransfer(filePath2),
+    new MyFileTransfer(filePath3),
+});
+```
+
+
+```c#
+Subject.Publish(new List<AbstractCommand>() {
+    new AlwaysSucceed(),
+    new Echo() { VerbatimText = "Hello, world!"},
+});
 ```
 
 ### From the Command Line
@@ -104,7 +172,7 @@ The **queue:length** command shows a quick summary of pending, in-progress, and 
 inengine.exe -pInEngine.Core queue:length
 ```
 
-### Peek at Commands
+### Peek at Queued Commands
 
 The **queue:peek** command allows for queued commands to be inspected:
 
