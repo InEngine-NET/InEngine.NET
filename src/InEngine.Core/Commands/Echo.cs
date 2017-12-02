@@ -12,7 +12,7 @@ namespace InEngine.Core.Commands
 
         public override void Run()
         {
-            Write.Line(VerbatimText);
+            Line(VerbatimText);
         }
     }
 }
