@@ -130,7 +130,7 @@ namespace InEngine.Core.Queuing.Clients
         {
             return Redis.ListRange(queueName, from, to)
                         .ToStringArray()
-                        .Select(x => x.DeserializeFromJson<IMessage>()).ToList();
+                        .Select(x => x.DeserializeFromJson<Message>() as IMessage).ToList();
         }
     }
 }

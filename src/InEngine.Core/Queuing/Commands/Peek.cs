@@ -12,10 +12,10 @@ namespace InEngine.Core.Queuing.Commands
     public class Peek : AbstractCommand
     {
         [Option("from", DefaultValue = 0, HelpText = "The first message to peek at (0-indexed).")]
-        public long From { get; set; }
+        public long From { get; set; } = 0;
 
         [Option("to", DefaultValue = 10, HelpText = "The last message to peek at.")]
-        public long To { get; set; }
+        public long To { get; set; } = 10;
 
         [Option("json", HelpText = "View the messages as JSON.")]
         public bool JsonFormat { get; set; }
@@ -43,15 +43,15 @@ namespace InEngine.Core.Queuing.Commands
             
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var broker = Queue.Make(UseSecondaryQueue);
+            var queue = Queue.Make(UseSecondaryQueue);
             if (PendingQueue) {
-                PrintMessages(broker.PeekPendingMessages(From, To), "Pending");
+                PrintMessages(queue.PeekPendingMessages(From, To), "Pending");
             }
             if (InProgressQueue) {
-                PrintMessages(broker.PeekInProgressMessages(From, To), "In-progress");
+                PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
             }
             if (FailedQueue) {
-                PrintMessages(broker.PeekFailedMessages(From, To), "Failed");
+                PrintMessages(queue.PeekFailedMessages(From, To), "Failed");
             }
         }
 

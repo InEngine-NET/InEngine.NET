@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using Quartz;
@@ -32,9 +33,9 @@ namespace InEngine.Core.Scheduling
             };
         }
 
-        public Occurence Job(Action action)
+        public Occurence Job(Expression<Action> expressionAction)
         {
-            return Job(new Lambda() { Action = action });
+            return Job(new Lambda() { ExpressionAction = expressionAction });
         }
 
         public Occurence Job(IList<AbstractCommand> commands)

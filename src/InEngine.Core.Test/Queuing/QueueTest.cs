@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
@@ -8,6 +9,7 @@ using InEngine.Core.Queuing.Commands;
 using Moq;
 using NUnit.Framework;
 using Quartz;
+using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Test.Queuing
 {
@@ -38,13 +40,13 @@ namespace InEngine.Core.Test.Queuing
         [Test]
         public void ShouldPublishLambdaCommand()
         {
-            Action action = () => { Console.Write("Hello, world."); };
-            var lambda = new Lambda() { Action = action };
+            Expression<Action> expression = () => Console.Write("Hello, world.");
+            var lambda = new Lambda(expression);
             MockQueueClient.Setup(x => x.Publish(It.IsAny<Lambda>()));
 
-            Subject.Publish(action);
+            Subject.Publish(lambda);
 
-            MockQueueClient.Verify(x => x.Publish(It.Is<Lambda>(y => y.Action == action)), Times.Once());
+            MockQueueClient.Verify(x => x.Publish(It.Is<Lambda>(y => y.ExpressionAction.Compile() == action)), Times.Once());
         }
 
         [Test]
