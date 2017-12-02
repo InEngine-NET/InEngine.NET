@@ -37,6 +37,11 @@ namespace InEngine.Core.Scheduling
             return Job(new Lambda() { Action = action });
         }
 
+        public Occurence Job(IList<AbstractCommand> commands)
+        {
+            return Job(new Chain() { Commands = commands });
+        }
+
         public JobRegistration RegisterJob(AbstractCommand command, IJobDetail jobDetail, ITrigger trigger)
         {
             if (!JobGroups.ContainsKey(command.SchedulerGroup))

@@ -48,7 +48,7 @@ namespace InEngine.Core
         #endregion
 
         #region Scheduling
-        public void Execute(IJobExecutionContext context)
+        public virtual void Execute(IJobExecutionContext context)
         {
             var properties = GetType().GetProperties();
             context.MergedJobDataMap.ToList().ForEach(x => {
@@ -68,7 +68,6 @@ namespace InEngine.Core
                 Failed(exception);
             }
         }
-
         #endregion
 
         #region Console output

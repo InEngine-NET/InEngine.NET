@@ -9,7 +9,6 @@ namespace InEngine.Core.Queuing
         string QueueName { get; set; }
         bool UseCompression { get; set; }
         void Publish(ICommand command);
-        void Publish(Action action);
         bool Consume();
         long GetPendingQueueLength();
         long GetInProgressQueueLength();

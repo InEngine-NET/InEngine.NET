@@ -29,11 +29,6 @@ namespace InEngine.Core.Queuing.Clients
         public bool UseCompression { get; set; }
         public int RedisDb { get; set; }
 
-        public void Publish(Action action)
-        {
-            Publish(new Lambda() { Action = action });
-        }
-
         public void Publish(ICommand command)
         {
             Redis.ListLeftPush(

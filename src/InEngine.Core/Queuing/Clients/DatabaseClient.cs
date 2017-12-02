@@ -33,11 +33,6 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
-        public void Publish(Action action)
-        {
-            Publish(new Lambda() { Action = action });
-        }
-
         public bool Consume()
         {
 

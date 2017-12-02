@@ -1,11 +1,8 @@
 ﻿using System;
 using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
-using InEngine.Core.Commands;
 using InEngine.Core.Scheduling;
-using Moq;
 using NUnit.Framework;
-using Quartz;
 
 namespace InEngine.Core.Test.Scheduling
 {
@@ -32,6 +29,19 @@ namespace InEngine.Core.Test.Scheduling
             var alwaysSucceed = new AlwaysSucceed();
 
             Subject.Job(() => { Console.WriteLine("Hello, world!"); }).EverySecond();
+        }
+
+        [Test]
+        public void ShouldScheduleCommandChain()
+        {
+            var alwaysSucceed = new AlwaysSucceed();
+
+            Subject.Job(new [] {
+                new AlwaysSucceed(),
+                new AlwaysSucceed(),
+                new AlwaysSucceed(),
+                new AlwaysSucceed()
+            }).EverySecond();
         }
     }
 }

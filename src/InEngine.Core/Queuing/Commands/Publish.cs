@@ -23,6 +23,7 @@ namespace InEngine.Core.Queuing.Commands
         public bool UseSecondaryQueue { get; set; }
 
         public ICommand Command { get; set; }
+        public Queue Queue { get; set; }
 
         public override void Run()
         {
@@ -43,7 +44,10 @@ namespace InEngine.Core.Queuing.Commands
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
-            Queue.Make(UseSecondaryQueue).Publish(command);
+            if (Queue == null)
+                Queue.Make(UseSecondaryQueue);
+
+            Queue.Publish(command);
         }
 
         public override void Failed(Exception exception)
