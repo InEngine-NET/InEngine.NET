@@ -1,4 +1,5 @@
-﻿using BeekmanLabs.UnitTesting;
+﻿using System.Collections.Generic;
+using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
@@ -50,6 +51,28 @@ namespace InEngine.Core.Test.Commands
 
             mockCommand1.Verify(x => x.Run(), Times.Once());
             mockCommand2.Verify(x => x.Run(), Times.Never());
+        }
+
+        [Test]
+        public void ShouldRunChainOfDifferentCommands()
+        {
+            Subject.Commands = new List<AbstractCommand>() {
+                new AlwaysSucceed(),
+                new Echo() { VerbatimText = "Hello, world!"},
+            };
+
+            Subject.Run();
+        }
+
+        [Test]
+        public void ShouldRunChainOfDifferentCommandsAsAbstractCommand()
+        {
+            Subject.Commands = new[] {
+                new AlwaysSucceed() as AbstractCommand,
+                new Echo() { VerbatimText = "Hello, world!"} as AbstractCommand,
+            };
+
+            Subject.Run();
         }
     }
 }
