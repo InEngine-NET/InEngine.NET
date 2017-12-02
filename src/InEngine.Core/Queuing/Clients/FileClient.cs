@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Queuing.Clients
@@ -56,6 +57,11 @@ namespace InEngine.Core.Queuing.Clients
             {
                 streamWriter.Write(serializedMessage);
             }   
+        }
+
+        public void Publish(Action action)
+        {
+            Publish(new Lambda() { Action = action });
         }
 
         public bool Consume()

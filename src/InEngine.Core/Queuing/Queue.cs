@@ -49,6 +49,11 @@ namespace InEngine.Core.Queuing
             return queue;
         }
 
+        public void Publish(Action action)
+        {
+            QueueClient.Publish(action);
+        }
+
         public void Publish(ICommand command)
         {
             QueueClient.Publish(command);
