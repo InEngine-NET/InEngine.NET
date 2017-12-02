@@ -7,7 +7,7 @@ using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Commands;
 using NUnit.Framework;
 
-namespace InEngine.Core.Test.Queue.Commands
+namespace InEngine.Core.Test.Queuing.Commands
 {
     [TestFixture]
     public class PublishTest : TestBase<Publish>

@@ -5,7 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Quartz;
 
-namespace InEngine.Core.Test.Queue.Commands
+namespace InEngine.Core.Test.Queuing.Commands
 {
     [TestFixture]
     public class ConsumeTest : TestBase<Consume>
