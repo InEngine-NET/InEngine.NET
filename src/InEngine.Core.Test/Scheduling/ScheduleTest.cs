@@ -28,8 +28,6 @@ namespace InEngine.Core.Test.Scheduling
         {
             var alwaysSucceed = new AlwaysSucceed();
 
-            //Subject.Job()
-
             Subject.Job(() => Console.WriteLine("Hello, world!")).EverySecond();
         }
 

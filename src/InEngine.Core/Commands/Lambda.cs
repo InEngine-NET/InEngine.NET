@@ -8,7 +8,10 @@ namespace InEngine.Core.Commands
     public class Lambda : AbstractCommand
     {
         public ExpressionNode ExpressionNode { get; set; }
-        public Expression<Action> ExpressionAction { set { ExpressionNode = value.ToExpressionNode(); } }
+        public Expression<Action> ExpressionAction { 
+            get { return ExpressionNode.ToExpression<Action>(); }
+            set { ExpressionNode = value.ToExpressionNode(); } 
+        }
 
         public Lambda()
         {}

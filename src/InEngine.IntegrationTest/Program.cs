@@ -26,7 +26,6 @@ namespace InEngine.IntegrationTest
 
             queue.ClearPendingQueue();
             queue.Publish(() => Console.WriteLine("Core lambda command."));
-            queue.Publish(() => Console.WriteLine("Core lambda command."));
 
             new Length { }.Run();
             new Peek { PendingQueue = true }.Run();
