@@ -98,7 +98,7 @@
                 InEngine.NET
               </span>
               <span class="md-header-nav__topic">
-                Getting Started
+                Quickstart
               </span>
             
           
@@ -166,6 +166,39 @@
         
       
       
+        
+
+<nav class="md-tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="." title="Quickstart" class="md-tabs__link md-tabs__link--active">
+        Quickstart
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="commands/" title="Documentation" class="md-tabs__link">
+          Documentation
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -219,9 +252,48 @@
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
     
-    <a href="." title="Getting Started" class="md-nav__link md-nav__link--active">
-      Getting Started
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Quickstart
+      </label>
+    
+    <a href="." title="Quickstart" class="md-nav__link md-nav__link--active">
+      Quickstart
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-it-work" title="How does it work?" class="md-nav__link">
+    How does it work?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-queueing-work" title="How does queueing work?" class="md-nav__link">
+    How does queueing work?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-run-non-net-commands" title="How do I run non-.NET commands?" class="md-nav__link">
+    How do I run non-.NET commands?
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -305,16 +377,104 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-it-work" title="How does it work?" class="md-nav__link">
+    How does it work?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-queueing-work" title="How does queueing work?" class="md-nav__link">
+    How does queueing work?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-run-non-net-commands" title="How do I run non-.NET commands?" class="md-nav__link">
+    How do I run non-.NET commands?
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>Getting Started</h1>
+                  <h1>Quickstart</h1>
                 
-                <p>InEngine.NET allows commands to be queued, scheduled, and run directly. </p>
-<p>Get started by reading up on <a href="./commands">commands</a>, then <a href="./scheduling">scheduling</a> and <a href="./queuing">queuing</a>.</p>
+                <p>InEngine.NET is a plugin-based software application that allows commands to be <a href="./queuing">queued</a>, <a href="./scheduling">scheduled</a>, and run directly.</p>
+<h2 id="how-does-it-work">How does it work?<a class="headerlink" href="#how-does-it-work" title="Permanent link">&para;</a></h2>
+<p>InEngine.NET uses a plugin system to dynamically load .NET assemblies and execute code. 
+It also has a built-in command for launching external non-.NET programs.</p>
+<p>Get started by pulling the binaries from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">latest release</a> on GitHub.</p>
+<p>Then run a command the <strong>echo</strong> command from the core plugin:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core <span class="nb">echo</span> --text<span class="s2">&quot;Hello, world&quot;</span>
+</pre></div>
+
+
+<p>Or if you're a Linux or Mac OS X fan (like me!), use the <strong>inengine</strong> shell script (<a href="http://www.mono-project.com/download/">Mono</a> is required):</p>
+<div class="codehilite"><pre><span></span>inengine -pInEngine.Core <span class="nb">echo</span> --text<span class="s2">&quot;Hello, world&quot;</span>
+</pre></div>
+
+
+<p>Instead of downloading binaries and runtimes, you can pull the latest Docker image:</p>
+<div class="codehilite"><pre><span></span>docker pull ethanhann/inengine:latest
+</pre></div>
+
+
+<p>Now run a command in a container:</p>
+<div class="codehilite"><pre><span></span>docker run --rm inengine -pInEngine.Core <span class="nb">echo</span> --text<span class="s2">&quot;Hello, world&quot;</span>
+</pre></div>
+
+
+<h2 id="how-does-queueing-work">How does queueing work?<a class="headerlink" href="#how-does-queueing-work" title="Permanent link">&para;</a></h2>
+<p>There are a lot of <a href="./queuing">queuing</a> features, but this is the gist...</p>
+<p>Want to queue our example echo command to run in the background or possibly on another server?</p>
+<p>Use the core plugin's <strong>queue:publish</strong> command:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>InEngine.Core.dll --command-verb<span class="o">=</span><span class="nb">echo</span> --args <span class="s2">&quot;text=Hello, world&quot;</span>
+</pre></div>
+
+
+<p>How do we consume that queued echo command?</p>
+<p>Use the core plugin's <strong>queue:consume</strong> command of course:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:consume
+</pre></div>
+
+
+<h2 id="how-do-i-run-non-net-commands">How do I run non-.NET commands?<a class="headerlink" href="#how-do-i-run-non-net-commands" title="Permanent link">&para;</a></h2>
+<p>There is a special <strong>proc</strong> command in the core plugin that allows for the execution of any program you can run at the command line. </p>
+<p>For example, create a python script called <strong>helloworld.py</strong> that contains this:</p>
+<div class="codehilite"><pre><span></span><span class="k">print</span> <span class="s1">&#39;Hello, world!&#39;</span>
+</pre></div>
+
+
+<p>Now execute it with the <strong>proc</strong> command:</p>
+<div class="codehilite"><pre><span></span>inengine -pInEngine.Core proc --command<span class="o">=</span>/usr/bin/python --args<span class="o">=</span>helloworld.py
+</pre></div>
                 
                   
                 

@@ -166,6 +166,41 @@
         
       
       
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href=".." title="Quickstart" class="md-tabs__link">
+        Quickstart
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../commands/" title="Documentation" class="md-tabs__link md-tabs__link--active">
+          Documentation
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -213,8 +248,8 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Getting Started" class="md-nav__link">
-      Getting Started
+    <a href=".." title="Quickstart" class="md-nav__link">
+      Quickstart
     </a>
   </li>
 
@@ -374,6 +409,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
+    In a Container with Docker
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -527,6 +569,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
+    In a Container with Docker
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -548,17 +597,16 @@
                 
                 
                 <h1 id="scheduling">Scheduling<a class="headerlink" href="#scheduling" title="Permanent link">&para;</a></h1>
-<p><a href="../commands">Commands</a> can be scheduled to run by leveraging the inengine.exe program, available as a download from a recent <a href="https://github.com/InEngine-NET/InEngine.NET/releases">release</a>.</p>
+<p><a href="../commands">Commands</a> can be run at certain times on recurring schedules.</p>
 <h2 id="scheduling-a-command">Scheduling a Command<a class="headerlink" href="#scheduling-a-command" title="Permanent link">&para;</a></h2>
 <p>A job schedule is created by adding a class to your plugin assembly that implements the <strong>InEngine.Core.IJobs</strong> interface.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
-<span class="k">using</span> <span class="nn">Quartz</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">class</span> <span class="nc">Jobs</span> <span class="p">:</span> <span class="n">IJobs</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">IScheduler</span> <span class="n">scheduler</span><span class="p">)</span>
+        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">Schedule</span> <span class="n">schedule</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="c1">// Schedule some jobs</span>
         <span class="p">}</span>
@@ -567,10 +615,9 @@
 </pre></div>
 
 
-<p>This class is automatically discovered by the InEngine.NET scheduler.
+<p>The InEngine.NET scheduler automatically discovers this class.
 It will call the Jobs.Schedule method with an initialized <strong>InEngine.Scheduling.Schedule</strong> object.</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
-<span class="k">using</span> <span class="nn">Quartz</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
 <span class="p">{</span>
@@ -578,7 +625,20 @@ It will call the Jobs.Schedule method with an initialized <strong>InEngine.Sched
     <span class="p">{</span>
         <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">Schedule</span> <span class="n">schedule</span><span class="p">)</span>
         <span class="p">{</span>
+            <span class="cm">/* </span>
+<span class="cm">             * Run MyCommand every five minutes. </span>
+<span class="cm">             */</span>
             <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+
+            <span class="cm">/* </span>
+<span class="cm">             * Run a lambda expression every ten minutes. </span>
+<span class="cm">             */</span>
+            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">)).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
+
+            <span class="cm">/* </span>
+<span class="cm">             * Run a parameterless method every five minutes. </span>
+<span class="cm">             */</span>
+            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">).</span><span class="n">EverySecond</span><span class="p">();</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -731,8 +791,19 @@ sudo supervisorctl update
 </pre></div>
 
 
-<p>Now, simply start the InEngine Scheduler.</p>
+<p>Now, simply start the scheduler workers with the <strong>supervisorctl</strong> program:</p>
 <div class="codehilite"><pre><span></span>sudo supervisorctl start inengine-scheduler:*
+</pre></div>
+
+
+<h3 id="in-a-container-with-docker">In a Container with Docker<a class="headerlink" href="#in-a-container-with-docker" title="Permanent link">&para;</a></h3>
+<p>Install <a href="https://www.docker.com/what-docker">Docker</a> first, then pull the <strong>ethanhann/inengine</strong> image:</p>
+<div class="codehilite"><pre><span></span>docker pull ethanhann/inengine:latest
+</pre></div>
+
+
+<p>Now run the scheduler:</p>
+<div class="codehilite"><pre><span></span>docker run --rm inengine -s
 </pre></div>
                 
                   

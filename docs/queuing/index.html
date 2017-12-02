@@ -166,6 +166,41 @@
         
       
       
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href=".." title="Quickstart" class="md-tabs__link">
+        Quickstart
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../commands/" title="Documentation" class="md-tabs__link md-tabs__link--active">
+          Documentation
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -213,8 +248,8 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Getting Started" class="md-nav__link">
-      Getting Started
+    <a href=".." title="Quickstart" class="md-nav__link">
+      Quickstart
     </a>
   </li>
 
@@ -297,9 +332,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
-    Prerequisites
+  <a href="#queue-drivers" title="Queue Drivers" class="md-nav__link">
+    Queue Drivers
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file" title="File" class="md-nav__link">
+    File
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" title="Redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync" title="Sync" class="md-nav__link">
+    Sync
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -312,8 +374,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code" title="From Code" class="md-nav__link">
-    From Code
+  <a href="#with-c-classes" title="With C# Classes" class="md-nav__link">
+    With C# Classes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-lambda-expressions" title="With Lambda Expressions" class="md-nav__link">
+    With Lambda Expressions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequentially-in-a-chain" title="Sequentially In a Chain" class="md-nav__link">
+    Sequentially In a Chain
   </a>
   
 </li>
@@ -339,7 +415,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code_1" title="From Code" class="md-nav__link">
+  <a href="#from-code" title="From Code" class="md-nav__link">
     From Code
   </a>
   
@@ -380,8 +456,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#peek-at-commands" title="Peek at Commands" class="md-nav__link">
-    Peek at Commands
+  <a href="#peek-at-queued-commands" title="Peek at Queued Commands" class="md-nav__link">
+    Peek at Queued Commands
   </a>
   
 </li>
@@ -459,9 +535,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
-    Prerequisites
+  <a href="#queue-drivers" title="Queue Drivers" class="md-nav__link">
+    Queue Drivers
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file" title="File" class="md-nav__link">
+    File
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" title="Redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync" title="Sync" class="md-nav__link">
+    Sync
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -474,8 +577,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code" title="From Code" class="md-nav__link">
-    From Code
+  <a href="#with-c-classes" title="With C# Classes" class="md-nav__link">
+    With C# Classes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-lambda-expressions" title="With Lambda Expressions" class="md-nav__link">
+    With Lambda Expressions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequentially-in-a-chain" title="Sequentially In a Chain" class="md-nav__link">
+    Sequentially In a Chain
   </a>
   
 </li>
@@ -501,7 +618,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code_1" title="From Code" class="md-nav__link">
+  <a href="#from-code" title="From Code" class="md-nav__link">
     From Code
   </a>
   
@@ -542,8 +659,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#peek-at-commands" title="Peek at Commands" class="md-nav__link">
-    Peek at Commands
+  <a href="#peek-at-queued-commands" title="Peek at Queued Commands" class="md-nav__link">
+    Peek at Queued Commands
   </a>
   
 </li>
@@ -591,9 +708,16 @@
                 
                 <h1 id="queuing">Queuing<a class="headerlink" href="#queuing" title="Permanent link">&para;</a></h1>
 <p>InEngine.NET's queue functionality allows for commands to be run in the background with a simple publish/consume model. </p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Redis is required to use the InEngine.NET queue feature. 
-It can be installed on Ubuntu with this command:</p>
+<h2 id="queue-drivers">Queue Drivers<a class="headerlink" href="#queue-drivers" title="Permanent link">&para;</a></h2>
+<p>To make use of queue features, a queue driver must be specified in <a href="../configuration">appsettings.json</a>.
+These are the available drivers...</p>
+<h3 id="file">File<a class="headerlink" href="#file" title="Permanent link">&para;</a></h3>
+<p>The file driver writes queued messages to the file system. 
+It is useful for testing and development, but probably not suitable for production.</p>
+<h3 id="redis">Redis<a class="headerlink" href="#redis" title="Permanent link">&para;</a></h3>
+<p>Redis is suitable for production use. 
+InEngine.NET utilizes Redis' durable queue features which mean messages will not be lost if InEngine.NET unexpectedly fails. </p>
+<p>Redis can be installed on Ubuntu with this command:</p>
 <div class="codehilite"><pre><span></span>sudo apt-get install redis-server
 </pre></div>
 
@@ -607,15 +731,61 @@ It can be installed on Ubuntu with this command:</p>
 It is highly recommended to <a href="https://redis.io/topics/security#authentication-feature">set a password</a> for Redis.
 </div>
 
+<h3 id="sync">Sync<a class="headerlink" href="#sync" title="Permanent link">&para;</a></h3>
+<p>The sync driver causes the publish command to run a published command synchronously.
+All other queue commands and methods are not supported and will throw an exception if called.
+This driver can be useful for plugin development and testing.</p>
 <h2 id="publishing-commands">Publishing Commands<a class="headerlink" href="#publishing-commands" title="Permanent link">&para;</a></h2>
-<h3 id="from-code">From Code<a class="headerlink" href="#from-code" title="Permanent link">&para;</a></h3>
-<p><a href="../commands">Commands</a> can be published programmatically with the <strong>InEngine.Core.Queuing.Broker</strong> class:</p>
-<div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+<h3 id="with-c-classes">With C# Classes<a class="headerlink" href="#with-c-classes" title="Permanent link">&para;</a></h3>
+<p><a href="../commands">Commands</a> can be published programmatically with the <strong>InEngine.Core.Queuing.Queue</strong> class:</p>
+<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
 </pre></div>
 
 
-<p>Or publish to the secondary queue:</p>
-<div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+<p>Or publish to the secondary queue by passing true to the Make method:</p>
+<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+</pre></div>
+
+
+<div class="admonition note">
+<p class="admonition-title">Do I have to use Queue.Make()?</p>
+<p>Queue.Make() is a factory method that autoloads the queue settings from appsettings.json, creates the appropriate queue driver, and returns an instance of Queue.
+You can create your own Queue object an initialize it if you want.
+At the very least you can assign the object returned by Queue.Make() to a local variable or load it into a DI container for later use.</p>
+</div>
+<h3 id="with-lambda-expressions">With Lambda Expressions<a class="headerlink" href="#with-lambda-expressions" title="Permanent link">&para;</a></h3>
+<p>Lambda expressions, aka anonymous functions, can be queued.
+The disadvantage to queuing lambdas is that the helpful functionality available in <strong>InEngine.Core.AbstractCommand</strong> is not available.  </p>
+<p>This is how you queue a lambda:</p>
+<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">));</span>
+</pre></div>
+
+
+<p>Here is a neat shortcut for commands without parameters:</p>
+<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">());</span>
+<span class="c1">// Can be rewritten as...</span>
+<span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">);</span>
+</pre></div>
+
+
+<h3 id="sequentially-in-a-chain">Sequentially In a Chain<a class="headerlink" href="#sequentially-in-a-chain" title="Permanent link">&para;</a></h3>
+<p>Chained commands run in the order specified.
+This is useful for when order matters.</p>
+<p>Also, if one command in the chain fails, then subsequent commands are not run at all.
+This affords the opportunity to add additional code that records which command failed, then resuming the command chain where it left off.</p>
+<p>Here is a an example of how to chain an imaginary file transfer command together:</p>
+<div class="codehilite"><pre><span></span><span class="n">Subject</span><span class="p">.</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath1</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath2</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath3</span><span class="p">),</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">Subject</span><span class="p">.</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">AbstractCommand</span><span class="p">&gt;()</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="nf">AlwaysSucceed</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nf">Echo</span><span class="p">()</span> <span class="p">{</span> <span class="n">VerbatimText</span> <span class="p">=</span> <span class="s">&quot;Hello, world!&quot;</span><span class="p">},</span>
+<span class="p">});</span>
 </pre></div>
 
 
@@ -638,15 +808,15 @@ This is an example of how to publish a command from the CLI by specifying the co
 
 
 <h2 id="consuming-commands">Consuming Commands<a class="headerlink" href="#consuming-commands" title="Permanent link">&para;</a></h2>
-<h3 id="from-code_1">From Code<a class="headerlink" href="#from-code_1" title="Permanent link">&para;</a></h3>
-<p>Consuming a command is also accomplished with the Broker class:</p>
-<div class="codehilite"><pre><span></span><span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Consume</span><span class="p">();</span>
+<h3 id="from-code">From Code<a class="headerlink" href="#from-code" title="Permanent link">&para;</a></h3>
+<p>Consuming a command is also accomplished with the Queue class:</p>
+<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Consume</span><span class="p">();</span>
 </pre></div>
 
 
 <p>The make method takes an optional second argument to indicate if the secondary queue should be used instead of the primary queue.</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Uses secondary queue.</span>
-<span class="n">Broker</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Consume</span><span class="p">();</span>
+<span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Consume</span><span class="p">();</span>
 </pre></div>
 
 
@@ -671,7 +841,7 @@ There are a variety of <a href="../scheduling/#running-the-scheduler">ways to ru
 </pre></div>
 
 
-<h3 id="peek-at-commands">Peek at Commands<a class="headerlink" href="#peek-at-commands" title="Permanent link">&para;</a></h3>
+<h3 id="peek-at-queued-commands">Peek at Queued Commands<a class="headerlink" href="#peek-at-queued-commands" title="Permanent link">&para;</a></h3>
 <p>The <strong>queue:peek</strong> command allows for queued commands to be inspected:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --in-progress --failed
 </pre></div>
@@ -687,14 +857,14 @@ There are a variety of <a href="../scheduling/#running-the-scheduler">ways to ru
 </pre></div>
 
 
-<p>By default, up to 10 messages will be retrieved, but the number is configurable:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --limit<span class="o">=</span><span class="m">100</span>
+<p>By default, up to the first 10 messages will be retrieved, but the range is configurable:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --to<span class="o">=</span><span class="m">100</span>
 </pre></div>
 
 
-<p>The a paginated slice of the queue can be retrieved using the offset argument.
+<p>A slice of the queue can be retrieved using the from argument.
 For example, this queue:peek call retrieves the 100-200 queued commands:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --limit<span class="o">=</span><span class="m">100</span> --offset<span class="o">=</span><span class="m">100</span>
+<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --from<span class="o">=</span><span class="m">100</span> --to<span class="o">=</span><span class="m">200</span>
 </pre></div>
 
 
