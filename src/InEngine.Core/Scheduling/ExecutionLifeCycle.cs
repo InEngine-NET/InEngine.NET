@@ -57,7 +57,7 @@ namespace InEngine.Core.Scheduling
 
             try
             {
-                if (ShouldPingBefore)
+                if (ShouldPingAfter)
                     new IO.Http().Get(PingAfterUrl);
             }
             catch (Exception exception)
