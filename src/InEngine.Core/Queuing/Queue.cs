@@ -5,6 +5,7 @@ using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using Newtonsoft.Json;
+using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Queuing
 {
@@ -49,7 +50,7 @@ namespace InEngine.Core.Queuing
 
         public void Publish(Expression<Action> expressionAction)
         {
-            QueueClient.Publish(new Lambda(expressionAction));
+            QueueClient.Publish(new Lambda(expressionAction.ToExpressionNode()));
         }
 
         public void Publish(ICommand command)
@@ -72,12 +73,8 @@ namespace InEngine.Core.Queuing
             var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
             if (commandType == null)
                 throw new CommandFailedException($"Could not locate command {message.CommandClassName}. Is the {message.CommandAssemblyName} plugin registered in the settings file?");
-            if (message.IsCompressed)
-                return JsonConvert.DeserializeObject(message.SerializedCommand.Decompress(), commandType) as ICommand;
-            //return JsonConvert.DeserializeObject(message.SerializedCommand, commandType) as ICommand;
-            //message.SerializedCommand.DeserializeFromJson(commandType) as ICommand;
             return JsonConvert.DeserializeObject(
-                message.SerializedCommand,
+                message.IsCompressed ? message.SerializedCommand.Decompress() : message.SerializedCommand,
                 commandType,
                 new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects }
             ) as ICommand;

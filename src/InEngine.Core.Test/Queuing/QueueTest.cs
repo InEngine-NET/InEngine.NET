@@ -41,7 +41,7 @@ namespace InEngine.Core.Test.Queuing
         public void ShouldPublishLambdaCommand()
         {
             Expression<Action> expression = () => Console.Write("Hello, world.");
-            var lambda = new Lambda(expression);
+            var lambda = new Lambda(expression.ToExpressionNode());
             MockQueueClient.Setup(x => x.Publish(It.IsAny<Lambda>()));
 
             Subject.Publish(lambda);

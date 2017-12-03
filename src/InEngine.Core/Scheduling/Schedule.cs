@@ -6,6 +6,7 @@ using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using Quartz;
 using Quartz.Impl;
+using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Scheduling
 {
@@ -35,7 +36,7 @@ namespace InEngine.Core.Scheduling
 
         public Occurence Job(Expression<Action> expressionAction)
         {
-            return Job(new Lambda() { ExpressionAction = expressionAction });
+            return Job(new Lambda() { ExpressionNode = expressionAction.ToExpressionNode() });
         }
 
         public Occurence Job(IList<AbstractCommand> commands)
