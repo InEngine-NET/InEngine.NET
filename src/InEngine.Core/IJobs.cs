@@ -4,6 +4,6 @@ namespace InEngine.Core
 {
     public interface IJobs : IPluginType
     {
-        void Schedule(Schedule schedule);
+        void Schedule(ISchedule schedule);
     }
 }

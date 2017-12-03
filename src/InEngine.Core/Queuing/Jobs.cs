@@ -7,14 +7,14 @@ namespace InEngine.Core.Queuing
 {
     public class Jobs : IJobs
     {
-        public void Schedule(Schedule schedule)
+        public void Schedule(ISchedule schedule)
         {
             var queueSettings = InEngineSettings.Make().Queue;
             ScheduleQueueConsumerJobs(schedule, queueSettings.PrimaryQueueConsumers);
             ScheduleQueueConsumerJobs(schedule, queueSettings.SecondaryQueueConsumers, true);
         }
 
-        void ScheduleQueueConsumerJobs(Schedule schedule, int consumers, bool useSecondaryQueue = false)
+        void ScheduleQueueConsumerJobs(ISchedule schedule, int consumers, bool useSecondaryQueue = false)
         {
             if (consumers < 0)
                 throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");

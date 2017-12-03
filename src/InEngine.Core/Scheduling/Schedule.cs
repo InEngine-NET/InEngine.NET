@@ -9,7 +9,7 @@ using Quartz.Impl;
 
 namespace InEngine.Core.Scheduling
 {
-    public class Schedule
+    public class Schedule : ISchedule
     {
         public IScheduler Scheduler { get; set; } = StdSchedulerFactory.GetDefaultScheduler();
         public IDictionary<string, JobGroup> JobGroups { get; set; } = new Dictionary<string, JobGroup>();
