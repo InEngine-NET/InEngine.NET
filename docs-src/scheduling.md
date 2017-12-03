@@ -13,7 +13,7 @@ namespace MyCommandPlugin
 {
     public class Jobs : IJobs
     {
-        public void Schedule(Schedule schedule)
+        public void Schedule(ISchedule schedule)
         {
             // Schedule some jobs
         }
@@ -31,7 +31,7 @@ namespace MyCommandPlugin
 {
     public class Jobs : IJobs
     {
-        public void Schedule(Schedule schedule)
+        public void Schedule(ISchedule schedule)
         {
             /* 
              * Run MyCommand every five minutes. 
@@ -209,7 +209,7 @@ sudo apt-get install supervisor
 Supervisor configuration files are stored in the **/etc/supervisor/conf.d** directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called **/etc/supervisor/conf.d/inengine-scheduler.conf**. 
 
 ```ini
-[program:inengine-scheudler]
+[program:inengine-scheduler]
 process_name=%(program_name)s_%(process_num)02d
 directory=/path/to/scheduler
 command=mono inengine.exe -s
