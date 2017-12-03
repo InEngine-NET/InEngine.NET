@@ -12,7 +12,8 @@ namespace InEngine.Core.Scheduling
 {
     public class Schedule : ISchedule
     {
-        public IScheduler Scheduler { get; set; } = StdSchedulerFactory.GetDefaultScheduler();
+        public static Lazy<IScheduler> lazyScheduler = new Lazy<IScheduler>(StdSchedulerFactory.GetDefaultScheduler);
+        public static IScheduler Scheduler { get { return lazyScheduler.Value; } } 
         public IDictionary<string, JobGroup> JobGroups { get; set; } = new Dictionary<string, JobGroup>();
 
         public Occurence Job(AbstractCommand command)
