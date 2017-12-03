@@ -1,32 +1,34 @@
 # Commands
 
 Commands are the fundamental abstraction used to run custom logic.
+They can be C# classes, lambda expressions, or CLI programs.
 
 ## Create a Command
 
-The InEngine.Core package is required. Install it into your own Visual Studio project.
+The InEngine.Core package is required to create a C# class command. 
+Install it in a Visual Studio project.
 
-**Package Manager**
+==Package Manager==
 ```bash
 Install-Package InEngine.Core
 ```
 
-**Nuget CLI**
+==Nuget CLI==
 ```bash
 nuget install InEgine.Core
 ```
 
-**.NET CLI**
+==.NET CLI==
 ```bash
 dotnet add package InEngine.Core
 ```
 
-**Paket CLI**
+==Paket CLI==
 ```bash
 paket add InEngine.Core
 ```
 
-Adding a class that implements **InEngine.Core.ICommand** is the simplest way to create a command.
+Adding a class that implements ==InEngine.Core.ICommand== is the simplest way to create a command.
 
 ```c#
 using System;
@@ -45,7 +47,7 @@ namespace MyCommandPlugin
 ```
 
 A command that implements ICommand can be run directly or [queued](queuing), but it cannot be [scheduled](scheduling).
-Extending the **InEngine.Core.AbstractCommand** class adds extra functionality, like a progress bar, and the ability to schedule the command using the scheduler.
+Extending the ==InEngine.Core.AbstractCommand== class adds extra functionality, like a progress bar, and the ability to schedule the command using the scheduler.
 Minimally, the Run method should be overridden.
 
 ```c#
@@ -66,7 +68,7 @@ namespace MyCommandPlugin
 
 ## Run a Command
 
-Create a class that implements **InEngine.Core.IOptions** in the same assembly as the command class.
+Create a class that implements ==InEngine.Core.IOptions== in the same assembly as the command class.
 Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. 
 Optional help text can also be specified in the VerbOption attribute.
 The help text can be auto-generated from the attribute or manually specified in the GetUsage method if desired.
@@ -106,7 +108,7 @@ inengine.exe -pMyCommandPlugin my-command
 ### Executing Arbitrary Processes
 
 It isn't necessary to create C# classes to utilize InEngine.NET.
-Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's **proc** command.
+Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's ==proc== command.
 The command lists directory contents using "ls" with the "-lhp" switches:
 
 ```bash
@@ -149,7 +151,7 @@ Run inengine.exe with only the plugin specified:
 inengine.exe -pInEngine.Core
 ```
 
-The **InEngine.Core** library is itself a plugin that contains queue-related and other commands. 
+The ==InEngine.Core== library is itself a plugin that contains queue-related and other commands. 
 As an example, this is the help output for the core plugin.
 
 ```text
@@ -184,7 +186,7 @@ Run the command with the -h or --help arguments.
 inengine.exe -pInEngine.Core queue:publish -h
 ```
 
-The **InEngine.Core** plugin's command to clear the InEngine.NET queues produces this help message. 
+The ==InEngine.Core== plugin's command to clear the InEngine.NET queues produces this help message. 
 
 ```text
 InEngine 3.x
@@ -208,7 +210,7 @@ Copyright © 2017 Ethan Hann
 
 ## Writing Output
 
-The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console, for example:
+The ==InEngine.Core.AbstractCommand== class provides some helper functions to output text to the console, for example:
 
 ```c#
 public override void Run()
@@ -276,7 +278,7 @@ The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuratio
 
 ## Progress Bar
 
-The **InEngine.Core.AbstractCommand** class provides a ProgressBar property to show command progress in a terminal.
+The ==InEngine.Core.AbstractCommand== class provides a ProgressBar property to show command progress in a terminal.
 This is how it is used:
 
 ```c#

@@ -43,7 +43,7 @@ This driver can be useful for plugin development and testing.
 
 ### With C# Classes
 
-[Commands](commands) can be published programmatically with the **InEngine.Core.Queuing.Queue** class:
+[Commands](commands) can be published programmatically with the ==InEngine.Core.Queuing.Queue== class:
 
 ```c#
 Queue.Make().Publish(new MyCommand());
@@ -63,7 +63,7 @@ Queue.Make(true).Publish(new MyCommand());
 ### With Lambda Expressions
 
 Lambda expressions, aka anonymous functions, can be queued.
-The disadvantage to queuing lambdas is that the helpful functionality available in **InEngine.Core.AbstractCommand** is not available.  
+The disadvantage to queuing lambdas is that the helpful functionality available in ==InEngine.Core.AbstractCommand== is not available.  
 
 This is how you queue a lambda:
 
@@ -108,7 +108,7 @@ Subject.Publish(new List<AbstractCommand>() {
 ### From the Command Line
 
 Commands can be published from the command line as well.
-Note that all queue commands reside in the **InEngine.Core** plugin.
+Note that all queue commands reside in the ==InEngine.Core== plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:
 
 ```bash
@@ -151,7 +151,7 @@ Commands can be consumed from the command line as well with this simple command:
 inengine.exe -pInEngine.Core queue:consume
 ```
 
-Use the **--secondary** argument to consume the secondary queue instead of the primary queue:
+Use the ==--secondary== argument to consume the secondary queue instead of the primary queue:
 
 ```bash
 inengine.exe -pInEngine.Core queue:consume --secondary
@@ -166,7 +166,7 @@ There are a variety of [ways to run the scheduler](scheduling/#running-the-sched
 
 ### Viewing Queue Lengths
 
-The **queue:length** command shows a quick summary of pending, in-progress, and failed commands in the primary and secondary queues:
+The ==queue:length== command shows a quick summary of pending, in-progress, and failed commands in the primary and secondary queues:
 
 ```bash
 inengine.exe -pInEngine.Core queue:length
@@ -174,7 +174,7 @@ inengine.exe -pInEngine.Core queue:length
 
 ### Peek at Queued Commands
 
-The **queue:peek** command allows for queued commands to be inspected:
+The ==queue:peek== command allows for queued commands to be inspected:
 
 ```bash
 inengine.exe -pInEngine.Core queue:peek --pending --in-progress --failed
@@ -208,7 +208,7 @@ inengine.exe -pInEngine.Core queue:peek --pending --from=100 --to=200
 ## Handling Failed Commands
 
 Commands that throw an exception are put in a special "failed" queue. 
-They can be republished with the **queue:republish** command:
+They can be republished with the ==queue:republish== command:
 
 ```bash
 inengine.exe -pInEngine.Core queue:republish

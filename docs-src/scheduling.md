@@ -4,7 +4,7 @@
 
 ## Scheduling a Command
 
-A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.IJobs** interface.
+A job schedule is created by adding a class to your plugin assembly that implements the ==InEngine.Core.IJobs== interface.
 
 ```c#
 using System;
@@ -22,7 +22,7 @@ namespace MyCommandPlugin
 ```
 
 The InEngine.NET scheduler automatically discovers this class.
-It will call the Jobs.Schedule method with an initialized **InEngine.Scheduling.Schedule** object.
+It will call the Jobs.Schedule method with an initialized ==InEngine.Scheduling.Schedule== object.
 
 ```c#
 using System;
@@ -120,12 +120,19 @@ Run a command daily at a specific time (at 10:30pm in this example):
 schedule.Job(new MyCommand()).DailyAt(22, 30);
 ```
 
+## Lifecycle Events
+
+Schedule commands can have lifecycle events.
+
+The ==Before== anonymous function 
+
+
 ## Command State
 
 Commands can have properties like any C# class.
 When running from the command line these properties are usually initialized with command line arguments.
 When run by the scheduler, the properties are specified when the command is scheduled.
-For example, this command's **Foo** property will be auto-wired to "bar" when the command is later executed by the scheduler. 
+For example, this command's ==Foo== property will be auto-wired to "bar" when the command is later executed by the scheduler. 
 
 ```c#
 schedule
@@ -135,7 +142,7 @@ schedule
     .EveryFiveMinutes();
 ```
 
-If it is not desirable to auto-wire a property for some reason, simply decorate the property in the command class with the **InEngine.Core.Scheduling.DoNotAutoWireAttribute** class. 
+If it is not desirable to auto-wire a property for some reason, simply decorate the property in the command class with the ==InEngine.Core.Scheduling.DoNotAutoWireAttribute== class. 
 
 ```c#
 using System;
@@ -185,7 +192,7 @@ ps Install.ps1
 
 #### Uninstalling
 
-Simply run the **Uninstall.ps1** script with elevated permissions to remove the service.
+Simply run the ==Uninstall.ps1== script with elevated permissions to remove the service.
 
 ```bash
 ps Uninstall.ps1
@@ -206,7 +213,7 @@ sudo apt-get install supervisor
 
 #### Configuring Supervisor
 
-Supervisor configuration files are stored in the **/etc/supervisor/conf.d** directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called **/etc/supervisor/conf.d/inengine-scheduler.conf**. 
+Supervisor configuration files are stored in the ==/etc/supervisor/conf.d== directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called ==/etc/supervisor/conf.d/inengine-scheduler.conf==. 
 
 ```ini
 [program:inengine-scheduler]
@@ -230,7 +237,7 @@ sudo supervisorctl reread
 sudo supervisorctl update
 ```
 
-Now, simply start the scheduler workers with the **supervisorctl** program:
+Now, simply start the scheduler workers with the ==supervisorctl== program:
 
 ```bash
 sudo supervisorctl start inengine-scheduler:*
@@ -238,7 +245,7 @@ sudo supervisorctl start inengine-scheduler:*
 
 ### In a Container with Docker
 
-Install [Docker](https://www.docker.com/what-docker) first, then pull the **ethanhann/inengine** image:
+Install [Docker](https://www.docker.com/what-docker) first, then pull the ==ethanhann/inengine== image:
 
 ```bash
 docker pull ethanhann/inengine:latest
