@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using InEngine.Core.IO;
 using InEngine.Core.Scheduling;
 using Konsole;
@@ -15,6 +16,7 @@ namespace InEngine.Core
         public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
+        public int SecondsBeforeTimeout { get; set; }
 
         protected AbstractCommand()
         {
@@ -23,6 +25,7 @@ namespace InEngine.Core
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
             ExecutionLifeCycle = new ExecutionLifeCycle();
+            SecondsBeforeTimeout = 300;
         }
 
         public virtual void Run()
@@ -58,7 +61,13 @@ namespace InEngine.Core
             try
             {
                 ExecutionLifeCycle.FirePreActions(this);
-                Run();
+                if (SecondsBeforeTimeout <= 0)
+                    Run();
+                else {
+                    var task = Task.Run(() => Run());
+                    if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
+                        throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");   
+                }
                 ExecutionLifeCycle.FirePostActions(this);
             }
             catch (Exception exception)
