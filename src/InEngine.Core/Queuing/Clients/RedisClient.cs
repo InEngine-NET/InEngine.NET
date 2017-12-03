@@ -50,11 +50,10 @@ namespace InEngine.Core.Queuing.Clients
             var message = serializedMessage.DeserializeFromJson<Message>();
             if (message == null)
                 return false;
-            var commandInstance = Queue.ExtractCommandInstanceFromMessage(message);
 
             try
             {
-                commandInstance.Run();
+                Queue.ExtractCommandInstanceFromMessageAndRun(message as IMessage);
             }
             catch (Exception exception)
             {

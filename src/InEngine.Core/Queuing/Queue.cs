@@ -5,6 +5,7 @@ using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using Newtonsoft.Json;
+using Quartz;
 using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Queuing
@@ -78,6 +79,15 @@ namespace InEngine.Core.Queuing
                 commandType,
                 new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects }
             ) as ICommand;
+        }
+
+        public static void ExtractCommandInstanceFromMessageAndRun(IMessage message)
+        {
+            var command = ExtractCommandInstanceFromMessage(message);
+            if (command is IJob)
+                (command as IJob).Execute(null);
+            else
+                command.Run();
         }
 
         public long GetPendingQueueLength()
