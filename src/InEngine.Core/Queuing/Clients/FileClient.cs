@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Queuing.Clients

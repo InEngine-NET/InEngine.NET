@@ -1,5 +1,4 @@
-﻿using System;
-namespace InEngine.Core.Queuing
+﻿namespace InEngine.Core.Queuing
 {
     public class QueueSettings
     {

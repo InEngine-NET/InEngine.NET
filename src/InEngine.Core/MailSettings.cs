@@ -1,5 +1,4 @@
-﻿using System;
-namespace InEngine.Core
+﻿namespace InEngine.Core
 {
     public class MailSettings
     {

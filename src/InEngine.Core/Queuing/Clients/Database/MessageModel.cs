@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace InEngine.Core.Queuing.Clients.Database
+﻿namespace InEngine.Core.Queuing.Clients.Database
 {
     public class MessageModel : Message
     {

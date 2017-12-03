@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Scheduling;
 using Konsole;
 using Quartz;
-using RestSharp;
 
 namespace InEngine.Core
 {

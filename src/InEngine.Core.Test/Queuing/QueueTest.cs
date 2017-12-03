@@ -4,11 +4,8 @@ using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Queuing;
-using InEngine.Core.Queuing.Clients;
-using InEngine.Core.Queuing.Commands;
 using Moq;
 using NUnit.Framework;
-using Quartz;
 using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Test.Queuing

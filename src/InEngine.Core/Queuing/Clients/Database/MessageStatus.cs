@@ -1,5 +1,4 @@
-﻿using System;
-namespace InEngine.Core.Queuing.Clients.Database
+﻿namespace InEngine.Core.Queuing.Clients.Database
 {
     public static class MessageStatus
     {

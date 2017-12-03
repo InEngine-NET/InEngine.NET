@@ -1,7 +1,4 @@
-﻿using System;
-using CommandLine;
-
-namespace InEngine.Core.Queuing.Commands
+﻿namespace InEngine.Core.Queuing.Commands
 {
     public class Length : AbstractCommand
     {
