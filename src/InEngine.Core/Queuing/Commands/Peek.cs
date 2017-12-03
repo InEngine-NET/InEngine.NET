@@ -9,10 +9,10 @@ namespace InEngine.Core.Queuing.Commands
 {
     public class Peek : AbstractCommand
     {
-        [Option("from", DefaultValue = 0, HelpText = "The first message to peek at (0-indexed).")]
+        [Option("from", DefaultValue = 0, HelpText = "The first commandEnvelope to peek at (0-indexed).")]
         public long From { get; set; } = 0;
 
-        [Option("to", DefaultValue = 10, HelpText = "The last message to peek at.")]
+        [Option("to", DefaultValue = 10, HelpText = "The last commandEnvelope to peek at.")]
         public long To { get; set; } = 10;
 
         [Option("json", HelpText = "View the messages as JSON.")]
@@ -53,7 +53,7 @@ namespace InEngine.Core.Queuing.Commands
             }
         }
 
-        public void PrintMessages(List<IMessage> messages, string queueName)
+        public void PrintMessages(List<ICommandEnvelope> messages, string queueName)
         {
             WarningText($"{queueName}:");
             if (!messages.Any()) {
@@ -64,11 +64,11 @@ namespace InEngine.Core.Queuing.Commands
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
             messages.ForEach(x => {
-                var message = x as IMessage;
+                var commandEnvelope = x as ICommandEnvelope;
                 if (JsonFormat)
-                    Line(message.SerializeToJson());
+                    Line(commandEnvelope.SerializeToJson());
                 else
-                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(message));
+                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(commandEnvelope));
             });
         }
     }

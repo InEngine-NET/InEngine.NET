@@ -6,7 +6,7 @@ namespace InEngine.Core.Queuing
 {
     public class Options : IOptions
     {
-        [VerbOption("queue:publish", HelpText = "Publish a command message to a queue.")]
+        [VerbOption("queue:publish", HelpText = "Publish a command commandEnvelope to a queue.")]
         public Publish Publish { get; set; }
 
         [VerbOption("queue:consume", HelpText = "Consume one or more command messages from the queue.")]

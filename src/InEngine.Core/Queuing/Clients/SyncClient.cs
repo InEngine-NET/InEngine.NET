@@ -49,17 +49,17 @@ namespace InEngine.Core.Queuing.Clients
             throw new NotImplementedException();
         }
 
-        public List<IMessage> PeekFailedMessages(long from, long to)
+        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             throw new NotImplementedException();
         }
 
-        public List<IMessage> PeekInProgressMessages(long from, long to)
+        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
         {
             throw new NotImplementedException();
         }
 
-        public List<IMessage> PeekPendingMessages(long from, long to)
+        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
         {
             throw new NotImplementedException();
         }

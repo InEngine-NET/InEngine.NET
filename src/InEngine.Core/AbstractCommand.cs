@@ -51,12 +51,14 @@ namespace InEngine.Core
         #region Scheduling
         public virtual void Execute(IJobExecutionContext context)
         {
-            var properties = GetType().GetProperties();
-            context.MergedJobDataMap.ToList().ForEach(x => {
-                var property = properties.FirstOrDefault(y => y.Name == x.Key);
-                if (property != null)
-                    property.SetValue(this, x.Value);                
-            });
+            if (context != null) {
+                var properties = GetType().GetProperties();
+                context.MergedJobDataMap.ToList().ForEach(x => {
+                    var property = properties.FirstOrDefault(y => y.Name == x.Key);
+                    if (property != null)
+                        property.SetValue(this, x.Value);                
+                });
+            }
 
             try
             {

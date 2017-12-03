@@ -21,8 +21,8 @@ namespace InEngine.Core.Queuing.Clients
 
             using (var context = new QueueDbContext(QueueBaseName))
             {
-                context.Messages.Add(new MessageModel() {
-                    Status = MessageStatus.Pending,
+                context.Messages.Add(new CommandEnvelopeModel() {
+                    Status = CommandEnvelopeStatus.Pending,
                     IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
@@ -35,7 +35,7 @@ namespace InEngine.Core.Queuing.Clients
         public bool Consume()
         {
 
-            IMessage message;
+            ICommandEnvelope commandEnvelope;
             using (var conn = new SqlConnection())
             {
                 conn.Open();
@@ -48,10 +48,10 @@ namespace InEngine.Core.Queuing.Clients
                             context.Database.UseTransaction(transaction);
                             var messageModel = context.Messages
                                                       .OrderBy(x => x.QueuedAt)
-                                                      .FirstOrDefault(x => x.Status == MessageStatus.Pending&& x.QueueName == QueueName);
-                            messageModel.Status = MessageStatus.InProgress;
+                                                      .FirstOrDefault(x => x.Status == CommandEnvelopeStatus.Pending&& x.QueueName == QueueName);
+                            messageModel.Status = CommandEnvelopeStatus.InProgress;
                             context.SaveChanges();
-                            message = messageModel;
+                            commandEnvelope = messageModel;
                         }
 
                         transaction.Commit();
@@ -66,7 +66,7 @@ namespace InEngine.Core.Queuing.Clients
 
             try
             {
-                Queue.ExtractCommandInstanceFromMessage(message).Run();
+                Queue.ExtractCommandInstanceFromMessageAndRun(commandEnvelope);
             }
             catch (Exception exception)
             {
@@ -80,10 +80,10 @@ namespace InEngine.Core.Queuing.Clients
                             using (var context = new QueueDbContext(conn, false, QueueBaseName))
                             {
                                 context.Database.UseTransaction(transaction);
-                                var messageModel = context.Messages.FirstOrDefault(x => x.Id == message.Id);
-                                messageModel.Status = MessageStatus.Failed;
+                                var messageModel = context.Messages.FirstOrDefault(x => x.Id == commandEnvelope.Id);
+                                messageModel.Status = CommandEnvelopeStatus.Failed;
                                 context.SaveChanges();
-                                message = messageModel;
+                                commandEnvelope = messageModel;
                             }
 
                             transaction.Commit();
@@ -91,7 +91,7 @@ namespace InEngine.Core.Queuing.Clients
                         catch (Exception dbException)
                         {
                             transaction.Rollback();
-                            throw new CommandFailedException("Failed to set queue message from in-progress to failed.", dbException);
+                            throw new CommandFailedException("Failed to set queue commandEnvelope from in-progress to failed.", dbException);
                         }
                     }
                 }
@@ -110,24 +110,24 @@ namespace InEngine.Core.Queuing.Clients
                             using (var context = new QueueDbContext(conn, false, QueueBaseName))
                             {
                                 context.Database.UseTransaction(transaction);
-                                var messageModel = context.Messages.FirstOrDefault(x => x.Id == message.Id);
-                                messageModel.Status = MessageStatus.Completed;
+                                var messageModel = context.Messages.FirstOrDefault(x => x.Id == commandEnvelope.Id);
+                                messageModel.Status = CommandEnvelopeStatus.Completed;
                                 context.SaveChanges();
-                                message = messageModel;
+                                commandEnvelope = messageModel;
                             }
                             transaction.Commit();
                         }
                         catch (Exception dbException)
                         {
                             transaction.Rollback();
-                            throw new CommandFailedException("Failed to set queue message from in-progress to completed.", dbException);
+                            throw new CommandFailedException("Failed to set queue commandEnvelope from in-progress to completed.", dbException);
                         }
                     }
                 }
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException($"Failed to remove completed message from queue", exception);
+                throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue", exception);
             }
 
             return true;
@@ -135,17 +135,17 @@ namespace InEngine.Core.Queuing.Clients
 
         public long GetPendingQueueLength()
         {
-            return GetQueueLength(MessageStatus.Pending);
+            return GetQueueLength(CommandEnvelopeStatus.Pending);
         }
 
         public long GetInProgressQueueLength()
         {
-            return GetQueueLength(MessageStatus.InProgress);
+            return GetQueueLength(CommandEnvelopeStatus.InProgress);
         }
 
         public long GetFailedQueueLength()
         {
-            return GetQueueLength(MessageStatus.Failed);
+            return GetQueueLength(CommandEnvelopeStatus.Failed);
         }
 
         public long GetQueueLength(string status)
@@ -158,19 +158,19 @@ namespace InEngine.Core.Queuing.Clients
 
         public bool ClearPendingQueue()
         {
-            ClearQueue(MessageStatus.Pending);
+            ClearQueue(CommandEnvelopeStatus.Pending);
             return true;
         }
 
         public bool ClearInProgressQueue()
         {
-            ClearQueue(MessageStatus.InProgress);
+            ClearQueue(CommandEnvelopeStatus.InProgress);
             return true;
         }
 
         public bool ClearFailedQueue()
         {
-            ClearQueue(MessageStatus.Failed);
+            ClearQueue(CommandEnvelopeStatus.Failed);
             return true;
         }
 
@@ -198,10 +198,10 @@ namespace InEngine.Core.Queuing.Clients
                         {
                             context.Database.UseTransaction(transaction);
                             var messageModels = context.Messages
-                                                       .Where(x => x.QueueName == QueueName && x.Status == MessageStatus.Pending)
+                                                       .Where(x => x.QueueName == QueueName && x.Status == CommandEnvelopeStatus.Pending)
                                                         .OrderBy(x => x.QueuedAt);
                             foreach(var messageModel in messageModels)
-                                messageModel.Status = MessageStatus.InProgress;
+                                messageModel.Status = CommandEnvelopeStatus.InProgress;
                             context.SaveChanges();
                         }
 
@@ -216,22 +216,22 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
-        public List<IMessage> PeekPendingMessages(long from, long to)
+        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
         {
-            return GetMessages(MessageStatus.Pending, from, to);
+            return GetMessages(CommandEnvelopeStatus.Pending, from, to);
         }
 
-        public List<IMessage> PeekInProgressMessages(long from, long to)
+        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
         {
-            return GetMessages(MessageStatus.InProgress, from, to);
+            return GetMessages(CommandEnvelopeStatus.InProgress, from, to);
         }
 
-        public List<IMessage> PeekFailedMessages(long from, long to)
+        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
-            return GetMessages(MessageStatus.Failed, from, to);
+            return GetMessages(CommandEnvelopeStatus.Failed, from, to);
         }
 
-        public List<IMessage> GetMessages(string status, long from, long to)
+        public List<ICommandEnvelope> GetMessages(string status, long from, long to)
         {
             using (var context = new QueueDbContext(QueueBaseName))
             {
@@ -239,7 +239,7 @@ namespace InEngine.Core.Queuing.Clients
                               .Where(x => x.QueueName == QueueName && x.Status == status)
                               .Skip(Convert.ToInt32(from))
                               .Take(Convert.ToInt32(to - from))
-                              .Select(x => x as IMessage)
+                              .Select(x => x as ICommandEnvelope)
                               .ToList();
             }
         }

@@ -32,7 +32,7 @@ namespace InEngine.Core.Queuing.Clients
         {
             Redis.ListLeftPush(
                 PendingQueueName,
-                new Message() {
+                new CommandEnvelope() {
                     IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
                     CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
@@ -47,13 +47,13 @@ namespace InEngine.Core.Queuing.Clients
             var serializedMessage = rawRedisMessageValue.ToString();
             if (serializedMessage == null)
                 return false;
-            var message = serializedMessage.DeserializeFromJson<Message>();
-            if (message == null)
+            var commandEnvelope = serializedMessage.DeserializeFromJson<CommandEnvelope>();
+            if (commandEnvelope == null)
                 return false;
 
             try
             {
-                Queue.ExtractCommandInstanceFromMessageAndRun(message as IMessage);
+                Queue.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
             }
             catch (Exception exception)
             {
@@ -68,7 +68,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException($"Failed to remove completed message from queue: {InProgressQueueName}", exception);
+                throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue: {InProgressQueueName}", exception);
             }
 
             return true;
@@ -109,26 +109,26 @@ namespace InEngine.Core.Queuing.Clients
             Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
         }
 
-        public List<IMessage> PeekPendingMessages(long from, long to)
+        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
         {
             return GetMessages(PendingQueueName, from, to);
         }
 
-        public List<IMessage> PeekInProgressMessages(long from, long to)
+        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
         {
             return GetMessages(InProgressQueueName, from, to);
         }
 
-        public List<IMessage> PeekFailedMessages(long from, long to)
+        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             return GetMessages(FailedQueueName, from, to);
         }
 
-        public List<IMessage> GetMessages(string queueName, long from, long to)
+        public List<ICommandEnvelope> GetMessages(string queueName, long from, long to)
         {
             return Redis.ListRange(queueName, from, to)
                         .ToStringArray()
-                        .Select(x => x.DeserializeFromJson<Message>() as IMessage).ToList();
+                        .Select(x => x.DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
         }
     }
 }

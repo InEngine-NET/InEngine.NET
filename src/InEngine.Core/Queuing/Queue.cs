@@ -69,21 +69,21 @@ namespace InEngine.Core.Queuing
             return QueueClient.Consume();
         }
 
-        public static ICommand ExtractCommandInstanceFromMessage(IMessage message)
+        public static ICommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
         {
-            var commandType = Type.GetType($"{message.CommandClassName}, {message.CommandAssemblyName}");
+            var commandType = Type.GetType($"{commandEnvelope.CommandClassName}, {commandEnvelope.CommandAssemblyName}");
             if (commandType == null)
-                throw new CommandFailedException($"Could not locate command {message.CommandClassName}. Is the {message.CommandAssemblyName} plugin registered in the settings file?");
+                throw new CommandFailedException($"Could not locate command {commandEnvelope.CommandClassName}. Is the {commandEnvelope.CommandAssemblyName} plugin registered in the settings file?");
             return JsonConvert.DeserializeObject(
-                message.IsCompressed ? message.SerializedCommand.Decompress() : message.SerializedCommand,
+                commandEnvelope.IsCompressed ? commandEnvelope.SerializedCommand.Decompress() : commandEnvelope.SerializedCommand,
                 commandType,
                 new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects }
             ) as ICommand;
         }
 
-        public static void ExtractCommandInstanceFromMessageAndRun(IMessage message)
+        public static void ExtractCommandInstanceFromMessageAndRun(ICommandEnvelope commandEnvelope)
         {
-            var command = ExtractCommandInstanceFromMessage(message);
+            var command = ExtractCommandInstanceFromMessage(commandEnvelope);
             if (command is IJob)
                 (command as IJob).Execute(null);
             else
@@ -125,17 +125,17 @@ namespace InEngine.Core.Queuing
             QueueClient.RepublishFailedMessages();
         }
 
-        public List<IMessage> PeekPendingMessages(long from, long to)
+        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
         {
             return QueueClient.PeekPendingMessages(from, to);
         }
 
-        public List<IMessage> PeekInProgressMessages(long from, long to)
+        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
         {
             return QueueClient.PeekInProgressMessages(from, to);
         }
 
-        public List<IMessage> PeekFailedMessages(long from, long to)
+        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             return QueueClient.PeekFailedMessages(from, to);
         }

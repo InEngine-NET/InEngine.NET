@@ -5,7 +5,7 @@ namespace InEngine.Core.Queuing.Clients.Database
 {
     public class QueueDbContext : DbContext
     {
-        public DbSet<MessageModel> Messages { get; set; }
+        public DbSet<CommandEnvelopeModel> Messages { get; set; }
         public string MessageTableName { get; set; }
 
         public QueueDbContext(string messageTableName) 
@@ -21,7 +21,7 @@ namespace InEngine.Core.Queuing.Clients.Database
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MessageModel>().ToTable(MessageTableName);
+            modelBuilder.Entity<CommandEnvelopeModel>().ToTable(MessageTableName);
         }
     }
 }

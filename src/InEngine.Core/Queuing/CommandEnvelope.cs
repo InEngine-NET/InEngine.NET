@@ -2,7 +2,7 @@
 
 namespace InEngine.Core.Queuing
 {
-    public class Message : IMessage
+    public class CommandEnvelope : ICommandEnvelope
     {
         public int Id { get; set; }
         public string CommandAssemblyName { get; set; }

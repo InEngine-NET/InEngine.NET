@@ -16,8 +16,8 @@ namespace InEngine.Core.Queuing
         bool ClearInProgressQueue();
         bool ClearFailedQueue();
         void RepublishFailedMessages();
-        List<IMessage> PeekPendingMessages(long from, long to);
-        List<IMessage> PeekInProgressMessages(long from, long to);
-        List<IMessage> PeekFailedMessages(long from, long to);
+        List<ICommandEnvelope> PeekPendingMessages(long from, long to);
+        List<ICommandEnvelope> PeekInProgressMessages(long from, long to);
+        List<ICommandEnvelope> PeekFailedMessages(long from, long to);
     }
 }

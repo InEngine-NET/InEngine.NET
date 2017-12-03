@@ -39,7 +39,7 @@ namespace InEngine.Core.Queuing.Commands
             }
 
             if (command == null)
-                throw new CommandFailedException("Did not publish message. Could not load command from plugin.");
+                throw new CommandFailedException("Did not publish commandEnvelope. Could not load command from plugin.");
 
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);

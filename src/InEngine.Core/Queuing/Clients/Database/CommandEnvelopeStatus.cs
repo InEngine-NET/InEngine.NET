@@ -1,6 +1,6 @@
 ﻿namespace InEngine.Core.Queuing.Clients.Database
 {
-    public static class MessageStatus
+    public static class CommandEnvelopeStatus
     {
         public static string Pending { get => "Pending"; }
         public static string InProgress { get => "InProgress"; }
