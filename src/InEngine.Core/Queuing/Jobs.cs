@@ -5,7 +5,7 @@ using InEngine.Core.Scheduling;
 
 namespace InEngine.Core.Queuing
 {
-    public class Jobs : IJobs
+    public class CommandSchedule : ICommandSchedule
     {
         public void Schedule(ISchedule schedule)
         {
@@ -20,7 +20,7 @@ namespace InEngine.Core.Queuing
                 throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");
 
             foreach (var index in Enumerable.Range(0, consumers).ToList())
-                schedule.Job(new Consume()
+                schedule.Command(new Consume()
                 {
                     ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}",
                     UseSecondaryQueue = useSecondaryQueue

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Quartz;
 
 namespace InEngine.Core.Scheduling
 {
     public interface ISchedule
     {
-        Occurence Job(AbstractCommand command);
-        Occurence Job(Expression<Action> expressionAction);
-        Occurence Job(IList<AbstractCommand> commands);
+        Occurence Command(AbstractCommand command);
+        Occurence Command(Expression<Action> expressionAction);
+        Occurence Command(IList<AbstractCommand> commands);
     }
 }

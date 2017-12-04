@@ -2,7 +2,7 @@
 
 namespace InEngine.Core
 {
-    public interface IJobs : IPluginType
+    public interface ICommandSchedule : IPluginType
     {
         void Schedule(ISchedule schedule);
     }

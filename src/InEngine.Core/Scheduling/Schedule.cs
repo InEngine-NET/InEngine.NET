@@ -16,7 +16,7 @@ namespace InEngine.Core.Scheduling
         public static IScheduler Scheduler { get { return lazyScheduler.Value; } } 
         public IDictionary<string, JobGroup> JobGroups { get; set; } = new Dictionary<string, JobGroup>();
 
-        public Occurence Job(AbstractCommand command)
+        public Occurence Command(AbstractCommand command)
         {
             var jobDetail = MakeJobBuilder(command).Build();
 
@@ -35,14 +35,14 @@ namespace InEngine.Core.Scheduling
             };
         }
 
-        public Occurence Job(Expression<Action> expressionAction)
+        public Occurence Command(Expression<Action> expressionAction)
         {
-            return Job(new Lambda() { ExpressionNode = expressionAction.ToExpressionNode() });
+            return Command(new Lambda() { ExpressionNode = expressionAction.ToExpressionNode() });
         }
 
-        public Occurence Job(IList<AbstractCommand> commands)
+        public Occurence Command(IList<AbstractCommand> commands)
         {
-            return Job(new Chain() { Commands = commands });
+            return Command(new Chain() { Commands = commands });
         }
 
         public JobRegistration RegisterJob(AbstractCommand command, IJobDetail jobDetail, ITrigger trigger)
@@ -60,8 +60,8 @@ namespace InEngine.Core.Scheduling
 
         public void Initialize()
         {
-            Plugin.Load<IJobs>().ForEach(x => {
-                x.Make<IJobs>().ForEach(y => y.Schedule(this));
+            Plugin.Load<ICommandSchedule>().ForEach(x => {
+                x.Make<ICommandSchedule>().ForEach(y => y.Schedule(this));
             });
 
             JobGroups.AsEnumerable().ToList().ForEach(x => {

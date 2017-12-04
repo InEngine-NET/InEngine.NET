@@ -18,7 +18,12 @@ namespace InEngine.Core.Queuing
             return new QueueLifeCycleActions(command);
         }
 
-        public static IQueueLifeCycleActions Command(IList<AbstractCommand> commands)
+        public static IQueueLifeCycleActions Command<T>(T command) where T : AbstractCommand
+        {
+            return new QueueLifeCycleActions(command);
+        }
+
+        public static IQueueLifeCycleActions Commands(IList<AbstractCommand> commands)
         {
             return new QueueLifeCycleActions(new Chain() { Commands = commands });
         }
