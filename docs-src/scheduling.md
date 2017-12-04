@@ -2,6 +2,17 @@
 
 [Commands](commands) can be run at certain times on recurring schedules.
 
+Scheduled commands are different from queued commands.
+A command is queued when it is desirable to run the command once, as soon as possible.
+Queued commands are typically configured right before being dispatched.
+A command is scheduled when is it is desirable to run the command many times, on a definite schedule.
+
+InEngine.NET takes a strictly programmatic approach to defining a schedule.
+A command schedule is defined in code, not in an external data store.
+There are several advantages to this approach.
+One advantage is that the schedule can be versioned alongside the command code.
+Another advantage is that there is no overhead from managing additional state in an external data store.
+
 ## Scheduling a Command
 
 A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.ICommandSchedule** interface.
@@ -121,7 +132,7 @@ Run a command daily at a specific time (at 10:30pm in this example):
 schedule.Command(new MyCommand()).DailyAt(22, 30);
 ```
 
-## Scheduling a Chain of Commands
+### In a Chain
 
 A group of commands can be scheduled to run as an atomic batch.
 
@@ -142,7 +153,7 @@ This is a good place to add special logic that will allow the command to be reco
 or to alert someone that manual intervention is necessary.  
 
 
-## Life Cycle Methods
+### With Life Cycle Methods
 
 Commands have optional life cycle methods that are initialized when a command is scheduled.
 
@@ -239,16 +250,13 @@ It can also be run on Mac and Linux with Mono via a shell wrapper script:
 
 ### On Windows as a Service
 
-#### Installing
-Run the Install.ps1 PowerShell script in the scheduler directory to install the scheduler in place. 
+Run the **Install.ps1** PowerShell script in the scheduler directory to install the scheduler in place. 
 The script needs to be run as an administrator. 
 The script will register the service at the location where the script is run.
 
 ```bash
 ps Install.ps1
 ```
-
-#### Uninstalling
 
 Simply run the **Uninstall.ps1** script with elevated permissions to remove the service.
 

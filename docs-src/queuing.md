@@ -1,10 +1,19 @@
 # Queuing
 
-InEngine.NET's queue functionality allows for commands to be run in the background with a simple publish/consume model. 
+InEngine.NET's queue functionality allows for commands to be run in the background via a [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) model.
+A command should be queued when it is desirable to run the command once, as soon as possible, in a background task.
+
+Queuing is especially important for Web site and applications. 
+Queuing is like the sister technology of caching.
+Caching makes page loads faster when reading data from a database, or serving static assets, by drastically reducing direct database and file system read operations. 
+Queuing makes page loads faster when writing data to a database, or performing other blocking tasks, by pushing them into the background.
+Some common examples are sending emails, importing CSV files into a database, transforming an image file, and processing a shopping cart order.
+It is not appropriate to use queuing if output from the task is needed immediately in the response of a Web request.
 
 ## Queue Drivers
 
 To make use of queue features, a queue driver must be specified in [appsettings.json](configuration).
+
 These are the available drivers...
 
 ### File
@@ -39,26 +48,38 @@ The sync driver causes the publish command to run a published command synchronou
 All other queue commands and methods are not supported and will throw an exception if called.
 This driver can be useful for plugin development and testing.
 
-## Publishing Commands
+## Enqueuing Commands
 
 ### With C# Classes
 
-[Commands](commands) can be published programmatically with the **InEngine.Core.Queuing.Queue** class:
+[Commands](commands) can be enqueued programmatically with the **InEngine.Core.Queuing.Enqueue** class:
 
 ```c#
-Queue.Make().Publish(new MyCommand());
+Enqueue.Command(new MyCommand())
+       .Dispatch();
 ```
 
-Or publish to the secondary queue by passing true to the Make method:
+Or enqueue to the secondary queue:
 
 ```c#
-Queue.Make(true).Publish(new MyCommand());
+Enqueue.Command(new MyCommand())
+       .ToSecondaryQueue()
+       .Dispatch();
 ```
 
-!!! note "Do I have to use Queue.Make()?"
-    Queue.Make() is a factory method that autoloads the queue settings from appsettings.json, creates the appropriate queue driver, and returns an instance of Queue.
-    You can create your own Queue object an initialize it if you want.
-    At the very least you can assign the object returned by Queue.Make() to a local variable or load it into a DI container for later use.
+Enqueue is just a wrapper.
+It is possible to peel back the covers to get to the queue client.
+```c#
+// Enqueue.Command actually returns a life cycle object...
+var commandToDispatch = Enqueue.Command(new MyCommand());
+
+// The life cycle object has a QueueAdapter that can be set...
+var shouldUseSecondaryQueue = true;
+commandToDispatch.QueueAdapter = QueueAdapter.Make(shouldUseSecondaryQueue);
+
+// Now dispatch the command... 
+commandToDispatch.Dispatch();
+```
 
 ### With Lambda Expressions
 
@@ -68,15 +89,8 @@ The disadvantage to queuing lambdas is that the helpful functionality available 
 This is how you queue a lambda:
 
 ```c#
-Queue.Make().Publish(() => Console.WriteLine("Hello, world!"));
-```
-
-Here is a neat shortcut for commands without parameters:
-
-```c#
-Queue.Make().Publish(() => Foo.Bar());
-// Can be rewritten as...
-Queue.Make().Publish(Foo.Bar);
+Enqueue.Command(() => Console.WriteLine("Hello, world!"))
+       .Dispatch();
 ```
 
 ### Sequentially In a Chain
@@ -85,25 +99,57 @@ Chained commands run in the order specified.
 This is useful for when order matters.
 
 Also, if one command in the chain fails, then subsequent commands are not run at all.
-This affords the opportunity to add additional code that records which command failed, then resuming the command chain where it left off.
+This affords the opportunity to add additional code that records which command failed to notify someone that manual intervention is necessary, 
+or some other error handling functionality.
 
 Here is a an example of how to chain a series of (imaginary) file transfer commands together:
 
 ```c#
-Subject.Publish(new[] {
-    new MyFileTransfer(filePath1),
-    new MyFileTransfer(filePath2),
-    new MyFileTransfer(filePath3),
-});
+Enqueue.Command(new[] {
+            new MyFileTransfer(filePath1),
+            new MyFileTransfer(filePath2),
+            new MyFileTransfer(filePath3),
+       })
+       .Dispatch();
 ```
 
+It is also possible to enqueue a list of different commands:
+ 
+```c#
+Enqueue.Command(new List<AbstractCommand>() {
+           new AlwaysSucceed(),
+           new Echo() { VerbatimText = "Hello, world!"},
+       })
+        .Dispatch();
+```
+
+### With Life Cycle Methods
+
+Commands have optional life cycle methods that are initialized when a command is enqueued.
+This is similar to scheduling life cycle methods, but a queue does not have the **Before** and **After** method.
+It has the rest.
+
+It is often useful to hit a URL before or after the command runs:
 
 ```c#
-Subject.Publish(new List<AbstractCommand>() {
-    new AlwaysSucceed(),
-    new Echo() { VerbatimText = "Hello, world!"},
-});
+Enqueue.Command(new Command())
+    .EveryFiveMinutes()
+    .PingBefore("http://example.com")
+    .PingAfter("http://example.com");
 ```
+
+The **AbstractCommand** class has an instance of **InEngine.Core.IO.Write**. 
+This class is more than just a wrapper for **Console.WriteLine**.
+
+It also allows these life cycle methods to send the command's text output to files or an email:  
+
+```c#
+Enqueue.Command(new Command)
+    .EveryFiveMinutes()
+    .WriteOutputTo("/some/path")
+    .AppendOutputTo("/some/path")
+    .EmailOutputTo("example@inengine.net");
+``` 
 
 ### From the Command Line
 
@@ -129,23 +175,9 @@ inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --
 
 ## Consuming Commands
 
-### From Code
-Consuming a command is also accomplished with the Queue class:
-
-```c#
-Queue.Make().Consume();
-```
-
-The make method takes an optional second argument to indicate if the secondary queue should be used instead of the primary queue.
-
-```c#
-// Uses secondary queue.
-Queue.Make(true).Consume();
-```
-
-Commands can be consumed from the command line as well with this simple command:
-
 ### From the Command Line
+
+Commands can be consumed from the command line with this simple command:
 
 ```bash
 inengine.exe -pInEngine.Core queue:consume
@@ -161,6 +193,24 @@ inengine.exe -pInEngine.Core queue:consume --secondary
 
 The InEngine scheduler is needed to consume queued messages in the background. 
 There are a variety of [ways to run the scheduler](scheduling/#running-the-scheduler).
+
+### From Code
+
+It should (probably) never be necessary to manually consume commands in code, but it is possible. 
+
+Consuming a command is accomplished with the **InEngine.Core.Queuing.Commands.Consume** class:
+
+```c#
+new Consume().Run();
+```
+
+Or consume the secondary queue:
+
+```c#
+new Consume {
+    UseSecondaryQueue = true
+}.Run();
+```
 
 ## Examining the Queue
 
@@ -205,7 +255,7 @@ For example, this queue:peek call retrieves the 100-200 queued commands:
 inengine.exe -pInEngine.Core queue:peek --pending --from=100 --to=200
 ```
 
-## Handling Failed Commands
+## Re-queuing Failed Commands
 
 Commands that throw an exception are put in a special "failed" queue. 
 They can be republished with the **queue:republish** command:
