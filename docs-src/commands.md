@@ -105,6 +105,75 @@ Run your command:
 inengine.exe -pMyCommandPlugin my-command
 ```
 
+### Writing Output
+
+The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console, for example:
+
+```c#
+public override void Run()
+{
+    Line("Display some information");
+}
+```
+
+All of these commands append a newline to the end of the specified text:
+
+```c#
+Line("This is some text");                  // Text color is white
+Info("Something good happened");            // Text color is green
+Warning("Something not so good happened");  // Text color is yellow
+Error("Something bad happened");            // Text color is red
+```
+
+These commands are similar, but they do not append a newline:
+
+```c#
+Text("This is some text");                      // Text color is white
+InfoText("Something good happened");            // Text color is green
+WarningText("Something not so good happened");  // Text color is yellow
+ErrorText("Something bad happened");            // Text color is red
+```
+
+You can also display newlines:
+ 
+```c#
+Newline();      // 1 newline
+Newline(5);     // 5 newlines
+Newline(10);    // 10 newlines
+```
+
+The methods can be chained together:
+
+```c#
+InfoText("You have this many things: ")
+    .Line("23")
+    .NewLine(2)
+    .InfoText("You have this many other things: ")
+    .Line("34")
+    .NewLine(2); 
+```
+
+### Progress Bar
+
+The **InEngine.Core.AbstractCommand** class provides a ProgressBar property to show command progress in a terminal.
+This is how it is used:
+
+```c#
+public override void Run()
+{
+    // Define the ticks (aka steps) for the command...
+    var maxTicks = 100000;
+    SetProgressBarMaxTicks(maxTicks);
+
+    // Do some work...
+    for (var i = 0; i <= maxTicks;i++)
+    {
+        // Update the command's progress
+        UpdateProgress(i);
+    }
+}
+```
+
 ### Executing Arbitrary Processes
 
 It isn't necessary to create C# classes to utilize InEngine.NET.
@@ -208,54 +277,6 @@ Copyright © 2017 Ethan Hann
                       queue.
 ```
 
-## Writing Output
-
-The **InEngine.Core.AbstractCommand** class provides some helper functions to output text to the console, for example:
-
-```c#
-public override void Run()
-{
-    Line("Display some information");
-}
-```
-
-All of these commands append a newline to the end of the specified text:
-
-```c#
-Line("This is some text");                  // Text color is white
-Info("Something good happened");            // Text color is green
-Warning("Something not so good happened");  // Text color is yellow
-Error("Something bad happened");            // Text color is red
-```
-
-These commands are similar, but they do not append a newline:
-
-```c#
-Text("This is some text");                      // Text color is white
-InfoText("Something good happened");            // Text color is green
-WarningText("Something not so good happened");  // Text color is yellow
-ErrorText("Something bad happened");            // Text color is red
-```
-
-You can also display newlines:
- 
-```c#
-Newline();      // 1 newline
-Newline(5);     // 5 newlines
-Newline(10);    // 10 newlines
-```
-
-The methods can be chained together:
-
-```c#
-InfoText("You have this many things: ")
-    .Line("23")
-    .NewLine(2)
-    .InfoText("You have this many other things: ")
-    .Line("34")
-    .NewLine(2); 
-```
-
 ## Logging
 
 Any exceptions thrown by a command will be logged provided NLog is configured to record errors. 
@@ -275,25 +296,3 @@ The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuratio
     </rules>
 </nlog>
 ```
-
-## Progress Bar
-
-The **InEngine.Core.AbstractCommand** class provides a ProgressBar property to show command progress in a terminal.
-This is how it is used:
-
-```c#
-public override void Run()
-{
-    // Define the ticks (aka steps) for the command...
-    var maxTicks = 100000;
-    SetProgressBarMaxTicks(maxTicks);
-
-    // Do some work...
-    for (var i = 0; i <= maxTicks;i++)
-    {
-        // Update the command's progress
-        UpdateProgress(i);
-    }
-}
-```
- 
