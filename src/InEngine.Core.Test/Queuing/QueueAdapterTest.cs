@@ -11,7 +11,7 @@ using Serialize.Linq.Extensions;
 namespace InEngine.Core.Test.Queuing
 {
     [TestFixture]
-    public class QueueTest : TestBase<Queue>
+    public class QueueAdapterTest : TestBase<QueueAdapter>
     {
         public Mock<IQueueClient> MockQueueClient { get; set; }
 
@@ -44,22 +44,6 @@ namespace InEngine.Core.Test.Queuing
             Subject.Publish(lambda);
 
             MockQueueClient.Verify(x => x.Publish(It.IsAny<Lambda>()), Times.Once());
-        }
-
-        [Test]
-        public void ShouldPublishChainOfCommands()
-        {
-            var commands = new[] {
-                new AlwaysSucceed(),
-                new AlwaysSucceed(),
-                new AlwaysSucceed(),
-                new AlwaysSucceed(),
-            };
-            MockQueueClient.Setup(x => x.Publish(It.IsAny<Chain>()));
-
-            Subject.Publish(commands);
-
-            MockQueueClient.Verify(x => x.Publish(It.Is<Chain>(y => y.Commands.Equals(commands))), Times.Once());
         }
     }
 }

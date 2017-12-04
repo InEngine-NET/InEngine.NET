@@ -7,10 +7,14 @@ namespace InEngine.IntegrationTest
         public static void Main(string[] args)
         {
             Console.WriteLine("------------------------------------------------------------");
-            Console.WriteLine("Integration Tests");
+            Console.WriteLine("Queuing Integration Tests");
             Console.WriteLine("------------------------------------------------------------");
             new QueuingTest().Run();
+
+            Console.WriteLine("------------------------------------------------------------");
+            Console.WriteLine("Scheduling Integration Tests");
+            Console.WriteLine("------------------------------------------------------------");
             new SchedulingTest().Run();
         }
-    }
+    }   
 }

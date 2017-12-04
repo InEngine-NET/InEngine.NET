@@ -1,9 +1,9 @@
 ﻿using System;
 using InEngine.Core.Exceptions;
 
-namespace InEngine.Core.Scheduling
+namespace InEngine.Core
 {
-    public class ExecutionLifeCycle
+    public class CommandLifeCycle
     {
         public MailSettings MailSettings { get; set; }
         public Action<AbstractCommand> BeforeAction { get; set; }

@@ -42,11 +42,6 @@ namespace MyCommandPlugin
              * Run a lambda expression every ten minutes. 
              */
             schedule.Job(() => Console.WriteLine("Hello, world!")).EveryTenMinutes();
-            
-            /* 
-             * Run a parameterless method every five minutes. 
-             */
-            schedule.Job(() => Foo.Bar).EverySecond();
         }
     }
 }
@@ -119,6 +114,20 @@ Run a command daily at a specific time (at 10:30pm in this example):
 ```c#
 schedule.Job(new MyCommand()).DailyAt(22, 30);
 ```
+
+## Scheduling a Chain of Commands
+
+A group of commands can be scheduled as an atomic batch.
+
+
+```c#
+schedule.Job(new[] {
+    new MyFileTransfer(filePath1),
+    new MyFileTransfer(filePath2),
+    new MyFileTransfer(filePath3),
+});
+```
+
 
 ## Lifecycle Events
 

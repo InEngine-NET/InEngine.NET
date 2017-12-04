@@ -48,7 +48,7 @@ namespace InEngine.Core.Queuing.Clients
                             context.Database.UseTransaction(transaction);
                             var messageModel = context.Messages
                                                       .OrderBy(x => x.QueuedAt)
-                                                      .FirstOrDefault(x => x.Status == CommandEnvelopeStatus.Pending&& x.QueueName == QueueName);
+                                                      .FirstOrDefault(x => x.Status == CommandEnvelopeStatus.Pending && x.QueueName == QueueName);
                             messageModel.Status = CommandEnvelopeStatus.InProgress;
                             context.SaveChanges();
                             commandEnvelope = messageModel;
@@ -66,7 +66,7 @@ namespace InEngine.Core.Queuing.Clients
 
             try
             {
-                Queue.ExtractCommandInstanceFromMessageAndRun(commandEnvelope);
+                QueueAdapter.ExtractCommandInstanceFromMessageAndRun(commandEnvelope);
             }
             catch (Exception exception)
             {

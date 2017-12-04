@@ -87,7 +87,7 @@ This is useful for when order matters.
 Also, if one command in the chain fails, then subsequent commands are not run at all.
 This affords the opportunity to add additional code that records which command failed, then resuming the command chain where it left off.
 
-Here is a an example of how to chain an imaginary file transfer command together:
+Here is a an example of how to chain a series of (imaginary) file transfer commands together:
 
 ```c#
 Subject.Publish(new[] {

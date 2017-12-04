@@ -2,7 +2,7 @@
 
 namespace InEngine.Core
 {
-    public static class JsonExtensions
+    static class JsonExtensions
     {
         public static string SerializeToJson<T>(this T message, bool compress = false) where T : class
         {

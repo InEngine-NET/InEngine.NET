@@ -41,7 +41,7 @@ namespace InEngine.Core.Queuing.Commands
             
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var queue = Queue.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue);
             if (PendingQueue) {
                 PrintMessages(queue.PeekPendingMessages(From, To), "Pending");
             }
@@ -68,7 +68,7 @@ namespace InEngine.Core.Queuing.Commands
                 if (JsonFormat)
                     Line(commandEnvelope.SerializeToJson());
                 else
-                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(commandEnvelope));
+                    konsoleForm.Write(QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope));
             });
         }
     }

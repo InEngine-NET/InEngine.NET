@@ -19,30 +19,10 @@ namespace InEngine.Core.Commands
                 }
                 catch (Exception exception)
                 {
+                    x.Failed(exception);
                     throw new CommandChainFailedException(x.Name, exception);
                 }
             });
-        }
-
-        public override void Execute(IJobExecutionContext context)
-        {
-            var properties = GetType().GetProperties();
-            context.MergedJobDataMap.ToList().ForEach(x => {
-                var property = properties.FirstOrDefault(y => y.Name == x.Key);
-                if (property != null)
-                    property.SetValue(this, x.Value);
-            });
-
-            try
-            {
-                ExecutionLifeCycle.FirePreActions(this);
-                Run();
-                ExecutionLifeCycle.FirePostActions(this);
-            }
-            catch (Exception exception)
-            {
-                Failed(exception);
-            }
         }
     }
 }

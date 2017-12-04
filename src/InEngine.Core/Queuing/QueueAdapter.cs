@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using Newtonsoft.Json;
 using Quartz;
-using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Queuing
 {
-    public class Queue : IQueueClient
+    public class QueueAdapter : IQueueClient
     {
         public IQueueClient QueueClient { get; set; }
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
         public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
         public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
 
-        public static Queue Make(bool useSecondaryQueue = false)
+        public static QueueAdapter Make(bool useSecondaryQueue = false)
         {
             var queueSettings = InEngineSettings.Make().Queue;
             var queueDriverName = queueSettings.QueueDriver.ToLower();
-            var queue = new Queue();
+            var queue = new QueueAdapter();
 
             if (queueDriverName == "redis")
                 queue.QueueClient = new RedisClient()
@@ -49,19 +46,9 @@ namespace InEngine.Core.Queuing
             return queue;
         }
 
-        public void Publish(Expression<Action> expressionAction)
-        {
-            QueueClient.Publish(new Lambda(expressionAction.ToExpressionNode()));
-        }
-
         public void Publish(ICommand command)
         {
             QueueClient.Publish(command);
-        }
-
-        public void Publish(IList<AbstractCommand> commands)
-        {
-            QueueClient.Publish(new Chain() { Commands = commands });
         }
 
         public bool Consume()

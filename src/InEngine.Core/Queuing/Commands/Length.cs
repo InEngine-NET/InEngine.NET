@@ -4,11 +4,11 @@
     {
         public override void Run()
         {
-            PrintQueueLengths(Queue.Make());
-            PrintQueueLengths(Queue.Make(true));
+            PrintQueueLengths(QueueAdapter.Make());
+            PrintQueueLengths(QueueAdapter.Make(true));
         }
 
-        public void PrintQueueLengths(Queue queue)
+        public void PrintQueueLengths(QueueAdapter queue)
         {
             var leftPadding = 15;
             Warning($"{queue.QueueName} Queue:");

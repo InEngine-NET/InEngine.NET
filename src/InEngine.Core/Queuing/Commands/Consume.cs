@@ -13,7 +13,7 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
-            var queue = Queue.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue);
             var shouldConsume = true;
             while (shouldConsume)
                 shouldConsume = queue.Consume() && ShouldConsumeAll;

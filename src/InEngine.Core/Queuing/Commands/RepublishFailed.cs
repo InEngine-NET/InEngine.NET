@@ -13,7 +13,7 @@ namespace InEngine.Core.Queuing.Commands
 
         public override void Run()
         {
-            var queue = Queue.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue);
             Enumerable.Range(0, Limit)
                       .ToList()
                       .ForEach(x => queue.RepublishFailedMessages());

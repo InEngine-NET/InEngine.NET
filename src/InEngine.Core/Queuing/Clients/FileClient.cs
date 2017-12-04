@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using InEngine.Core.Exceptions;
-using Quartz;
 
 namespace InEngine.Core.Queuing.Clients
 {
@@ -82,7 +81,7 @@ namespace InEngine.Core.Queuing.Clients
             var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
             try
             {
-                Queue.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
+                QueueAdapter.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
             }
             catch (Exception exception)
             {

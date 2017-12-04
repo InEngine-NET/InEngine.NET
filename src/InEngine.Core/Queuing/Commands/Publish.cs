@@ -23,7 +23,7 @@ namespace InEngine.Core.Queuing.Commands
         public bool UseSecondaryQueue { get; set; }
 
         public ICommand Command { get; set; }
-        public Queue Queue { get; set; }
+        public QueueAdapter Queue { get; set; }
 
         public override void Run()
         {
@@ -39,13 +39,13 @@ namespace InEngine.Core.Queuing.Commands
             }
 
             if (command == null)
-                throw new CommandFailedException("Did not publish commandEnvelope. Could not load command from plugin.");
+                throw new CommandFailedException("Did not publish command. Could not load command from plugin.");
 
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
             if (Queue == null)
-                Queue.Make(UseSecondaryQueue);
+                Queue = QueueAdapter.Make(UseSecondaryQueue);
 
             Queue.Publish(command);
         }

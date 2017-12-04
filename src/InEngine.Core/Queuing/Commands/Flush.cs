@@ -21,7 +21,7 @@ namespace InEngine.Core.Queuing.Commands
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");
-            var queue = Queue.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue);
             if (PendingQueue)
                 Info($"Pending: {queue.ClearPendingQueue().ToString()}");
             if (InProgressQueue)

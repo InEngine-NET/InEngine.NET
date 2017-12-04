@@ -2,15 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using InEngine.Core.IO;
-using InEngine.Core.Scheduling;
 using Konsole;
 using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
+    abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite, IHasCommandLifeCycle
     {
-        public ExecutionLifeCycle ExecutionLifeCycle { get; set; }
+        public CommandLifeCycle CommandLifeCycle { get; set; }
         public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
@@ -24,7 +23,7 @@ namespace InEngine.Core
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
-            ExecutionLifeCycle = new ExecutionLifeCycle();
+            CommandLifeCycle = new CommandLifeCycle();
             SecondsBeforeTimeout = 300;
         }
 
@@ -62,7 +61,7 @@ namespace InEngine.Core
 
             try
             {
-                ExecutionLifeCycle.FirePreActions(this);
+                CommandLifeCycle.FirePreActions(this);
                 if (SecondsBeforeTimeout <= 0)
                     Run();
                 else {
@@ -70,7 +69,7 @@ namespace InEngine.Core
                     if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
                         throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");   
                 }
-                ExecutionLifeCycle.FirePostActions(this);
+                CommandLifeCycle.FirePostActions(this);
             }
             catch (Exception exception)
             {

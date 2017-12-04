@@ -53,7 +53,7 @@ namespace InEngine.Core.Queuing.Clients
 
             try
             {
-                Queue.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
+                QueueAdapter.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
             }
             catch (Exception exception)
             {
