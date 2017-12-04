@@ -41,12 +41,12 @@ namespace InEngine.IntegrationTest
                    .WriteOutputTo(queueWriteIntegrationTest)
                    .AppendOutputTo(queueAppendIntegrationTest)
                    .Dispatch();
-            Enqueue.Command(new[] {
+            Enqueue.Commands(new[] {
                 new Echo { VerbatimText = "Chain Link 1" },
                 new Echo { VerbatimText = "Chain Link 2" },
             }).Dispatch();
 
-            Enqueue.Command(new List<AbstractCommand> {
+            Enqueue.Commands(new List<AbstractCommand> {
                 new Echo { VerbatimText = "Chain Link A" },
                 new AlwaysFail(),
                 new Echo { VerbatimText = "Chain Link C" },

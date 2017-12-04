@@ -17,7 +17,7 @@ namespace InEngine.IntegrationTest
             File.Delete(writingEverySecond);
             File.Delete(appendingEverySecond);
             var schedule = new Schedule();
-            schedule.Job(new Echo { VerbatimText = "Hello, world!" })
+            schedule.Command(new Echo { VerbatimText = "Hello, world!" })
                     .EverySecond()
                     .Before(x => Console.WriteLine("Before"))
                     .After(x => Console.WriteLine("After"))
@@ -27,12 +27,12 @@ namespace InEngine.IntegrationTest
                     .AppendOutputTo(appendingEverySecond)
                     .EmailOutputTo("example@inengine.net");
 
-            schedule.Job(new[] {
+            schedule.Command(new[] {
                 new Echo { VerbatimText = "Chain Link 1" },
                 new Echo { VerbatimText = "Chain Link 2" },
             }).EverySecond();
 
-            schedule.Job(new List<AbstractCommand> {
+            schedule.Command(new List<AbstractCommand> {
                 new Echo { VerbatimText = "Chain Link A" },
                 new AlwaysFail(),
                 new Echo { VerbatimText = "Chain Link C" },

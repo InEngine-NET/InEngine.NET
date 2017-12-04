@@ -20,7 +20,7 @@ namespace InEngine.Core.Test.Scheduling
         {
             var alwaysSucceed = new AlwaysSucceed();
 
-            Subject.Job(alwaysSucceed).EverySecond();
+            Subject.Command(alwaysSucceed).EverySecond();
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace InEngine.Core.Test.Scheduling
         {
             var alwaysSucceed = new AlwaysSucceed();
 
-            Subject.Job(() => Console.WriteLine("Hello, world!")).EverySecond();
+            Subject.Command(() => Console.WriteLine("Hello, world!")).EverySecond();
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace InEngine.Core.Test.Scheduling
         {
             var alwaysSucceed = new AlwaysSucceed();
 
-            Subject.Job(new [] {
+            Subject.Command(new [] {
                 new AlwaysSucceed(),
                 new AlwaysSucceed(),
                 new AlwaysSucceed(),
