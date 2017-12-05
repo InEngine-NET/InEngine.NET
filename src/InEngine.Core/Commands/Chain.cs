@@ -15,6 +15,7 @@ namespace InEngine.Core.Commands
             Commands.ToList().ForEach(x => { 
                 try
                 {
+                    x.WriteSummaryToConsole();
                     x.Run();
                 }
                 catch (Exception exception)
