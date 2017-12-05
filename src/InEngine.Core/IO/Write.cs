@@ -23,65 +23,69 @@ namespace InEngine.Core.IO
             return this;
         }
 
-        public IWrite Info(string val)
+        public IWrite Info(object val)
         {
             return ColoredLine(val, InfoColor);
         }
 
-        public IWrite Error(string val)
+        public IWrite Error(object val)
         {
             return ColoredLine(val, ErrorColor);
         }
 
-        public IWrite Warning(string val)
+        public IWrite Warning(object val)
         {
             return ColoredLine(val, WarningColor);
         }
 
-        public IWrite Line(string val)
+        public IWrite Line(object val)
         {
             return ColoredLine(val, LineColor);
         }
 
-        public IWrite ColoredLine(string val, ConsoleColor consoleColor)
+        public IWrite ColoredLine(object val, ConsoleColor consoleColor)
         {
+            if (val == null)
+                val = String.Empty;
             consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(val);
             Console.ResetColor();
             consoleOutputLock.ReleaseMutex();
-            Buffer.Add(val);
+            Buffer.Add(val.ToString());
             return this;
         }
 
-        public IWrite InfoText(string val)
+        public IWrite InfoText(object val)
         {
             return ColoredText(val, InfoColor);
         }
 
-        public IWrite ErrorText(string val)
+        public IWrite ErrorText(object val)
         {
             return ColoredText(val, ErrorColor);
         }
 
-        public IWrite WarningText(string val)
+        public IWrite WarningText(object val)
         {
             return ColoredText(val, WarningColor);
         }
 
-        public IWrite Text(string val)
+        public IWrite Text(object val)
         {
             return ColoredText(val, LineColor);
         }
 
-        public IWrite ColoredText(string val, ConsoleColor consoleColor)
+        public IWrite ColoredText(object val, ConsoleColor consoleColor)
         {
+            if (val == null)
+                val = String.Empty;
             consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
             Console.Write(val);
             Console.ResetColor();
             consoleOutputLock.ReleaseMutex();
-            Buffer.Add(val);
+            Buffer.Add(val.ToString());
             return this;
         }
 

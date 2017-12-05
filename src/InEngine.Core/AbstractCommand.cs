@@ -79,52 +79,52 @@ namespace InEngine.Core
         #endregion
 
         #region Console output
-        public IWrite Info(string val)
+        public IWrite Info(object val)
         {
             return Write.Info(val);
         }
 
-        public IWrite Warning(string val)
+        public IWrite Warning(object val)
         {
             return Write.Warning(val);
         }
 
-        public IWrite Error(string val)
+        public IWrite Error(object val)
         {
             return Write.Error(val);
         }
 
-        public IWrite Line(string val)
+        public IWrite Line(object val)
         {
             return Write.Line(val);
         }
 
-        public IWrite ColoredLine(string val, ConsoleColor consoleColor)
+        public IWrite ColoredLine(object val, ConsoleColor consoleColor)
         {
             return Write.ColoredLine(val, consoleColor);
         }
 
-        public IWrite InfoText(string val)
+        public IWrite InfoText(object val)
         {
             return Write.InfoText(val);
         }
 
-        public IWrite WarningText(string val)
+        public IWrite WarningText(object val)
         {
             return Write.WarningText(val);
         }
 
-        public IWrite ErrorText(string val)
+        public IWrite ErrorText(object val)
         {
             return Write.ErrorText(val);
         }
 
-        public IWrite Text(string val)
+        public IWrite Text(object val)
         {
             return Write.Text(val);
         }
 
-        public IWrite ColoredText(string val, ConsoleColor consoleColor)
+        public IWrite ColoredText(object val, ConsoleColor consoleColor)
         {
             return Write.ColoredText(val, consoleColor);
         }
