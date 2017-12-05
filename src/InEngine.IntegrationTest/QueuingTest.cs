@@ -20,7 +20,7 @@ namespace InEngine.IntegrationTest
             queue.Publish(new Echo() { VerbatimText = "Core echo command." });
             new Length { }.Run();
             new Peek { PendingQueue = true }.Run();
-            new Consume { ShouldConsumeAll = true }.Run();
+            new Consume { Count = 10 }.Run();
 
             Enqueue.Command(() => Console.WriteLine("Core lambda command."))
                    .Dispatch();
@@ -28,6 +28,7 @@ namespace InEngine.IntegrationTest
                    .Dispatch();
             Enqueue.Command(new AlwaysFail())
                    .WriteOutputTo("queueWriteTest-TheFileShouldNotExist.txt")
+                   .WithRetries(4)
                    .Dispatch();
 
             var queueWriteIntegrationTest = "queueWriteIntegrationTest.txt";
@@ -52,7 +53,7 @@ namespace InEngine.IntegrationTest
                 new Echo { VerbatimText = "Chain Link C" },
             });
 
-            new Consume { ShouldConsumeAll = true }.Run();
+            new Consume { Count = 1000 }.Run();
         }
     }
 }

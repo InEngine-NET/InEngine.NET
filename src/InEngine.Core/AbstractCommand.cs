@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using Konsole;
 using Quartz;
@@ -32,6 +33,28 @@ namespace InEngine.Core
             throw new NotImplementedException();
         }
 
+        public virtual void RunWithLifeCycle()
+        {
+            try
+            {
+                CommandLifeCycle.FirePreActions(this);
+                if (SecondsBeforeTimeout <= 0)
+                    Run();
+                else
+                {
+                    var task = Task.Run(() => Run());
+                    if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
+                        throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
+                }
+                CommandLifeCycle.FirePostActions(this);
+            }
+            catch (Exception exception)
+            {
+                Failed(exception);
+                throw new CommandFailedException("Command failed. See inner exception for details.", exception);
+            }
+        }
+
         public virtual void Failed(Exception exception)
         {}
 
@@ -50,31 +73,17 @@ namespace InEngine.Core
         #region Scheduling
         public virtual void Execute(IJobExecutionContext context)
         {
-            if (context != null) {
+            if (context != null)
+            {
                 var properties = GetType().GetProperties();
                 context.MergedJobDataMap.ToList().ForEach(x => {
                     var property = properties.FirstOrDefault(y => y.Name == x.Key);
                     if (property != null)
-                        property.SetValue(this, x.Value);                
+                        property.SetValue(this, x.Value);
                 });
             }
 
-            try
-            {
-                CommandLifeCycle.FirePreActions(this);
-                if (SecondsBeforeTimeout <= 0)
-                    Run();
-                else {
-                    var task = Task.Run(() => Run());
-                    if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
-                        throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");   
-                }
-                CommandLifeCycle.FirePostActions(this);
-            }
-            catch (Exception exception)
-            {
-                Failed(exception);
-            }
+            RunWithLifeCycle();
         }
         #endregion
 

@@ -10,5 +10,6 @@ namespace InEngine.Core.Queuing
         IQueueLifeCycleActions WriteOutputTo(string output);
         IQueueLifeCycleActions AppendOutputTo(string output);
         IQueueLifeCycleActions EmailOutputTo(string emailAddress);
+        IQueueLifeCycleActions WithRetries(int maximumRetries);
     }
 }

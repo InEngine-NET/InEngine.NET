@@ -74,6 +74,12 @@ namespace InEngine.Core.Queuing
             return this;
         }
 
+        public IQueueLifeCycleActions WithRetries(int maximumRetries)
+        {
+            Command.CommandLifeCycle.MaximumRetries = maximumRetries;
+            return this;
+        }
+
         public void Dispatch()
         {
             if (QueueAdapter == null)

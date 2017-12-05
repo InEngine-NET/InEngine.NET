@@ -14,7 +14,7 @@ namespace InEngine.Core.Queuing.Clients
             command.Run();
         }
 
-        public bool Consume()
+        public ICommandEnvelope Consume()
         {
             throw new NotImplementedException();
         }

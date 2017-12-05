@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
+using Konsole.Forms;
 using Newtonsoft.Json;
 using Quartz;
 
@@ -27,11 +28,6 @@ namespace InEngine.Core.Queuing
                     UseCompression = queueSettings.UseCompression,
                     RedisDb = queueSettings.RedisDb
                 };
-            else if (queueDriverName == "database")
-                queue.QueueClient = new DatabaseClient() {
-                    QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression,
-                };
             else if (queueDriverName == "file")
                 queue.QueueClient = new FileClient() {
                     QueueBaseName = queueSettings.QueueName,
@@ -51,12 +47,12 @@ namespace InEngine.Core.Queuing
             QueueClient.Publish(command);
         }
 
-        public bool Consume()
+        public ICommandEnvelope Consume()
         {
             return QueueClient.Consume();
         }
 
-        public static ICommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
+        public static AbstractCommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
         {
             var commandType = Type.GetType($"{commandEnvelope.CommandClassName}, {commandEnvelope.CommandAssemblyName}");
             if (commandType == null)
@@ -65,16 +61,7 @@ namespace InEngine.Core.Queuing
                 commandEnvelope.IsCompressed ? commandEnvelope.SerializedCommand.Decompress() : commandEnvelope.SerializedCommand,
                 commandType,
                 new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects }
-            ) as ICommand;
-        }
-
-        public static void ExtractCommandInstanceFromMessageAndRun(ICommandEnvelope commandEnvelope)
-        {
-            var command = ExtractCommandInstanceFromMessage(commandEnvelope);
-            if (command is IJob)
-                (command as IJob).Execute(null);
-            else
-                command.Run();
+            ) as AbstractCommand;
         }
 
         public long GetPendingQueueLength()

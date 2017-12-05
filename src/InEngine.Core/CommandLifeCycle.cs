@@ -11,16 +11,32 @@ namespace InEngine.Core
 
         public bool ShouldPingBefore { get; set; }
         public string PingBeforeUrl { get; set; }
+
         public bool ShouldPingAfter { get; set; }
         public string PingAfterUrl { get; set; }
 
-
         public bool ShouldWriteOutputToFile { get; set; }
         public string WriteOutputToFilePath { get; set; }
+
         public bool ShouldAppendOutputToFile { get; set; }
         public string AppendOutputToFilePath { get; set; }
+
         public bool ShouldEmailOutput { get; set; }
         public string EmailOutputToAddress { get; set; }
+
+        public int MaximumRetries { get; set;  }
+        public int CurrentTry { get; set; }
+
+        public CommandLifeCycle IncrementRetry()
+        {
+            CurrentTry++;
+            return this;
+        }
+
+        public bool ShouldRetry()
+        {
+            return CurrentTry <= MaximumRetries;
+        }
 
         public void FirePreActions(AbstractCommand command)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using InEngine.Core.Exceptions;
+using Quartz;
 
 namespace InEngine.Core.Queuing.Clients
 {
@@ -58,14 +59,14 @@ namespace InEngine.Core.Queuing.Clients
             }   
         }
 
-        public bool Consume()
+        public ICommandEnvelope Consume()
         {
             var fileInfo = new DirectoryInfo(PendingQueuePath)
                 .GetFiles()
                 .OrderBy(x => x.LastWriteTimeUtc)
                 .FirstOrDefault();
             if (fileInfo == null)
-                return false;
+                return null;
             var inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
 
             try 
@@ -75,17 +76,25 @@ namespace InEngine.Core.Queuing.Clients
             catch (FileNotFoundException)
             {
                 // Another process probably consumed the file when it was read and moved.
-                return false;
+                return null;
             }
 
-            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
+            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope;
+
+            var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+            command.CommandLifeCycle.IncrementRetry();
+            commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
             try
             {
-                QueueAdapter.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
+                command.WriteSummaryToConsole();
+                command.RunWithLifeCycle();
             }
             catch (Exception exception)
             {
-                File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
+                if (command.CommandLifeCycle.ShouldRetry())
+                    File.Move(inProgressFilePath, Path.Combine(PendingQueuePath, fileInfo.Name));
+                else
+                    File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
                 throw new CommandFailedException("Failed to consume commandEnvelope.", exception);
             }
 
@@ -97,7 +106,8 @@ namespace InEngine.Core.Queuing.Clients
             {
                 throw new CommandFailedException("Failed to move commandEnvelope from in-progress queue.", exception);
             }
-            return true;
+
+            return commandEnvelope;
         }
 
         public void RepublishFailedMessages()

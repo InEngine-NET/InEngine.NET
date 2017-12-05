@@ -34,7 +34,6 @@
   <ItemGroup>
     <Folder Include="Scheduling\" />
     <Folder Include="Queuing\Clients\" />
-    <Folder Include="Queuing\Clients\Database\" />
     <Folder Include="Scheduling\Commands\" />
   </ItemGroup>
   <ItemGroup>

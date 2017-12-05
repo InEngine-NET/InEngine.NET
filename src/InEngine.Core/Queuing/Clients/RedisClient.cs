@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
 using StackExchange.Redis;
 
 namespace InEngine.Core.Queuing.Clients
@@ -41,25 +42,33 @@ namespace InEngine.Core.Queuing.Clients
             );
         }
 
-        public bool Consume()
+        public ICommandEnvelope Consume()
         {
             var rawRedisMessageValue = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
             var serializedMessage = rawRedisMessageValue.ToString();
             if (serializedMessage == null)
-                return false;
+                return null;
             var commandEnvelope = serializedMessage.DeserializeFromJson<CommandEnvelope>();
             if (commandEnvelope == null)
-                return false;
-
+                throw new CommandFailedException("Could not deserialize the command.");
+            
+            var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+            command.CommandLifeCycle.IncrementRetry();
+            commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
             try
             {
-                QueueAdapter.ExtractCommandInstanceFromMessageAndRun(commandEnvelope as ICommandEnvelope);
+                command.WriteSummaryToConsole();
+                command.RunWithLifeCycle();
             }
             catch (Exception exception)
             {
                 Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
-                Redis.ListLeftPush(FailedQueueName, rawRedisMessageValue);
-                throw new CommandFailedException("Consumed command failed.", exception);
+                if (command.CommandLifeCycle.ShouldRetry())
+                    Redis.ListLeftPush(PendingQueueName, commandEnvelope.SerializeToJson());
+                else {
+                    Redis.ListLeftPush(FailedQueueName, commandEnvelope.SerializeToJson());
+                    throw new CommandFailedException("Failed to run consumed command.", exception);   
+                }
             }
 
             try
@@ -71,7 +80,7 @@ namespace InEngine.Core.Queuing.Clients
                 throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue: {InProgressQueueName}", exception);
             }
 
-            return true;
+            return commandEnvelope;
         }
 
         public long GetPendingQueueLength()
