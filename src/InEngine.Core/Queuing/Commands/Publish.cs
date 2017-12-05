@@ -22,7 +22,7 @@ namespace InEngine.Core.Queuing.Commands
         [Option("secondary", DefaultValue = false, HelpText = "Publish the command to the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
-        public ICommand Command { get; set; }
+        public AbstractCommand Command { get; set; }
         public QueueAdapter Queue { get; set; }
 
         public override void Run()

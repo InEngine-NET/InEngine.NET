@@ -9,7 +9,7 @@ namespace InEngine.Core.Queuing.Clients
         public string QueueName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool UseCompression { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public void Publish(ICommand command)
+        public void Publish(AbstractCommand command)
         {
             command.Run();
         }

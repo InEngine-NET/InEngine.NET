@@ -42,7 +42,7 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
-        public void Publish(ICommand command)
+        public void Publish(AbstractCommand command)
         {
             if (!Directory.Exists(PendingQueuePath))
                 Directory.CreateDirectory(PendingQueuePath);

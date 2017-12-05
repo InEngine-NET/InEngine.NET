@@ -120,7 +120,7 @@ namespace InEngine
                         ExitWithSuccess();
                     else if (subOptions == null)
                         ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
-                    var command = subOptions as ICommand;
+                    var command = subOptions as AbstractCommand;
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
                     command.Run();

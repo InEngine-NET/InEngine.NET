@@ -8,7 +8,7 @@ using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite, IHasCommandLifeCycle
+    abstract public class AbstractCommand : IFailed, IJob, IWrite, IHasCommandLifeCycle
     {
         public CommandLifeCycle CommandLifeCycle { get; set; }
         public Write Write { get; set; }

@@ -74,12 +74,12 @@ namespace InEngine.Core
             return pluginList.OrderBy(x => x.Name).ToList();
         }
 
-        public ICommand CreateCommandFromClass(string fullCommandName)
+        public AbstractCommand CreateCommandFromClass(string fullCommandName)
         {
-            return Assembly.CreateInstance(fullCommandName) as ICommand;
+            return Assembly.CreateInstance(fullCommandName) as AbstractCommand;
         }
 
-        public ICommand CreateCommandFromVerb(string verbName)
+        public AbstractCommand CreateCommandFromVerb(string verbName)
         {
             var commandClassNames = new List<string>();
             var optionsList = Make<IOptions>();
@@ -95,7 +95,7 @@ namespace InEngine.Core
                 throw new AmbiguousCommandException(verbName);
             if (commandCount == 0)
                 throw new CommandNotFoundException(verbName);
-            return Assembly.CreateInstance(commandClassNames.First()) as ICommand;   
+            return Assembly.CreateInstance(commandClassNames.First()) as AbstractCommand;   
         }
     }
 }

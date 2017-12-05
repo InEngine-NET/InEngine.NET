@@ -28,26 +28,7 @@ dotnet add package InEngine.Core
 paket add InEngine.Core
 ```
 
-Adding a class that implements **InEngine.Core.ICommand** is the simplest way to create a command.
-
-```c#
-using System;
-using InEngine.Core;
-
-namespace MyCommandPlugin
-{
-    public class MyCommand : ICommand
-    {
-        public void Run()
-        {
-            Console.WriteLine("Hello, world!");
-        }
-    }
-}
-```
-
-A command that implements ICommand can be run directly or [queued](queuing), but it cannot be [scheduled](scheduling).
-Extending the **InEngine.Core.AbstractCommand** class adds extra functionality, like a progress bar, and the ability to schedule the command using the scheduler.
+To create a class command, extend the **InEngine.Core.AbstractCommand** class.
 Minimally, the Run method should be overridden.
 
 ```c#

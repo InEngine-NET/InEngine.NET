@@ -42,7 +42,7 @@ namespace InEngine.Core.Queuing
             return queue;
         }
 
-        public void Publish(ICommand command)
+        public void Publish(AbstractCommand command)
         {
             QueueClient.Publish(command);
         }

@@ -10,7 +10,7 @@ using InEngine.Core.Queuing.Commands;
 
 namespace InEngine.IntegrationTest
 {
-    public class QueuingTest : ICommand
+    public class QueuingTest : AbstractCommand
     {
         public void Run()
         {

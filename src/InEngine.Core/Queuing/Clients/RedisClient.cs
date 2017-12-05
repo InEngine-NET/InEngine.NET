@@ -29,7 +29,7 @@ namespace InEngine.Core.Queuing.Clients
         public bool UseCompression { get; set; }
         public int RedisDb { get; set; }
 
-        public void Publish(ICommand command)
+        public void Publish(AbstractCommand command)
         {
             Redis.ListLeftPush(
                 PendingQueueName,

@@ -8,7 +8,7 @@ using InEngine.Core.Scheduling;
 
 namespace InEngine.IntegrationTest
 {
-    public class SchedulingTest : ICommand
+    public class SchedulingTest : AbstractCommand
     {
         public void Run()
         {
