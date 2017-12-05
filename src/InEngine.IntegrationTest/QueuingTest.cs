@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using InEngine.Commands;
 using InEngine.Core;
 using InEngine.Core.Commands;
@@ -12,7 +13,7 @@ namespace InEngine.IntegrationTest
 {
     public class QueuingTest : AbstractCommand
     {
-        public void Run()
+        public override void Run()
         {
             var queue = QueueAdapter.Make();
 
@@ -20,7 +21,7 @@ namespace InEngine.IntegrationTest
             queue.Publish(new Echo() { VerbatimText = "Core echo command." });
             new Length { }.Run();
             new Peek { PendingQueue = true }.Run();
-            new Consume { Count = 10 }.Run();
+            var consume = new Consume { Count = 1000 };
 
             Enqueue.Command(() => Console.WriteLine("Core lambda command."))
                    .Dispatch();
@@ -30,6 +31,28 @@ namespace InEngine.IntegrationTest
                    .WriteOutputTo("queueWriteTest-TheFileShouldNotExist.txt")
                    .WithRetries(4)
                    .Dispatch();
+
+            Enqueue.Commands(new[] {
+                new Echo { VerbatimText = "Chain Link 1" },
+                new Echo { VerbatimText = "Chain Link 2" },
+            }).Dispatch();
+
+            Enqueue.Commands(new List<AbstractCommand> {
+                new Echo { VerbatimText = "Chain Link A" },
+                new AlwaysFail(),
+                new Echo { VerbatimText = "Chain Link C" },
+            }).Dispatch();
+
+            Enqueue.Commands(new List<AbstractCommand> {
+                new Echo { VerbatimText = "Chain Link A" },
+                new AlwaysFail(),
+                new Echo { VerbatimText = "Chain Link C" },
+            }).Dispatch();
+
+            Enqueue.Commands(Enumerable.Range(0, 10).Select(x => new AlwaysSucceed() as AbstractCommand).ToList())
+                   .Dispatch();
+            
+            consume.Run();
 
             var queueWriteIntegrationTest = "queueWriteIntegrationTest.txt";
             var queueAppendIntegrationTest = "queueAppendIntegrationTest.txt";
@@ -42,18 +65,8 @@ namespace InEngine.IntegrationTest
                    .WriteOutputTo(queueWriteIntegrationTest)
                    .AppendOutputTo(queueAppendIntegrationTest)
                    .Dispatch();
-            Enqueue.Commands(new[] {
-                new Echo { VerbatimText = "Chain Link 1" },
-                new Echo { VerbatimText = "Chain Link 2" },
-            }).Dispatch();
 
-            Enqueue.Commands(new List<AbstractCommand> {
-                new Echo { VerbatimText = "Chain Link A" },
-                new AlwaysFail(),
-                new Echo { VerbatimText = "Chain Link C" },
-            });
-
-            new Consume { Count = 1000 }.Run();
+            consume.Run();
         }
     }
 }
