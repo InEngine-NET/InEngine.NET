@@ -39,7 +39,7 @@ Want to queue our example echo command to run in the background or possibly on a
 Use the core plugin's **queue:publish** command:
 
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --command-verb=echo --args "text=Hello, world"
+inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-verb=echo --args "text=Hello, world"
 ``` 
 
 How do we consume that queued echo command?

@@ -7,7 +7,7 @@ namespace InEngine.Core.Queuing.Commands
 {
     public class Publish : AbstractCommand
     {
-        [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core.dll")]
+        [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core")]
         public string CommandPlugin { get; set; }
 
         [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo.")]
@@ -30,7 +30,7 @@ namespace InEngine.Core.Queuing.Commands
             var command = Command;
 
             if (command == null && !string.IsNullOrWhiteSpace(CommandPlugin)) {
-                var plugin = PluginAssembly.LoadFrom(CommandPlugin);
+                var plugin = PluginAssembly.LoadFrom($"{CommandPlugin}.dll");
                 if (!string.IsNullOrWhiteSpace(CommandClass))
                     command = plugin.CreateCommandFromClass(CommandClass);
                 else if (!string.IsNullOrWhiteSpace(CommandVerb)) {

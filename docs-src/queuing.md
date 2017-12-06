@@ -158,19 +158,19 @@ Note that all queue commands reside in the **InEngine.Core** plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:
 
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=MyCommandPlugin.dll --command-class=MyCommand --args "text=bar"
+inengine.exe -pInEngine.Core queue:publish --command-plugin=MyCommandPlugin --command-class=MyCommand --args "text=bar"
 ```
 
 There is an "Echo" command in the *InEngine.Core* package. It is useful for end-to-end testing with the queue feature.
  
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --command-class=InEngine.Core.Commands.Echo --args "text=foo"
+inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-class=InEngine.Core.Commands.Echo --args "text=foo"
 ```
 
 The command verb can also be specified instead of the full class name:
  
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core.dll --command-verb=echo--args "text=foo"
+inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-verb=echo--args "text=foo"
 ```
 
 ## Consuming Commands

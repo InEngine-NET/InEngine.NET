@@ -235,7 +235,7 @@ InEngine 3.x
 Copyright © 2017 Ethan Hann
 
   --command-plugin    Required. The name of a command plugin file, e.g. 
-                      InEngine.Core.dll
+                      InEngine.Core
 
   --command-verb      A plugin command verb, e.g. echo
 
