@@ -49,10 +49,8 @@ namespace MyCommandPlugin
 
 ## Run a Command
 
-Create a class that implements **InEngine.Core.IOptions** in the same assembly as the command class.
+Create a class that extends **InEngine.Core.AbstractPlugin** in the same assembly as the command class.
 Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. 
-Optional help text can also be specified in the VerbOption attribute.
-The help text can be auto-generated from the attribute or manually specified in the GetUsage method if desired.
 
 ```c#
 using CommandLine;
@@ -61,16 +59,10 @@ using InEngine.Core;
 
 namespace MyCommandPlugin
 {
-    public class MyOptions : IOptions
+    public class MyOptions : AbstractPlugin
     {
         [VerbOption("my-command", HelpText="My example command.")]
         public MyCommand MyCommand { get; set; }
-
-        [HelpVerbOption]
-        public string GetUsage(string verb)
-        {
-            return HelpText.AutoBuild(this, verb);
-        }
     }
 }
 ```

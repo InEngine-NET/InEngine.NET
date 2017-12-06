@@ -36,6 +36,7 @@
     <Folder Include="Scheduling\Commands\" />
     <Folder Include="Queuing\LifeCycle\" />
     <Folder Include="Queuing\Message\" />
+    <Folder Include="Scheduling\LifeCycle\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ComponentModel.DataAnnotations" />

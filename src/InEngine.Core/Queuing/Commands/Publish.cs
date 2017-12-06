@@ -30,7 +30,7 @@ namespace InEngine.Core.Queuing.Commands
             var command = Command;
 
             if (command == null && !string.IsNullOrWhiteSpace(CommandPlugin)) {
-                var plugin = Plugin.LoadFrom(CommandPlugin);
+                var plugin = PluginAssembly.LoadFrom(CommandPlugin);
                 if (!string.IsNullOrWhiteSpace(CommandClass))
                     command = plugin.CreateCommandFromClass(CommandClass);
                 else if (!string.IsNullOrWhiteSpace(CommandVerb)) {

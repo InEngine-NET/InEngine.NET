@@ -30,7 +30,7 @@ namespace InEngine
 
         public void Interpret(string[] args)
         {
-            var plugins = Plugin.Load<AbstractPlugin>();
+            var plugins = PluginAssembly.Load<AbstractPlugin>();
             var parser = new Parser(with => {
                 with.IgnoreUnknownArguments = true;
                 with.MutuallyExclusive = true;
@@ -136,7 +136,7 @@ namespace InEngine
                 ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
         }
 
-        public void PrintPluginHelpTextAndExit(Plugin plugin, List<AbstractPlugin> pluginOptionList, string[] pluginArgs)
+        public void PrintPluginHelpTextAndExit(PluginAssembly plugin, List<AbstractPlugin> pluginOptionList, string[] pluginArgs)
         {
             Write.Info(CliLogo);
             Write.Warning("Plugin: ");
@@ -163,7 +163,7 @@ namespace InEngine
             ExitWithSuccess();
         }
 
-        public void PrintInEngineHelpTextAndExit(List<Plugin> plugins, Options options)
+        public void PrintInEngineHelpTextAndExit(List<PluginAssembly> plugins, Options options)
         {
             Write.Info(CliLogo);
             Write.Warning("Usage:");

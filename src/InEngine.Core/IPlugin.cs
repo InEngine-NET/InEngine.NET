@@ -2,7 +2,7 @@
 
 namespace InEngine.Core
 {
-    public interface IPluginType
+    public interface IPlugin
     {
         void Schedule(ISchedule schedule);
         string GetUsage(string verb);

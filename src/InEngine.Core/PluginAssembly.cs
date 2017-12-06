@@ -8,23 +8,23 @@ using InEngine.Core.Exceptions;
 
 namespace InEngine.Core
 {
-    public class Plugin
+    public class PluginAssembly
     {
         public Assembly Assembly { get; set; }
         public string Name { get { return Assembly.GetName().Name; } }
         public string Version { get { return Assembly.GetName().Version.ToString(); } }
 
-        public Plugin(Assembly assembly)
+        public PluginAssembly(Assembly assembly)
         {
             Assembly = assembly;
         }
 
-        public static Plugin LoadFrom(string assemblyPath)
+        public static PluginAssembly LoadFrom(string assemblyPath)
         {
             var path = Path.Combine(InEngineSettings.BasePath, assemblyPath);
             try
             {
-                return new Plugin(Assembly.LoadFrom(path));   
+                return new PluginAssembly(Assembly.LoadFrom(path));   
             }
             catch (Exception exception)
             {
@@ -32,7 +32,7 @@ namespace InEngine.Core
             }
         }
 
-        public List<T> Make<T>() where T : class, IPluginType
+        public List<T> Make<T>() where T : class, IPlugin
         {
             return Assembly
                 .GetTypes()
@@ -41,12 +41,12 @@ namespace InEngine.Core
                 .ToList();
         }
 
-        public static List<Plugin> Load<T>() where T : IPluginType
+        public static List<PluginAssembly> Load<T>() where T : IPlugin
         {
-            var pluginList = new List<Plugin>();
+            var pluginList = new List<PluginAssembly>();
             try
             {
-                pluginList.Add(new Plugin(Assembly.GetExecutingAssembly()));    
+                pluginList.Add(new PluginAssembly(Assembly.GetExecutingAssembly()));    
             } 
             catch (Exception exception)
             {
@@ -62,7 +62,7 @@ namespace InEngine.Core
                 try
                 {
                     if (assembly.GetTypes().Any(y => y.IsClass && typeof(T).IsAssignableFrom(y)))
-                        pluginList.Add(new Plugin(assembly));
+                        pluginList.Add(new PluginAssembly(assembly));
                 }
                 catch (Exception exception)
                 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InEngine.Core.Scheduling
+namespace InEngine.Core.Scheduling.LifeCycle
 {
     public class LifeCycleActions : IScheduleLifeCycleActions
     {

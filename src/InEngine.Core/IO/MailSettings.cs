@@ -1,4 +1,4 @@
-﻿namespace InEngine.Core
+﻿namespace InEngine.Core.IO
 {
     public class MailSettings
     {

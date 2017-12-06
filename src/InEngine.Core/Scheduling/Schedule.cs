@@ -60,8 +60,8 @@ namespace InEngine.Core.Scheduling
 
         public void Initialize()
         {
-            Plugin.Load<IPluginType>().ForEach(x => {
-                x.Make<IPluginType>().ForEach(y => y.Schedule(this));
+            PluginAssembly.Load<IPlugin>().ForEach(x => {
+                x.Make<IPlugin>().ForEach(y => y.Schedule(this));
             });
 
             JobGroups.AsEnumerable().ToList().ForEach(x => {

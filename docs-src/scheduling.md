@@ -15,7 +15,7 @@ Another advantage is that there is no overhead from managing additional state in
 
 ## Scheduling a Command
 
-A job schedule is created by adding a class to your plugin assembly that implements the **InEngine.Core.ICommandSchedule** interface.
+A job schedule is created by adding a class to a plugin assembly that extends the **InEngine.Core.AbstractPlugin** class.
 
 This is a simple example:
 
@@ -25,9 +25,9 @@ using InEngine.Core;
 
 namespace MyCommandPlugin
 {
-    public class CommandSchedule : ICommandSchedule
+    public class MySchedulePlugin : AbstractPlugin
     {
-        public void Schedule(ISchedule schedule)
+        public override void Schedule(ISchedule schedule)
         {
             // Schedule some jobs
         }
@@ -36,7 +36,7 @@ namespace MyCommandPlugin
 ```
 
 The InEngine.NET scheduler automatically discovers this class in your plugin assembly.
-It will call the **ICommandSchedule.Schedule** method with an initialized **InEngine.Scheduling.Schedule** object.
+It will call the **AbstractPlugin.Schedule** method with an initialized **InEngine.Scheduling.Schedule** object.
 
 This is a command schedule class with a few scheduling examples:
 
@@ -46,9 +46,9 @@ using InEngine.Core;
 
 namespace MyCommandPlugin
 {
-    public class CommandSchedule : ICommandSchedule
+    public class MySchedulePlugin : AbstractPlugin
     {
-        public void Schedule(ISchedule schedule)
+        public override void Schedule(ISchedule schedule)
         {
             /* 
              * Run MyCommand every five minutes. 

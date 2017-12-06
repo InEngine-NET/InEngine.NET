@@ -5,7 +5,7 @@ using InEngine.Core.Scheduling;
 
 namespace InEngine.Core
 {
-    public class AbstractPlugin : IPluginType
+    public class AbstractPlugin : IPlugin
     {
         public virtual void Schedule(ISchedule schedule)
         {}
