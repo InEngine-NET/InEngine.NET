@@ -82,7 +82,7 @@ namespace InEngine.Core
         public AbstractCommand CreateCommandFromVerb(string verbName)
         {
             var commandClassNames = new List<string>();
-            var optionsList = Make<IOptions>();
+            var optionsList = Make<AbstractPlugin>();
 
             foreach (var options in optionsList)
                 foreach (var property in options.GetType().GetProperties())

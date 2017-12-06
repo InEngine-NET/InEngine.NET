@@ -30,7 +30,7 @@ namespace InEngine
 
         public void Interpret(string[] args)
         {
-            var plugins = Plugin.Load<IOptions>();
+            var plugins = Plugin.Load<AbstractPlugin>();
             var parser = new Parser(with => {
                 with.IgnoreUnknownArguments = true;
                 with.MutuallyExclusive = true;
@@ -59,7 +59,7 @@ namespace InEngine
                 if (plugin == null)
                     ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
-                var pluginOptionList = plugin.Make<IOptions>();
+                var pluginOptionList = plugin.Make<AbstractPlugin>();
 
                 var pluginArgs = args.Skip(1).ToArray();
 
@@ -110,7 +110,7 @@ namespace InEngine
             return $"✘ {message}";
         }
 
-        public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
+        public void InterpretPluginArguments(string[] pluginArgs, AbstractPlugin pluginOptions)
         {
             var isSuccessful = Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
                 try
@@ -136,7 +136,7 @@ namespace InEngine
                 ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
         }
 
-        public void PrintPluginHelpTextAndExit(Plugin plugin, List<IOptions> pluginOptionList, string[] pluginArgs)
+        public void PrintPluginHelpTextAndExit(Plugin plugin, List<AbstractPlugin> pluginOptionList, string[] pluginArgs)
         {
             Write.Info(CliLogo);
             Write.Warning("Plugin: ");

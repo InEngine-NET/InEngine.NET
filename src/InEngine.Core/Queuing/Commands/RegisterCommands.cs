@@ -1,10 +1,9 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using InEngine.Core.Queuing.Commands;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing.Commands
 {
-    public class Options : IOptions
+    public class RegisterCommands : AbstractPlugin
     {
         [VerbOption("queue:publish", HelpText = "Publish a command commandEnvelope to a queue.")]
         public Publish Publish { get; set; }
@@ -23,11 +22,5 @@ namespace InEngine.Core.Queuing
 
         [VerbOption("queue:peek", HelpText = "Peek at messages in the primary or secondary queues.")]
         public Peek Peek { get; set; }
-
-        [HelpVerbOption]
-        public string GetUsage(string verb)
-        {
-            return HelpText.AutoBuild(this, verb);
-        }
     }
 }
