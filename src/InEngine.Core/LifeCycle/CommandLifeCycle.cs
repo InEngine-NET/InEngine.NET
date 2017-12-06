@@ -2,7 +2,7 @@
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 
-namespace InEngine.Core
+namespace InEngine.Core.LifeCycle
 {
     public class CommandLifeCycle
     {

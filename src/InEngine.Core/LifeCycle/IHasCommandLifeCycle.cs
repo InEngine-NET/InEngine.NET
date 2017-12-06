@@ -1,7 +1,7 @@
 ﻿using System;
 using InEngine.Core.Scheduling;
 
-namespace InEngine.Core
+namespace InEngine.Core.LifeCycle
 {
     public interface IHasCommandLifeCycle
     {

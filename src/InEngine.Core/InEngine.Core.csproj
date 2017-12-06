@@ -37,6 +37,7 @@
     <Folder Include="Queuing\LifeCycle\" />
     <Folder Include="Queuing\Message\" />
     <Folder Include="Scheduling\LifeCycle\" />
+    <Folder Include="LifeCycle\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ComponentModel.DataAnnotations" />
