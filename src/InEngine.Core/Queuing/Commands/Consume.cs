@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using CommandLine;
+using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Commands
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
+using InEngine.Core.Queuing.Message;
 using Konsole.Forms;
 
 namespace InEngine.Core.Queuing.Commands

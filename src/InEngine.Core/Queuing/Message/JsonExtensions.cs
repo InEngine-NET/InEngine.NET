@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace InEngine.Core
+namespace InEngine.Core.Queuing.Message
 {
     static class JsonExtensions
     {

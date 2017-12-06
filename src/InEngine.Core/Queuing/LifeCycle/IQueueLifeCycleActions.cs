@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing.LifeCycle
 {
     public interface IQueueLifeCycleActions : IDispatch
     {

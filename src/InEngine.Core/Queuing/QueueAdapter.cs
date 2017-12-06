@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
-using Konsole.Forms;
-using Newtonsoft.Json;
-using Quartz;
+using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing
 {
@@ -57,11 +55,7 @@ namespace InEngine.Core.Queuing
             var commandType = Type.GetType($"{commandEnvelope.CommandClassName}, {commandEnvelope.CommandAssemblyName}");
             if (commandType == null)
                 throw new CommandFailedException($"Could not locate command {commandEnvelope.CommandClassName}. Is the {commandEnvelope.CommandAssemblyName} plugin registered in the settings file?");
-            return JsonConvert.DeserializeObject(
-                commandEnvelope.IsCompressed ? commandEnvelope.SerializedCommand.Decompress() : commandEnvelope.SerializedCommand,
-                commandType,
-                new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects }
-            ) as AbstractCommand;
+            return commandEnvelope.SerializedCommand.DeserializeFromJson<AbstractCommand>(commandEnvelope.IsCompressed);
         }
 
         public long GetPendingQueueLength()

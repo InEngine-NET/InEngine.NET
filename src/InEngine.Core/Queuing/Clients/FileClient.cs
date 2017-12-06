@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using InEngine.Core.Exceptions;
-using Quartz;
+using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {

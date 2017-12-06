@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using InEngine.Core.Exceptions;
-using InEngine.Core.IO;
+using InEngine.Core.Queuing.Message;
 using StackExchange.Redis;
 
 namespace InEngine.Core.Queuing.Clients

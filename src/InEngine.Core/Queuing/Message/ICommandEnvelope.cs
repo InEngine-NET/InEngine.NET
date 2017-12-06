@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing.Message
 {
     public interface ICommandEnvelope
     {

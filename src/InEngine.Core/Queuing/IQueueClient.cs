@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing
 {
