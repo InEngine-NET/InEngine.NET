@@ -5,7 +5,7 @@ using InEngine.Core.Scheduling;
 
 namespace InEngine.Core.Queuing
 {
-    public class CommandSchedule : ICommandSchedule
+    public class CommandSchedule : AbstractCommand
     {
         public void Schedule(ISchedule schedule)
         {
