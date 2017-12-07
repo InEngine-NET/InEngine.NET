@@ -30,7 +30,7 @@ namespace InEngine
 
         public void Interpret(string[] args)
         {
-            var plugins = PluginAssembly.Load<AbstractPlugin>();
+            var pluginAssemblies = PluginAssembly.Load<AbstractPlugin>();
             var parser = new Parser(with => {
                 with.IgnoreUnknownArguments = true;
                 with.MutuallyExclusive = true;
@@ -43,7 +43,7 @@ namespace InEngine
                     ExitWithFailure("Could not parse arguments.");
 
                 if (!args.Any())
-                    PrintInEngineHelpTextAndExit(plugins, options);
+                    PrintInEngineHelpTextAndExit(pluginAssemblies, options);
 
                 InEngineSettings.ConfigurationFile = options.ConfigurationFile;
 
@@ -55,7 +55,9 @@ namespace InEngine
                     ExitWithSuccess();
                 }
 
-                var plugin = plugins.FirstOrDefault(x => x.Name == options.PluginName);
+
+                var plugin = pluginAssemblies.FirstOrDefault(x => x.Name == options.PluginName);
+
                 if (plugin == null)
                     ExitWithFailure("Plugin does not exist: " + options.PluginName);
                 
@@ -166,11 +168,11 @@ namespace InEngine
         public void PrintInEngineHelpTextAndExit(List<PluginAssembly> plugins, Options options)
         {
             Write.Info(CliLogo);
-            Write.Warning("Usage:");
             Write.Text(options.GetUsage(""));
             Write.Newline();
             Write.Warning("Plugins:");
-            plugins.ForEach(x => Console.WriteLine($"  {x.Name}"));
+            plugins.ForEach(x => Write.Line($"  {x.Name}"));
+            Write.Newline(2);
             ExitWithSuccess();   
         }
     }
