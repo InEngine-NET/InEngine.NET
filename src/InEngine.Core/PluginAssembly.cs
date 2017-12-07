@@ -37,7 +37,7 @@ namespace InEngine.Core
         {
             return Assembly
                 .GetTypes()
-                .Where(x => x.IsClass && typeof(T).IsAssignableFrom(x))
+                .Where(x => x.IsClass && typeof(T).IsAssignableFrom(x) && !x.IsAbstract)
                 .Select(x => Assembly.CreateInstance(x.FullName) as T)
                 .ToList();
         }
@@ -62,7 +62,7 @@ namespace InEngine.Core
             {
                 try
                 {
-                    if (assembly.GetTypes().Any(y => y.IsClass && typeof(T).IsAssignableFrom(y)))
+                    if (assembly.GetTypes().Any(x => x.IsClass && typeof(T).IsAssignableFrom(x) && !x.IsAbstract))
                         pluginList.Add(new PluginAssembly(assembly));
                 }
                 catch (Exception exception)

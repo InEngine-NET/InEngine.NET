@@ -159,17 +159,42 @@ namespace InEngine
             ExitWithSuccess();
         }
 
-        public void PrintInEngineHelpTextAndExit(List<PluginAssembly> plugins, Options options)
+        public void PrintInEngineHelpTextAndExit(List<PluginAssembly> pluginAssemblies, Options options)
         {
             Write.Info(CliLogo);
             Write.Text(options.GetUsage(""));
-            plugins.ForEach(x => {
-                Write.Warning(x.Name);
-                x.Plugins.ForEach(y => {
-                    Write.Line(string.Join(Environment.NewLine, y.GetUsageWithoutHeader().Split('\n').Where(s => !string.IsNullOrWhiteSpace(s))))
-                         .Newline();
+
+            /*
+             * Compute the max width of a command verb name to allow for proper padding.
+             */
+            var maxWidth = 0;
+            pluginAssemblies.ForEach(pluginAssembly => {
+                pluginAssembly.Plugins.ForEach(plugin => {
+                    foreach (var verb in plugin.GetVerbOptions())
+                        if (verb.LongName != null && verb.LongName.Length > maxWidth)
+                            maxWidth = verb.LongName.Length;
                 });
             });
+
+            /*
+             * Print out each plugin's commands.
+             */
+            pluginAssemblies.ForEach(pluginAssembly => {
+                Write.Warning(pluginAssembly.Name);
+                pluginAssembly
+                    .Plugins
+                    .OrderBy(x => x.GetType().Name)
+                    .ToList()
+                    .ForEach(plugin => {
+                        plugin.GetVerbOptions().ToList().ForEach(verb => {
+                            var name = (verb.LongName ?? "");
+                            var padding = new string(' ', maxWidth - name.Length + 2);
+                            Write.InfoText($"  {name}")
+                                 .Line(padding + (verb.HelpText ?? ""));
+                        });
+                    });
+            });
+
             ExitWithSuccess();
         }
     }

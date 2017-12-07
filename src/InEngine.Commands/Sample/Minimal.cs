@@ -11,7 +11,7 @@ namespace InEngine.Commands.Sample
      */
     public class Minimal : AbstractCommand
     {
-        public void Run()
+        public override void Run()
         {
         }
     }
