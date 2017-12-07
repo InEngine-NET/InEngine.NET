@@ -55,30 +55,24 @@ namespace InEngine
                     ExitWithSuccess();
                 }
 
+                var pluginArgs = args.ToArray();
+                var firstPluginArg = pluginArgs.FirstOrDefault();
+                var firstArgIsConf = firstPluginArg.StartsWith("-c", StringComparison.OrdinalIgnoreCase) ||
+                                     firstPluginArg.StartsWith("--configuration", StringComparison.OrdinalIgnoreCase);
 
-                var plugin = pluginAssemblies.FirstOrDefault(x => x.Name == options.PluginName);
-
-                if (plugin == null)
-                    ExitWithFailure("Plugin does not exist: " + options.PluginName);
-                
-                var pluginOptionList = plugin.Make<AbstractPlugin>();
-
-                var pluginArgs = args.Skip(1).ToArray();
-
-                if (!pluginArgs.ToList().Any()) {
-                    PrintPluginHelpTextAndExit(plugin, pluginOptionList, pluginArgs);
-                }
-
-                if (new[] { "-p", "--plugin-name", "-c", "--configuration" }.Any(c => pluginArgs.First().StartsWith("-p", StringComparison.OrdinalIgnoreCase)))
+                if (firstArgIsConf)
                     pluginArgs = pluginArgs.Skip(1).ToArray();
 
-                // Need to remove plugin options    
-                var commandVerbName = pluginArgs.First();
-                foreach (var ops in pluginOptionList)
-                    foreach (var prop in ops.GetType().GetProperties())
-                        foreach (object attr in prop.GetCustomAttributes(true))
-                            if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
-                                    InterpretPluginArguments(pluginArgs, ops);
+                var commandVerbName = pluginArgs.FirstOrDefault();
+
+                foreach(var assembly in pluginAssemblies)
+                    foreach (var ops in assembly.Plugins)
+                        foreach (var prop in ops.GetType().GetProperties())
+                            foreach (object attr in prop.GetCustomAttributes(true))
+                                if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
+                                        InterpretPluginArguments(pluginArgs, ops);
+
+                PrintInEngineHelpTextAndExit(pluginAssemblies, options);
             }
         }
 
@@ -169,11 +163,14 @@ namespace InEngine
         {
             Write.Info(CliLogo);
             Write.Text(options.GetUsage(""));
-            Write.Newline();
-            Write.Warning("Plugins:");
-            plugins.ForEach(x => Write.Line($"  {x.Name}"));
-            Write.Newline(2);
-            ExitWithSuccess();   
+            plugins.ForEach(x => {
+                Write.Warning(x.Name);
+                x.Plugins.ForEach(y => {
+                    Write.Line(string.Join(Environment.NewLine, y.GetUsageWithoutHeader().Split('\n').Where(s => !string.IsNullOrWhiteSpace(s))))
+                         .Newline();
+                });
+            });
+            ExitWithSuccess();
         }
     }
 }

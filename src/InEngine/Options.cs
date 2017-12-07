@@ -5,9 +5,6 @@ namespace InEngine
 {
     public class Options
     {
-        [Option('p', "plugin", HelpText = "Plug-In to activate.")]
-        public string PluginName { get; set; }
-
         [Option('s', "scheduler", HelpText = "Run the scheduler.")]
         public bool ShouldRunScheduler { get; set; }
 

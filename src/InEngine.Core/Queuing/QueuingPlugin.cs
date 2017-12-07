@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CommandLine;
+using CommandLine.Text;
 using InEngine.Core.Queuing.Commands;
 using InEngine.Core.Scheduling;
 

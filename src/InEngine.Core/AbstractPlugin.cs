@@ -11,9 +11,18 @@ namespace InEngine.Core
         {}
 
         [HelpVerbOption]
-        public virtual string GetUsage(string verb)
+        public string GetUsage(string verb)
         {
-            return HelpText.AutoBuild(this, verb);
+            var helpText = HelpText.AutoBuild(this, verb);
+            helpText.Heading = $"{GetType().Assembly.GetName().Name} v{GetType().Assembly.GetName().Version.ToString()}";
+            return helpText;
+        }
+
+        public virtual string GetUsageWithoutHeader()
+        {
+            var helpText = new HelpText();
+            helpText.AddOptions(this);
+            return helpText;
         }
     }
 }

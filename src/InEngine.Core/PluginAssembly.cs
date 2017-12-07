@@ -13,10 +13,11 @@ namespace InEngine.Core
         public Assembly Assembly { get; set; }
         public string Name { get { return Assembly.GetName().Name; } }
         public string Version { get { return Assembly.GetName().Version.ToString(); } }
-
+        public List<AbstractPlugin> Plugins { get; set; }
         public PluginAssembly(Assembly assembly)
         {
             Assembly = assembly;
+            Plugins = Make<AbstractPlugin>();
         }
 
         public static PluginAssembly LoadFrom(string assemblyPath)
