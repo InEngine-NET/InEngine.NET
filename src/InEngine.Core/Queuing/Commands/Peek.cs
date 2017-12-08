@@ -10,11 +10,11 @@ namespace InEngine.Core.Queuing.Commands
 {
     public class Peek : AbstractCommand
     {
-        [Option("from", DefaultValue = 0, HelpText = "The first commandEnvelope to peek at (0-indexed).")]
+        [Option("from", DefaultValue = 0, HelpText = "The first command to peek at (0-indexed).")]
         public long From { get; set; } = 0;
 
-        [Option("to", DefaultValue = 10, HelpText = "The last commandEnvelope to peek at.")]
-        public long To { get; set; } = 10;
+        [Option("to", DefaultValue = 9, HelpText = "The last command to peek at.")]
+        public long To { get; set; } = 9;
 
         [Option("json", HelpText = "View the messages as JSON.")]
         public bool JsonFormat { get; set; }
