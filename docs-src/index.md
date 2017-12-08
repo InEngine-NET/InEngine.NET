@@ -10,12 +10,12 @@ Get started by pulling the binaries from the [latest release](https://github.com
 Then run a command the **echo** command from the core plugin:
 
 ```bash
-inengine.exe -pInEngine.Core echo --text"Hello, world"
+inengine.exe echo --text"Hello, world"
 ```
 Or if you're a Linux or Mac OS X fan (like me!), use the **inengine** shell script ([Mono](http://www.mono-project.com/download/) is required):
 
 ```bash
-inengine -pInEngine.Core echo --text"Hello, world"
+inengine echo --text"Hello, world"
 ```
 
 Instead of downloading binaries and runtimes, you can pull the latest Docker image:
@@ -27,7 +27,7 @@ docker pull ethanhann/inengine:latest
 Now run a command in a container:
 
 ```bash
-docker run --rm inengine -pInEngine.Core echo --text"Hello, world"
+docker run --rm inengine echo --text"Hello, world"
 ``` 
 
 ## How does queueing work?
@@ -39,7 +39,7 @@ Want to queue our example echo command to run in the background or possibly on a
 Use the core plugin's **queue:publish** command:
 
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-verb=echo --args "text=Hello, world"
+inengine.exe queue:publish --command-plugin=InEngine.Core --command-verb=echo --args "text=Hello, world"
 ``` 
 
 How do we consume that queued echo command?
@@ -47,7 +47,7 @@ How do we consume that queued echo command?
 Use the core plugin's **queue:consume** command of course:
 
 ```bash
-inengine.exe -pInEngine.Core queue:consume
+inengine.exe queue:consume
 ``` 
 
 ## How do I run non-.NET commands?
@@ -63,5 +63,5 @@ print 'Hello, world!'
 Now execute it with the **proc** command:
 
 ```bash
-inengine -pInEngine.Core proc --command=/usr/bin/python --args=helloworld.py
+inengine proc --command=/usr/bin/python --args=helloworld.py
 ```

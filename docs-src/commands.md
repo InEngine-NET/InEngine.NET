@@ -59,7 +59,7 @@ using InEngine.Core;
 
 namespace MyCommandPlugin
 {
-    public class MyOptions : AbstractPlugin
+    public class MyPlugin : AbstractPlugin
     {
         [VerbOption("my-command", HelpText="My example command.")]
         public MyCommand MyCommand { get; set; }
@@ -75,7 +75,7 @@ Add your plugin to the ["Plugins" list in appsettings.config](configuration) at 
 Run your command:
 
 ```bash
-inengine.exe -pMyCommandPlugin my-command
+inengine.exe my-command
 ```
 
 ### Writing Output
@@ -154,78 +154,30 @@ Arbitrary commands can be run, with an argument list by leveraging the InEngine.
 The command lists directory contents using "ls" with the "-lhp" switches:
 
 ```bash
-inengine.exe -pInEngine.Core proc -c"/bin/ls" -a"-lhp"
+inengine.exe proc -c"/bin/ls" -a"-lhp"
 ```
 
-## View Available Plugins
+## View Commands
 
-Run inengine.exe without any arguments to see a list of plugins:
-
-```text
-  ___       _____             _              _   _ _____ _____ 
- |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
-  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
-  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
- |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
-                        |___/ 
-
-Usage:
-InEngine 3.x
-Copyright © 2017 Ethan Hann
-
-  p, plugin           Plug-In to activate.
-
-  s, scheduler        Run the scheduler.
-
-  c, configuration    (Default: ./appsettings.json) The path to the 
-                      configuration file.
-
-
-Plugins:
-  InEngine.Core
-```
-
-## View Commands in a Plugin
-
-Run inengine.exe with only the plugin specified:
+Run inengine.exe with no arguments to see a list of commands:
 
 ```bash
-inengine.exe -pInEngine.Core
+inengine.exe
 ```
 
-The **InEngine.Core** library is itself a plugin that contains queue-related and other commands. 
-As an example, this is the help output for the core plugin.
-
-```text
-  ___       _____             _              _   _ _____ _____ 
- |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
-  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
-  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
- |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
-                        |___/ 
-
-Plugin: 
-  Name:    InEngine.Core
-  Version: 3.x
+![InEngine Command List](/images/inengine.png)
 
 
-Commands:
-  queue:publish     Publish a command message to a queue.
-  queue:consume     Consume one or more command messages from the queue.
-  queue:length      Get the number of messages in the primary and secondary queues.
-  queue:flush       Clear the primary or secondary queues.
-  queue:republish   Republish failed messages to the queue.
-  queue:peek        Peek at messages in the primary or secondary queues.
-  echo              Echo some text to the console. Useful for end-to-end testing.
-  proc              Launch an arbitrary process.
-```
+!!! note "InEngine.Core is a Plugin"
+    The **InEngine.Core** library is itself a plugin that contains queueing, scheduling, and other commands. 
 
-## Print Help Text for a Plugin's Commands
+
+## View a Command's Help Text
 
 Run the command with the -h or --help arguments.
 
 ```bash
-inengine.exe -pInEngine.Core queue:publish -h
+inengine.exe queue:publish -h
 ```
 
 The **InEngine.Core** plugin's command to clear the InEngine.NET queues produces this help message. 

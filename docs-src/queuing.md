@@ -158,19 +158,19 @@ Note that all queue commands reside in the **InEngine.Core** plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:
 
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=MyCommandPlugin --command-class=MyCommand --args "text=bar"
+inengine.exe queue:publish --command-plugin=MyCommandPlugin --command-class=MyCommand --args "text=bar"
 ```
 
 There is an "Echo" command in the *InEngine.Core* package. It is useful for end-to-end testing with the queue feature.
  
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-class=InEngine.Core.Commands.Echo --args "text=foo"
+inengine.exe queue:publish --command-plugin=InEngine.Core --command-class=InEngine.Core.Commands.Echo --args "text=foo"
 ```
 
 The command verb can also be specified instead of the full class name:
  
 ```bash
-inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --command-verb=echo--args "text=foo"
+inengine.exe queue:publish --command-plugin=InEngine.Core --command-verb=echo--args "text=foo"
 ```
 
 ## Consuming Commands
@@ -180,13 +180,13 @@ inengine.exe -pInEngine.Core queue:publish --command-plugin=InEngine.Core --comm
 Commands can be consumed from the command line with this simple command:
 
 ```bash
-inengine.exe -pInEngine.Core queue:consume
+inengine.exe queue:consume
 ```
 
 Use the **--secondary** argument to consume the secondary queue instead of the primary queue:
 
 ```bash
-inengine.exe -pInEngine.Core queue:consume --secondary
+inengine.exe queue:consume --secondary
 ```
 
 ### With the Scheduler
@@ -219,7 +219,7 @@ new Consume {
 The **queue:length** command shows a quick summary of pending, in-progress, and failed commands in the primary and secondary queues:
 
 ```bash
-inengine.exe -pInEngine.Core queue:length
+inengine.exe queue:length
 ```
 
 ### Peek at Queued Commands
@@ -227,32 +227,32 @@ inengine.exe -pInEngine.Core queue:length
 The **queue:peek** command allows for queued commands to be inspected:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --in-progress --failed
+inengine.exe queue:peek --pending --in-progress --failed
 ```  
 
 It is of course possible to peek in the secondary queues:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --secondary
+inengine.exe queue:peek --pending --secondary
 ```
 
 Queued commands can be viewed in JSON which maybe useful for debugging:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --json
+inengine.exe queue:peek --pending --json
 ```  
 
 By default, up to the first 10 messages will be retrieved, but the range is configurable:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --to=100
+inengine.exe queue:peek --pending --to=100
 ```
 
 A slice of the queue can be retrieved using the from argument.
 For example, this queue:peek call retrieves the 100-200 queued commands:
 
 ```bash
-inengine.exe -pInEngine.Core queue:peek --pending --from=100 --to=200
+inengine.exe queue:peek --pending --from=100 --to=200
 ```
 
 ## Re-queuing Failed Commands
@@ -261,20 +261,20 @@ Commands that throw an exception are put in a special "failed" queue.
 They can be republished with the **queue:republish** command:
 
 ```bash
-inengine.exe -pInEngine.Core queue:republish
+inengine.exe queue:republish
 ```
 
 Failed secondary queue commands can be republished as well:
 
 ```bash
-inengine.exe -pInEngine.Core queue:republish --secondary
+inengine.exe queue:republish --secondary
 ```
 
 By default, only 100 failed commands are republished at a time.
 The is configurable:
 
 ```bash
-inengine.exe -pInEngine.Core queue:republish --limit=1000
+inengine.exe queue:republish --limit=1000
 ```
 
 ## Primary and Secondary Queue
@@ -289,7 +289,7 @@ If it is desirable, different [configuration files](configuration) can be used t
 Simply create a new config file with a new QueueName setting and point inengine.exe at it with the -c argument:
 
 ```bash
-inengine.exe -cMyCustomSettingsFile.json -pInEngine.Core queue:consume
+inengine.exe -cMyCustomSettingsFile.json queue:consume
 ```
 
 ## Message Compression
