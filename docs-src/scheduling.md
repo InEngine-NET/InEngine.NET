@@ -6,6 +6,7 @@ Scheduled commands are different from queued commands.
 A command is queued when it is desirable to run the command once, as soon as possible.
 Queued commands are typically configured right before being dispatched.
 A command is scheduled when is it is desirable to run the command many times, on a definite schedule.
+Scheduled commands are configured when their schedule is defined, in code. 
 
 InEngine.NET takes a strictly programmatic approach to defining a schedule.
 A command schedule is defined in code, not in an external data store.
