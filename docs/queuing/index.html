@@ -175,13 +175,16 @@
     <ul class="md-tabs__list">
       
         
-  <li class="md-tabs__item">
-    
-      <a href=".." title="Quickstart" class="md-tabs__link">
-        Quickstart
-      </a>
-    
-  </li>
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href=".." title="Home" class="md-tabs__link">
+          Home
+        </a>
+      
+    </li>
+  
 
       
         
@@ -247,10 +250,46 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Home
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Home
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href=".." title="Quickstart" class="md-nav__link">
       Quickstart
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -366,8 +405,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#publishing-commands" title="Publishing Commands" class="md-nav__link">
-    Publishing Commands
+  <a href="#enqueuing-commands" title="Enqueuing Commands" class="md-nav__link">
+    Enqueuing Commands
   </a>
   
     <nav class="md-nav">
@@ -395,6 +434,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#with-life-cycle-methods" title="With Life Cycle Methods" class="md-nav__link">
+    With Life Cycle Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#from-the-command-line" title="From the Command Line" class="md-nav__link">
     From the Command Line
   </a>
@@ -415,13 +461,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code" title="From Code" class="md-nav__link">
-    From Code
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#from-the-command-line_1" title="From the Command Line" class="md-nav__link">
     From the Command Line
   </a>
@@ -431,6 +470,13 @@
           <li class="md-nav__item">
   <a href="#with-the-scheduler" title="With the Scheduler" class="md-nav__link">
     With the Scheduler
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-code" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -468,8 +514,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-failed-commands" title="Handling Failed Commands" class="md-nav__link">
-    Handling Failed Commands
+  <a href="#re-queuing-failed-commands" title="Re-queuing Failed Commands" class="md-nav__link">
+    Re-queuing Failed Commands
   </a>
   
 </li>
@@ -569,8 +615,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#publishing-commands" title="Publishing Commands" class="md-nav__link">
-    Publishing Commands
+  <a href="#enqueuing-commands" title="Enqueuing Commands" class="md-nav__link">
+    Enqueuing Commands
   </a>
   
     <nav class="md-nav">
@@ -598,6 +644,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#with-life-cycle-methods" title="With Life Cycle Methods" class="md-nav__link">
+    With Life Cycle Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#from-the-command-line" title="From the Command Line" class="md-nav__link">
     From the Command Line
   </a>
@@ -618,13 +671,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#from-code" title="From Code" class="md-nav__link">
-    From Code
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#from-the-command-line_1" title="From the Command Line" class="md-nav__link">
     From the Command Line
   </a>
@@ -634,6 +680,13 @@
           <li class="md-nav__item">
   <a href="#with-the-scheduler" title="With the Scheduler" class="md-nav__link">
     With the Scheduler
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-code" title="From Code" class="md-nav__link">
+    From Code
   </a>
   
 </li>
@@ -671,8 +724,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-failed-commands" title="Handling Failed Commands" class="md-nav__link">
-    Handling Failed Commands
+  <a href="#re-queuing-failed-commands" title="Re-queuing Failed Commands" class="md-nav__link">
+    Re-queuing Failed Commands
   </a>
   
 </li>
@@ -707,10 +760,17 @@
                 
                 
                 <h1 id="queuing">Queuing<a class="headerlink" href="#queuing" title="Permanent link">&para;</a></h1>
-<p>InEngine.NET's queue functionality allows for commands to be run in the background with a simple publish/consume model. </p>
+<p>InEngine.NET's queue functionality allows for commands to be run in the background via a <a href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern">publish/subscribe</a> model.
+A command should be queued when it is desirable to run the command once, as soon as possible, in a background task.</p>
+<p>Queuing is especially important for Web site and applications. 
+Queuing is like the sister technology of caching.
+Caching makes page loads faster when reading data from a database, or serving static assets, by drastically reducing direct database and file system read operations. 
+Queuing makes page loads faster when writing data to a database, or performing other blocking tasks, by pushing them into the background.
+Some common examples are sending emails, importing CSV files into a database, transforming an image file, and processing a shopping cart order.
+It is not appropriate to use queuing if output from the task is needed immediately in the response of a Web request.</p>
 <h2 id="queue-drivers">Queue Drivers<a class="headerlink" href="#queue-drivers" title="Permanent link">&para;</a></h2>
-<p>To make use of queue features, a queue driver must be specified in <a href="../configuration">appsettings.json</a>.
-These are the available drivers...</p>
+<p>To make use of queue features, a queue driver must be specified in <a href="../configuration">appsettings.json</a>.</p>
+<p>These are the available drivers...</p>
 <h3 id="file">File<a class="headerlink" href="#file" title="Permanent link">&para;</a></h3>
 <p>The file driver writes queued messages to the file system. 
 It is useful for testing and development, but probably not suitable for production.</p>
@@ -735,36 +795,41 @@ It is highly recommended to <a href="https://redis.io/topics/security#authentica
 <p>The sync driver causes the publish command to run a published command synchronously.
 All other queue commands and methods are not supported and will throw an exception if called.
 This driver can be useful for plugin development and testing.</p>
-<h2 id="publishing-commands">Publishing Commands<a class="headerlink" href="#publishing-commands" title="Permanent link">&para;</a></h2>
+<h2 id="enqueuing-commands">Enqueuing Commands<a class="headerlink" href="#enqueuing-commands" title="Permanent link">&para;</a></h2>
 <h3 id="with-c-classes">With C# Classes<a class="headerlink" href="#with-c-classes" title="Permanent link">&para;</a></h3>
-<p><a href="../commands">Commands</a> can be published programmatically with the <strong>InEngine.Core.Queuing.Queue</strong> class:</p>
-<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+<p><a href="../commands">Commands</a> can be enqueued programmatically with the <strong>InEngine.Core.Queuing.Enqueue</strong> class:</p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">())</span>
+       <span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
 </pre></div>
 
 
-<p>Or publish to the secondary queue by passing true to the Make method:</p>
-<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+<p>Or enqueue to the secondary queue:</p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">())</span>
+       <span class="p">.</span><span class="n">ToSecondaryQueue</span><span class="p">()</span>
+       <span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
 </pre></div>
 
 
-<div class="admonition note">
-<p class="admonition-title">Do I have to use Queue.Make()?</p>
-<p>Queue.Make() is a factory method that autoloads the queue settings from appsettings.json, creates the appropriate queue driver, and returns an instance of Queue.
-You can create your own Queue object an initialize it if you want.
-At the very least you can assign the object returned by Queue.Make() to a local variable or load it into a DI container for later use.</p>
-</div>
+<p>Enqueue is just a wrapper.
+It is possible to peel back the covers to get to the queue client.</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Enqueue.Command actually returns a life cycle object...</span>
+<span class="kt">var</span> <span class="n">commandToDispatch</span> <span class="p">=</span> <span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">());</span>
+
+<span class="c1">// The life cycle object has a QueueAdapter that can be set...</span>
+<span class="kt">var</span> <span class="n">shouldUseSecondaryQueue</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="n">commandToDispatch</span><span class="p">.</span><span class="n">QueueAdapter</span> <span class="p">=</span> <span class="n">QueueAdapter</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="n">shouldUseSecondaryQueue</span><span class="p">);</span>
+
+<span class="c1">// Now dispatch the command... </span>
+<span class="n">commandToDispatch</span><span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
+</pre></div>
+
+
 <h3 id="with-lambda-expressions">With Lambda Expressions<a class="headerlink" href="#with-lambda-expressions" title="Permanent link">&para;</a></h3>
 <p>Lambda expressions, aka anonymous functions, can be queued.
 The disadvantage to queuing lambdas is that the helpful functionality available in <strong>InEngine.Core.AbstractCommand</strong> is not available.  </p>
 <p>This is how you queue a lambda:</p>
-<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">));</span>
-</pre></div>
-
-
-<p>Here is a neat shortcut for commands without parameters:</p>
-<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">());</span>
-<span class="c1">// Can be rewritten as...</span>
-<span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Publish</span><span class="p">(</span><span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">))</span>
+       <span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
 </pre></div>
 
 
@@ -772,20 +837,47 @@ The disadvantage to queuing lambdas is that the helpful functionality available 
 <p>Chained commands run in the order specified.
 This is useful for when order matters.</p>
 <p>Also, if one command in the chain fails, then subsequent commands are not run at all.
-This affords the opportunity to add additional code that records which command failed, then resuming the command chain where it left off.</p>
-<p>Here is a an example of how to chain an imaginary file transfer command together:</p>
-<div class="codehilite"><pre><span></span><span class="n">Subject</span><span class="p">.</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
-    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath1</span><span class="p">),</span>
-    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath2</span><span class="p">),</span>
-    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath3</span><span class="p">),</span>
-<span class="p">});</span>
+This affords the opportunity to add additional code that records which command failed to notify someone that manual intervention is necessary, 
+or some other error handling functionality.</p>
+<p>Here is a an example of how to chain a series of (imaginary) file transfer commands together:</p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+            <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath1</span><span class="p">),</span>
+            <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath2</span><span class="p">),</span>
+            <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath3</span><span class="p">),</span>
+       <span class="p">})</span>
+       <span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="n">Subject</span><span class="p">.</span><span class="n">Publish</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">AbstractCommand</span><span class="p">&gt;()</span> <span class="p">{</span>
-    <span class="k">new</span> <span class="nf">AlwaysSucceed</span><span class="p">(),</span>
-    <span class="k">new</span> <span class="nf">Echo</span><span class="p">()</span> <span class="p">{</span> <span class="n">VerbatimText</span> <span class="p">=</span> <span class="s">&quot;Hello, world!&quot;</span><span class="p">},</span>
-<span class="p">});</span>
+<p>It is also possible to enqueue a list of different commands:</p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">AbstractCommand</span><span class="p">&gt;()</span> <span class="p">{</span>
+           <span class="k">new</span> <span class="nf">AlwaysSucceed</span><span class="p">(),</span>
+           <span class="k">new</span> <span class="nf">Echo</span><span class="p">()</span> <span class="p">{</span> <span class="n">VerbatimText</span> <span class="p">=</span> <span class="s">&quot;Hello, world!&quot;</span><span class="p">},</span>
+       <span class="p">})</span>
+        <span class="p">.</span><span class="n">Dispatch</span><span class="p">();</span>
+</pre></div>
+
+
+<h3 id="with-life-cycle-methods">With Life Cycle Methods<a class="headerlink" href="#with-life-cycle-methods" title="Permanent link">&para;</a></h3>
+<p>Commands have optional life cycle methods that are initialized when a command is enqueued.
+This is similar to scheduling life cycle methods, but a queue does not have the <strong>Before</strong> and <strong>After</strong> method.
+It has the rest.</p>
+<p>It is often useful to hit a URL before or after the command runs:</p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">())</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">PingBefore</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">PingAfter</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The <strong>AbstractCommand</strong> class has an instance of <strong>InEngine.Core.IO.Write</strong>. 
+This class is more than just a wrapper for <strong>Console.WriteLine</strong>.</p>
+<p>It also allows these life cycle methods to send the command's text output to files or an email:  </p>
+<div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">WriteOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">AppendOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">EmailOutputTo</span><span class="p">(</span><span class="s">&quot;example@inengine.net&quot;</span><span class="p">);</span>
 </pre></div>
 
 
@@ -793,96 +885,98 @@ This affords the opportunity to add additional code that records which command f
 <p>Commands can be published from the command line as well.
 Note that all queue commands reside in the <strong>InEngine.Core</strong> plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>MyCommandPlugin.dll --command-class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>MyCommandPlugin --command-class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
 </pre></div>
 
 
 <p>There is an "Echo" command in the <em>InEngine.Core</em> package. It is useful for end-to-end testing with the queue feature.</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>InEngine.Core.dll --command-class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>InEngine.Core --command-class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
 </pre></div>
 
 
 <p>The command verb can also be specified instead of the full class name:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:publish --command-plugin<span class="o">=</span>InEngine.Core.dll --command-verb<span class="o">=</span>echo--args <span class="s2">&quot;text=foo&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>InEngine.Core --command-verb<span class="o">=</span>echo--args <span class="s2">&quot;text=foo&quot;</span>
 </pre></div>
 
 
 <h2 id="consuming-commands">Consuming Commands<a class="headerlink" href="#consuming-commands" title="Permanent link">&para;</a></h2>
-<h3 id="from-code">From Code<a class="headerlink" href="#from-code" title="Permanent link">&para;</a></h3>
-<p>Consuming a command is also accomplished with the Queue class:</p>
-<div class="codehilite"><pre><span></span><span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">().</span><span class="n">Consume</span><span class="p">();</span>
-</pre></div>
-
-
-<p>The make method takes an optional second argument to indicate if the secondary queue should be used instead of the primary queue.</p>
-<div class="codehilite"><pre><span></span><span class="c1">// Uses secondary queue.</span>
-<span class="n">Queue</span><span class="p">.</span><span class="n">Make</span><span class="p">(</span><span class="k">true</span><span class="p">).</span><span class="n">Consume</span><span class="p">();</span>
-</pre></div>
-
-
-<p>Commands can be consumed from the command line as well with this simple command:</p>
 <h3 id="from-the-command-line_1">From the Command Line<a class="headerlink" href="#from-the-command-line_1" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:consume
+<p>Commands can be consumed from the command line with this simple command:</p>
+<div class="codehilite"><pre><span></span>inengine.exe queue:consume
 </pre></div>
 
 
 <p>Use the <strong>--secondary</strong> argument to consume the secondary queue instead of the primary queue:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:consume --secondary
+<div class="codehilite"><pre><span></span>inengine.exe queue:consume --secondary
 </pre></div>
 
 
 <h3 id="with-the-scheduler">With the Scheduler<a class="headerlink" href="#with-the-scheduler" title="Permanent link">&para;</a></h3>
 <p>The InEngine scheduler is needed to consume queued messages in the background. 
 There are a variety of <a href="../scheduling/#running-the-scheduler">ways to run the scheduler</a>.</p>
+<h3 id="from-code">From Code<a class="headerlink" href="#from-code" title="Permanent link">&para;</a></h3>
+<p>It should (probably) never be necessary to manually consume commands in code, but it is possible. </p>
+<p>Consuming a command is accomplished with the <strong>InEngine.Core.Queuing.Commands.Consume</strong> class:</p>
+<div class="codehilite"><pre><span></span><span class="k">new</span> <span class="nf">Consume</span><span class="p">().</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Or consume the secondary queue:</p>
+<div class="codehilite"><pre><span></span><span class="k">new</span> <span class="n">Consume</span> <span class="p">{</span>
+    <span class="n">UseSecondaryQueue</span> <span class="p">=</span> <span class="k">true</span>
+<span class="p">}.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+
+
 <h2 id="examining-the-queue">Examining the Queue<a class="headerlink" href="#examining-the-queue" title="Permanent link">&para;</a></h2>
 <h3 id="viewing-queue-lengths">Viewing Queue Lengths<a class="headerlink" href="#viewing-queue-lengths" title="Permanent link">&para;</a></h3>
 <p>The <strong>queue:length</strong> command shows a quick summary of pending, in-progress, and failed commands in the primary and secondary queues:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:length
+<div class="codehilite"><pre><span></span>inengine.exe queue:length
 </pre></div>
 
 
 <h3 id="peek-at-queued-commands">Peek at Queued Commands<a class="headerlink" href="#peek-at-queued-commands" title="Permanent link">&para;</a></h3>
 <p>The <strong>queue:peek</strong> command allows for queued commands to be inspected:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --in-progress --failed
+<div class="codehilite"><pre><span></span>inengine.exe queue:peek --pending --in-progress --failed
 </pre></div>
 
 
 <p>It is of course possible to peek in the secondary queues:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --secondary
+<div class="codehilite"><pre><span></span>inengine.exe queue:peek --pending --secondary
 </pre></div>
 
 
 <p>Queued commands can be viewed in JSON which maybe useful for debugging:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --json
+<div class="codehilite"><pre><span></span>inengine.exe queue:peek --pending --json
 </pre></div>
 
 
 <p>By default, up to the first 10 messages will be retrieved, but the range is configurable:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --to<span class="o">=</span><span class="m">100</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:peek --pending --to<span class="o">=</span><span class="m">100</span>
 </pre></div>
 
 
 <p>A slice of the queue can be retrieved using the from argument.
 For example, this queue:peek call retrieves the 100-200 queued commands:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:peek --pending --from<span class="o">=</span><span class="m">100</span> --to<span class="o">=</span><span class="m">200</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:peek --pending --from<span class="o">=</span><span class="m">100</span> --to<span class="o">=</span><span class="m">200</span>
 </pre></div>
 
 
-<h2 id="handling-failed-commands">Handling Failed Commands<a class="headerlink" href="#handling-failed-commands" title="Permanent link">&para;</a></h2>
+<h2 id="re-queuing-failed-commands">Re-queuing Failed Commands<a class="headerlink" href="#re-queuing-failed-commands" title="Permanent link">&para;</a></h2>
 <p>Commands that throw an exception are put in a special "failed" queue. 
 They can be republished with the <strong>queue:republish</strong> command:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish
+<div class="codehilite"><pre><span></span>inengine.exe queue:republish
 </pre></div>
 
 
 <p>Failed secondary queue commands can be republished as well:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish --secondary
+<div class="codehilite"><pre><span></span>inengine.exe queue:republish --secondary
 </pre></div>
 
 
 <p>By default, only 100 failed commands are republished at a time.
 The is configurable:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -pInEngine.Core queue:republish --limit<span class="o">=</span><span class="m">1000</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:republish --limit<span class="o">=</span><span class="m">1000</span>
 </pre></div>
 
 
@@ -894,7 +988,7 @@ while jobs that are expected to finish after only a few moments are sent to the 
 <p>What about 3, 4, or 900 queues? Managing numerous queues gets to be a pain and, practically speaking, is probably unnecessary.
 If it is desirable, different <a href="../configuration">configuration files</a> can be used to run multiple instances of InEngine.NET.
 Simply create a new config file with a new QueueName setting and point inengine.exe at it with the -c argument:</p>
-<div class="codehilite"><pre><span></span>inengine.exe -cMyCustomSettingsFile.json -pInEngine.Core queue:consume
+<div class="codehilite"><pre><span></span>inengine.exe -cMyCustomSettingsFile.json queue:consume
 </pre></div>
 
 

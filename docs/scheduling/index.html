@@ -175,13 +175,16 @@
     <ul class="md-tabs__list">
       
         
-  <li class="md-tabs__item">
-    
-      <a href=".." title="Quickstart" class="md-tabs__link">
-        Quickstart
-      </a>
-    
-  </li>
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href=".." title="Home" class="md-tabs__link">
+          Home
+        </a>
+      
+    </li>
+  
 
       
         
@@ -247,10 +250,46 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Home
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Home
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href=".." title="Quickstart" class="md-nav__link">
       Quickstart
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -324,6 +363,26 @@
     Scheduling a Command
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-a-chain" title="In a Chain" class="md-nav__link">
+    In a Chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-life-cycle-methods" title="With Life Cycle Methods" class="md-nav__link">
+    With Life Cycle Methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -352,26 +411,6 @@
   <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
     On Windows as a Service
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installing" title="Installing" class="md-nav__link">
-    Installing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#uninstalling" title="Uninstalling" class="md-nav__link">
-    Uninstalling
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -484,6 +523,26 @@
     Scheduling a Command
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-a-chain" title="In a Chain" class="md-nav__link">
+    In a Chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-life-cycle-methods" title="With Life Cycle Methods" class="md-nav__link">
+    With Life Cycle Methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -512,26 +571,6 @@
   <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
     On Windows as a Service
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installing" title="Installing" class="md-nav__link">
-    Installing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#uninstalling" title="Uninstalling" class="md-nav__link">
-    Uninstalling
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -598,15 +637,26 @@
                 
                 <h1 id="scheduling">Scheduling<a class="headerlink" href="#scheduling" title="Permanent link">&para;</a></h1>
 <p><a href="../commands">Commands</a> can be run at certain times on recurring schedules.</p>
+<p>Scheduled commands are different from queued commands.
+A command is queued when it is desirable to run the command once, as soon as possible.
+Queued commands are typically configured right before being dispatched.
+A command is scheduled when is it is desirable to run the command many times, on a definite schedule.</p>
+<p>InEngine.NET takes a strictly programmatic approach to defining a schedule.
+A command schedule is defined in code, not in an external data store.
+There are several advantages to this approach.
+One advantage is that the schedule can be versioned alongside the command code.
+Another advantage is that there is no overhead from managing additional state in an external data store.</p>
 <h2 id="scheduling-a-command">Scheduling a Command<a class="headerlink" href="#scheduling-a-command" title="Permanent link">&para;</a></h2>
-<p>A job schedule is created by adding a class to your plugin assembly that implements the <strong>InEngine.Core.IJobs</strong> interface.</p>
+<p>A job schedule is created by adding a class to a plugin assembly that extends the <strong>InEngine.Core.AbstractPlugin</strong> class.</p>
+<p>This is a simple example:</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
 <span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">Jobs</span> <span class="p">:</span> <span class="n">IJobs</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MySchedulePlugin</span> <span class="p">:</span> <span class="n">AbstractPlugin</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">Schedule</span> <span class="n">schedule</span><span class="p">)</span>
+        <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">ISchedule</span> <span class="n">schedule</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="c1">// Schedule some jobs</span>
         <span class="p">}</span>
@@ -615,88 +665,139 @@
 </pre></div>
 
 
-<p>The InEngine.NET scheduler automatically discovers this class.
-It will call the Jobs.Schedule method with an initialized <strong>InEngine.Scheduling.Schedule</strong> object.</p>
+<p>The InEngine.NET scheduler automatically discovers this class in your plugin assembly.
+It will call the <strong>AbstractPlugin.Schedule</strong> method with an initialized <strong>InEngine.Scheduling.Schedule</strong> object.</p>
+<p>This is a command schedule class with a few scheduling examples:</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">MyCommandPlugin</span>
 <span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">Jobs</span> <span class="p">:</span> <span class="n">IJobs</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">MySchedulePlugin</span> <span class="p">:</span> <span class="n">AbstractPlugin</span>
     <span class="p">{</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">Schedule</span> <span class="n">schedule</span><span class="p">)</span>
+        <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Schedule</span><span class="p">(</span><span class="n">ISchedule</span> <span class="n">schedule</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="cm">/* </span>
 <span class="cm">             * Run MyCommand every five minutes. </span>
 <span class="cm">             */</span>
-            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+            <span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
 
             <span class="cm">/* </span>
 <span class="cm">             * Run a lambda expression every ten minutes. </span>
 <span class="cm">             */</span>
-            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">)).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
-
-            <span class="cm">/* </span>
-<span class="cm">             * Run a parameterless method every five minutes. </span>
-<span class="cm">             */</span>
-            <span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Foo</span><span class="p">.</span><span class="n">Bar</span><span class="p">).</span><span class="n">EverySecond</span><span class="p">();</span>
+            <span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">)).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<p>Run a command on a custom cron schedule (in this example every 15 seconds):</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Cron</span><span class="p">(</span><span class="s">&quot;15 * * * * ?&quot;</span><span class="p">);</span>
+<p>A command can be run on a custom cron schedule:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Cron</span><span class="p">(</span><span class="s">&quot;15 * * * * ?&quot;</span><span class="p">);</span>
 </pre></div>
 
 
+<p>There are a number of additional methods for scheduling commands to run on common intervals.</p>
 <p>Run a command every second:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EverySecond</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EverySecond</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command every minute:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryMinute</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryMinute</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command every 5 minutes:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFiveMinutes</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command every 10 minutes:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryTenMinutes</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command every 15 minutes:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFifteenMinutes</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryFifteenMinutes</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command every 30 minutes:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryThirtyMinutes</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">EveryThirtyMinutes</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command hourly:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Hourly</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Hourly</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command hourly at a certain number of minutes past the hour (27 minutes in this example):</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">HourlyAt</span><span class="p">(</span><span class="m">27</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">HourlyAt</span><span class="p">(</span><span class="m">27</span><span class="p">);</span>
 </pre></div>
 
 
 <p>Run a command daily:</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Daily</span><span class="p">();</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">Daily</span><span class="p">();</span>
 </pre></div>
 
 
 <p>Run a command daily at a specific time (at 10:30pm in this example):</p>
-<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Job</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">DailyAt</span><span class="p">(</span><span class="m">22</span><span class="p">,</span> <span class="m">30</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCommand</span><span class="p">()).</span><span class="n">DailyAt</span><span class="p">(</span><span class="m">22</span><span class="p">,</span> <span class="m">30</span><span class="p">);</span>
+</pre></div>
+
+
+<h3 id="in-a-chain">In a Chain<a class="headerlink" href="#in-a-chain" title="Permanent link">&para;</a></h3>
+<p>A group of commands can be scheduled to run as an atomic batch.</p>
+<p>This simple example schedules a group of imaginary file transfer commands to run in a chain:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath1</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath2</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nf">MyFileTransfer</span><span class="p">(</span><span class="n">filePath3</span><span class="p">),</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="n">Daily</span><span class="p">();</span>
+</pre></div>
+
+
+<p>The chain of commands will stop executing if one of them fails.
+The method <strong>Failed</strong> of the command that failed will be called.
+This is a good place to add special logic that will allow the command to be recovered later, 
+or to alert someone that manual intervention is necessary.  </p>
+<h3 id="with-life-cycle-methods">With Life Cycle Methods<a class="headerlink" href="#with-life-cycle-methods" title="Permanent link">&para;</a></h3>
+<p>Commands have optional life cycle methods that are initialized when a command is scheduled.</p>
+<p>The <strong>Before</strong> and <strong>After</strong> methods allow for some custom logic to be called before and after the command is run:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">())</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">Before</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;X refers to the command. Its methods can be used.&quot;</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">After</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;X refers to the command&quot;</span><span class="p">));</span>
+</pre></div>
+
+
+<p>It is often useful to hit a URL before or after as well:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">())</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">PingBefore</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">PingAfter</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The <strong>AbstractCommand</strong> class has an instance of <strong>InEngine.Core.IO.Write</strong>. 
+This class is more than just a wrapper for <strong>Console.WriteLine</strong>.</p>
+<p>It also allows these life cycle methods to send the command's text output to files or an email:  </p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">WriteOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">AppendOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">EmailOutputTo</span><span class="p">(</span><span class="s">&quot;example@inengine.net&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The <strong>Before</strong> and <strong>After</strong> methods allow for some custom logic to be called before and after the command is run:</p>
+<div class="codehilite"><pre><span></span><span class="n">schedule</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">Before</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;X refers to the command. Its methods can be used.&quot;</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">After</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="s">&quot;X refers to the command&quot;</span><span class="p">));</span>
 </pre></div>
 
 
@@ -746,15 +847,13 @@ For example, this command's <strong>Foo</strong> property will be auto-wired to 
 
 
 <h3 id="on-windows-as-a-service">On Windows as a Service<a class="headerlink" href="#on-windows-as-a-service" title="Permanent link">&para;</a></h3>
-<h4 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h4>
-<p>Run the Install.ps1 PowerShell script in the scheduler directory to install the scheduler in place. 
+<p>Run the <strong>Install.ps1</strong> PowerShell script in the scheduler directory to install the scheduler in place. 
 The script needs to be run as an administrator. 
 The script will register the service at the location where the script is run.</p>
 <div class="codehilite"><pre><span></span>ps Install.ps1
 </pre></div>
 
 
-<h4 id="uninstalling">Uninstalling<a class="headerlink" href="#uninstalling" title="Permanent link">&para;</a></h4>
 <p>Simply run the <strong>Uninstall.ps1</strong> script with elevated permissions to remove the service.</p>
 <div class="codehilite"><pre><span></span>ps Uninstall.ps1
 </pre></div>
@@ -771,7 +870,7 @@ It has extensive <a href="http://supervisord.org/index.html">documentation</a>, 
 
 <h4 id="configuring-supervisor">Configuring Supervisor<a class="headerlink" href="#configuring-supervisor" title="Permanent link">&para;</a></h4>
 <p>Supervisor configuration files are stored in the <strong>/etc/supervisor/conf.d</strong> directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called <strong>/etc/supervisor/conf.d/inengine-scheduler.conf</strong>. </p>
-<div class="codehilite"><pre><span></span><span class="k">[program:inengine-scheudler]</span>
+<div class="codehilite"><pre><span></span><span class="k">[program:inengine-scheduler]</span>
 <span class="na">process_name</span><span class="o">=</span><span class="s">%(program_name)s_%(process_num)02d</span>
 <span class="na">directory</span><span class="o">=</span><span class="s">/path/to/scheduler</span>
 <span class="na">command</span><span class="o">=</span><span class="s">mono inengine.exe -s</span>
