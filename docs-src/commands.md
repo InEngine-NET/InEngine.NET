@@ -165,7 +165,7 @@ Run inengine.exe with no arguments to see a list of commands:
 inengine.exe
 ```
 
-![InEngine Command List](/images/inengine.png)
+![InEngine Command List](images/commands.png)
 
 
 !!! note "InEngine.Core is a Plugin"

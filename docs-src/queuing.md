@@ -3,7 +3,7 @@
 InEngine.NET's queue functionality allows for commands to be run in the background via a [publish/subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) model.
 A command should be queued when it is desirable to run the command once, as soon as possible, in a background task.
 
-Queuing is especially important for Web site and applications. 
+Queuing is especially important for Web sites and applications. 
 Queuing is like the sister technology of caching.
 Caching makes page loads faster when reading data from a database, or serving static assets, by drastically reducing direct database and file system read operations. 
 Queuing makes page loads faster when writing data to a database, or performing other blocking tasks, by pushing them into the background.
