@@ -1,7 +1,7 @@
 # Commands
 
 Commands can be C# classes, lambda expressions, or CLI programs.
-They can be queued, scheduled, or from the command line.
+They can be queued, scheduled, or run from the command line.
 
 ## Create a Command
 
