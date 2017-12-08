@@ -1,4 +1,4 @@
-InEngine.NET is a plugin-based software application that allows commands to be [queued](queuing), [scheduled](scheduling), and run directly.
+InEngine.NET is a plugin-based software application that allows [commands](commands) to be [queued](queuing), [scheduled](scheduling), and run directly.
 
 ## How does it work?
 
