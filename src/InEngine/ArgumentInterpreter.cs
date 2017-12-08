@@ -106,16 +106,15 @@ namespace InEngine
             return $"✘ {message}";
         }
 
-        public void InterpretPluginArguments(string[] pluginArgs, AbstractPlugin pluginOptions)
+        public void InterpretPluginArguments(string[] pluginArgs, AbstractPlugin abstractPlugin)
         {
-            var isSuccessful = Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
+            var isSuccessful = Parser.Default.ParseArguments(pluginArgs, abstractPlugin, (verb, subOptions) => {
                 try
-                {
-                    var lastArg = pluginArgs.ToList().LastOrDefault();
-                    if (subOptions == null && (lastArg == "-h" || lastArg == "--help"))
+                { 
+                    if (subOptions == null && (pluginArgs.Contains("-h") || pluginArgs.Contains("--help")))
                         ExitWithSuccess();
                     else if (subOptions == null)
-                        ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
+                        ExitWithFailure("");
                     var command = subOptions as AbstractCommand;
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
