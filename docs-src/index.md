@@ -37,7 +37,7 @@ Want to queue our example echo command to run in the background or possibly on a
 Use the core plugin's **queue:publish** command:
 
 ```bash
-inengine.exe queue:publish --command-plugin=InEngine.Core --command-verb=echo --args "text=Hello, world"
+inengine.exe queue:publish --plugin=InEngine.Core --command=echo --args "text=Hello, world"
 ``` 
 
 How do we consume that queued echo command?
@@ -86,5 +86,5 @@ It opens up the possibility of running shell scripts, ETLs, Java programs, etc. 
 The example python script can be queued:
 
 ```bash
-inengine queue:publish --command-plugin=InEngine.Core --command-verb=exec --args="executable=helloworld"
+inengine queue:publish --plugin=InEngine.Core --command=exec --args="executable=helloworld"
 ```

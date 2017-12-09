@@ -12,7 +12,7 @@ namespace InEngine.Core
     {
         public static string BasePath { get; set; } = Directory.GetCurrentDirectory();
         public static string ConfigurationFile { get; set; } = "appsettings.json";
-        public List<string> Plugins { get; set; } = new List<string>();
+        public IDictionary<string, string> Plugins { get; set; } = new Dictionary<string, string>();
         public QueueSettings Queue { get; set; } = new QueueSettings();
         public MailSettings Mail { get; set; } = new MailSettings();
         public IDictionary<string, string> ExecWhitelist { get; set; } = new Dictionary<string, string>();

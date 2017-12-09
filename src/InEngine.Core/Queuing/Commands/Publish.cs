@@ -7,13 +7,13 @@ namespace InEngine.Core.Queuing.Commands
 {
     public class Publish : AbstractCommand
     {
-        [Option("command-plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core")]
-        public string CommandPlugin { get; set; }
+        [Option("plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core")]
+        public string PluginName { get; set; }
 
-        [Option("command-verb", HelpText =  "A plugin command verb, e.g. echo.")]
+        [Option("command", HelpText =  "A command name, e.g. echo.")]
         public string CommandVerb { get; set; }
 
-        [Option("command-class", HelpText = "A command class name, e.g. InEngine.Core.Commands.AlwaysSucceed. Takes precedence over --command-verb if both are specified.")]
+        [Option("class", HelpText = "A command class, e.g. InEngine.Core.Commands.AlwaysSucceed. Takes precedence over --command if both are specified.")]
         public string CommandClass { get; set; }
 
         [OptionArray("args", HelpText = "An optional list of arguments to publish with the command.")]
@@ -29,8 +29,8 @@ namespace InEngine.Core.Queuing.Commands
         {
             var command = Command;
 
-            if (command == null && !string.IsNullOrWhiteSpace(CommandPlugin)) {
-                var plugin = PluginAssembly.LoadFrom($"{CommandPlugin}.dll");
+            if (command == null && !string.IsNullOrWhiteSpace(PluginName)) {
+                var plugin = PluginAssembly.LoadFrom(PluginName);
                 if (!string.IsNullOrWhiteSpace(CommandClass))
                     command = plugin.CreateCommandFromClass(CommandClass);
                 else if (!string.IsNullOrWhiteSpace(CommandVerb)) {

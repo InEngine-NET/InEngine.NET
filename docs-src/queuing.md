@@ -98,7 +98,7 @@ Enqueue.Command(() => Console.WriteLine("Hello, world!"))
 The **exec** command allows for external programs to be executed.
 
 ```bash
-inengine queue:publish --command-plugin=InEngine.Core --command-verb=exe --args="command=/usr/bin/python" "args=--version"
+inengine queue:publish --plugin=InEngine.Core --command=exe --args="command=/usr/bin/python" "args=--version"
 ```
 
 !!! note "Do not include "--" for the command and args parameters."
@@ -171,19 +171,19 @@ Note that all queue commands reside in the **InEngine.Core** plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:
 
 ```bash
-inengine.exe queue:publish --command-plugin=MyCommandPlugin --command-class=MyCommand --args "text=bar"
+inengine.exe queue:publish --plugin=MyCommandPlugin --class=MyCommand --args "text=bar"
 ```
 
 There is an "Echo" command in the *InEngine.Core* package. It is useful for end-to-end testing with the queue feature.
  
 ```bash
-inengine.exe queue:publish --command-plugin=InEngine.Core --command-class=InEngine.Core.Commands.Echo --args "text=foo"
+inengine.exe queue:publish --plugin=InEngine.Core --class=InEngine.Core.Commands.Echo --args "text=foo"
 ```
 
 The command verb can also be specified instead of the full class name:
  
 ```bash
-inengine.exe queue:publish --command-plugin=InEngine.Core --command-verb=echo--args "text=foo"
+inengine.exe queue:publish --plugin=InEngine.Core --command=echo--args "text=foo"
 ```
 
 ## Consuming Commands

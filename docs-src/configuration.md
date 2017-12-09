@@ -7,9 +7,9 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 ```json
 {
   "InEngine": {
-    "Plugins": [
-      "path/to/MyCommandPlugin"
-    ],
+    "Plugins": {
+      "MyPlugin": "/path/to/plugin/assembly"
+    },
     "ExecWhitelist": {
       "foo": "/path/to/foo.exe"
     },
@@ -37,10 +37,10 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 
 ## Top-level Settings
 
-| Setting                   | Type              | Description                                                                                                           |
-| ------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Plugins                   | array of strings  | A list of paths of plugin assemblies, with ".dll" omitted from the assembly name.                                     |
-| ExecWhitelist             | object            | A set of key/value pairs, where the value is the file system path of an executable and the key is a command alias.    |
+| Setting                   | Type              | Description                                                                                                                                |
+| ------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Plugins                   | object            | A set of key/value pairs, where the value is the directory where the plugin is located and the key is the plugin name sans .dll extension. |
+| ExecWhitelist             | object            | A set of key/value pairs, where the value is the file system path of an executable and the key is a command alias.                         |
 
 
 ## Mail Settings

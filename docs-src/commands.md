@@ -219,14 +219,14 @@ The **InEngine.Core** plugin's command to clear the InEngine.NET queues produces
 InEngine 3.x
 Copyright © 2017 Ethan Hann
 
-  --command-plugin    Required. The name of a command plugin file, e.g. 
+  --plugin            Required. The name of a command plugin file, e.g. 
                       InEngine.Core
 
-  --command-verb      A plugin command verb, e.g. echo
+  --command           A command name, e.g. echo
 
-  --command-class     A command class name, e.g. 
+  --class             A command class, e.g. 
                       InEngine.Core.Commands.AlwaysSucceed. Takes precedence 
-                      over --command-verb if both are specified.
+                      over --command if both are specified.
 
   --args              An optional list of arguments to publish with the 
                       command.
