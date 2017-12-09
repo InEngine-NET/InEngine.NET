@@ -10,6 +10,14 @@ The **-c, --configuration** argument can also be used to specify an alternate co
     "Plugins": [
       "path/to/MyCommandPlugin"
     ],
+    "ExecWhitelist": {
+      "foo": "/path/to/foo.exe"
+    },
+    "Mail": {
+      "Host": "localhost",
+      "Port": 25,
+      "From": "no-reply@inengine.net"
+    },
     "Queue": {
       "UseCompression": false,
       "PrimaryQueueConsumers":  16,
@@ -29,9 +37,19 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 
 ## Top-level Settings
 
-| Setting                   | Type              | Description                                                                       |
-| ------------------------- | ----------------- | --------------------------------------------------------------------------------- |
-| Plugins                   | array of strings  | A list of paths of plugin assemblies, with ".dll" omitted from the assembly name. |
+| Setting                   | Type              | Description                                                                                                           |
+| ------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Plugins                   | array of strings  | A list of paths of plugin assemblies, with ".dll" omitted from the assembly name.                                     |
+| ExecWhitelist             | object            | A set of key/value pairs, where the value is the file system path of an executable and the key is a command alias.    |
+
+
+## Mail Settings
+
+| Setting   | Type      | Description                                           |
+| --------- | --------- | ----------------------------------------------------- |
+| Host      | string    | The hostname of an SMTP server.                       |
+| Port      | integer   | The port of an SMTP server.                           |
+| From      | string    | The default email address used to send email from.    |
 
 
 ## Queue Settings

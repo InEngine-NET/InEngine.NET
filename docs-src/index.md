@@ -52,20 +52,22 @@ inengine.exe queue:consume
 
 There is a special **exec** command in the core plugin that allows for the execution of any program you can run at the command line. 
 
-For example, create a python script called **helloworld.py** that contains this:
+For example, create a python script called **helloworld.py**, make it executable, and add this to it:
 
 ```python
+#!/usr/bin/env python
+
 print 'Hello, world!'
 ```
 
-Whitelist the "python" command in the [appsettings.json](configuration) file:
+Whitelist the "helloworld" executable in the [appsettings.json](configuration) file:
 
 ```json
 {
   "InEngine": {
     // ...
     "ExecWhitelist": {
-      "python": "/usr/bin/python"
+      "helloworld": "/path/to/helloworld.py"
     }
     // ...
   }
@@ -75,7 +77,7 @@ Whitelist the "python" command in the [appsettings.json](configuration) file:
 Now execute it with the **exec** command:
 
 ```bash
-inengine exe --command=python --args=helloworld.py
+inengine exec --executable="helloworld"
 ```
 
 Why would you want to do this?
@@ -84,5 +86,5 @@ It opens up the possibility of running shell scripts, ETLs, Java programs, etc. 
 The example python script can be queued:
 
 ```bash
-inengine queue:publish --command-plugin=InEngine.Core --command-verb=exec --args="executable=python" "args=helloworld.py"
+inengine queue:publish --command-plugin=InEngine.Core --command-verb=exec --args="executable=helloworld"
 ```

@@ -50,7 +50,9 @@ namespace MyCommandPlugin
 ## Run a Command
 
 Create a class that extends **InEngine.Core.AbstractPlugin** in the same assembly as the command class.
-Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. 
+Add a VerbOptions attribute, from the **CommandLine** namespace, that defines the name of the command. 
+
+This class registers a command in the MyPlugin assembly called "mycommand":
 
 ```c#
 using CommandLine;
@@ -61,7 +63,7 @@ namespace MyCommandPlugin
 {
     public class MyPlugin : AbstractPlugin
     {
-        [VerbOption("my-command", HelpText="My example command.")]
+        [VerbOption("mycommand", HelpText="My example command.")]
         public MyCommand MyCommand { get; set; }
     }
 }
@@ -70,12 +72,12 @@ namespace MyCommandPlugin
 Download the InEngine binary distribution, from the [GitHub Releases](https://github.com/InEngine-NET/InEngine.NET/releases) page, that matches the version of the InEngine.Core package you included.
 
 Copy your project's DLLs into the Plugins subdirectory included in the binary distribution. 
-Add your plugin to the ["Plugins" list in appsettings.config](configuration) at the root of the binary distribution.
+Add your plugin to the "Plugins" list in [appsettings.config](configuration) at the root of the binary distribution.
 
 Run your command:
 
 ```bash
-inengine.exe my-command
+inengine.exe mycommand
 ```
 
 ### Writing Output
@@ -149,27 +151,41 @@ public override void Run()
 
 ### Running non-.NET Commands
 
-It isn't necessary to create C# classes to utilize InEngine.NET.
-Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's **exec** command.
+It is not necessary to create C# classes to utilize InEngine.NET.
+Arbitrary external programs can be run, with an optional argument list, by leveraging the InEngine.Core plugin's **exec** command.
 
-This command prints the version of python:
+For example, create a python script called **helloworld.py**, make it executable, and add this to it:
 
-```bash
-inengine.exe exec -e"python" -a"--version"
+```python
+#!/usr/bin/env python
+
+print 'Hello, world!'
 ```
 
-Whitelist the "php" command in the [appsettings.json](configuration) file:
+Whitelist the helloworld.py script in the [appsettings.json](configuration) file:
 
 ```json
 {
   "InEngine": {
     // ...
     "ExecWhitelist": {
-      "ls": "ls"
+      "helloworld": "/path/to/helloworld.py"
     }
     // ...
   }
 }
+```
+
+Now execute it with the **exec** command:
+
+```bash
+inengine exec --executable="helloworld"
+```
+
+If an external executable requires arguments, use the **--args** argument:
+
+```bash
+inengine exec --executable="foo" --args="--version"
 ```
 
 ## View Commands
