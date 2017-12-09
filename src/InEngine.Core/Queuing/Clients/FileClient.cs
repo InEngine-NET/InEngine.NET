@@ -95,7 +95,7 @@ namespace InEngine.Core.Queuing.Clients
                     File.Move(inProgressFilePath, Path.Combine(PendingQueuePath, fileInfo.Name));
                 else
                     File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
-                throw new CommandFailedException("Failed to consume commandEnvelope.", exception);
+                throw new CommandFailedException("Failed to consume command.", exception);
             }
 
             try
@@ -104,7 +104,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException("Failed to move commandEnvelope from in-progress queue.", exception);
+                throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
             }
 
             return commandEnvelope;
