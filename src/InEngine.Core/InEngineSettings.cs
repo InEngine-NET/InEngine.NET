@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using InEngine.Core.Commands;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ namespace InEngine.Core
         public List<string> Plugins { get; set; } = new List<string>();
         public QueueSettings Queue { get; set; } = new QueueSettings();
         public MailSettings Mail { get; set; } = new MailSettings();
+        public IDictionary<string, string> ExecWhitelist { get; set; } = new Dictionary<string, string>();
 
         public static InEngineSettings Make()
         {

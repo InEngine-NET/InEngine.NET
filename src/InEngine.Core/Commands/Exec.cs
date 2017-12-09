@@ -1,27 +1,35 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using CommandLine;
 using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Commands
 {
-    public class SystemProcess : AbstractCommand
+    public class Exec : AbstractCommand
     {
-        [Option('c', "command", Required = true, HelpText = "The name of the CLI program/command to run.")]
-        public string Command { get; set; }
+        [Option('e', "executable", Required = true, HelpText = "The name of the CLI program/command to run.")]
+        public string Executable { get; set; }
 
         [Option('a', "args", HelpText = "Arguments for the CLI program/command.")]
         public string Arguments { get; set; }
 
-        [Option('t', "timeout", DefaultValue = 900, HelpText = "The number of seconds to wait before killing the runnin process.")]
+        [Option('t', "timeout", DefaultValue = 900, HelpText = "The number of seconds to wait before killing the running process.")]
         public int Timeout { get; set; }
+
+        public IDictionary<string, string> ExecWhitelist { get; set; }
 
         public override void Run()
         {
-            if (!File.Exists(Command))
-                throw new CommandFailedException($"Cannot run {Command}. It either does not exist or is inaccessible. Exiting...");
+            if (ExecWhitelist == null)
+                ExecWhitelist = InEngineSettings.Make().ExecWhitelist;
+            if (!ExecWhitelist.ContainsKey(Executable))
+                throw new CommandFailedException("Executable is not whitelisted.");
+            var fileName = ExecWhitelist[Executable];
+            if (!File.Exists(fileName))
+                throw new CommandFailedException($"Cannot run {fileName}. It either does not exist or is inaccessible. Exiting...");
             var process = new Process() { 
-                StartInfo = new ProcessStartInfo(Command, Arguments) {
+                StartInfo = new ProcessStartInfo(fileName, Arguments) {
                     UseShellExecute = false,
                     ErrorDialog = false,
                     RedirectStandardError = false,
@@ -29,7 +37,7 @@ namespace InEngine.Core.Commands
                     RedirectStandardOutput = false,
                 } 
             };
-            var commandWithArguments = $"{Command} {Arguments}";
+            var commandWithArguments = $"{fileName} {Arguments}";
             process.Start();
             if (process.WaitForExit(Timeout * 1000)) {
                 return;
