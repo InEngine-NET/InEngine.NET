@@ -7,7 +7,7 @@ It also has a built-in command for launching external non-.NET programs.
 
 Get started by pulling the binaries from the [latest release](https://github.com/InEngine-NET/InEngine.NET/releases) on GitHub.
 
-Then run a command the **echo** command from the core plugin:
+Then run the **echo** command from the core plugin:
 
 ```bash
 inengine.exe echo --text"Hello, world"
@@ -32,8 +32,6 @@ docker run --rm inengine echo --text"Hello, world"
 
 ## How does queueing work?
 
-There are a lot of [queuing](queuing) features, but this is the gist...
-
 Want to queue our example echo command to run in the background or possibly on another server?
 
 Use the core plugin's **queue:publish** command:
@@ -44,7 +42,7 @@ inengine.exe queue:publish --command-plugin=InEngine.Core --command-verb=echo --
 
 How do we consume that queued echo command?
 
-Use the core plugin's **queue:consume** command of course:
+Use the core plugin's **queue:consume** command:
 
 ```bash
 inengine.exe queue:consume
@@ -52,7 +50,7 @@ inengine.exe queue:consume
 
 ## How do I run non-.NET commands?
 
-There is a special **proc** command in the core plugin that allows for the execution of any program you can run at the command line. 
+There is a special **exec** command in the core plugin that allows for the execution of any program you can run at the command line. 
 
 For example, create a python script called **helloworld.py** that contains this:
 
@@ -60,8 +58,31 @@ For example, create a python script called **helloworld.py** that contains this:
 print 'Hello, world!'
 ```
 
-Now execute it with the **proc** command:
+Whitelist the "python" command in the [appsettings.json](configuration) file:
+
+```json
+{
+  "InEngine": {
+    // ...
+    "ExecWhitelist": {
+      "python": "/usr/bin/python"
+    }
+    // ...
+  }
+}
+```
+
+Now execute it with the **exec** command:
 
 ```bash
-inengine proc --command=/usr/bin/python --args=helloworld.py
+inengine exe --command=python --args=helloworld.py
+```
+
+Why would you want to do this?
+It opens up the possibility of running shell scripts, ETLs, Java programs, etc. in the background or on a schedule. 
+
+The example python script can be queued:
+
+```bash
+inengine queue:publish --command-plugin=InEngine.Core --command-verb=exec --args="executable=python" "args=helloworld.py"
 ```

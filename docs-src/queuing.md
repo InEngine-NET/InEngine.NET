@@ -93,6 +93,19 @@ Enqueue.Command(() => Console.WriteLine("Hello, world!"))
        .Dispatch();
 ```
 
+### With the "exec" Command
+
+The **exec** command allows for external programs to be executed.
+
+```bash
+inengine queue:publish --command-plugin=InEngine.Core --command-verb=exe --args="command=/usr/bin/python" "args=--version"
+```
+
+!!! note "Do not include "--" for the command and args parameters."
+    This is purely to make parsing easier internally.
+
+
+    
 ### Sequentially In a Chain
 
 Chained commands run in the order specified.

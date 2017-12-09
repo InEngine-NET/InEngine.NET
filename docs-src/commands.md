@@ -147,14 +147,29 @@ public override void Run()
 }
 ```
 
-### Executing Arbitrary Processes
+### Running non-.NET Commands
 
 It isn't necessary to create C# classes to utilize InEngine.NET.
-Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's **proc** command.
-The command lists directory contents using "ls" with the "-lhp" switches:
+Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's **exec** command.
+
+This command prints the version of python:
 
 ```bash
-inengine.exe proc -c"/bin/ls" -a"-lhp"
+inengine.exe exec -e"python" -a"--version"
+```
+
+Whitelist the "php" command in the [appsettings.json](configuration) file:
+
+```json
+{
+  "InEngine": {
+    // ...
+    "ExecWhitelist": {
+      "ls": "ls"
+    }
+    // ...
+  }
+}
 ```
 
 ## View Commands
@@ -174,7 +189,9 @@ inengine.exe
 
 ## View a Command's Help Text
 
-Run the command with the -h or --help arguments.
+Run the command with the -h or --help arguments to see help text.
+
+This command prints the publish command's help text, from the core plugin:
 
 ```bash
 inengine.exe queue:publish -h
