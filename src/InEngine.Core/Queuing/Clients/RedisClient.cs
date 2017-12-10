@@ -36,7 +36,7 @@ namespace InEngine.Core.Queuing.Clients
                 new CommandEnvelope() {
                     IsCompressed = UseCompression,
                     CommandClassName = command.GetType().FullName,
-                    CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
+                    PluginName = command.GetType().Assembly.GetName().Name,
                     SerializedCommand = command.SerializeToJson(UseCompression)
                 }.SerializeToJson()
             );

@@ -7,24 +7,23 @@ namespace InEngine
 {
     public class ServerHost : IDisposable
     {
-        public Schedule Schedule { get; set; }
+        public SuperScheduler SuperScheduler { get; set; }
 
         public ServerHost()
         {
-            Schedule = new Schedule();
+            SuperScheduler = new SuperScheduler();
             Common.Logging.LogManager.Adapter = new Common.Logging.Simple.ConsoleOutLoggerFactoryAdapter { Level = Common.Logging.LogLevel.Info };
-            Schedule.Initialize();
+            SuperScheduler.Initialize();
         }
 
         public void Dispose()
         {
-            if (Schedule != null)
-                Schedule.Shutdown();
+            SuperScheduler?.Shutdown();
         }
 
         public void Start()
         {
-            Schedule.Start();
+            SuperScheduler.Start();
         }
     }
 }

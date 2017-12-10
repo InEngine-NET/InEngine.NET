@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Linq;
 using Quartz;
 using Quartz.Impl.Matchers;
 
@@ -10,10 +8,10 @@ namespace InEngine.Core.Scheduling
     {
         public override void Run()
         {
-            var schedule = new Schedule();
-            schedule.Initialize();
+            var superScheduler = new SuperScheduler();
+            superScheduler.Initialize();
 
-            var scheduler = schedule.Scheduler;
+            var scheduler = superScheduler.Scheduler;
             foreach(var groupName in scheduler.GetJobGroupNames())
             {
                 Warning($"Group Name: {groupName}").Newline();

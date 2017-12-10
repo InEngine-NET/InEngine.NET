@@ -53,9 +53,10 @@ namespace InEngine.Core.Queuing
 
         public static AbstractCommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
         {
-            var commandType = Type.GetType($"{commandEnvelope.CommandClassName}, {commandEnvelope.CommandAssemblyName}");
+            var commandType = PluginAssembly.LoadFrom(commandEnvelope.PluginName)
+                                            .GetCommandType(commandEnvelope.CommandClassName);
             if (commandType == null)
-                throw new CommandFailedException($"Could not locate command {commandEnvelope.CommandClassName}. Is the {commandEnvelope.CommandAssemblyName} plugin registered in the settings file?");
+                throw new CommandFailedException($"Could not locate command {commandEnvelope.CommandClassName}. Is the {commandEnvelope.PluginName} plugin registered in the settings file?");
             return commandEnvelope.SerializedCommand.DeserializeFromJson<AbstractCommand>(commandEnvelope.IsCompressed);
         }
 

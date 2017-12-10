@@ -46,11 +46,10 @@ namespace InEngine.Core.Queuing.Clients
         {
             if (!Directory.Exists(PendingQueuePath))
                 Directory.CreateDirectory(PendingQueuePath);
-            var serializedMessage = new CommandEnvelope()
-            {
+            var serializedMessage = new CommandEnvelope() {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
-                CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
+                PluginName = command.GetType().Assembly.GetName().Name,
                 SerializedCommand = command.SerializeToJson(UseCompression)
             }.SerializeToJson();
             using (var streamWriter = File.CreateText(Path.Combine(PendingQueuePath, Guid.NewGuid().ToString()))) 

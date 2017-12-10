@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
 using InEngine.Core.Commands;
@@ -12,8 +13,6 @@ namespace InEngine.Core.Scheduling
 {
     public class Schedule : ISchedule
     {
-        public static Lazy<IScheduler> lazyScheduler = new Lazy<IScheduler>(StdSchedulerFactory.GetDefaultScheduler);
-        public IScheduler Scheduler { get { return lazyScheduler.Value; } } 
         public IDictionary<string, JobGroup> JobGroups { get; set; } = new Dictionary<string, JobGroup>();
 
         public Occurence Command(AbstractCommand command)
@@ -58,35 +57,10 @@ namespace InEngine.Core.Scheduling
             return registration;
         }
 
-        public void Initialize()
-        {
-            PluginAssembly.Load<IPlugin>().ForEach(x => {
-                x.Make<IPlugin>().ForEach(y => y.Schedule(this));
-            });
-
-            JobGroups.AsEnumerable().ToList().ForEach(x => {
-                x.Value.Registrations.AsEnumerable().ToList().ForEach(y => {
-                    Scheduler.ScheduleJob(y.Value.JobDetail, y.Value.Trigger);
-                });
-            });
-        }
-
-        public void Start()
-        {
-            Scheduler.Start();
-        }
-
-        public void Shutdown()
-        {
-            if (Scheduler.IsStarted)
-                Scheduler.Shutdown();
-        }
-
         public JobBuilder MakeJobBuilder(AbstractCommand command)
         {
-            return JobBuilder
-                .Create(command.GetType())
-                .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);
+            return JobBuilder.Create(command.GetType())
+                  .WithIdentity($"{command.Name}:job:{command.ScheduleId}", command.SchedulerGroup);
         }
     }
 }

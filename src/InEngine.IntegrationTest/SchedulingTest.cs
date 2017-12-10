@@ -10,14 +10,14 @@ namespace InEngine.IntegrationTest
 {
     public class SchedulingTest : AbstractCommand
     {
-        public void Run()
+        public override void Run()
         {
             var writingEverySecond = "writingEverySecond.txt";
             var appendingEverySecond = "appendingEverySecond.txt";
             File.Delete(writingEverySecond);
             File.Delete(appendingEverySecond);
-            var schedule = new Schedule();
-            schedule.Command(new Echo { VerbatimText = "Hello, world!" })
+            var superScheduler = new SuperScheduler();
+            superScheduler.Schedule.Command(new Echo { VerbatimText = "Hello, world!" })
                     .EverySecond()
                     .Before(x => Console.WriteLine("Before"))
                     .After(x => Console.WriteLine("After"))
@@ -27,19 +27,19 @@ namespace InEngine.IntegrationTest
                     .AppendOutputTo(appendingEverySecond)
                     .EmailOutputTo("example@inengine.net");
 
-            schedule.Command(new[] {
+            superScheduler.Schedule.Command(new[] {
                 new Echo { VerbatimText = "Chain Link 1" },
                 new Echo { VerbatimText = "Chain Link 2" },
             }).EverySecond();
 
-            schedule.Command(new List<AbstractCommand> {
+            superScheduler.Schedule.Command(new List<AbstractCommand> {
                 new Echo { VerbatimText = "Chain Link A" },
                 new AlwaysFail(),
                 new Echo { VerbatimText = "Chain Link C" },
             }).EverySecond();
 
-            schedule.Initialize();
-            schedule.Start();
+            superScheduler.Initialize();
+            superScheduler.Start();
         }
     }
 }

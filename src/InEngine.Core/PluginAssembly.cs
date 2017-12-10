@@ -57,6 +57,7 @@ namespace InEngine.Core
                 .Make()
                 .Plugins
                 .Select(x => Assembly.LoadFrom(Path.Combine(x.Value, $"{x.Key}.dll")));
+
             foreach (var assembly in assemblies)
             {
                 try
@@ -138,6 +139,11 @@ namespace InEngine.Core
             if (commandCount == 0)
                 throw new CommandNotFoundException(verbName);
             return Assembly.CreateInstance(commandClassNames.First()) as AbstractCommand;
+        }
+
+        public Type GetCommandType(string commandClassName)
+        {
+            return Assembly.GetType(commandClassName);
         }
     }
 }
