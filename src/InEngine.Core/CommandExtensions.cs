@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace InEngine.Core
 {
     public static class CommandExtensions

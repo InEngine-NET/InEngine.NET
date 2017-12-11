@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using Quartz;
-using Quartz.Impl;
 using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Scheduling
