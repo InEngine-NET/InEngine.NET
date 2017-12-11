@@ -98,12 +98,12 @@ namespace InEngine.Core
         static string MakeFullPluginAssemblyPath(string pluginName)
         {
             var plugins = InEngineSettings.Make().Plugins;
-            if (!plugins.ContainsKey(pluginName))
+            var isCorePlugin = Assembly.GetCallingAssembly().GetName().Name == pluginName;
+            if (!isCorePlugin && !plugins.ContainsKey(pluginName))
                 throw new PluginNotRegisteredException(pluginName);
-            
             return Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                plugins[pluginName],
+                isCorePlugin ? "" : plugins[pluginName],
                 $"{pluginName}.dll"
             );
         }

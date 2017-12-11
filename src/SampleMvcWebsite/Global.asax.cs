@@ -22,7 +22,7 @@ namespace SampleMvcWebsite
 
         protected void Application_End()
         {
-            SuperScheduler.Shutdown();
+            SuperScheduler?.Shutdown();
         }
     }
 }

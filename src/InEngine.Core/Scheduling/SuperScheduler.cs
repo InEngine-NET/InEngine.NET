@@ -7,7 +7,7 @@ namespace InEngine.Core.Scheduling
 {
     public class SuperScheduler
     {
-        public Schedule Schedule { get; set; }
+        public Schedule Schedule { get; set; } = new Schedule();
         public IScheduler Scheduler { get; set; }
         public string SchedulerInstanceName { get; set; } = "InEngine";
         public string SchedulerThreadPoolType { get; set; } = "Quartz.Simpl.SimpleThreadPool, Quartz";
@@ -23,7 +23,6 @@ namespace InEngine.Core.Scheduling
                 ["quartz.threadPool.threadPriority"] = SchedulerThreadPriority
             }).GetScheduler();
 
-            Schedule = new Schedule();
             PluginAssembly.Load<IPlugin>().ForEach(x => {
                 x.Plugins.ForEach(y => y.Schedule(Schedule));
             });
