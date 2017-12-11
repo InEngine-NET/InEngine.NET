@@ -376,8 +376,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executing-arbitrary-processes" title="Executing Arbitrary Processes" class="md-nav__link">
-    Executing Arbitrary Processes
+  <a href="#running-non-net-commands" title="Running non-.NET Commands" class="md-nav__link">
+    Running non-.NET Commands
   </a>
   
 </li>
@@ -508,8 +508,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executing-arbitrary-processes" title="Executing Arbitrary Processes" class="md-nav__link">
-    Executing Arbitrary Processes
+  <a href="#running-non-net-commands" title="Running non-.NET Commands" class="md-nav__link">
+    Running non-.NET Commands
   </a>
   
 </li>
@@ -601,7 +601,8 @@ Minimally, the Run method should be overridden.</p>
 
 <h2 id="run-a-command">Run a Command<a class="headerlink" href="#run-a-command" title="Permanent link">&para;</a></h2>
 <p>Create a class that extends <strong>InEngine.Core.AbstractPlugin</strong> in the same assembly as the command class.
-Add a VerbOptions attribute, from the CommandLine namespace, that defines the name of the command. </p>
+Add a VerbOptions attribute, from the <strong>CommandLine</strong> namespace, that defines the name of the command. </p>
+<p>This class registers a command in the MyPlugin assembly called "mycommand":</p>
 <div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">CommandLine</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">CommandLine.Text</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
@@ -610,7 +611,7 @@ Add a VerbOptions attribute, from the CommandLine namespace, that defines the na
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">class</span> <span class="nc">MyPlugin</span> <span class="p">:</span> <span class="n">AbstractPlugin</span>
     <span class="p">{</span>
-<span class="na">        [VerbOption(&quot;my-command&quot;, HelpText=&quot;My example command.&quot;)]</span>
+<span class="na">        [VerbOption(&quot;mycommand&quot;, HelpText=&quot;My example command.&quot;)]</span>
         <span class="k">public</span> <span class="n">MyCommand</span> <span class="n">MyCommand</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -619,9 +620,9 @@ Add a VerbOptions attribute, from the CommandLine namespace, that defines the na
 
 <p>Download the InEngine binary distribution, from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">GitHub Releases</a> page, that matches the version of the InEngine.Core package you included.</p>
 <p>Copy your project's DLLs into the Plugins subdirectory included in the binary distribution. 
-Add your plugin to the <a href="../configuration">"Plugins" list in appsettings.config</a> at the root of the binary distribution.</p>
+Add your plugin to the "Plugins" list in <a href="../configuration">appsettings.config</a> at the root of the binary distribution.</p>
 <p>Run your command:</p>
-<div class="codehilite"><pre><span></span>inengine.exe my-command
+<div class="codehilite"><pre><span></span>inengine.exe mycommand
 </pre></div>
 
 
@@ -686,11 +687,36 @@ This is how it is used:</p>
 </pre></div>
 
 
-<h3 id="executing-arbitrary-processes">Executing Arbitrary Processes<a class="headerlink" href="#executing-arbitrary-processes" title="Permanent link">&para;</a></h3>
-<p>It isn't necessary to create C# classes to utilize InEngine.NET.
-Arbitrary commands can be run, with an argument list by leveraging the InEngine.Core plugin's <strong>proc</strong> command.
-The command lists directory contents using "ls" with the "-lhp" switches:</p>
-<div class="codehilite"><pre><span></span>inengine.exe proc -c<span class="s2">&quot;/bin/ls&quot;</span> -a<span class="s2">&quot;-lhp&quot;</span>
+<h3 id="running-non-net-commands">Running non-.NET Commands<a class="headerlink" href="#running-non-net-commands" title="Permanent link">&para;</a></h3>
+<p>It is not necessary to create C# classes to utilize InEngine.NET.
+Arbitrary external programs can be run, with an optional argument list, by leveraging the InEngine.Core plugin's <strong>exec</strong> command.</p>
+<p>For example, create a python script called <strong>helloworld.py</strong>, make it executable, and add this to it:</p>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="k">print</span> <span class="s1">&#39;Hello, world!&#39;</span>
+</pre></div>
+
+
+<p>Whitelist the helloworld.py script in the <a href="../configuration">appsettings.json</a> file:</p>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="err">//</span> <span class="err">...</span>
+    <span class="nt">&quot;ExecWhitelist&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;helloworld&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/helloworld.py&quot;</span>
+    <span class="p">}</span>
+    <span class="err">//</span> <span class="err">...</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Now execute it with the <strong>exec</strong> command:</p>
+<div class="codehilite"><pre><span></span>inengine <span class="nb">exec</span> --executable<span class="o">=</span><span class="s2">&quot;helloworld&quot;</span>
+</pre></div>
+
+
+<p>If an external executable requires arguments, use the <strong>--args</strong> argument:</p>
+<div class="codehilite"><pre><span></span>inengine <span class="nb">exec</span> --executable<span class="o">=</span><span class="s2">&quot;foo&quot;</span> --args<span class="o">=</span><span class="s2">&quot;--version&quot;</span>
 </pre></div>
 
 
@@ -706,7 +732,8 @@ The command lists directory contents using "ls" with the "-lhp" switches:</p>
 <p>The <strong>InEngine.Core</strong> library is itself a plugin that contains queueing, scheduling, and other commands. </p>
 </div>
 <h2 id="view-a-commands-help-text">View a Command's Help Text<a class="headerlink" href="#view-a-commands-help-text" title="Permanent link">&para;</a></h2>
-<p>Run the command with the -h or --help arguments.</p>
+<p>Run the command with the -h or --help arguments to see help text.</p>
+<p>This command prints the publish command's help text, from the core plugin:</p>
 <div class="codehilite"><pre><span></span>inengine.exe queue:publish -h
 </pre></div>
 
@@ -715,14 +742,14 @@ The command lists directory contents using "ls" with the "-lhp" switches:</p>
 <div class="codehilite"><pre><span></span>InEngine 3.x
 Copyright © 2017 Ethan Hann
 
-  --command-plugin    Required. The name of a command plugin file, e.g. 
+  --plugin            Required. The name of a command plugin file, e.g. 
                       InEngine.Core
 
-  --command-verb      A plugin command verb, e.g. echo
+  --command           A command name, e.g. echo
 
-  --command-class     A command class name, e.g. 
+  --class             A command class, e.g. 
                       InEngine.Core.Commands.AlwaysSucceed. Takes precedence 
-                      over --command-verb if both are specified.
+                      over --command if both are specified.
 
   --args              An optional list of arguments to publish with the 
                       command.

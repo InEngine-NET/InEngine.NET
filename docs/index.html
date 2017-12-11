@@ -474,7 +474,7 @@
 <p>InEngine.NET uses a plugin system to dynamically load .NET assemblies and execute code. 
 It also has a built-in command for launching external non-.NET programs.</p>
 <p>Get started by pulling the binaries from the <a href="https://github.com/InEngine-NET/InEngine.NET/releases">latest release</a> on GitHub.</p>
-<p>Then run a command the <strong>echo</strong> command from the core plugin:</p>
+<p>Then run the <strong>echo</strong> command from the core plugin:</p>
 <div class="codehilite"><pre><span></span>inengine.exe <span class="nb">echo</span> --text<span class="s2">&quot;Hello, world&quot;</span>
 </pre></div>
 
@@ -495,28 +495,49 @@ It also has a built-in command for launching external non-.NET programs.</p>
 
 
 <h2 id="how-does-queueing-work">How does queueing work?<a class="headerlink" href="#how-does-queueing-work" title="Permanent link">&para;</a></h2>
-<p>There are a lot of <a href="./queuing">queuing</a> features, but this is the gist...</p>
 <p>Want to queue our example echo command to run in the background or possibly on another server?</p>
 <p>Use the core plugin's <strong>queue:publish</strong> command:</p>
-<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>InEngine.Core --command-verb<span class="o">=</span><span class="nb">echo</span> --args <span class="s2">&quot;text=Hello, world&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span><span class="nb">echo</span> --args <span class="s2">&quot;text=Hello, world&quot;</span>
 </pre></div>
 
 
 <p>How do we consume that queued echo command?</p>
-<p>Use the core plugin's <strong>queue:consume</strong> command of course:</p>
+<p>Use the core plugin's <strong>queue:consume</strong> command:</p>
 <div class="codehilite"><pre><span></span>inengine.exe queue:consume
 </pre></div>
 
 
 <h2 id="how-do-i-run-non-net-commands">How do I run non-.NET commands?<a class="headerlink" href="#how-do-i-run-non-net-commands" title="Permanent link">&para;</a></h2>
-<p>There is a special <strong>proc</strong> command in the core plugin that allows for the execution of any program you can run at the command line. </p>
-<p>For example, create a python script called <strong>helloworld.py</strong> that contains this:</p>
-<div class="codehilite"><pre><span></span><span class="k">print</span> <span class="s1">&#39;Hello, world!&#39;</span>
+<p>There is a special <strong>exec</strong> command in the core plugin that allows for the execution of any program you can run at the command line. </p>
+<p>For example, create a python script called <strong>helloworld.py</strong>, make it executable, and add this to it:</p>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="k">print</span> <span class="s1">&#39;Hello, world!&#39;</span>
 </pre></div>
 
 
-<p>Now execute it with the <strong>proc</strong> command:</p>
-<div class="codehilite"><pre><span></span>inengine proc --command<span class="o">=</span>/usr/bin/python --args<span class="o">=</span>helloworld.py
+<p>Whitelist the "helloworld" executable in the <a href="./configuration">appsettings.json</a> file:</p>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="err">//</span> <span class="err">...</span>
+    <span class="nt">&quot;ExecWhitelist&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;helloworld&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/helloworld.py&quot;</span>
+    <span class="p">}</span>
+    <span class="err">//</span> <span class="err">...</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Now execute it with the <strong>exec</strong> command:</p>
+<div class="codehilite"><pre><span></span>inengine <span class="nb">exec</span> --executable<span class="o">=</span><span class="s2">&quot;helloworld&quot;</span>
+</pre></div>
+
+
+<p>Why would you want to do this?
+It opens up the possibility of running shell scripts, ETLs, Java programs, etc. in the background or on a schedule. </p>
+<p>The example python script can be queued:</p>
+<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span><span class="nb">exec</span> --args<span class="o">=</span><span class="s2">&quot;executable=helloworld&quot;</span>
 </pre></div>
                 
                   

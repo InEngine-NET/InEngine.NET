@@ -390,6 +390,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mail-settings" title="Mail Settings" class="md-nav__link">
+    Mail Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
     Queue Settings
   </a>
@@ -438,6 +445,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mail-settings" title="Mail Settings" class="md-nav__link">
+    Mail Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
     Queue Settings
   </a>
@@ -464,9 +478,17 @@
 The <strong>-c, --configuration</strong> argument can also be used to specify an alternate configuration file.</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="s2">&quot;path/to/MyCommandPlugin&quot;</span>
-    <span class="p">],</span>
+    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;MyPlugin&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/plugin/assembly&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;ExecWhitelist&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/foo.exe&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Mail&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;no-reply@inengine.net&quot;</span>
+    <span class="p">},</span>
     <span class="nt">&quot;Queue&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&quot;UseCompression&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
       <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span>  <span class="mi">16</span><span class="p">,</span>
@@ -495,8 +517,40 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
 <tbody>
 <tr>
 <td>Plugins</td>
-<td>array of strings</td>
-<td>A list of paths of plugin assemblies, with ".dll" omitted from the assembly name.</td>
+<td>object</td>
+<td>A set of key/value pairs, where the value is the directory where the plugin is located and the key is the plugin name sans .dll extension.</td>
+</tr>
+<tr>
+<td>ExecWhitelist</td>
+<td>object</td>
+<td>A set of key/value pairs, where the value is the file system path of an executable and the key is a command alias.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mail-settings">Mail Settings<a class="headerlink" href="#mail-settings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>string</td>
+<td>The hostname of an SMTP server.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>integer</td>
+<td>The port of an SMTP server.</td>
+</tr>
+<tr>
+<td>From</td>
+<td>string</td>
+<td>The default email address used to send email from.</td>
 </tr>
 </tbody>
 </table>

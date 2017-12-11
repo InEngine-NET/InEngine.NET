@@ -427,6 +427,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#with-the-exec-command" title="With the "exec" Command" class="md-nav__link">
+    With the "exec" Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sequentially-in-a-chain" title="Sequentially In a Chain" class="md-nav__link">
     Sequentially In a Chain
   </a>
@@ -637,6 +644,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#with-the-exec-command" title="With the "exec" Command" class="md-nav__link">
+    With the "exec" Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sequentially-in-a-chain" title="Sequentially In a Chain" class="md-nav__link">
     Sequentially In a Chain
   </a>
@@ -833,6 +847,16 @@ The disadvantage to queuing lambdas is that the helpful functionality available 
 </pre></div>
 
 
+<h3 id="with-the-exec-command">With the "exec" Command<a class="headerlink" href="#with-the-exec-command" title="Permanent link">&para;</a></h3>
+<p>The <strong>exec</strong> command allows for external programs to be executed.</p>
+<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span>exe --args<span class="o">=</span><span class="s2">&quot;command=/usr/bin/python&quot;</span> <span class="s2">&quot;args=--version&quot;</span>
+</pre></div>
+
+
+<div class="admonition note">
+<p class="admonition-title">Do not include "--" for the command and args parameters.</p>
+<p>This is purely to make parsing easier internally.</p>
+</div>
 <h3 id="sequentially-in-a-chain">Sequentially In a Chain<a class="headerlink" href="#sequentially-in-a-chain" title="Permanent link">&para;</a></h3>
 <p>Chained commands run in the order specified.
 This is useful for when order matters.</p>
@@ -885,17 +909,17 @@ This class is more than just a wrapper for <strong>Console.WriteLine</strong>.</
 <p>Commands can be published from the command line as well.
 Note that all queue commands reside in the <strong>InEngine.Core</strong> plugin.
 This is an example of how to publish a command from the CLI by specifying the command's plugin, class name, and arguments:</p>
-<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>MyCommandPlugin --command-class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --plugin<span class="o">=</span>MyCommandPlugin --class<span class="o">=</span>MyCommand --args <span class="s2">&quot;text=bar&quot;</span>
 </pre></div>
 
 
 <p>There is an "Echo" command in the <em>InEngine.Core</em> package. It is useful for end-to-end testing with the queue feature.</p>
-<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>InEngine.Core --command-class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --plugin<span class="o">=</span>InEngine.Core --class<span class="o">=</span>InEngine.Core.Commands.Echo --args <span class="s2">&quot;text=foo&quot;</span>
 </pre></div>
 
 
 <p>The command verb can also be specified instead of the full class name:</p>
-<div class="codehilite"><pre><span></span>inengine.exe queue:publish --command-plugin<span class="o">=</span>InEngine.Core --command-verb<span class="o">=</span>echo--args <span class="s2">&quot;text=foo&quot;</span>
+<div class="codehilite"><pre><span></span>inengine.exe queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span>echo--args <span class="s2">&quot;text=foo&quot;</span>
 </pre></div>
 
 
