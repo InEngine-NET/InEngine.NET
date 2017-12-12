@@ -1,10 +1,8 @@
 ﻿using System;
 using InEngine.Core.Queuing;
 using InEngine.Core.Scheduling;
-using Quartz;
-using Quartz.Impl;
 
-namespace InEngine
+namespace InEngine.Core
 {
     public class ServerHost : IDisposable
     {
@@ -27,10 +25,10 @@ namespace InEngine
         public void Start()
         {
             SuperScheduler.Start();
-            StartQueueServerAsync();
+            StartDequeueAsync();
         }
 
-        public async void StartQueueServerAsync()
+        public async void StartDequeueAsync()
         {
             await Dequeue.StartAsync();
         }

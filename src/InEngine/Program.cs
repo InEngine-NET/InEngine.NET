@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.ServiceProcess;
+using InEngine.Core;
 using Mono.Unix;
 using Mono.Unix.Native;
 
