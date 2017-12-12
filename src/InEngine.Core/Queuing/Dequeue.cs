@@ -24,7 +24,7 @@ namespace InEngine.Core.Queuing
         {
             if (QueueSettings == null)
                 QueueSettings = InEngineSettings.Make().Queue;
-            
+
             var allTasks = new List<Task>();
             Log.Debug("Start dequeue tasks for primary queue...");
             allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
@@ -44,6 +44,7 @@ namespace InEngine.Core.Queuing
                 return Task.Factory.StartNew(() => {
                     var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings);
                     queue.Id = i;
+                    queue.Log = Log;
                     queueAdapters.Add(queue);
                     queue.Consume(CancellationTokenSource.Token);
                 }, TaskCreationOptions.LongRunning);

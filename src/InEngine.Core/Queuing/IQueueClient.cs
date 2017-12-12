@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing
 {
     public interface IQueueClient
     {
+        ILog Log { get; set; }
         int Id { get; set; }
         string QueueBaseName { get; set; }
         string QueueName { get; set; }

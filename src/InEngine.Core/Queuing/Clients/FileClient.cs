@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
+using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
+        public ILog Log { get; set; } = new Log();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
@@ -72,13 +73,14 @@ namespace InEngine.Core.Queuing.Clients
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException exception)
             {
+                Log.Debug(exception);
                 return;
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message);
+                Log.Error(exception);
             }
         }
 
@@ -96,9 +98,10 @@ namespace InEngine.Core.Queuing.Clients
             {
                 fileInfo.MoveTo(inProgressFilePath);
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException exception)
             {
                 // Another process probably consumed the file when it was read and moved.
+                Log.Debug(exception);
                 return null;
             }
 
@@ -114,6 +117,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
+                Log.Error(exception);
                 if (command.CommandLifeCycle.ShouldRetry())
                     File.Move(inProgressFilePath, Path.Combine(PendingQueuePath, fileInfo.Name));
                 else
@@ -127,6 +131,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
+                Log.Error(exception);
                 throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
             }
 

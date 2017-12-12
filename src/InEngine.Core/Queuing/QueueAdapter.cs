@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using InEngine.Core.Exceptions;
+using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
 
@@ -10,6 +10,7 @@ namespace InEngine.Core.Queuing
 {
     public class QueueAdapter : IQueueClient
     {
+        public ILog Log { get; set; } = new Log();
         public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
         public IQueueClient QueueClient { get; set; }
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }

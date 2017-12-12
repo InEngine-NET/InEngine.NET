@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
+using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Message;
 using StackExchange.Redis;
 
@@ -11,6 +12,7 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class RedisClient : IQueueClient
     {
+        public ILog Log { get; set; } = new Log();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
@@ -78,13 +80,14 @@ namespace InEngine.Core.Queuing.Clients
                     Task.Factory.StartNew(Consume, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
                 });
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException exception)
             {
+                Log.Debug(exception);
                 return;
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message);
+                Log.Error(exception);
             }
         }
 
@@ -108,6 +111,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
+                Log.Error(exception);
                 Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
                 if (command.CommandLifeCycle.ShouldRetry())
                     Redis.ListLeftPush(PendingQueueName, commandEnvelope.SerializeToJson());
@@ -124,6 +128,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
+                Log.Error(exception);
                 throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue: {InProgressQueueName}", exception);
             }
 
