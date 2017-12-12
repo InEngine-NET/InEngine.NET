@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
@@ -9,6 +10,7 @@ namespace InEngine.Core.Queuing
 {
     public class QueueAdapter : IQueueClient
     {
+        public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
         public IQueueClient QueueClient { get; set; }
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
         public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
@@ -46,9 +48,19 @@ namespace InEngine.Core.Queuing
             QueueClient.Publish(command);
         }
 
+        public void Consume(CancellationToken CancellationToken)
+        {
+            QueueClient.Consume(CancellationToken);
+        }
+
         public ICommandEnvelope Consume()
         {
             return QueueClient.Consume();
+        }
+
+        public void Recover()
+        {
+            QueueClient.Recover();
         }
 
         public static AbstractCommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
