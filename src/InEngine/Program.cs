@@ -4,6 +4,7 @@ using System.ServiceProcess;
 using InEngine.Core;
 using Mono.Unix;
 using Mono.Unix.Native;
+using NLog;
 
 namespace InEngine
 {
@@ -18,14 +19,16 @@ namespace InEngine
         }
 
         /// <summary>
-        /// Start the scheduler as a service or as a CLI program in the foreground.
+        /// Start the server as a service or as a CLI program in the foreground.
         /// </summary>
         public static void RunServer()
         {
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
 
             if (isRunningUnderMono) {
-                var serverHost = new ServerHost();
+                var serverHost = new ServerHost(
+                    NLogAdapter.Make()
+                );
                 serverHost.Start();
                 Console.WriteLine("CTRL+C to exit.");
                 UnixSignal.WaitAny(new[] {

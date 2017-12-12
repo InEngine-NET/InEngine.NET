@@ -15,6 +15,15 @@ namespace InEngine.Core.IO
         public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
         public ConsoleColor LineColor { get; set; } = ConsoleColor.White;
         public List<string> Buffer { get; set; } = new List<string>();
+        public bool IsBufferEnabled { get; set; }
+
+        public Write() : this(true)
+        {}
+
+        public Write(bool isBufferEnabled)
+        {
+            IsBufferEnabled = isBufferEnabled;
+        }
 
         public IWrite Newline(int count = 1)
         {
@@ -45,14 +54,7 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredLine(object val, ConsoleColor consoleColor)
         {
-            if (val == null)
-                val = String.Empty;
-            consoleOutputLock.WaitOne();
-            Console.ForegroundColor = consoleColor;
-            Console.WriteLine(val);
-            Console.ResetColor();
-            consoleOutputLock.ReleaseMutex();
-            Buffer.Add(val.ToString());
+            WriteColoredLineOrText(val, consoleColor, true);
             return this;
         }
 
@@ -78,15 +80,27 @@ namespace InEngine.Core.IO
 
         public IWrite ColoredText(object val, ConsoleColor consoleColor)
         {
+            WriteColoredLineOrText(val, consoleColor, false);
+            return this;
+        }
+
+        void WriteColoredLineOrText(object val, ConsoleColor consoleColor, bool writeLine)
+        {
             if (val == null)
                 val = String.Empty;
             consoleOutputLock.WaitOne();
             Console.ForegroundColor = consoleColor;
-            Console.Write(val);
+            if (writeLine)
+                Console.WriteLine(val);
+            else
+                Console.Write(val);
             Console.ResetColor();
+            if (IsBufferEnabled) {
+                Buffer.Add(val.ToString());
+                if (writeLine)
+                    Buffer.Add(Environment.NewLine);
+            }
             consoleOutputLock.ReleaseMutex();
-            Buffer.Add(val.ToString());
-            return this;
         }
 
         public string FlushBuffer()
