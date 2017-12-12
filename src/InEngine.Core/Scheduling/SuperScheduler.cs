@@ -23,6 +23,7 @@ namespace InEngine.Core.Scheduling
                 ["quartz.threadPool.threadPriority"] = SchedulerThreadPriority
             }).GetScheduler();
 
+
             PluginAssembly.Load<IPlugin>().ForEach(x => {
                 x.Plugins.ForEach(y => y.Schedule(Schedule));
             });

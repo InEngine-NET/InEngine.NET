@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Common.Logging;
 using InEngine.Core.Exceptions;
-using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
-        public ILog Log { get; set; } = new Log();
+        public ILog Log { get; set; } = LogManager.GetLogger<FileClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }

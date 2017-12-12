@@ -1,5 +1,6 @@
 # Configuration 
 
+## InEngine Settings
 Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution.
 The **-c, --configuration** argument can also be used to specify an alternate configuration file.
 
@@ -65,3 +66,30 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 | RedisPort                 | integer   | Redis's port.                                                         |
 | RedisDb                   | integer   | The Redis database - 0-15                                             |
 | RedisPassword             | string    | The Redis auth password                                               |
+
+
+## Logging Settings
+
+Any exceptions thrown by a command will be logged, provided NLog is configured to log exceptions. 
+The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file needs to be setup with something like this: 
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <targets>
+        <target name="logfile" xsi:type="File" fileName="inengine.log" />
+    </targets>
+
+    <rules>
+        <logger name="*" minlevel="Error" writeTo="logfile" />
+    </rules>
+</nlog>
+```
+
+InEngine.Core does not depend explicitly on NLog, but rather [Common.Logging](http://net-commons.github.io/common-logging/).
+This means that any logging framework that Common.Logging supports can be used.
+Configuring Common.Logging to use a different logging framework is out of the scope of this documentation.
+
+

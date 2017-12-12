@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Logging;
 using InEngine.Core.Exceptions;
-using InEngine.Core.Logging;
 using InEngine.Core.Queuing.Message;
 using StackExchange.Redis;
 
@@ -12,7 +12,7 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class RedisClient : IQueueClient
     {
-        public ILog Log { get; set; } = new Log();
+        public ILog Log { get; set; } = LogManager.GetLogger<RedisClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";

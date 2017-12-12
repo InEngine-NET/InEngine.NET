@@ -235,22 +235,3 @@ Copyright © 2017 Ethan Hann
                       queue.
 ```
 
-## Logging
-
-Any exceptions thrown by a command will be logged provided NLog is configured to record errors. 
-The [NLog configuration](https://github.com/NLog/NLog/wiki/Tutorial#configuration) file needs to be setup with something like this: 
-
-```xml
-<?xml version="1.0" encoding="utf-8" ?>
-<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-    <targets>
-        <target name="logfile" xsi:type="File" fileName="inengine.log" />
-    </targets>
-
-    <rules>
-        <logger name="*" minlevel="Error" writeTo="logfile" />
-    </rules>
-</nlog>
-```

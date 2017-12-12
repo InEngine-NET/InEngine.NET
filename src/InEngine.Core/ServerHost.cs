@@ -1,5 +1,4 @@
 ﻿using System;
-using InEngine.Core.Logging;
 using InEngine.Core.Queuing;
 using InEngine.Core.Scheduling;
 
@@ -10,21 +9,16 @@ namespace InEngine.Core
         public SuperScheduler SuperScheduler { get; set; }
         public Dequeue Dequeue { get; set; }
 
-        public ServerHost() : this(null)
-        {}
-
-        public ServerHost(ILog log)
+        public ServerHost()
         {
-            //SuperScheduler = new SuperScheduler();
-            //SuperScheduler.Initialize();
+            SuperScheduler = new SuperScheduler();
+            SuperScheduler.Initialize();
             Dequeue = new Dequeue();
-            if (log != null)
-                Dequeue.Log = log;
         }
 
         public void Start()
         {
-            //SuperScheduler.Start();
+            SuperScheduler.Start();
             StartDequeueAsync();
         }
 

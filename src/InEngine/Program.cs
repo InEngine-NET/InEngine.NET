@@ -26,9 +26,7 @@ namespace InEngine
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
 
             if (isRunningUnderMono) {
-                var serverHost = new ServerHost(
-                    NLogAdapter.Make()
-                );
+                var serverHost = new ServerHost();
                 serverHost.Start();
                 Console.WriteLine("CTRL+C to exit.");
                 UnixSignal.WaitAny(new[] {

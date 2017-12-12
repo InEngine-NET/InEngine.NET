@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using InEngine.Core.Logging;
+using Common.Logging;
 
 namespace InEngine.Core.Queuing
 {
@@ -12,7 +12,7 @@ namespace InEngine.Core.Queuing
         IList<QueueAdapter> queueAdapters;
         public CancellationTokenSource CancellationTokenSource { get; set; }
         public QueueSettings QueueSettings { get; set; }
-        public static ILog Log { get; set; } = new Log();
+        public ILog Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
 
         public Dequeue()
         {
@@ -44,7 +44,6 @@ namespace InEngine.Core.Queuing
                 return Task.Factory.StartNew(() => {
                     var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings);
                     queue.Id = i;
-                    queue.Log = Log;
                     queueAdapters.Add(queue);
                     queue.Consume(CancellationTokenSource.Token);
                 }, TaskCreationOptions.LongRunning);

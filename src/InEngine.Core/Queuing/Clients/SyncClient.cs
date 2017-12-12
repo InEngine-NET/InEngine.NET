@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using InEngine.Core.Logging;
+using Common.Logging;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class SyncClient : IQueueClient
     {
-        public ILog Log { get; set; } = new Log();
+        public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string QueueName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

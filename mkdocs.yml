@@ -16,6 +16,7 @@ pages:
   - scheduling.md
   - queuing.md
   - configuration.md
+  - server.md
 
 extra_css:
     - css/style.css

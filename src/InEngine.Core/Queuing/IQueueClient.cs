@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using InEngine.Core.Logging;
+using Common.Logging;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing
