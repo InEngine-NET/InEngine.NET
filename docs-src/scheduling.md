@@ -283,9 +283,9 @@ sudo apt-get install supervisor
 Supervisor configuration files are stored in the **/etc/supervisor/conf.d** directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called **/etc/supervisor/conf.d/inengine-scheduler.conf**. 
 
 ```ini
-[program:inengine-scheduler]
+[program:inengine]
 process_name=%(program_name)s_%(process_num)02d
-directory=/path/to/scheduler
+directory=/path/to/inengine
 command=mono inengine.exe -s
 autostart=true
 autorestart=true
@@ -307,7 +307,7 @@ sudo supervisorctl update
 Now, simply start the scheduler workers with the **supervisorctl** program:
 
 ```bash
-sudo supervisorctl start inengine-scheduler:*
+sudo supervisorctl start inengine:*
 ```
 
 ### In a Container with Docker
