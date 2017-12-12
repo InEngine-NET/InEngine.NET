@@ -9,16 +9,14 @@ namespace InEngine
     public class ServerHost : IDisposable
     {
         public SuperScheduler SuperScheduler { get; set; }
-        public Dequeue ConsumeServer { get; set; }
+        public Dequeue Dequeue { get; set; }
 
         public ServerHost()
         {
             SuperScheduler = new SuperScheduler();
             Common.Logging.LogManager.Adapter = new Common.Logging.Simple.ConsoleOutLoggerFactoryAdapter { Level = Common.Logging.LogLevel.Info };
             SuperScheduler.Initialize();
-            ConsumeServer = new Dequeue() {
-                TaskCount = 10
-            };
+            Dequeue = new Dequeue();
         }
 
         public void Dispose()
@@ -34,7 +32,7 @@ namespace InEngine
 
         public async void StartQueueServerAsync()
         {
-            await ConsumeServer.StartAsync();
+            await Dequeue.StartAsync();
         }
     }
 }

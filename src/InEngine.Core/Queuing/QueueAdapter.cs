@@ -16,9 +16,10 @@ namespace InEngine.Core.Queuing
         public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
         public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
 
-        public static QueueAdapter Make(bool useSecondaryQueue = false)
+        public static QueueAdapter Make(bool useSecondaryQueue = false, QueueSettings queueSettings = null)
         {
-            var queueSettings = InEngineSettings.Make().Queue;
+            if (queueSettings == null)
+                queueSettings = InEngineSettings.Make().Queue;
             var queueDriverName = queueSettings.QueueDriver.ToLower();
             var queue = new QueueAdapter();
 

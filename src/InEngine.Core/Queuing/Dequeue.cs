@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace InEngine.Core.Queuing
 {
-    public class Dequeue
+    public class Dequeue : IDisposable
     {
         IList<QueueAdapter> queueAdapters;
         public CancellationTokenSource CancellationTokenSource { get; set; }
-        public int TaskCount { get; set; }
+        public QueueSettings QueueSettings { get; set; }
 
         public Dequeue()
         {
@@ -20,12 +20,15 @@ namespace InEngine.Core.Queuing
 
         public async Task StartAsync()
         {
+            if (QueueSettings == null)
+                QueueSettings = InEngineSettings.Make().Queue;
+            
             // Create dequeue tasks for primary and secondary queues.
             var allTasks = new List<Task>();
             Console.WriteLine("Start dequeue tasks for primary queue...");
-            allTasks.AddRange(MakeTasks());
+            allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
             Console.WriteLine("Start dequeue tasks for secondary queue...");
-            allTasks.AddRange(MakeTasks());
+            allTasks.AddRange(MakeTasks(false, QueueSettings.SecondaryQueueConsumers));
             await Task.WhenAll(allTasks);
 
             // Recover from restart, if necessary.
@@ -33,12 +36,12 @@ namespace InEngine.Core.Queuing
             QueueAdapter.Make(true).Recover();
         }
 
-        public IList<Task> MakeTasks()
+        IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
         {
-            return Enumerable.Range(0, TaskCount).Select((i) => {
+            return Enumerable.Range(0, numberOfTasks).Select((i) => {
                 Console.WriteLine($"Registering Dequeuer #{i}");
                 return Task.Factory.StartNew(() => {
-                    var queue = QueueAdapter.Make();
+                    var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings);
                     queue.Id = i;
                     queueAdapters.Add(queue);
                     queue.Consume(CancellationTokenSource.Token);
