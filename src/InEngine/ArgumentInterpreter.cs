@@ -47,11 +47,11 @@ namespace InEngine
 
                 InEngineSettings.ConfigurationFile = options.ConfigurationFile;
 
-                if (options.ShouldRunScheduler) 
+                if (options.ShouldRunServer) 
                 {
                     Write.Info(CliLogo);
-                    Write.Line("Starting the scheduler...").Newline();
-                    Program.RunScheduler();
+                    Write.Line("Starting...").Newline();
+                    Program.RunServer();
                     ExitWithSuccess();
                 }
 

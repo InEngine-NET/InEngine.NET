@@ -27,24 +27,5 @@ namespace InEngine.Core.Queuing
         [VerbOption("queue:peek", HelpText = "Peek at messages in the primary or secondary queues.")]
         public Peek Peek { get; set; }
 
-        public override void Schedule(ISchedule schedule)
-        {
-            var queueSettings = InEngineSettings.Make().Queue;
-            ScheduleQueueConsumerJobs(schedule, queueSettings.PrimaryQueueConsumers);
-            ScheduleQueueConsumerJobs(schedule, queueSettings.SecondaryQueueConsumers, true);
-        }
-
-        void ScheduleQueueConsumerJobs(ISchedule schedule, int consumers, bool useSecondaryQueue = false)
-        {
-            if (consumers < 0)
-                throw new ArgumentOutOfRangeException(nameof(consumers), consumers, "The number of queue consumers must be 0 or greater.");
-
-            foreach (var index in Enumerable.Range(0, consumers).ToList())
-                schedule.Command(new Consume() {
-                    ScheduleId = $"{(useSecondaryQueue ? "secondary" : "primary")}:{index.ToString()}",
-                    UseSecondaryQueue = useSecondaryQueue
-                })
-                .EverySecond();
-        }
     }
 }

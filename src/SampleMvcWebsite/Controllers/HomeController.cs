@@ -20,7 +20,7 @@ namespace SampleMvcWebsite.Controllers
             ViewData["Version"] = mvcName.Version.Major + "." + mvcName.Version.Minor;
             ViewData["Runtime"] = isMono ? "Mono" : ".NET";
 
-            //Enqueue.Command(new SayHello()).Dispatch();
+            Enqueue.Command(new SayHello()).Dispatch();
 
             return View();
         }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Message;
 
@@ -9,6 +11,7 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
+        public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
         public bool UseCompression { get; set; }
@@ -56,6 +59,27 @@ namespace InEngine.Core.Queuing.Clients
             {
                 streamWriter.Write(serializedMessage);
             }   
+        }
+
+        public void Consume(CancellationToken cancellationToken)
+        {
+            try
+            {
+                while(true)
+                {
+                    if (Consume() == null)
+                        Thread.Sleep(5000);   
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
         }
 
         public ICommandEnvelope Consume()
@@ -116,6 +140,9 @@ namespace InEngine.Core.Queuing.Clients
                 .ToList()
                 .ForEach(x => x.MoveTo(Path.Combine(PendingQueuePath, x.Name)));
         }
+
+        public void Recover()
+        {}
 
         public long GetFailedQueueLength()
         {

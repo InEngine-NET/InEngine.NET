@@ -19,7 +19,7 @@ namespace InEngine
         /// <summary>
         /// Start the scheduler as a service or as a CLI program in the foreground.
         /// </summary>
-        public static void RunScheduler()
+        public static void RunServer()
         {
             var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
 

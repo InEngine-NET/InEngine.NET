@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class SyncClient : IQueueClient
     {
+        public int Id { get; set; } = 0;
         public string QueueBaseName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string QueueName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool UseCompression { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -13,6 +15,14 @@ namespace InEngine.Core.Queuing.Clients
         public void Publish(AbstractCommand command)
         {
             command.Run();
+        }
+
+        public void Recover()
+        {}
+
+        public void Consume(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public ICommandEnvelope Consume()
