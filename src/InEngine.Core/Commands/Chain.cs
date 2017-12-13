@@ -20,6 +20,7 @@ namespace InEngine.Core.Commands
                 }
                 catch (Exception exception)
                 {
+                    Log.Error($"Chain command failed at command #{x}", exception);
                     x.Failed(exception);
                     throw new CommandChainFailedException(x.Name, exception);
                 }
