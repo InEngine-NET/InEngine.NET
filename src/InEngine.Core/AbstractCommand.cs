@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommandLine;
-using CommandLine.Text;
+using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.LifeCycle;
@@ -13,6 +12,7 @@ namespace InEngine.Core
 {
     abstract public class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle
     {
+        protected ILog Log { get; set; }
         public CommandLifeCycle CommandLifeCycle { get; set; }
         public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
@@ -23,6 +23,7 @@ namespace InEngine.Core
 
         protected AbstractCommand()
         {
+            Log = LogManager.GetLogger(GetType());
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
@@ -53,6 +54,7 @@ namespace InEngine.Core
             }
             catch (Exception exception)
             {
+                Log.Error(this, exception);
                 Failed(exception);
                 throw new CommandFailedException("Command failed. See inner exception for details.", exception);
             }

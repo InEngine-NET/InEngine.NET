@@ -5,12 +5,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using CommandLine;
+using Common.Logging;
 using InEngine.Core.Exceptions;
 
 namespace InEngine.Core
 {
     public class PluginAssembly
     {
+        ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
+
         public Assembly Assembly { get; set; }
         public string Name { get { return Assembly.GetName().Name; } }
         public string Version { get { return Assembly.GetName().Version.ToString(); } }
@@ -34,6 +37,7 @@ namespace InEngine.Core
             }
             catch (Exception exception)
             {
+                LogManager.GetLogger<PluginAssembly>().Error(exception);
                 throw new PluginNotFoundException($"Plugin not found at {path}", exception);
             }
         }
@@ -50,6 +54,7 @@ namespace InEngine.Core
             }
             catch (Exception exception)
             {
+                LogManager.GetLogger<PluginAssembly>().Error(exception);
                 throw new PluginNotFoundException("Could not load InEngine.Core plugin.", exception);
             }
 

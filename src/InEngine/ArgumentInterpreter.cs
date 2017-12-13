@@ -1,23 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
+using Common.Logging;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
-using NLog;
 using InEngine.Core.IO;
-using System.Collections.Generic;
 
 namespace InEngine
 {
     public class ArgumentInterpreter
     {
-        public Logger Logger { get; set; }
+        public ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
         public string CliLogo { get; set; }
         public IWrite Write { get; set; } = new Write();
 
         public ArgumentInterpreter()
         {
-            Logger = LogManager.GetCurrentClassLogger();
             CliLogo = @"
   ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
@@ -80,13 +79,13 @@ namespace InEngine
         {
             if (string.IsNullOrWhiteSpace(message))
                 message = "success";
-            Logger.Debug($"✔ {message}");
+            Log.Debug($"✔ {message}");
             Environment.Exit(ExitCodes.success);
         }
 
         public void ExitWithFailure(string message = null)
         {
-            Logger.Error(MakeErrorMessage(message));
+            Log.Error(MakeErrorMessage(message));
             Write.Error(message);
             Environment.Exit(ExitCodes.fail);
         }
@@ -94,7 +93,7 @@ namespace InEngine
         public void ExitWithFailure(Exception exception = null)
         {
             var ex = exception ?? new Exception("Unspecified failure");
-            Logger.Error(ex, MakeErrorMessage(ex.Message));
+            Log.Error(MakeErrorMessage(ex.Message), ex);
             Write.Error(ex.Message);
             Environment.Exit(ExitCodes.fail);
         }
