@@ -383,6 +383,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#inengine-settings" title="InEngine Settings" class="md-nav__link">
+    InEngine Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
     Top-level Settings
   </a>
@@ -403,12 +410,31 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#logging-settings" title="Logging Settings" class="md-nav__link">
+    Logging Settings
+  </a>
+  
+</li>
+      
       
       
     </ul>
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/" title="Server" class="md-nav__link">
+      Server
+    </a>
   </li>
 
         
@@ -438,6 +464,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#inengine-settings" title="InEngine Settings" class="md-nav__link">
+    InEngine Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
     Top-level Settings
   </a>
@@ -458,6 +491,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#logging-settings" title="Logging Settings" class="md-nav__link">
+    Logging Settings
+  </a>
+  
+</li>
+      
       
       
     </ul>
@@ -474,6 +514,7 @@
                 
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<h2 id="inengine-settings">InEngine Settings<a class="headerlink" href="#inengine-settings" title="Permanent link">&para;</a></h2>
 <p>Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution.
 The <strong>-c, --configuration</strong> argument can also be used to specify an alternate configuration file.</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
@@ -611,6 +652,27 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
 </tr>
 </tbody>
 </table>
+<h2 id="logging-settings">Logging Settings<a class="headerlink" href="#logging-settings" title="Permanent link">&para;</a></h2>
+<p>Any exceptions thrown by a command will be logged, provided NLog is configured to log exceptions. 
+The <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file needs to be setup with something like this: </p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
+      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;targets&gt;</span>
+        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;inengine.log&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/targets&gt;</span>
+
+    <span class="nt">&lt;rules&gt;</span>
+        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Error&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/rules&gt;</span>
+<span class="nt">&lt;/nlog&gt;</span>
+</pre></div>
+
+
+<p>InEngine.Core does not depend explicitly on NLog, but rather <a href="http://net-commons.github.io/common-logging/">Common.Logging</a>.
+This means that any logging framework that Common.Logging supports can be used.
+Configuring Common.Logging to use a different logging framework is out of the scope of this documentation.</p>
                 
                   
                 
@@ -643,6 +705,20 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
             </div>
           </a>
         
+        
+          <a href="../server/" title="Server" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Server
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>

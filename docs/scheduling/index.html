@@ -397,67 +397,6 @@
     Running the Scheduler
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#manually-from-the-cli" title="Manually from the CLI" class="md-nav__link">
-    Manually from the CLI
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
-    On Windows as a Service
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#on-linux-with-supervisor" title="On Linux with Supervisor" class="md-nav__link">
-    On Linux with Supervisor
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installing-supervisor" title="Installing Supervisor" class="md-nav__link">
-    Installing Supervisor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuring-supervisor" title="Configuring Supervisor" class="md-nav__link">
-    Configuring Supervisor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starting-supervisor" title="Starting Supervisor" class="md-nav__link">
-    Starting Supervisor
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
-    In a Container with Docker
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
       
@@ -489,6 +428,18 @@
   <li class="md-nav__item">
     <a href="../configuration/" title="Configuration" class="md-nav__link">
       Configuration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/" title="Server" class="md-nav__link">
+      Server
     </a>
   </li>
 
@@ -556,67 +507,6 @@
   <a href="#running-the-scheduler" title="Running the Scheduler" class="md-nav__link">
     Running the Scheduler
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#manually-from-the-cli" title="Manually from the CLI" class="md-nav__link">
-    Manually from the CLI
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
-    On Windows as a Service
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#on-linux-with-supervisor" title="On Linux with Supervisor" class="md-nav__link">
-    On Linux with Supervisor
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installing-supervisor" title="Installing Supervisor" class="md-nav__link">
-    Installing Supervisor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuring-supervisor" title="Configuring Supervisor" class="md-nav__link">
-    Configuring Supervisor
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starting-supervisor" title="Starting Supervisor" class="md-nav__link">
-    Starting Supervisor
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
-    In a Container with Docker
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -836,7 +726,7 @@ For example, this command's <strong>Foo</strong> property will be auto-wired to 
 
 
 <h2 id="running-the-scheduler">Running the Scheduler<a class="headerlink" href="#running-the-scheduler" title="Permanent link">&para;</a></h2>
-<h3 id="manually-from-the-cli">Manually from the CLI<a class="headerlink" href="#manually-from-the-cli" title="Permanent link">&para;</a></h3>
+<p>There are a <a href="../server">variety of ways</a> to run the scheduler. The simplest way is from the command line. </p>
 <p>Running the scheduler from the CommandLine is useful for debugging or local development:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -s
 </pre></div>
@@ -844,66 +734,6 @@ For example, this command's <strong>Foo</strong> property will be auto-wired to 
 
 <p>It can also be run on Mac and Linux with Mono via a shell wrapper script:</p>
 <div class="codehilite"><pre><span></span>./inengine -s
-</pre></div>
-
-
-<h3 id="on-windows-as-a-service">On Windows as a Service<a class="headerlink" href="#on-windows-as-a-service" title="Permanent link">&para;</a></h3>
-<p>Run the <strong>Install.ps1</strong> PowerShell script in the scheduler directory to install the scheduler in place. 
-The script needs to be run as an administrator. 
-The script will register the service at the location where the script is run.</p>
-<div class="codehilite"><pre><span></span>ps Install.ps1
-</pre></div>
-
-
-<p>Simply run the <strong>Uninstall.ps1</strong> script with elevated permissions to remove the service.</p>
-<div class="codehilite"><pre><span></span>ps Uninstall.ps1
-</pre></div>
-
-
-<h3 id="on-linux-with-supervisor">On Linux with Supervisor<a class="headerlink" href="#on-linux-with-supervisor" title="Permanent link">&para;</a></h3>
-<p>Supervisor is a process control system for Linux. 
-It has extensive <a href="http://supervisord.org/index.html">documentation</a>, but the following should be enough to get started.</p>
-<h4 id="installing-supervisor">Installing Supervisor<a class="headerlink" href="#installing-supervisor" title="Permanent link">&para;</a></h4>
-<p>This command installs Supervisor on Ubuntu:</p>
-<div class="codehilite"><pre><span></span>sudo apt-get install supervisor
-</pre></div>
-
-
-<h4 id="configuring-supervisor">Configuring Supervisor<a class="headerlink" href="#configuring-supervisor" title="Permanent link">&para;</a></h4>
-<p>Supervisor configuration files are stored in the <strong>/etc/supervisor/conf.d</strong> directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called <strong>/etc/supervisor/conf.d/inengine-scheduler.conf</strong>. </p>
-<div class="codehilite"><pre><span></span><span class="k">[program:inengine-scheduler]</span>
-<span class="na">process_name</span><span class="o">=</span><span class="s">%(program_name)s_%(process_num)02d</span>
-<span class="na">directory</span><span class="o">=</span><span class="s">/path/to/scheduler</span>
-<span class="na">command</span><span class="o">=</span><span class="s">mono inengine.exe -s</span>
-<span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
-<span class="na">autorestart</span><span class="o">=</span><span class="s">true</span>
-<span class="na">user</span><span class="o">=</span><span class="s">InEngine</span>
-<span class="na">numprocs</span><span class="o">=</span><span class="s">1</span>
-<span class="na">redirect_stderr</span><span class="o">=</span><span class="s">true</span>
-<span class="na">stdout_logfile</span><span class="o">=</span><span class="s">./scheduler.log</span>
-</pre></div>
-
-
-<h4 id="starting-supervisor">Starting Supervisor<a class="headerlink" href="#starting-supervisor" title="Permanent link">&para;</a></h4>
-<p>Whenever a configuration change happens to files in the Supervisor config files, Supervisor needs to be instructed to reload its configuration.</p>
-<div class="codehilite"><pre><span></span>sudo supervisorctl reread
-sudo supervisorctl update
-</pre></div>
-
-
-<p>Now, simply start the scheduler workers with the <strong>supervisorctl</strong> program:</p>
-<div class="codehilite"><pre><span></span>sudo supervisorctl start inengine-scheduler:*
-</pre></div>
-
-
-<h3 id="in-a-container-with-docker">In a Container with Docker<a class="headerlink" href="#in-a-container-with-docker" title="Permanent link">&para;</a></h3>
-<p>Install <a href="https://www.docker.com/what-docker">Docker</a> first, then pull the <strong>ethanhann/inengine</strong> image:</p>
-<div class="codehilite"><pre><span></span>docker pull ethanhann/inengine:latest
-</pre></div>
-
-
-<p>Now run the scheduler:</p>
-<div class="codehilite"><pre><span></span>docker run --rm inengine -s
 </pre></div>
                 
                   

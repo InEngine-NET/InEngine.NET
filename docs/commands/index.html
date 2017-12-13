@@ -401,13 +401,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#logging" title="Logging" class="md-nav__link">
-    Logging
-  </a>
-  
-</li>
-      
       
       
     </ul>
@@ -449,6 +442,18 @@
   <li class="md-nav__item">
     <a href="../configuration/" title="Configuration" class="md-nav__link">
       Configuration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/" title="Server" class="md-nav__link">
+      Server
     </a>
   </li>
 
@@ -529,13 +534,6 @@
         <li class="md-nav__item">
   <a href="#view-a-commands-help-text" title="View a Command's Help Text" class="md-nav__link">
     View a Command's Help Text
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#logging" title="Logging" class="md-nav__link">
-    Logging
   </a>
   
 </li>
@@ -756,24 +754,6 @@ Copyright © 2017 Ethan Hann
 
   --secondary         (Default: False) Publish the command to the secondary 
                       queue.
-</pre></div>
-
-
-<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
-<p>Any exceptions thrown by a command will be logged provided NLog is configured to record errors. 
-The <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file needs to be setup with something like this: </p>
-<div class="codehilite"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
-<span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
-      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
-
-    <span class="nt">&lt;targets&gt;</span>
-        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;inengine.log&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/targets&gt;</span>
-
-    <span class="nt">&lt;rules&gt;</span>
-        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Error&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/rules&gt;</span>
-<span class="nt">&lt;/nlog&gt;</span>
 </pre></div>
                 
                   

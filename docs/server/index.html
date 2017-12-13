@@ -34,7 +34,7 @@
     
     
       
-        <title>License - InEngine.NET</title>
+        <title>The InEngine Server - InEngine.NET</title>
       
     
     
@@ -98,7 +98,7 @@
                 InEngine.NET
               </span>
               <span class="md-header-nav__topic">
-                License
+                The InEngine Server
               </span>
             
           
@@ -179,7 +179,7 @@
   
     <li class="md-tabs__item">
       
-        <a href=".." title="Home" class="md-tabs__link md-tabs__link--active">
+        <a href=".." title="Home" class="md-tabs__link">
           Home
         </a>
       
@@ -192,7 +192,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../commands/" title="Documentation" class="md-tabs__link">
+        <a href="../commands/" title="Documentation" class="md-tabs__link md-tabs__link--active">
           Documentation
         </a>
       
@@ -249,12 +249,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
     
     <label class="md-nav__link" for="nav-1">
       Home
@@ -282,18 +280,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
-    
-    
-    <a href="./" title="License" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
       License
     </a>
-    
   </li>
 
         
@@ -306,10 +297,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Documentation
@@ -373,11 +366,108 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../server/" title="Server" class="md-nav__link">
-      Server
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        The InEngine Server
+      </label>
+    
+    <a href="./" title="The InEngine Server" class="md-nav__link md-nav__link--active">
+      The InEngine Server
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-server" title="Running the Server" class="md-nav__link">
+    Running the Server
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-foreground" title="In the Foreground" class="md-nav__link">
+    In the Foreground
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
+    On Windows as a Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-linux-with-supervisor" title="On Linux with Supervisor" class="md-nav__link">
+    On Linux with Supervisor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-supervisor" title="Installing Supervisor" class="md-nav__link">
+    Installing Supervisor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-supervisor" title="Configuring Supervisor" class="md-nav__link">
+    Configuring Supervisor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-supervisor" title="Starting Supervisor" class="md-nav__link">
+    Starting Supervisor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
+    In a Container with Docker
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -393,31 +483,174 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-server" title="Running the Server" class="md-nav__link">
+    Running the Server
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-foreground" title="In the Foreground" class="md-nav__link">
+    In the Foreground
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
+    On Windows as a Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-linux-with-supervisor" title="On Linux with Supervisor" class="md-nav__link">
+    On Linux with Supervisor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-supervisor" title="Installing Supervisor" class="md-nav__link">
+    Installing Supervisor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-supervisor" title="Configuring Supervisor" class="md-nav__link">
+    Configuring Supervisor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-supervisor" title="Starting Supervisor" class="md-nav__link">
+    Starting Supervisor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-container-with-docker" title="In a Container with Docker" class="md-nav__link">
+    In a Container with Docker
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>License</h1>
-                
-                <p>The MIT License (MIT)</p>
-<p>Copyright (c) 2017 Ethan Hann</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+                <h1 id="the-inengine-server">The InEngine Server<a class="headerlink" href="#the-inengine-server" title="Permanent link">&para;</a></h1>
+<p>When run as a service, InEngine runs scheduled commands in the background and actively listens for commands to be queued.</p>
+<h2 id="running-the-server">Running the Server<a class="headerlink" href="#running-the-server" title="Permanent link">&para;</a></h2>
+<h3 id="in-the-foreground">In the Foreground<a class="headerlink" href="#in-the-foreground" title="Permanent link">&para;</a></h3>
+<p>Running the server from the CommandLine is useful for debugging or local development:</p>
+<div class="codehilite"><pre><span></span>inengine.exe -s
+</pre></div>
+
+
+<p>It can also be run on Mac and Linux with Mono via a shell wrapper script:</p>
+<div class="codehilite"><pre><span></span>./inengine -s
+</pre></div>
+
+
+<h3 id="on-windows-as-a-service">On Windows as a Service<a class="headerlink" href="#on-windows-as-a-service" title="Permanent link">&para;</a></h3>
+<p>Run the <strong>Install.ps1</strong> PowerShell script in the InEngine directory to install the InEngine as a service. 
+The script needs to be run as an administrator. 
+The script will register the service at the location where the script is run - i.e. put the files where you want them installed before running the installation script.</p>
+<div class="codehilite"><pre><span></span>ps Install.ps1
+</pre></div>
+
+
+<p>Simply run the <strong>Uninstall.ps1</strong> script with elevated permissions to remove the service.</p>
+<div class="codehilite"><pre><span></span>ps Uninstall.ps1
+</pre></div>
+
+
+<h3 id="on-linux-with-supervisor">On Linux with Supervisor<a class="headerlink" href="#on-linux-with-supervisor" title="Permanent link">&para;</a></h3>
+<p>Supervisor is a process control system for Linux. 
+It has extensive <a href="http://supervisord.org/index.html">documentation</a>, but the following should be enough to get started.</p>
+<h4 id="installing-supervisor">Installing Supervisor<a class="headerlink" href="#installing-supervisor" title="Permanent link">&para;</a></h4>
+<p>This command installs Supervisor on Ubuntu:</p>
+<div class="codehilite"><pre><span></span>sudo apt-get install supervisor
+</pre></div>
+
+
+<h4 id="configuring-supervisor">Configuring Supervisor<a class="headerlink" href="#configuring-supervisor" title="Permanent link">&para;</a></h4>
+<p>Supervisor configuration files are stored in the <strong>/etc/supervisor/conf.d</strong> directory. Multiple files can be created in this directory to specify different programs, or multiple instances of the same program, for Supervisor to monitor. Copy this sample config into a file called <strong>/etc/supervisor/conf.d/inengine-scheduler.conf</strong>. </p>
+<div class="codehilite"><pre><span></span><span class="k">[program:inengine]</span>
+<span class="na">process_name</span><span class="o">=</span><span class="s">%(program_name)s_%(process_num)02d</span>
+<span class="na">directory</span><span class="o">=</span><span class="s">/path/to/inengine</span>
+<span class="na">command</span><span class="o">=</span><span class="s">mono inengine.exe -s</span>
+<span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
+<span class="na">autorestart</span><span class="o">=</span><span class="s">true</span>
+<span class="na">user</span><span class="o">=</span><span class="s">InEngine</span>
+<span class="na">numprocs</span><span class="o">=</span><span class="s">1</span>
+<span class="na">redirect_stderr</span><span class="o">=</span><span class="s">true</span>
+<span class="na">stdout_logfile</span><span class="o">=</span><span class="s">./scheduler.log</span>
+</pre></div>
+
+
+<h4 id="starting-supervisor">Starting Supervisor<a class="headerlink" href="#starting-supervisor" title="Permanent link">&para;</a></h4>
+<p>Whenever a configuration change happens to files in the Supervisor config files, Supervisor needs to be instructed to reload its configuration.</p>
+<div class="codehilite"><pre><span></span>sudo supervisorctl reread
+sudo supervisorctl update
+</pre></div>
+
+
+<p>Now, simply start the server workers with the <strong>supervisorctl</strong> program:</p>
+<div class="codehilite"><pre><span></span>sudo supervisorctl start inengine:*
+</pre></div>
+
+
+<h3 id="in-a-container-with-docker">In a Container with Docker<a class="headerlink" href="#in-a-container-with-docker" title="Permanent link">&para;</a></h3>
+<p>Install <a href="https://www.docker.com/what-docker">Docker</a> first, then pull the <strong>ethanhann/inengine</strong> image:</p>
+<div class="codehilite"><pre><span></span>docker pull ethanhann/inengine:latest
+</pre></div>
+
+
+<p>Now run the InEngine in server mode:</p>
+<p>```bash
+docker run --rm inengine -s</p>
                 
                   
                 
@@ -436,7 +669,7 @@ SOFTWARE.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href=".." title="Quickstart" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../configuration/" title="Configuration" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -445,25 +678,11 @@ SOFTWARE.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Quickstart
+                Configuration
               </span>
             </div>
           </a>
         
-        
-          <a href="../commands/" title="Commands" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Commands
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
         
       </nav>
     </div>
