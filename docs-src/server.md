@@ -90,5 +90,5 @@ docker pull ethanhann/inengine:latest
 Now run the InEngine in server mode:
 
 ```bash
-docker run --rm inengine -s
+docker run --rm ethanhann/inengine -s
 ```
