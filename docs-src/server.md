@@ -61,7 +61,7 @@ autorestart=true
 user=InEngine
 numprocs=1
 redirect_stderr=true
-stdout_logfile=./scheduler.log
+stdout_logfile=./inengine.log
 ```
 
 #### Starting Supervisor
