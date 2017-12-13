@@ -1,4 +1,4 @@
-# The InEngine Server
+# Server
 
 When run as a service, InEngine runs scheduled commands in the background and actively listens for commands to be queued.
 
