@@ -28,7 +28,7 @@ The server can be run in Global.asax.cs:
 using System.Web;
 using InEngine.Core;
 
-namespace MyWeApp
+namespace MyWebApp
 {
     public class Global : HttpApplication
     {
