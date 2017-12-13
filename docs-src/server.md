@@ -4,6 +4,8 @@ When run as a service, InEngine runs scheduled commands in the background and ac
 
 ## Running the Server
 
+The server can be run in a variety of ways.
+
 ### In the Foreground
 
 Running the server from the CommandLine is useful for debugging or local development:
@@ -16,6 +18,34 @@ It can also be run on Mac and Linux with Mono via a shell wrapper script:
 
 ```bash
 ./inengine -s
+``` 
+
+### In ASP.NET 
+
+The server can be run in Global.asax.cs:
+
+```c#
+using System.Web;
+using InEngine.Core;
+
+namespace MyWeApp
+{
+    public class Global : HttpApplication
+    {
+        public ServerHost ServerHost { get; set; }
+
+        protected void Application_Start()
+        {
+            ServerHost = new ServerHost();
+            ServerHost.Start();
+        }
+
+        protected void Application_End()
+        {
+            ServerHost.Dispose();
+        }
+    }
+}
 ``` 
 
 ### On Windows as a Service

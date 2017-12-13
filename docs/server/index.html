@@ -410,6 +410,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#in-aspnet" title="In ASP.NET" class="md-nav__link">
+    In ASP.NET
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
     On Windows as a Service
   </a>
@@ -512,6 +519,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#in-aspnet" title="In ASP.NET" class="md-nav__link">
+    In ASP.NET
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#on-windows-as-a-service" title="On Windows as a Service" class="md-nav__link">
     On Windows as a Service
   </a>
@@ -582,6 +596,7 @@
                 <h1 id="server">Server<a class="headerlink" href="#server" title="Permanent link">&para;</a></h1>
 <p>When run as a service, InEngine runs scheduled commands in the background and actively listens for commands to be queued.</p>
 <h2 id="running-the-server">Running the Server<a class="headerlink" href="#running-the-server" title="Permanent link">&para;</a></h2>
+<p>The server can be run in a variety of ways.</p>
 <h3 id="in-the-foreground">In the Foreground<a class="headerlink" href="#in-the-foreground" title="Permanent link">&para;</a></h3>
 <p>Running the server from the CommandLine is useful for debugging or local development:</p>
 <div class="codehilite"><pre><span></span>inengine.exe -s
@@ -590,6 +605,32 @@
 
 <p>It can also be run on Mac and Linux with Mono via a shell wrapper script:</p>
 <div class="codehilite"><pre><span></span>./inengine -s
+</pre></div>
+
+
+<h3 id="in-aspnet">In ASP.NET<a class="headerlink" href="#in-aspnet" title="Permanent link">&para;</a></h3>
+<p>The server can be run in Global.asax.cs:</p>
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System.Web</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">InEngine.Core</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">MyWeApp</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">Global</span> <span class="p">:</span> <span class="n">HttpApplication</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="n">ServerHost</span> <span class="n">ServerHost</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+        <span class="k">protected</span> <span class="k">void</span> <span class="nf">Application_Start</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">ServerHost</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServerHost</span><span class="p">();</span>
+            <span class="n">ServerHost</span><span class="p">.</span><span class="n">Start</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">protected</span> <span class="k">void</span> <span class="nf">Application_End</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">ServerHost</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 
 
