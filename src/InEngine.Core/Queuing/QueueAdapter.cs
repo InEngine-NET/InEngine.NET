@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Common.Logging;
-using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
 
