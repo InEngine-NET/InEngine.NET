@@ -69,7 +69,7 @@ namespace InEngine.Core.Queuing.Commands
                 if (JsonFormat)
                     Line(commandEnvelope.SerializeToJson());
                 else
-                    konsoleForm.Write(QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope));
+                    konsoleForm.Write(commandEnvelope.GetCommandInstance());
             });
         }
     }

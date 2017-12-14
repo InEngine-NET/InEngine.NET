@@ -1,4 +1,6 @@
-﻿namespace InEngine.Core.Queuing
+﻿using InEngine.Core.Queuing.Clients;
+
+namespace InEngine.Core.Queuing
 {
     public class QueueSettings
     {
@@ -7,9 +9,8 @@
         public int SecondaryQueueConsumers { get; set; } = 8;
         public string QueueDriver { get; set; }
         public string QueueName { get; set; }
-        public string RedisHost { get; set; }
-        public int RedisPort { get; set; }
-        public int RedisDb { get; set; }
-        public string RedisPassword { get; set; }
+        public RedisClientSettings Redis { get; set; }
+        public RabbitMQClientSettings RabbitMQ { get; set; }
+        public FileClientSettings File { get; set; }
     }
 }

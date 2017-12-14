@@ -12,6 +12,8 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class RedisClient : IQueueClient
     {
+        public static RedisClientSettings ClientSettings { get; set; }
+
         public ILog Log { get; set; } = LogManager.GetLogger<RedisClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
@@ -21,19 +23,17 @@ namespace InEngine.Core.Queuing.Clients
         public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
         public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
         public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
-            var queueSettings = InEngineSettings.Make().Queue;
-            var redisConfig = ConfigurationOptions.Parse($"{queueSettings.RedisHost}:{queueSettings.RedisPort}");
-            redisConfig.Password = string.IsNullOrWhiteSpace(queueSettings.RedisPassword) ? 
+            var redisConfig = ConfigurationOptions.Parse($"{ClientSettings.Host}:{ClientSettings.Port}");
+            redisConfig.Password = string.IsNullOrWhiteSpace(ClientSettings.Password) ? 
                 null : 
-                queueSettings.RedisPassword;
+                ClientSettings.Password;
             redisConfig.AbortOnConnectFail = false;
             return ConnectionMultiplexer.Connect(redisConfig); 
         });
         public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
         public ConnectionMultiplexer _connectionMultiplexer;
-        public IDatabase Redis { get { return Connection.GetDatabase(RedisDb); } }
+        public IDatabase Redis { get { return Connection.GetDatabase(ClientSettings.Database); } }
         public bool UseCompression { get; set; }
-        public int RedisDb { get; set; }
 
         public RedisChannel RedisChannel { get; set; }
 
@@ -101,7 +101,7 @@ namespace InEngine.Core.Queuing.Clients
             if (commandEnvelope == null)
                 throw new CommandFailedException("Could not deserialize the command.");
 
-            var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+            var command = commandEnvelope.GetCommandInstance();
             command.CommandLifeCycle.IncrementRetry();
             commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
             try

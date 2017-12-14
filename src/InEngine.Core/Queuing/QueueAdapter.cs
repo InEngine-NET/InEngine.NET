@@ -24,22 +24,27 @@ namespace InEngine.Core.Queuing
             var queueDriverName = queueSettings.QueueDriver.ToLower();
             var queue = new QueueAdapter();
 
-            if (queueDriverName == "redis")
+            if (queueDriverName == "redis") {
+                RedisClient.ClientSettings = queueSettings.Redis;
                 queue.QueueClient = new RedisClient() {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
-                    RedisDb = queueSettings.RedisDb
-                };
-            else if (queueDriverName == "rabbitmq")
+                };   
+            }
+            else if (queueDriverName == "rabbitmq") {
+                RabbitMQClient.ClientSettings = queueSettings.RabbitMQ;
                 queue.QueueClient = new RabbitMQClient() {
                     QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression,
+                    UseCompression = queueSettings.UseCompression
                 };
-            else if (queueDriverName == "file")
+            }
+            else if (queueDriverName == "file") {
+                FileClient.ClientSettings = queueSettings.File;
                 queue.QueueClient = new FileClient() {
                     QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression,
+                    UseCompression = queueSettings.UseCompression
                 };
+            }
             else if (queueDriverName == "sync")
                 queue.QueueClient = new SyncClient();
             else
@@ -67,15 +72,6 @@ namespace InEngine.Core.Queuing
         public void Recover()
         {
             QueueClient.Recover();
-        }
-
-        public static AbstractCommand ExtractCommandInstanceFromMessage(ICommandEnvelope commandEnvelope)
-        {
-            var commandType = PluginAssembly.LoadFrom(commandEnvelope.PluginName)
-                                            .GetCommandType(commandEnvelope.CommandClassName);
-            if (commandType == null)
-                throw new CommandFailedException($"Could not locate command {commandEnvelope.CommandClassName}. Is the {commandEnvelope.PluginName} plugin registered in the settings file?");
-            return commandEnvelope.SerializedCommand.DeserializeFromJson<AbstractCommand>(commandEnvelope.IsCompressed);
         }
 
         public long GetPendingQueueLength()

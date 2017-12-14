@@ -12,6 +12,8 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class RabbitMQClient : IQueueClient, IDisposable
     {
+        public static RabbitMQClientSettings ClientSettings { get; set; } 
+
         public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
@@ -23,7 +25,10 @@ namespace InEngine.Core.Queuing.Clients
         public IConnection Connection { get {
                 if (_connection == null)
                     _connection = new ConnectionFactory() { 
-                        HostName = "localhost", 
+                        HostName = ClientSettings.Host,
+                        Port = ClientSettings.Port,
+                        UserName = ClientSettings.Username,
+                        Password = ClientSettings.Password,
                         AutomaticRecoveryEnabled = true 
                     }.CreateConnection();
                 return _connection; 
@@ -51,10 +56,6 @@ namespace InEngine.Core.Queuing.Clients
 
             Channel.ExchangeDeclare(QueueBaseName, ExchangeType.Direct);
             Channel.QueueDeclare(PendingQueueName, true, false, false);
-            Channel.BasicReturn += (model, eb) =>
-            {
-                throw new Exception("returned");
-            };
             var properties = Channel.CreateBasicProperties();
             properties.Persistent = true;
             Channel.QueueBind(PendingQueueName, QueueBaseName, QueueName, null);
@@ -80,7 +81,7 @@ namespace InEngine.Core.Queuing.Clients
                 if (commandEnvelope == null)
                     throw new CommandFailedException("Could not deserialize the command.");
 
-                var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+                var command = commandEnvelope.GetCommandInstance();
                 command.CommandLifeCycle.IncrementRetry();
                 commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
                 try
@@ -116,7 +117,7 @@ namespace InEngine.Core.Queuing.Clients
             if (commandEnvelope == null)
                 throw new CommandFailedException("Could not deserialize the command.");
 
-            var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+            var command = commandEnvelope.GetCommandInstance();
             command.CommandLifeCycle.IncrementRetry();
             commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
             try

@@ -11,12 +11,15 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
+        static Mutex consumeLock = new Mutex();
+        public static FileClientSettings ClientSettings { get; set; }
+
         public ILog Log { get; set; } = LogManager.GetLogger<FileClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
         public bool UseCompression { get; set; }
-        public string QueuePath { get { return $"{QueueBaseName}_{QueueName}"; } }
+        public string QueuePath { get { return Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}"); } }
         public string PendingQueuePath { 
             get { 
                 var path = $"{QueuePath}_Pending";
@@ -25,6 +28,7 @@ namespace InEngine.Core.Queuing.Clients
                 return path;
             } 
         }
+
         public string InProgressQueuePath
         {
             get
@@ -86,28 +90,26 @@ namespace InEngine.Core.Queuing.Clients
 
         public ICommandEnvelope Consume()
         {
-            var fileInfo = new DirectoryInfo(PendingQueuePath)
+            FileInfo fileInfo;
+            var inProgressFilePath = String.Empty;
+
+            consumeLock.WaitOne();
+            fileInfo = new DirectoryInfo(PendingQueuePath)
                 .GetFiles()
                 .OrderBy(x => x.LastWriteTimeUtc)
                 .FirstOrDefault();
-            if (fileInfo == null)
-                return null;
-            var inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
-
-            try 
-            {
+            if (fileInfo != null) {
+                inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
                 fileInfo.MoveTo(inProgressFilePath);
             }
-            catch (FileNotFoundException exception)
-            {
-                // Another process probably consumed the file when it was read and moved.
-                Log.Debug(exception);
+            if (fileInfo == null) {
+                consumeLock.ReleaseMutex();    
                 return null;
             }
-
+            consumeLock.ReleaseMutex();
+            
             var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope;
-
-            var command = QueueAdapter.ExtractCommandInstanceFromMessage(commandEnvelope);
+            var command = commandEnvelope.GetCommandInstance();
             command.CommandLifeCycle.IncrementRetry();
             commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
             try
