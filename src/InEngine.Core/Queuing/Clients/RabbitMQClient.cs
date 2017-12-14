@@ -23,14 +23,20 @@ namespace InEngine.Core.Queuing.Clients
         public bool UseCompression { get; set; }
         IConnection _connection;
         public IConnection Connection { get {
-                if (_connection == null)
-                    _connection = new ConnectionFactory() { 
+                if (_connection == null) {
+                    var factory = new ConnectionFactory() {
                         HostName = ClientSettings.Host,
                         Port = ClientSettings.Port,
-                        UserName = ClientSettings.Username,
-                        Password = ClientSettings.Password,
-                        AutomaticRecoveryEnabled = true 
-                    }.CreateConnection();
+                        AutomaticRecoveryEnabled = true
+                    };
+                    if (!string.IsNullOrWhiteSpace(ClientSettings.Username) && 
+                        !string.IsNullOrWhiteSpace(ClientSettings.Password)) {
+                        factory.UserName = ClientSettings.Username;
+                        factory.Password = ClientSettings.Password;
+                    }
+                        
+                    _connection = factory.CreateConnection();
+                }
                 return _connection; 
             } 
         }
