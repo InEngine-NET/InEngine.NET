@@ -38,10 +38,6 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
-        public RabbitMQClient()
-        {
-        }
-
         public void Publish(AbstractCommand command)
         {
 
