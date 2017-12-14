@@ -25,11 +25,15 @@ namespace InEngine.Core.Queuing
             var queue = new QueueAdapter();
 
             if (queueDriverName == "redis")
-                queue.QueueClient = new RedisClient()
-                {
+                queue.QueueClient = new RedisClient() {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
                     RedisDb = queueSettings.RedisDb
+                };
+            else if (queueDriverName == "rabbitmq")
+                queue.QueueClient = new RabbitMQClient() {
+                    QueueBaseName = queueSettings.QueueName,
+                    UseCompression = queueSettings.UseCompression,
                 };
             else if (queueDriverName == "file")
                 queue.QueueClient = new FileClient() {

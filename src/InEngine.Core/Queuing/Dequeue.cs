@@ -52,6 +52,10 @@ namespace InEngine.Core.Queuing
 
         public void Dispose()
         {
+            queueAdapters.ToList().ForEach(x => {
+                if (x is IDisposable)
+                    (x as IDisposable).Dispose();
+            });
             CancellationTokenSource.Cancel();
         }
     }

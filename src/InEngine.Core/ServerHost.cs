@@ -30,6 +30,7 @@ namespace InEngine.Core
         public void Dispose()
         {
             SuperScheduler?.Shutdown();
+            Dequeue.Dispose();
         }
     }
 }
