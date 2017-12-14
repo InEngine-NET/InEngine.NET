@@ -56,7 +56,7 @@ namespace InEngine.Core.Queuing.Clients
                 }.SerializeToJson()
             );
 
-            var count = PublishToChannel($"published command: {command.Name}");
+            PublishToChannel($"published command: {command.Name}");
         }
 
         public long PublishToChannel(string message = "published command.")
