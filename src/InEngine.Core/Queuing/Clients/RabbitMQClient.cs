@@ -21,6 +21,9 @@ namespace InEngine.Core.Queuing.Clients
         public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
         public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
         public bool UseCompression { get; set; }
+        public string DeadLetterExchangeName { get { return QueueBaseName + $":DeadLetter"; } }
+        public string ExchangeName { get { return QueueBaseName; } }
+        public string RoutingKey { get { return QueueName; } }
         IConnection _connection;
         public IConnection Connection { get {
                 if (_connection == null) {
@@ -34,7 +37,6 @@ namespace InEngine.Core.Queuing.Clients
                         factory.UserName = ClientSettings.Username;
                         factory.Password = ClientSettings.Password;
                     }
-                        
                     _connection = factory.CreateConnection();
                 }
                 return _connection; 
@@ -49,9 +51,21 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
+        public void InitChannel()
+        {
+            Channel.ExchangeDeclare(QueueBaseName, ExchangeType.Direct);
+            Channel.ExchangeDeclare(DeadLetterExchangeName, ExchangeType.Direct);
+            Channel.QueueDeclare(PendingQueueName, true, false, false, new Dictionary<string, object> {
+                { "x-dead-letter-exchange", DeadLetterExchangeName }
+            });
+            Channel.QueueBind(PendingQueueName, ExchangeName, RoutingKey, null);
+            Channel.QueueDeclare(FailedQueueName, true, false, false);
+            Channel.QueueBind(FailedQueueName, DeadLetterExchangeName, RoutingKey, null);
+        }
+
         public void Publish(AbstractCommand command)
         {
-
+            InitChannel();
             var body = Encoding.UTF8.GetBytes(new CommandEnvelope()
             {
                 IsCompressed = UseCompression,
@@ -60,16 +74,13 @@ namespace InEngine.Core.Queuing.Clients
                 SerializedCommand = command.SerializeToJson(UseCompression)
             }.SerializeToJson());
 
-            Channel.ExchangeDeclare(QueueBaseName, ExchangeType.Direct);
-            Channel.QueueDeclare(PendingQueueName, true, false, false);
             var properties = Channel.CreateBasicProperties();
             properties.Persistent = true;
-            Channel.QueueBind(PendingQueueName, QueueBaseName, QueueName, null);
-            Channel.BasicPublish(exchange: QueueBaseName,
-                                     routingKey: QueueName,
-                                     basicProperties: properties,
-                                     mandatory: true,
-                                     body: body);
+            Channel.BasicPublish(exchange: ExchangeName,
+                                 routingKey: RoutingKey,
+                                 basicProperties: properties,
+                                 mandatory: true,
+                                 body: body);
         }
 
         public void Recover()
@@ -77,7 +88,7 @@ namespace InEngine.Core.Queuing.Clients
 
         public void Consume(CancellationToken cancellationToken)
         {
-            Channel.QueueDeclare(PendingQueueName, true, false, false);
+            InitChannel();
             var consumer = new EventingBasicConsumer(Channel);
             consumer.Received += (model, result) => {
                 var eventingConsumer = (EventingBasicConsumer)model;
@@ -114,6 +125,7 @@ namespace InEngine.Core.Queuing.Clients
 
         public ICommandEnvelope Consume()
         {
+            InitChannel();
             var result = Channel.BasicGet(PendingQueueName, false);
             if (result == null)
                 return null;
@@ -146,32 +158,37 @@ namespace InEngine.Core.Queuing.Clients
             return commandEnvelope;
         }
 
-        public bool ClearFailedQueue()
+        public bool ClearPendingQueue()
         {
-            throw new NotImplementedException();
+            InitChannel();
+            return Channel.QueuePurge(PendingQueueName) > 0;
         }
 
+        public bool ClearFailedQueue()
+        {
+            InitChannel();
+            return Channel.QueuePurge(FailedQueueName) > 0;
+        }
+
+        public long GetPendingQueueLength()
+        {
+            InitChannel();
+            return Channel.MessageCount(PendingQueueName);
+        }
+
+        public long GetFailedQueueLength()
+        {
+            InitChannel();
+            return Channel.MessageCount(FailedQueueName);
+        }
+
+        #region Not implemented
         public bool ClearInProgressQueue()
         {
             throw new NotImplementedException();
         }
 
-        public bool ClearPendingQueue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetFailedQueueLength()
-        {
-            throw new NotImplementedException();
-        }
-
         public long GetInProgressQueueLength()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetPendingQueueLength()
         {
             throw new NotImplementedException();
         }
@@ -193,12 +210,15 @@ namespace InEngine.Core.Queuing.Clients
 
         public void RepublishFailedMessages()
         {
+            
             throw new NotImplementedException();
         }
+        #endregion
 
         public void Dispose()
         {
-            Connection.Close();
+            if (Connection != null && Connection.IsOpen)
+                Connection.Close();
         }
     }
 }
