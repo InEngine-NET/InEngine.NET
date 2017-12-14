@@ -4,7 +4,6 @@ using System.ServiceProcess;
 using InEngine.Core;
 using Mono.Unix;
 using Mono.Unix.Native;
-using NLog;
 
 namespace InEngine
 {
@@ -15,6 +14,11 @@ namespace InEngine
 
         static void Main(string[] args)
         {
+            /*
+             * Set current working directory as services use the system directory by default.
+             * Also, maybe run from the CLI from a different directory than the application root.
+             */
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             new ArgumentInterpreter().Interpret(args);
         }
 
@@ -23,11 +27,9 @@ namespace InEngine
         /// </summary>
         public static void RunServer()
         {
-            var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
-
-            if (isRunningUnderMono) {
-                var serverHost = new ServerHost();
-                serverHost.Start();
+            ServerHost = new ServerHost();
+            if (Type.GetType("Mono.Runtime") != null) {
+                ServerHost.Start();
                 Console.WriteLine("CTRL+C to exit.");
                 UnixSignal.WaitAny(new[] {
                     new UnixSignal(Signum.SIGINT),
@@ -35,27 +37,24 @@ namespace InEngine
                     new UnixSignal(Signum.SIGQUIT),
                     new UnixSignal(Signum.SIGHUP)
                 });
+                ServerHost.Dispose();
             }
-            else if (!Environment.UserInteractive && !isRunningUnderMono)
+            else if (!Environment.UserInteractive)
             {
-                // Set current working directory as services use the system directory by default.
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 using (var service = new Service())
                     ServiceBase.Run(service);
             }
             else
             {
-                var serverHost = new ServerHost();
-                serverHost.Start();
-                Console.WriteLine("Press any key to stop...");
+                ServerHost.Start();
+                Console.WriteLine("Any key to exit...");
                 Console.ReadLine();
-                serverHost.Dispose();
+                ServerHost.Dispose();
             }
         }
 
         static void Start(string[] args)
         {
-            ServerHost = new ServerHost();
             ServerHost.Start();
         }
 
