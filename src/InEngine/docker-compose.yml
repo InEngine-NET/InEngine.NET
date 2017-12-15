@@ -1,6 +1,10 @@
 ﻿version: '3'
+
 services:
   inengine:
-    image: inengine
+    build: .
   redis:
-    image: "redis:alpine"
+    image: "alpine/redis"
+    ports:
+      - "6379:6379"
+
