@@ -879,7 +879,7 @@ The disadvantage to queuing lambdas is that the helpful functionality available 
 
 <h3 id="with-the-exec-command">With the "exec" Command<a class="headerlink" href="#with-the-exec-command" title="Permanent link">&para;</a></h3>
 <p>The <strong>exec</strong> command allows for external programs to be executed.</p>
-<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span>exe --args<span class="o">=</span><span class="s2">&quot;command=/usr/bin/python&quot;</span> <span class="s2">&quot;args=--version&quot;</span>
+<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span><span class="nb">exec</span> --args<span class="o">=</span><span class="s2">&quot;command=/usr/bin/python&quot;</span> <span class="s2">&quot;args=--version&quot;</span>
 </pre></div>
 
 
