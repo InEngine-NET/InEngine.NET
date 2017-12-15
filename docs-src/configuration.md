@@ -21,14 +21,25 @@ The **-c, --configuration** argument can also be used to specify an alternate co
     },
     "Queue": {
       "UseCompression": false,
-      "PrimaryQueueConsumers":  16,
-      "SecondaryQueueConsumers": 4,
-      "QueueDriver": "redis",
+      "PrimaryQueueConsumers": 4,
+      "SecondaryQueueConsumers": 2,
+      "QueueDriver": "rabbitmq",
       "QueueName": "InEngineQueue",
-      "RedisHost": "localhost",
-      "RedisPort": 6379,
-      "RedisDb": 0,
-      "RedisPassword": ""
+      "Redis": {
+        "Host": "127.0.0.1",
+        "Port": 6379,
+        "Database": 0,
+        "Password": ""
+      },
+      "RabbitMQ": {
+        "Host": "localhost",
+        "Port": 5672,
+        "Username": "",
+        "Password": ""
+      },
+      "File": {
+        "BasePath": "../"
+      }
     }
   }
 }
@@ -55,6 +66,8 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 
 ## Queue Settings
 
+### General Settings
+
 | Setting                   | Type      | Description                                                           |
 | ------------------------- | --------- | --------------------------------------------------------------------- |
 | UseCompression            | bool      | A situation performance optimization that compresses queued messages. |
@@ -62,11 +75,30 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 | SecondaryQueueConsumers   | string    | The number of consumers to schedule for the secondary queue.          |
 | QueueDriver               | string    | The driver to use to interact with a queue data store.                |
 | QueueName                 | string    | The base name of the queue, used to form the Redis Queue keys.        |
-| RedisHost                 | string    | The Redis hostname to connect to.                                     |
-| RedisPort                 | integer   | Redis's port.                                                         |
-| RedisDb                   | integer   | The Redis database - 0-15                                             |
-| RedisPassword             | string    | The Redis auth password                                               |
 
+### RabbitMQ Client-specific Settings
+      
+| Setting                   | Type      | Description                                                           |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| Host                      | string    | The RabbitMQ hostname to connect to.                                  |
+| Port                      | integer   | RabbitMQ's port.                                                      |
+| Username                  | string    | The RabbitMQ username to authenticate with.                           |
+| Password                  | string    | The RabbitMQ password to authenticate with.                           |
+
+### Redis Client-specific Settings
+      
+| Setting                   | Type      | Description                                                           |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| Host                      | string    | The Redis hostname to connect to.                                     |
+| Port                      | integer   | Redis's port.                                                         |
+| Database                  | integer   | The Redis database - 0-15.                                            |
+| Password                  | string    | The Redis auth password.                                              |
+
+### File Client-specific Settings
+      
+| Setting                   | Type      | Description                                                           |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| BasePath                  | string    | The file system path where the queue directories should be located.   |
 
 ## Logging Settings
 

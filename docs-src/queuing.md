@@ -24,7 +24,7 @@ It is useful for testing and development, but probably not suitable for producti
 ### Redis
 
 Redis is suitable for production use. 
-InEngine.NET utilizes Redis' durable queue features which mean messages will not be lost if InEngine.NET unexpectedly fails. 
+InEngine.NET utilizes Redis' durable queue features which means messages will not be lost if InEngine.NET unexpectedly fails. 
 
 Redis can be installed on Ubuntu with this command:
 
@@ -41,6 +41,15 @@ sudo service redis start
 <div class="alert alert-info">
 It is highly recommended to <a href="https://redis.io/topics/security#authentication-feature">set a password</a> for Redis.
 </div> 
+
+### RabbitMQ
+
+RabbitMQ has built-in acknowledgement and persistence features that make it ideal for production use. 
+
+RabbitMQ can be installed on all major platforms, including Windows.
+
+See the [download and installation](https://www.rabbitmq.com/download.html) page to get started.
+
 
 ### Sync
 

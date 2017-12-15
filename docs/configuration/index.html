@@ -408,6 +408,40 @@
     Queue Settings
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-settings" title="General Settings" class="md-nav__link">
+    General Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq-client-specific-settings" title="RabbitMQ Client-specific Settings" class="md-nav__link">
+    RabbitMQ Client-specific Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-client-specific-settings" title="Redis Client-specific Settings" class="md-nav__link">
+    Redis Client-specific Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-client-specific-settings" title="File Client-specific Settings" class="md-nav__link">
+    File Client-specific Settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -489,6 +523,40 @@
     Queue Settings
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-settings" title="General Settings" class="md-nav__link">
+    General Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq-client-specific-settings" title="RabbitMQ Client-specific Settings" class="md-nav__link">
+    RabbitMQ Client-specific Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-client-specific-settings" title="Redis Client-specific Settings" class="md-nav__link">
+    Redis Client-specific Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-client-specific-settings" title="File Client-specific Settings" class="md-nav__link">
+    File Client-specific Settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -532,14 +600,25 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
     <span class="p">},</span>
     <span class="nt">&quot;Queue&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&quot;UseCompression&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span>  <span class="mi">16</span><span class="p">,</span>
-      <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-      <span class="nt">&quot;QueueDriver&quot;</span><span class="p">:</span> <span class="s2">&quot;redis&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;QueueDriver&quot;</span><span class="p">:</span> <span class="s2">&quot;rabbitmq&quot;</span><span class="p">,</span>
       <span class="nt">&quot;QueueName&quot;</span><span class="p">:</span> <span class="s2">&quot;InEngineQueue&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;RedisHost&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;RedisPort&quot;</span><span class="p">:</span> <span class="mi">6379</span><span class="p">,</span>
-      <span class="nt">&quot;RedisDb&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="nt">&quot;RedisPassword&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="nt">&quot;Redis&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">6379</span><span class="p">,</span>
+        <span class="nt">&quot;Database&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Password&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;RabbitMQ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">5672</span><span class="p">,</span>
+        <span class="nt">&quot;Username&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Password&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;File&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;BasePath&quot;</span><span class="p">:</span> <span class="s2">&quot;../&quot;</span>
+      <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -596,6 +675,7 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
 </tbody>
 </table>
 <h2 id="queue-settings">Queue Settings<a class="headerlink" href="#queue-settings" title="Permanent link">&para;</a></h2>
+<h3 id="general-settings">General Settings<a class="headerlink" href="#general-settings" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -630,25 +710,86 @@ The <strong>-c, --configuration</strong> argument can also be used to specify an
 <td>string</td>
 <td>The base name of the queue, used to form the Redis Queue keys.</td>
 </tr>
+</tbody>
+</table>
+<h3 id="rabbitmq-client-specific-settings">RabbitMQ Client-specific Settings<a class="headerlink" href="#rabbitmq-client-specific-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
 <tr>
-<td>RedisHost</td>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>string</td>
+<td>The RabbitMQ hostname to connect to.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>integer</td>
+<td>RabbitMQ's port.</td>
+</tr>
+<tr>
+<td>Username</td>
+<td>string</td>
+<td>The RabbitMQ username to authenticate with.</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>string</td>
+<td>The RabbitMQ password to authenticate with.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-client-specific-settings">Redis Client-specific Settings<a class="headerlink" href="#redis-client-specific-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
 <td>string</td>
 <td>The Redis hostname to connect to.</td>
 </tr>
 <tr>
-<td>RedisPort</td>
+<td>Port</td>
 <td>integer</td>
 <td>Redis's port.</td>
 </tr>
 <tr>
-<td>RedisDb</td>
+<td>Database</td>
 <td>integer</td>
-<td>The Redis database - 0-15</td>
+<td>The Redis database - 0-15.</td>
 </tr>
 <tr>
-<td>RedisPassword</td>
+<td>Password</td>
 <td>string</td>
-<td>The Redis auth password</td>
+<td>The Redis auth password.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-client-specific-settings">File Client-specific Settings<a class="headerlink" href="#file-client-specific-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasePath</td>
+<td>string</td>
+<td>The file system path where the queue directories should be located.</td>
 </tr>
 </tbody>
 </table>

@@ -393,6 +393,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rabbitmq" title="RabbitMQ" class="md-nav__link">
+    RabbitMQ
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sync" title="Sync" class="md-nav__link">
     Sync
   </a>
@@ -622,6 +629,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rabbitmq" title="RabbitMQ" class="md-nav__link">
+    RabbitMQ
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sync" title="Sync" class="md-nav__link">
     Sync
   </a>
@@ -802,7 +816,7 @@ It is not appropriate to use queuing if output from the task is needed immediate
 It is useful for testing and development, but probably not suitable for production.</p>
 <h3 id="redis">Redis<a class="headerlink" href="#redis" title="Permanent link">&para;</a></h3>
 <p>Redis is suitable for production use. 
-InEngine.NET utilizes Redis' durable queue features which mean messages will not be lost if InEngine.NET unexpectedly fails. </p>
+InEngine.NET utilizes Redis' durable queue features which means messages will not be lost if InEngine.NET unexpectedly fails. </p>
 <p>Redis can be installed on Ubuntu with this command:</p>
 <div class="codehilite"><pre><span></span>sudo apt-get install redis-server
 </pre></div>
@@ -817,6 +831,10 @@ InEngine.NET utilizes Redis' durable queue features which mean messages will not
 It is highly recommended to <a href="https://redis.io/topics/security#authentication-feature">set a password</a> for Redis.
 </div>
 
+<h3 id="rabbitmq">RabbitMQ<a class="headerlink" href="#rabbitmq" title="Permanent link">&para;</a></h3>
+<p>RabbitMQ has built-in acknowledgement and persistence features that make it ideal for production use. </p>
+<p>RabbitMQ can be installed on all major platforms, including Windows.</p>
+<p>See the <a href="https://www.rabbitmq.com/download.html">download and installation</a> page to get started.</p>
 <h3 id="sync">Sync<a class="headerlink" href="#sync" title="Permanent link">&para;</a></h3>
 <p>The sync driver causes the publish command to run a published command synchronously.
 All other queue commands and methods are not supported and will throw an exception if called.
