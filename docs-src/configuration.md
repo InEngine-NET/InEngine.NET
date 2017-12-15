@@ -76,7 +76,7 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 | QueueDriver               | string    | The driver to use to interact with a queue data store.                |
 | QueueName                 | string    | The base name of the queue, used to form the Redis Queue keys.        |
 
-### RabbitMQ Client-specific Settings
+### RabbitMQ
       
 | Setting                   | Type      | Description                                                           |
 | ------------------------- | --------- | --------------------------------------------------------------------- |
@@ -85,7 +85,7 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 | Username                  | string    | The RabbitMQ username to authenticate with.                           |
 | Password                  | string    | The RabbitMQ password to authenticate with.                           |
 
-### Redis Client-specific Settings
+### Redis
       
 | Setting                   | Type      | Description                                                           |
 | ------------------------- | --------- | --------------------------------------------------------------------- |
@@ -94,7 +94,7 @@ The **-c, --configuration** argument can also be used to specify an alternate co
 | Database                  | integer   | The Redis database - 0-15.                                            |
 | Password                  | string    | The Redis auth password.                                              |
 
-### File Client-specific Settings
+### File
       
 | Setting                   | Type      | Description                                                           |
 | ------------------------- | --------- | --------------------------------------------------------------------- |
