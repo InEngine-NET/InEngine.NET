@@ -878,13 +878,13 @@ The disadvantage to queuing lambdas is that the helpful functionality available 
 
 
 <h3 id="with-the-exec-command">With the "exec" Command<a class="headerlink" href="#with-the-exec-command" title="Permanent link">&para;</a></h3>
-<p>The <strong>exec</strong> command allows for external programs to be executed.</p>
-<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span><span class="nb">exec</span> --args<span class="o">=</span><span class="s2">&quot;command=/usr/bin/python&quot;</span> <span class="s2">&quot;args=--version&quot;</span>
+<p>The <strong>exec</strong> command allows for external programs to be executed. </p>
+<div class="codehilite"><pre><span></span>inengine queue:publish --plugin<span class="o">=</span>InEngine.Core --command<span class="o">=</span><span class="nb">exec</span> --args<span class="o">=</span><span class="s2">&quot;executable=ls&quot;</span> <span class="s2">&quot;args=-lhp&quot;</span>
 </pre></div>
 
 
 <div class="admonition note">
-<p class="admonition-title">Do not include "--" for the command and args parameters.</p>
+<p class="admonition-title">Do not include "--" for the executable and args parameters.</p>
 <p>This is purely to make parsing easier internally.</p>
 </div>
 <h3 id="sequentially-in-a-chain">Sequentially In a Chain<a class="headerlink" href="#sequentially-in-a-chain" title="Permanent link">&para;</a></h3>

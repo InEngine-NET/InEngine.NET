@@ -104,7 +104,7 @@ Enqueue.Command(() => Console.WriteLine("Hello, world!"))
 
 ### With the "exec" Command
 
-The **exec** command allows for external programs to be executed.
+The **exec** command allows for external programs to be executed. 
 
 ```bash
 inengine queue:publish --plugin=InEngine.Core --command=exec --args="executable=ls" "args=-lhp"
