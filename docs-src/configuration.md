@@ -1,7 +1,8 @@
 # Configuration 
 
-## InEngine Settings
-Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution.
+## Overview
+
+Configuration is accomplished by modifying the **appsettings.json** file that comes with the InEngine.NET binary distribution.
 The **-c, --configuration** argument can also be used to specify an alternate configuration file.
 
 
