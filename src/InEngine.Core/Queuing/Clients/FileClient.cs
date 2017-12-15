@@ -151,21 +151,6 @@ namespace InEngine.Core.Queuing.Clients
         public void Recover()
         {}
 
-        public long GetFailedQueueLength()
-        {
-            return new DirectoryInfo(FailedQueuePath).GetFiles().LongCount();
-        }
-
-        public long GetInProgressQueueLength()
-        {
-            return new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount();
-        }
-
-        public long GetPendingQueueLength()
-        {
-            return new DirectoryInfo(PendingQueuePath).GetFiles().LongCount();
-        }
-
         public bool ClearFailedQueue()
         {
             return ClearQueue(FailedQueuePath);
@@ -220,6 +205,15 @@ namespace InEngine.Core.Queuing.Clients
                 .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
                 .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope)
                 .ToList();
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            return new Dictionary<string, long>() {
+                {"Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount()},
+                {"In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount()},
+                {"Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount()}
+            };
         }
     }
 }

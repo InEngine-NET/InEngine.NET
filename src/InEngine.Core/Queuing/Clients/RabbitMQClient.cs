@@ -170,25 +170,8 @@ namespace InEngine.Core.Queuing.Clients
             return Channel.QueuePurge(FailedQueueName) > 0;
         }
 
-        public long GetPendingQueueLength()
-        {
-            InitChannel();
-            return Channel.MessageCount(PendingQueueName);
-        }
-
-        public long GetFailedQueueLength()
-        {
-            InitChannel();
-            return Channel.MessageCount(FailedQueueName);
-        }
-
         #region Not implemented
         public bool ClearInProgressQueue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetInProgressQueueLength()
         {
             throw new NotImplementedException();
         }
@@ -219,6 +202,15 @@ namespace InEngine.Core.Queuing.Clients
         {
             if (Connection != null && Connection.IsOpen)
                 Connection.Close();
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            InitChannel();
+            return new Dictionary<string, long>() {
+                {"Pending", Channel.MessageCount(PendingQueueName)},
+                {"Failed", Channel.MessageCount(FailedQueueName)}
+            };
         }
     }
 }

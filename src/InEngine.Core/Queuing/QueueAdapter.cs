@@ -73,21 +73,6 @@ namespace InEngine.Core.Queuing
             QueueClient.Recover();
         }
 
-        public long GetPendingQueueLength()
-        {
-            return QueueClient.GetPendingQueueLength();
-        }
-
-        public long GetInProgressQueueLength()
-        {
-            return QueueClient.GetInProgressQueueLength();
-        }
-
-        public long GetFailedQueueLength()
-        {
-            return QueueClient.GetFailedQueueLength();
-        }
-
         public bool ClearPendingQueue()
         {
             return QueueClient.ClearPendingQueue();
@@ -121,6 +106,11 @@ namespace InEngine.Core.Queuing
         public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             return QueueClient.PeekFailedMessages(from, to);
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            return QueueClient.GetQueueLengths();
         }
     }
 }

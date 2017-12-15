@@ -34,7 +34,6 @@ namespace InEngine.Core.Queuing.Clients
         public ConnectionMultiplexer _connectionMultiplexer;
         public IDatabase Redis { get { return Connection.GetDatabase(ClientSettings.Database); } }
         public bool UseCompression { get; set; }
-
         public RedisChannel RedisChannel { get; set; }
 
         public void InitChannel()
@@ -135,21 +134,6 @@ namespace InEngine.Core.Queuing.Clients
             return commandEnvelope;
         }
 
-        public long GetPendingQueueLength()
-        {
-            return Redis.ListLength(PendingQueueName);
-        }
-
-        public long GetInProgressQueueLength()
-        {
-            return Redis.ListLength(InProgressQueueName);
-        }
-
-        public long GetFailedQueueLength()
-        {
-            return Redis.ListLength(FailedQueueName);
-        }
-
         public bool ClearPendingQueue()
         {
             return Redis.KeyDelete(PendingQueueName);
@@ -190,6 +174,15 @@ namespace InEngine.Core.Queuing.Clients
             return Redis.ListRange(queueName, from, to)
                         .ToStringArray()
                         .Select(x => x.DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            return new Dictionary<string, long> {
+                {"Pending", Redis.ListLength(PendingQueueName)},
+                {"In-progress", Redis.ListLength(InProgressQueueName)},
+                {"Failed", Redis.ListLength(FailedQueueName)}
+            };
         }
     }
 }

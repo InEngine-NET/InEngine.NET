@@ -16,9 +16,7 @@ namespace InEngine.Core.Queuing
         void Consume(CancellationToken cancellationToken);
         ICommandEnvelope Consume();
         void Recover();
-        long GetPendingQueueLength();
-        long GetInProgressQueueLength();
-        long GetFailedQueueLength();
+        Dictionary<string, long> GetQueueLengths();
         bool ClearPendingQueue();
         bool ClearInProgressQueue();
         bool ClearFailedQueue();

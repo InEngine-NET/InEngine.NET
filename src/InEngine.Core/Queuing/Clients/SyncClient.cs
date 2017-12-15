@@ -47,21 +47,6 @@ namespace InEngine.Core.Queuing.Clients
             throw new NotImplementedException();
         }
 
-        public long GetFailedQueueLength()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetInProgressQueueLength()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetPendingQueueLength()
-        {
-            throw new NotImplementedException();
-        }
-
         public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             throw new NotImplementedException();
@@ -80,6 +65,11 @@ namespace InEngine.Core.Queuing.Clients
         public void RepublishFailedMessages()
         {
             throw new NotImplementedException();
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            return new Dictionary<string, long>();
         }
     }
 }
