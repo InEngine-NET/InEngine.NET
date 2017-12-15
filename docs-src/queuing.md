@@ -107,12 +107,11 @@ Enqueue.Command(() => Console.WriteLine("Hello, world!"))
 The **exec** command allows for external programs to be executed.
 
 ```bash
-inengine queue:publish --plugin=InEngine.Core --command=exec --args="command=/usr/bin/python" "args=--version"
+inengine queue:publish --plugin=InEngine.Core --command=exec --args="executable=ls" "args=-lhp"
 ```
 
-!!! note "Do not include "--" for the command and args parameters."
+!!! note "Do not include "--" for the executable and args parameters."
     This is purely to make parsing easier internally.
-
 
     
 ### Sequentially In a Chain
