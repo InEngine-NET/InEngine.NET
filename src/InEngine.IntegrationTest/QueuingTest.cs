@@ -58,7 +58,7 @@ namespace InEngine.IntegrationTest
             var queueAppendIntegrationTest = "queueAppendIntegrationTest.txt";
             File.Delete(queueWriteIntegrationTest);
             File.Delete(queueAppendIntegrationTest);
-            Enqueue.Command(new Echo { VerbatimText = "Core echo command in a lambda command." })
+            Enqueue.Command(new Echo { VerbatimText = "Core echo command." })
                    .PingAfter("http://www.google.com")
                    .PingBefore("http://www.google.com")
                    .EmailOutputTo("example@inengine.net")
