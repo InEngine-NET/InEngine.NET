@@ -5,7 +5,7 @@ using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Consume : AbstractCommand
+    public class Consume : AbstractCommand, IHasQueueSettings
     {
         [Option("all", HelpText = "Consume all the messages in the primary or secondary queue.")]
         public bool ShouldConsumeAll { get; set; }
@@ -16,9 +16,11 @@ namespace InEngine.Core.Queuing.Commands
         [Option("secondary", DefaultValue = false, HelpText = "Consume from the secondary queue.")]
         public bool UseSecondaryQueue { get; set; }
 
+        public QueueSettings QueueSettings { get; set; }
+
         public override void Run()
         {
-            var queue = QueueAdapter.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
             ICommandEnvelope commandEnvelope;
             while (ShouldConsumeAll)
                 try

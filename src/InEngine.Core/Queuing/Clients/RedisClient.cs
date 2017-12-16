@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 using StackExchange.Redis;
 
@@ -13,6 +14,7 @@ namespace InEngine.Core.Queuing.Clients
     public class RedisClient : IQueueClient
     {
         public static RedisClientSettings ClientSettings { get; set; }
+        public MailSettings MailSettings { get; set; }
 
         public ILog Log { get; set; } = LogManager.GetLogger<RedisClient>();
         public int Id { get; set; } = 0;

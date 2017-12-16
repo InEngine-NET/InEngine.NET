@@ -10,7 +10,7 @@ using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle
+    abstract public class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
     {
         protected ILog Log { get; set; }
         public CommandLifeCycle CommandLifeCycle { get; set; }
@@ -20,6 +20,7 @@ namespace InEngine.Core
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
         public int SecondsBeforeTimeout { get; set; }
+        public MailSettings MailSettings { get; set; } 
 
         protected AbstractCommand()
         {
@@ -29,7 +30,7 @@ namespace InEngine.Core
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
             CommandLifeCycle = new CommandLifeCycle() {
-                MailSettings = InEngineSettings.Make().Mail
+                MailSettings = MailSettings
             };
             SecondsBeforeTimeout = 300;
         }
@@ -89,7 +90,6 @@ namespace InEngine.Core
                         property.SetValue(this, x.Value);
                 });
             }
-
             RunWithLifeCycle();
         }
         #endregion

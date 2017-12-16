@@ -3,7 +3,7 @@ using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Flush : AbstractCommand
+    public class Flush : AbstractCommand, IHasQueueSettings
     {
         [Option("pending", HelpText = "Clear the pending queue.")]
         public bool PendingQueue { get; set; }
@@ -17,11 +17,13 @@ namespace InEngine.Core.Queuing.Commands
         [Option("secondary", HelpText = "Clear secondary queues. Primary queues are cleared by default.")]
         public bool UseSecondaryQueue { get; set; }
 
+        public QueueSettings QueueSettings { get; set; }
+
         public override void Run()
         {
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");
-            var queue = QueueAdapter.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
             if (PendingQueue)
                 Info($"Pending: {queue.ClearPendingQueue().ToString()}");
             if (InProgressQueue)

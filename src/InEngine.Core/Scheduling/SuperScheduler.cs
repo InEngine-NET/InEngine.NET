@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Linq;
+using InEngine.Core.IO;
 using Quartz;
 using Quartz.Impl;
 
@@ -14,7 +15,7 @@ namespace InEngine.Core.Scheduling
         public string SchedulerThreadCount { get; set; } = "20";
         public string SchedulerThreadPriority { get; set; } = "Normal";
 
-        public void Initialize()
+        public void Initialize(MailSettings mailSettings = null)
         {
             Scheduler = new StdSchedulerFactory(new NameValueCollection {
                 ["quartz.scheduler.instanceName"] = SchedulerInstanceName,
@@ -23,6 +24,7 @@ namespace InEngine.Core.Scheduling
                 ["quartz.threadPool.threadPriority"] = SchedulerThreadPriority
             }).GetScheduler();
 
+            Schedule.MailSettings = mailSettings;
 
             PluginAssembly.Load<IPlugin>().ForEach(x => {
                 x.Plugins.ForEach(y => y.Schedule(Schedule));

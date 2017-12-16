@@ -8,7 +8,7 @@ using Konsole.Forms;
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Peek : AbstractCommand
+    public class Peek : AbstractCommand, IHasQueueSettings
     {
         [Option("from", DefaultValue = 0, HelpText = "The first command to peek at (0-indexed).")]
         public long From { get; set; } = 0;
@@ -31,6 +31,8 @@ namespace InEngine.Core.Queuing.Commands
         [Option("secondary", HelpText = "Peek at messages in secondary queues. Primary queues are used by default.")]
         public bool UseSecondaryQueue { get; set; }
 
+        public QueueSettings QueueSettings { get; set; }
+
         public override void Run()
         {
             if (From < 0)
@@ -42,7 +44,7 @@ namespace InEngine.Core.Queuing.Commands
 
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var queue = QueueAdapter.Make(UseSecondaryQueue);
+            var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
 
             try
             {

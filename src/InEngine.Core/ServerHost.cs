@@ -8,12 +8,16 @@ namespace InEngine.Core
     {
         public SuperScheduler SuperScheduler { get; set; }
         public Dequeue Dequeue { get; set; }
+        public InEngineSettings InEngineSettings { get; set; }
 
         public ServerHost()
         {
             SuperScheduler = new SuperScheduler();
-            SuperScheduler.Initialize();
-            Dequeue = new Dequeue();
+            SuperScheduler.Initialize(InEngineSettings.Mail);
+            Dequeue = new Dequeue() {
+                QueueSettings = InEngineSettings.Queue,
+                MailSettings = InEngineSettings.Mail,
+            };
         }
 
         public void Start()

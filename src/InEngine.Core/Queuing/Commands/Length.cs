@@ -2,12 +2,14 @@
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Length : AbstractCommand
+    public class Length : AbstractCommand, IHasQueueSettings
     {
+        public QueueSettings QueueSettings { get; set; }
+
         public override void Run()
         {
-            PrintQueueLengths(QueueAdapter.Make());
-            PrintQueueLengths(QueueAdapter.Make(true));
+            PrintQueueLengths(QueueAdapter.Make(false, QueueSettings, MailSettings));
+            PrintQueueLengths(QueueAdapter.Make(true, QueueSettings, MailSettings));
         }
 
         public void PrintQueueLengths(QueueAdapter queue)

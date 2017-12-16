@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
 using Quartz;
 using Serialize.Linq.Extensions;
 
@@ -12,20 +13,19 @@ namespace InEngine.Core.Scheduling
     public class Schedule : ISchedule
     {
         public IDictionary<string, JobGroup> JobGroups { get; set; } = new Dictionary<string, JobGroup>();
+        public MailSettings MailSettings { get; set; }
 
         public Occurence Command(AbstractCommand command)
         {
             var jobDetail = MakeJobBuilder(command).Build();
-
+            command.MailSettings = command.CommandLifeCycle.MailSettings = MailSettings;
             command.GetType()
                    .GetProperties()
                    .ToList()
                    .Where(x => !x.GetCustomAttributes(typeof(DoNotAutoWireAttribute), true).Any())
                    .ToList()
                    .ForEach(x => jobDetail.JobDataMap.Add(x.Name, x.GetValue(command)));
-
-            return new Occurence()
-            {
+            return new Occurence() {
                 Schedule = this,
                 JobDetail = jobDetail,
                 Command = command

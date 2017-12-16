@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using Common.Logging;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -13,6 +14,7 @@ namespace InEngine.Core.Queuing.Clients
     public class RabbitMQClient : IQueueClient, IDisposable
     {
         public static RabbitMQClientSettings ClientSettings { get; set; } 
+        public MailSettings MailSettings { get; set; }
 
         public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;

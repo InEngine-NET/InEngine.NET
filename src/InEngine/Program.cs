@@ -27,7 +27,9 @@ namespace InEngine
         /// </summary>
         public static void RunServer()
         {
-            ServerHost = new ServerHost();
+            ServerHost = new ServerHost() {
+                InEngineSettings = InEngineSettings.Make()
+            };
             if (Type.GetType("Mono.Runtime") != null) {
                 ServerHost.Start();
                 Console.WriteLine("CTRL+C to exit.");

@@ -1,11 +1,14 @@
 ﻿using System;
+using InEngine.Core.IO;
 
 namespace InEngine.Core.Queuing.LifeCycle
 {
-    public class QueueLifeCycleBuilder : IQueueLifeCycleBuilder
+    public class QueueLifeCycleBuilder : IQueueLifeCycleBuilder, IHasMailSettings
     {
         public AbstractCommand Command { get; set; }
         public QueueAdapter QueueAdapter { get; set; }
+        public QueueSettings QueueSettings { get; set; }
+        public MailSettings MailSettings { get; set; }
 
         public QueueLifeCycleBuilder()
         {}
@@ -64,13 +67,13 @@ namespace InEngine.Core.Queuing.LifeCycle
 
         public IQueueLifeCycleBuilder ToPrimaryQueue()
         {
-            QueueAdapter = QueueAdapter.Make(false);
+            QueueAdapter = QueueAdapter.Make(false, QueueSettings, MailSettings);
             return this;
         }
 
         public IQueueLifeCycleBuilder ToSecondaryQueue()
         {
-            QueueAdapter = QueueAdapter.Make(true);
+            QueueAdapter = QueueAdapter.Make(true, QueueSettings, MailSettings);
             return this;
         }
 
@@ -83,7 +86,8 @@ namespace InEngine.Core.Queuing.LifeCycle
         public void Dispatch()
         {
             if (QueueAdapter == null)
-                QueueAdapter = QueueAdapter.Make();
+                QueueAdapter = QueueAdapter.Make(true, QueueSettings, MailSettings);
+                
             QueueAdapter.Publish(Command);
         }
     }

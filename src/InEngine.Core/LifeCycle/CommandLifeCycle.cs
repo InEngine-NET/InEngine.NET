@@ -87,13 +87,12 @@ namespace InEngine.Core.LifeCycle
             try
             {
                 if (ShouldEmailOutput)
-                    new IO.Mail() {
+                    new Mail() {
                         Host = MailSettings.Host,
                         Port = MailSettings.Port,
                         Username = MailSettings.Username,
                         Password = MailSettings.Password,
-                    }
-                    .Send(MailSettings.From, EmailOutputToAddress, emailSubject, commandOutput);
+                    }.Send(MailSettings.From, EmailOutputToAddress, emailSubject, commandOutput);
             }
             catch (Exception exception)
             {

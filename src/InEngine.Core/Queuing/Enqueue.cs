@@ -11,22 +11,38 @@ namespace InEngine.Core.Queuing
     {
         public static IQueueLifeCycleBuilder Command(Expression<Action> expressionAction)
         {
-            return new QueueLifeCycleBuilder(new Lambda(expressionAction.ToExpressionNode()));
+            var settings = InEngineSettings.Make();
+            return new QueueLifeCycleBuilder(new Lambda(expressionAction.ToExpressionNode())) {
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            };
         }
 
         public static IQueueLifeCycleBuilder Command(AbstractCommand command)
         {
-            return new QueueLifeCycleBuilder(command);
+            var settings = InEngineSettings.Make();
+            return new QueueLifeCycleBuilder(command) {
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            };
         }
 
         public static IQueueLifeCycleBuilder Command<T>(T command) where T : AbstractCommand
         {
-            return new QueueLifeCycleBuilder(command);
+            var settings = InEngineSettings.Make();
+            return new QueueLifeCycleBuilder(command) {
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            };
         }
 
         public static IQueueLifeCycleBuilder Commands(IList<AbstractCommand> commands)
         {
-            return new QueueLifeCycleBuilder(new Chain() { Commands = commands });
+            var settings = InEngineSettings.Make();
+            return new QueueLifeCycleBuilder(new Chain() { Commands = commands }) {
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            };
         }
     }
 }

@@ -15,13 +15,25 @@ namespace InEngine.IntegrationTest
     {
         public override void Run()
         {
-            var queue = QueueAdapter.Make();
+            var settings = InEngineSettings.Make();
+            var queue = QueueAdapter.Make(true, settings.Queue, settings.Mail);
 
             queue.ClearPendingQueue();
             queue.Publish(new Echo() { VerbatimText = "Core echo command." });
-            new Length { }.Run();
-            new Peek { PendingQueue = true }.Run();
-            var consume = new Consume { Count = 1000 };
+            new Length { 
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            }.Run();
+            new Peek { 
+                PendingQueue = true,
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            }.Run();
+            var consume = new Consume { 
+                Count = 1000,
+                QueueSettings = settings.Queue,
+                MailSettings = settings.Mail,
+            };
 
             Enqueue.Command(() => Console.WriteLine("Core lambda command."))
                    .Dispatch();
@@ -33,20 +45,38 @@ namespace InEngine.IntegrationTest
                    .Dispatch();
 
             Enqueue.Commands(new[] {
-                new Echo { VerbatimText = "Chain Link 1" },
-                new Echo { VerbatimText = "Chain Link 2" },
+                new Echo { 
+                    VerbatimText = "Chain Link 1",
+                    MailSettings = settings.Mail,
+                },
+                new Echo { 
+                    VerbatimText = "Chain Link 2",
+                    MailSettings = settings.Mail,
+                },
             }).Dispatch();
 
             Enqueue.Commands(new List<AbstractCommand> {
-                new Echo { VerbatimText = "Chain Link A" },
+                new Echo { 
+                    VerbatimText = "Chain Link A",
+                    MailSettings = settings.Mail,
+                },
                 new AlwaysFail(),
-                new Echo { VerbatimText = "Chain Link C" },
+                new Echo { 
+                    VerbatimText = "Chain Link C",
+                    MailSettings = settings.Mail,
+                },
             }).Dispatch();
 
             Enqueue.Commands(new List<AbstractCommand> {
-                new Echo { VerbatimText = "Chain Link A" },
+                new Echo { 
+                    VerbatimText = "Chain Link A",
+                    MailSettings = settings.Mail,
+                },
                 new AlwaysFail(),
-                new Echo { VerbatimText = "Chain Link C" },
+                new Echo { 
+                    VerbatimText = "Chain Link C",
+                    MailSettings = settings.Mail,
+                },
             }).Dispatch();
 
             Enqueue.Commands(Enumerable.Range(0, 10).Select(x => new AlwaysSucceed() as AbstractCommand).ToList())
@@ -58,7 +88,10 @@ namespace InEngine.IntegrationTest
             var queueAppendIntegrationTest = "queueAppendIntegrationTest.txt";
             File.Delete(queueWriteIntegrationTest);
             File.Delete(queueAppendIntegrationTest);
-            Enqueue.Command(new Echo { VerbatimText = "Core echo command." })
+            Enqueue.Command(new Echo { 
+                VerbatimText = "Core echo command.",
+                MailSettings = settings.Mail,
+            })
                    .PingAfter("http://www.google.com")
                    .PingBefore("http://www.google.com")
                    .EmailOutputTo("example@inengine.net")

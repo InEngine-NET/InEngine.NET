@@ -2,10 +2,11 @@
 using System.Threading;
 using Common.Logging;
 using InEngine.Core.Queuing.Message;
+using InEngine.Core.IO;
 
 namespace InEngine.Core.Queuing
 {
-    public interface IQueueClient
+    public interface IQueueClient : IHasMailSettings
     {
         ILog Log { get; set; }
         int Id { get; set; }

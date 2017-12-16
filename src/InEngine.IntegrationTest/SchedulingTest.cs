@@ -17,6 +17,7 @@ namespace InEngine.IntegrationTest
             File.Delete(writingEverySecond);
             File.Delete(appendingEverySecond);
             var superScheduler = new SuperScheduler();
+            superScheduler.Initialize(InEngineSettings.Make().Mail);
             superScheduler.Schedule.Command(new Echo { VerbatimText = "Hello, world!" })
                     .EverySecond()
                     .Before(x => Console.WriteLine("Before"))

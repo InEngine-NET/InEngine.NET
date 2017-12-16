@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Common.Logging;
+using InEngine.Core.IO;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
 
@@ -15,11 +16,10 @@ namespace InEngine.Core.Queuing
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
         public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
         public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
+        public MailSettings MailSettings { get => QueueClient.MailSettings; set => QueueClient.MailSettings = value; }
 
-        public static QueueAdapter Make(bool useSecondaryQueue = false, QueueSettings queueSettings = null)
+        public static QueueAdapter Make(bool useSecondaryQueue, QueueSettings queueSettings, MailSettings mailSettings)
         {
-            if (queueSettings == null)
-                queueSettings = InEngineSettings.Make().Queue;
             var queueDriverName = queueSettings.QueueDriver.ToLower();
             var queue = new QueueAdapter();
 
@@ -49,7 +49,8 @@ namespace InEngine.Core.Queuing
             else
                 throw new Exception("Unspecified or unknown queue driver.");
 
-            queue.QueueClient.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
+            queue.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
+            queue.MailSettings = mailSettings;
             return queue;
         }
 

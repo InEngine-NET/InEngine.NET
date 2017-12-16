@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Common.Logging;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
@@ -13,6 +14,7 @@ namespace InEngine.Core.Queuing.Clients
     {
         static Mutex consumeLock = new Mutex();
         public static FileClientSettings ClientSettings { get; set; }
+        public MailSettings MailSettings { get; set; }
 
         public ILog Log { get; set; } = LogManager.GetLogger<FileClient>();
         public int Id { get; set; } = 0;

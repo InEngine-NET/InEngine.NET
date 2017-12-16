@@ -5,7 +5,7 @@ using InEngine.Core.Exceptions;
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Publish : AbstractCommand
+    public class Publish : AbstractCommand, IHasQueueSettings
     {
         [Option("plugin", Required = true, HelpText = "The name of a command plugin file, e.g. InEngine.Core")]
         public string PluginName { get; set; }
@@ -23,7 +23,8 @@ namespace InEngine.Core.Queuing.Commands
         public bool UseSecondaryQueue { get; set; }
 
         public AbstractCommand Command { get; set; }
-        public QueueAdapter Queue { get; set; }
+
+        public QueueSettings QueueSettings { get; set; }
 
         public override void Run()
         {
@@ -44,10 +45,7 @@ namespace InEngine.Core.Queuing.Commands
             if (Arguments != null)
                 Parser.Default.ParseArguments(Arguments.ToList().Select(x => $"--{x}").ToArray(), command);
 
-            if (Queue == null)
-                Queue = QueueAdapter.Make(UseSecondaryQueue);
-
-            Queue.Publish(command);
+            QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings).Publish(command);
         }
 
         public override void Failed(Exception exception)

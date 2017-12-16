@@ -6,6 +6,7 @@ using Common.Logging;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
+using InEngine.Core.Queuing;
 
 namespace InEngine
 {
@@ -109,7 +110,8 @@ namespace InEngine
         {
             var isSuccessful = Parser.Default.ParseArguments(pluginArgs, abstractPlugin, (verb, subOptions) => {
                 try
-                { 
+                {
+                    var settings = InEngineSettings.Make();
                     if (subOptions == null && (pluginArgs.Contains("-h") || pluginArgs.Contains("--help")))
                         ExitWithSuccess();
                     else if (subOptions == null)
@@ -117,7 +119,10 @@ namespace InEngine
                     var command = subOptions as AbstractCommand;
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
-                    command.Run();
+                    if (command is IHasQueueSettings)
+                        (command as IHasQueueSettings).QueueSettings = settings.Queue;
+                    command.MailSettings = settings.Mail;
+                    command.Run(); 
                     ExitWithSuccess();
                 }
                 catch (Exception exception)

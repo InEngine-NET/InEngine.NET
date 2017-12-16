@@ -21,9 +21,8 @@ namespace InEngine.Core.Commands
 
         public override void Run()
         {
-            var settings = InEngineSettings.Make();
             if (ExecWhitelist == null)
-                ExecWhitelist = settings.ExecWhitelist;
+                ExecWhitelist = InEngineSettings.Make().ExecWhitelist;
             if (!ExecWhitelist.ContainsKey(Executable))
                 throw new CommandFailedException("Executable is not whitelisted.");
             var fileName = ExecWhitelist[Executable];
