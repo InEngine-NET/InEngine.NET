@@ -2,9 +2,9 @@
 
 namespace InEngine.Core.IO
 {
-    public class Http
+    public static class Http
     {
-        public string Get(string url)
+        public static string Get(string url)
         {
             return new RestClient(url).Execute(new RestRequest(string.Empty, Method.GET)).Content;
         }

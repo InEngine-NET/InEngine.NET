@@ -44,7 +44,7 @@ namespace InEngine.Core.LifeCycle
             try
             {
                 if (ShouldPingBefore)
-                    new IO.Http().Get(PingBeforeUrl);
+                    IO.Http.Get(PingBeforeUrl);
             }
             catch (Exception exception)
             {
@@ -75,7 +75,7 @@ namespace InEngine.Core.LifeCycle
             try
             {
                 if (ShouldPingAfter)
-                    new IO.Http().Get(PingAfterUrl);
+                    IO.Http.Get(PingAfterUrl);
             }
             catch (Exception exception)
             {
