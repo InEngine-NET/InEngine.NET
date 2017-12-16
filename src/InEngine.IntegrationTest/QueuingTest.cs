@@ -29,11 +29,7 @@ namespace InEngine.IntegrationTest
                 QueueSettings = settings.Queue,
                 MailSettings = settings.Mail,
             }.Run();
-            var consume = new Consume { 
-                Count = 1000,
-                QueueSettings = settings.Queue,
-                MailSettings = settings.Mail,
-            };
+ 
 
             Enqueue.Command(() => Console.WriteLine("Core lambda command."))
                    .Dispatch();
@@ -82,8 +78,6 @@ namespace InEngine.IntegrationTest
             Enqueue.Commands(Enumerable.Range(0, 10).Select(x => new AlwaysSucceed() as AbstractCommand).ToList())
                    .Dispatch();
             
-            consume.Run();
-
             var queueWriteIntegrationTest = "queueWriteIntegrationTest.txt";
             var queueAppendIntegrationTest = "queueAppendIntegrationTest.txt";
             File.Delete(queueWriteIntegrationTest);
@@ -98,8 +92,6 @@ namespace InEngine.IntegrationTest
                    .WriteOutputTo(queueWriteIntegrationTest)
                    .AppendOutputTo(queueAppendIntegrationTest)
                    .Dispatch();
-
-            consume.Run();
         }
     }
 }

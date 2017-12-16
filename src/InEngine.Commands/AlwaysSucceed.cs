@@ -9,6 +9,7 @@ namespace InEngine.Commands
     {
         public override void Run()
         {
+            Info("Ths command always succeeds.");
         }
     }
 }

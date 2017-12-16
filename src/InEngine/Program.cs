@@ -27,8 +27,10 @@ namespace InEngine
         /// </summary>
         public static void RunServer()
         {
+            var settings = InEngineSettings.Make();
             ServerHost = new ServerHost() {
-                InEngineSettings = InEngineSettings.Make()
+                MailSettings = settings.Mail,
+                QueueSettings = settings.Queue,
             };
             if (Type.GetType("Mono.Runtime") != null) {
                 ServerHost.Start();

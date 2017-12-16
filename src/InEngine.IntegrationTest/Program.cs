@@ -1,4 +1,5 @@
 ﻿using System;
+using InEngine.Core;
 
 namespace InEngine.IntegrationTest
 {
@@ -7,14 +8,21 @@ namespace InEngine.IntegrationTest
         public static void Main(string[] args)
         {
             Console.WriteLine("------------------------------------------------------------");
-            Console.WriteLine("Queuing Integration Tests");
+            Console.WriteLine("Queue Integration Tests");
             Console.WriteLine("------------------------------------------------------------");
             new QueuingTest().Run();
 
             Console.WriteLine("------------------------------------------------------------");
-            Console.WriteLine("Scheduling Integration Tests");
+            Console.WriteLine("Start Server...");
             Console.WriteLine("------------------------------------------------------------");
-            new SchedulingTest().Run();
+            var settings = InEngineSettings.Make();
+            var serverHost = new ServerHost() {
+                MailSettings = settings.Mail,
+                QueueSettings = settings.Queue,
+            };
+            serverHost.Start();
+            Console.ReadLine();
+            serverHost.Dispose();
         }
     }   
 }
