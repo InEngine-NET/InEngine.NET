@@ -2,8 +2,8 @@
 using System.IO;
 using System.ServiceProcess;
 using InEngine.Core;
-using Mono.Unix;
-using Mono.Unix.Native;
+//using Mono.Unix;
+//using Mono.Unix.Native;
 
 namespace InEngine
 {
@@ -32,18 +32,8 @@ namespace InEngine
                 MailSettings = settings.Mail,
                 QueueSettings = settings.Queue,
             };
-            if (Type.GetType("Mono.Runtime") != null) {
-                ServerHost.Start();
-                Console.WriteLine("CTRL+C to exit.");
-                UnixSignal.WaitAny(new[] {
-                    new UnixSignal(Signum.SIGINT),
-                    new UnixSignal(Signum.SIGTERM),
-                    new UnixSignal(Signum.SIGQUIT),
-                    new UnixSignal(Signum.SIGHUP)
-                });
-                ServerHost.Dispose();
-            }
-            else if (!Environment.UserInteractive)
+
+            if (!Environment.UserInteractive && Type.GetType("Mono.Runtime") == null)
             {
                 using (var service = new Service())
                     ServiceBase.Run(service);
@@ -51,7 +41,7 @@ namespace InEngine
             else
             {
                 ServerHost.Start();
-                Console.WriteLine("Any key to exit...");
+                Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
                 ServerHost.Dispose();
             }
