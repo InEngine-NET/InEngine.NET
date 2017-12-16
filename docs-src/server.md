@@ -36,8 +36,11 @@ namespace MyWebApp
 
         protected void Application_Start()
         {
-            ServerHost = new ServerHost();
-            ServerHost.Start();
+            var settings = InEngineSettings.Make();
+            ServerHost = new ServerHost() {
+                MailSettings = settings.Mail,
+                QueueSettings = settings.Queue,
+            };
         }
 
         protected void Application_End()

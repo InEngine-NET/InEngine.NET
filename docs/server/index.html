@@ -621,8 +621,11 @@
 
         <span class="k">protected</span> <span class="k">void</span> <span class="nf">Application_Start</span><span class="p">()</span>
         <span class="p">{</span>
-            <span class="n">ServerHost</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServerHost</span><span class="p">();</span>
-            <span class="n">ServerHost</span><span class="p">.</span><span class="n">Start</span><span class="p">();</span>
+            <span class="kt">var</span> <span class="n">settings</span> <span class="p">=</span> <span class="n">InEngineSettings</span><span class="p">.</span><span class="n">Make</span><span class="p">();</span>
+            <span class="n">ServerHost</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServerHost</span><span class="p">()</span> <span class="p">{</span>
+                <span class="n">MailSettings</span> <span class="p">=</span> <span class="n">settings</span><span class="p">.</span><span class="n">Mail</span><span class="p">,</span>
+                <span class="n">QueueSettings</span> <span class="p">=</span> <span class="n">settings</span><span class="p">.</span><span class="n">Queue</span><span class="p">,</span>
+            <span class="p">};</span>
         <span class="p">}</span>
 
         <span class="k">protected</span> <span class="k">void</span> <span class="nf">Application_End</span><span class="p">()</span>
