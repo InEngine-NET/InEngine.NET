@@ -9,24 +9,24 @@ namespace InEngine.Core.Queuing
 {
     public static class Enqueue
     {
-        public static IQueueLifeCycleActions Command(Expression<Action> expressionAction)
+        public static IQueueLifeCycleBuilder Command(Expression<Action> expressionAction)
         {
-            return new QueueLifeCycleActions(new Lambda(expressionAction.ToExpressionNode()));
+            return new QueueLifeCycleBuilder(new Lambda(expressionAction.ToExpressionNode()));
         }
 
-        public static IQueueLifeCycleActions Command(AbstractCommand command)
+        public static IQueueLifeCycleBuilder Command(AbstractCommand command)
         {
-            return new QueueLifeCycleActions(command);
+            return new QueueLifeCycleBuilder(command);
         }
 
-        public static IQueueLifeCycleActions Command<T>(T command) where T : AbstractCommand
+        public static IQueueLifeCycleBuilder Command<T>(T command) where T : AbstractCommand
         {
-            return new QueueLifeCycleActions(command);
+            return new QueueLifeCycleBuilder(command);
         }
 
-        public static IQueueLifeCycleActions Commands(IList<AbstractCommand> commands)
+        public static IQueueLifeCycleBuilder Commands(IList<AbstractCommand> commands)
         {
-            return new QueueLifeCycleActions(new Chain() { Commands = commands });
+            return new QueueLifeCycleBuilder(new Chain() { Commands = commands });
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace InEngine.Core.Scheduling.LifeCycle
 {
-    public class LifeCycleActions : IScheduleLifeCycleActions
+    public class ScheduleLifeCycleBuilder : IScheduleLifeCycleBuilder
     {
         public AbstractCommand Command { 
             get { return JobRegistration.Command; }
@@ -12,47 +12,47 @@ namespace InEngine.Core.Scheduling.LifeCycle
         public JobRegistration JobRegistration { get; set; }
 
 
-        public IScheduleLifeCycleActions Before(Action<AbstractCommand> action)
+        public IScheduleLifeCycleBuilder Before(Action<AbstractCommand> action)
         {
             JobRegistration.Command.CommandLifeCycle.BeforeAction = action;
             return this;
         }
 
-        public IScheduleLifeCycleActions After(Action<AbstractCommand> action)
+        public IScheduleLifeCycleBuilder After(Action<AbstractCommand> action)
         {
             JobRegistration.Command.CommandLifeCycle.AfterAction = action;
             return this;
         }
 
-        public IScheduleLifeCycleActions PingBefore(string url)
+        public IScheduleLifeCycleBuilder PingBefore(string url)
         {
             JobRegistration.Command.CommandLifeCycle.ShouldPingBefore = true;
             JobRegistration.Command.CommandLifeCycle.PingBeforeUrl = url;
             return this;
         }
 
-        public IScheduleLifeCycleActions PingAfter(string url)
+        public IScheduleLifeCycleBuilder PingAfter(string url)
         {
             JobRegistration.Command.CommandLifeCycle.ShouldPingAfter = true;
             JobRegistration.Command.CommandLifeCycle.PingAfterUrl = url;
             return this;
         }
 
-        public IScheduleLifeCycleActions WriteOutputTo(string output)
+        public IScheduleLifeCycleBuilder WriteOutputTo(string output)
         {
             JobRegistration.Command.CommandLifeCycle.ShouldWriteOutputToFile = true;
             JobRegistration.Command.CommandLifeCycle.WriteOutputToFilePath = output;
             return this;
         }
 
-        public IScheduleLifeCycleActions AppendOutputTo(string output)
+        public IScheduleLifeCycleBuilder AppendOutputTo(string output)
         {
             JobRegistration.Command.CommandLifeCycle.ShouldAppendOutputToFile = true;
             JobRegistration.Command.CommandLifeCycle.AppendOutputToFilePath = output;
             return this;
         }
 
-        public IScheduleLifeCycleActions EmailOutputTo(string emailAddress)
+        public IScheduleLifeCycleBuilder EmailOutputTo(string emailAddress)
         {
             JobRegistration.Command.CommandLifeCycle.ShouldEmailOutput = true;
             JobRegistration.Command.CommandLifeCycle.EmailOutputToAddress = emailAddress;
