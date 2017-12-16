@@ -28,7 +28,9 @@ namespace InEngine.Core
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
-            CommandLifeCycle = new CommandLifeCycle();
+            CommandLifeCycle = new CommandLifeCycle() {
+                MailSettings = InEngineSettings.Make().Mail
+            };
             SecondsBeforeTimeout = 300;
         }
 
