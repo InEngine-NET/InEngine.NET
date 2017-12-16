@@ -39,28 +39,48 @@ namespace InEngine.Core.Queuing.Commands
                 throw new ArgumentException("--to cannot be negative");
             if (To < From)
                 throw new ArgumentException("--from cannot be greater than --to");
-            
+
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
             var queue = QueueAdapter.Make(UseSecondaryQueue);
-            if (PendingQueue) {
-                PrintMessages(queue.PeekPendingMessages(From, To), "Pending");
+
+            try
+            {
+                if (PendingQueue)
+                    PrintMessages(queue.PeekPendingMessages(From, To), "Pending");
             }
-            if (InProgressQueue) {
-                PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
             }
-            if (FailedQueue) {
-                PrintMessages(queue.PeekFailedMessages(From, To), "Failed");
+
+            try
+            {
+                if (InProgressQueue)
+                    PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+            }
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
+            }
+
+            try
+            {
+                if (FailedQueue)
+                    PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+            }
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
             }
         }
 
         public void PrintMessages(List<ICommandEnvelope> messages, string queueName)
         {
             WarningText($"{queueName}:");
-            if (!messages.Any()) {
+            if (!messages.Any())
                 Line(" no messages available.");
-            }
-         
+
             Newline();
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
