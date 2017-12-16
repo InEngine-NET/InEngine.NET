@@ -3,4 +3,4 @@ FROM mono:latest
 WORKDIR /inengine
 ADD . /inengine
 
-ENTRYPOINT ["mono", "./InEngine.exe", "-s"]
+ENTRYPOINT ["mono", "./InEngine.exe"]

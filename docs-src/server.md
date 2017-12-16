@@ -120,8 +120,8 @@ Install [Docker](https://www.docker.com/what-docker) first, then pull the **etha
 docker pull ethanhann/inengine:latest
 ```
 
-Now run the InEngine in server mode:
+Now run InEngine in server mode:
 
 ```bash
-docker run --rm ethanhann/inengine -s
+docker run --rm -i ethanhann/inengine:latest -s
 ```
