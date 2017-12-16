@@ -193,7 +193,6 @@ namespace InEngine.Core.Queuing.Clients
 
         public void RepublishFailedMessages()
         {
-            
             throw new NotImplementedException();
         }
         #endregion
