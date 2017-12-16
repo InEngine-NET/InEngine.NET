@@ -113,12 +113,11 @@ namespace InEngine.Core.IO
         public void ToFile(string path, string text, bool shouldAppend = false)
         {
             fileOutputLock.WaitOne();
-            if (!File.Exists(path))
-                File.Create(path);
             if (shouldAppend)
                 File.AppendAllText(path, text);
             else
                 File.WriteAllText(path, text);
+            
             fileOutputLock.ReleaseMutex();
         }
     }
