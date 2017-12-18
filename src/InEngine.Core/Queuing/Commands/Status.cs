@@ -2,7 +2,7 @@
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Length : AbstractCommand, IHasQueueSettings
+    public class Status : AbstractCommand, IHasQueueSettings
     {
         public QueueSettings QueueSettings { get; set; }
 

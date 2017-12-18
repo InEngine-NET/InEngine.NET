@@ -9,6 +9,9 @@ namespace InEngine.Core.Queuing
 {
     public class QueuingPlugin : AbstractPlugin
     {
+        [VerbOption("queue:status", HelpText = "Get the status of queues and consumers.")]
+        public Status Status { get; set; }
+
         [VerbOption("queue:publish", HelpText = "Publish a command commandEnvelope to a queue.")]
         public Publish Publish { get; set; }
 
