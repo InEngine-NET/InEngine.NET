@@ -918,7 +918,6 @@ This is similar to scheduling life cycle methods, but a queue does not have the 
 It has the rest.</p>
 <p>It is often useful to hit a URL before or after the command runs:</p>
 <div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">())</span>
-    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
     <span class="p">.</span><span class="n">PingBefore</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="n">PingAfter</span><span class="p">(</span><span class="s">&quot;http://example.com&quot;</span><span class="p">);</span>
 </pre></div>
@@ -928,7 +927,6 @@ It has the rest.</p>
 This class is more than just a wrapper for <strong>Console.WriteLine</strong>.</p>
 <p>It also allows these life cycle methods to send the command's text output to files or an email:  </p>
 <div class="codehilite"><pre><span></span><span class="n">Enqueue</span><span class="p">.</span><span class="n">Command</span><span class="p">(</span><span class="k">new</span> <span class="n">Command</span><span class="p">)</span>
-    <span class="p">.</span><span class="n">EveryFiveMinutes</span><span class="p">()</span>
     <span class="p">.</span><span class="n">WriteOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="n">AppendOutputTo</span><span class="p">(</span><span class="s">&quot;/some/path&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="n">EmailOutputTo</span><span class="p">(</span><span class="s">&quot;example@inengine.net&quot;</span><span class="p">);</span>

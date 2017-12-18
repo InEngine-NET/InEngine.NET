@@ -154,7 +154,6 @@ It is often useful to hit a URL before or after the command runs:
 
 ```c#
 Enqueue.Command(new Command())
-    .EveryFiveMinutes()
     .PingBefore("http://example.com")
     .PingAfter("http://example.com");
 ```
@@ -166,7 +165,6 @@ It also allows these life cycle methods to send the command's text output to fil
 
 ```c#
 Enqueue.Command(new Command)
-    .EveryFiveMinutes()
     .WriteOutputTo("/some/path")
     .AppendOutputTo("/some/path")
     .EmailOutputTo("example@inengine.net");
