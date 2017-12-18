@@ -91,7 +91,7 @@ namespace InEngine.Core.Queuing.Commands
                 if (JsonFormat)
                     Line(commandEnvelope.SerializeToJson());
                 else
-                    konsoleForm.Write(commandEnvelope.GetCommandInstance());
+                    konsoleForm.Write(commandEnvelope.GetCommandInstanceAndIncrementRetry());
             });
         }
     }

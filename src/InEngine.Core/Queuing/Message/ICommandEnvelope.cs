@@ -10,6 +10,6 @@ namespace InEngine.Core.Queuing.Message
         string SerializedCommand { get; set; }
         DateTime QueuedAt { get; set; }
         bool IsCompressed { get; set; }
-        AbstractCommand GetCommandInstance();
+        AbstractCommand GetCommandInstanceAndIncrementRetry(Action actionOnFail = null);
     }
 }

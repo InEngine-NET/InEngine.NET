@@ -54,28 +54,40 @@ namespace InEngine.Core.Queuing.Clients
 
         public void Publish(AbstractCommand command)
         {
-            if (!Directory.Exists(PendingQueuePath))
-                Directory.CreateDirectory(PendingQueuePath);
-            var serializedMessage = new CommandEnvelope() {
+            PublishToQueue(new CommandEnvelope() {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
                 PluginName = command.GetType().Assembly.GetName().Name,
                 SerializedCommand = command.SerializeToJson(UseCompression)
-            }.SerializeToJson();
-            using (var streamWriter = File.CreateText(Path.Combine(PendingQueuePath, Guid.NewGuid().ToString()))) 
-            {
-                streamWriter.Write(serializedMessage);
-            }   
+            }, PendingQueuePath);
+        }
+
+        void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
+        {
+            if (!Directory.Exists(queuePath))
+                Directory.CreateDirectory(queuePath);
+
+            File.WriteAllText(
+                Path.Combine(queuePath, Guid.NewGuid().ToString()),
+                commandEnvelope.SerializeToJson()
+            );
         }
 
         public void Consume(CancellationToken cancellationToken)
         {
             try
             {
-                while(true)
+                while(true) 
                 {
-                    if (Consume() == null)
-                        Thread.Sleep(5000);   
+                    try
+                    {
+                        if (Consume() == null)
+                            Thread.Sleep(5000);   
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(exception);
+                    }
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
@@ -109,11 +121,12 @@ namespace InEngine.Core.Queuing.Clients
                 return null;
             }
             consumeLock.ReleaseMutex();
-            
-            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope;
-            var command = commandEnvelope.GetCommandInstance();
-            command.CommandLifeCycle.IncrementRetry();
-            commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
+
+            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
+            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+                File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
+            });
+
             try
             {
                 command.WriteSummaryToConsole();
@@ -122,8 +135,10 @@ namespace InEngine.Core.Queuing.Clients
             catch (Exception exception)
             {
                 Log.Error(exception);
-                if (command.CommandLifeCycle.ShouldRetry())
-                    File.Move(inProgressFilePath, Path.Combine(PendingQueuePath, fileInfo.Name));
+                if (command.CommandLifeCycle.ShouldRetry()) {
+                    PublishToQueue(commandEnvelope, PendingQueuePath);
+                    File.Delete(Path.Combine(PendingQueuePath, fileInfo.Name));
+                }
                 else
                     File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
                 throw new CommandFailedException("Failed to consume command.", exception);

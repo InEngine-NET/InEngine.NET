@@ -100,9 +100,10 @@ namespace InEngine.Core.Queuing.Clients
                 if (commandEnvelope == null)
                     throw new CommandFailedException("Could not deserialize the command.");
 
-                var command = commandEnvelope.GetCommandInstance();
-                command.CommandLifeCycle.IncrementRetry();
-                commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
+                var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+                    eventingConsumer.Model.BasicNack(result.DeliveryTag, false, false);
+                });
+
                 try
                 {
                     command.WriteSummaryToConsole();
@@ -137,9 +138,10 @@ namespace InEngine.Core.Queuing.Clients
             if (commandEnvelope == null)
                 throw new CommandFailedException("Could not deserialize the command.");
 
-            var command = commandEnvelope.GetCommandInstance();
-            command.CommandLifeCycle.IncrementRetry();
-            commandEnvelope.SerializedCommand = command.SerializeToJson(UseCompression);
+            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+                Channel.BasicNack(result.DeliveryTag, false, false);
+            });
+
             try
             {
                 command.WriteSummaryToConsole();

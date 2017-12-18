@@ -12,12 +12,21 @@ namespace InEngine.Core.Queuing.Message
         public DateTime QueuedAt { get; set; } = DateTime.UtcNow;
         public bool IsCompressed { get; set; }
 
-        public AbstractCommand GetCommandInstance()
+        public AbstractCommand GetCommandInstanceAndIncrementRetry(Action actionOnFail = null)
         {
-            var commandType = PluginAssembly.LoadFrom(PluginName).GetCommandType(CommandClassName);
-            if (commandType == null)
-                throw new CommandFailedException($"Could not locate command {CommandClassName}. Is the {PluginName} plugin registered in the settings file?");
-            return SerializedCommand.DeserializeFromJson<AbstractCommand>(IsCompressed);
+            try
+            {
+                PluginAssembly.LoadFrom(PluginName).GetCommandType(CommandClassName);
+                var command = SerializedCommand.DeserializeFromJson<AbstractCommand>(IsCompressed);
+                command.CommandLifeCycle.IncrementRetry();
+                SerializedCommand = command.SerializeToJson(IsCompressed);
+                return command;
+            }
+            catch (Exception exception)
+            {
+                actionOnFail.Invoke();
+                throw new CommandNotExtractableFromEnvelopeException(CommandClassName, exception);
+            }
         }
     }
 }
