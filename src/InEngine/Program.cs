@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.ServiceProcess;
 using InEngine.Core;
 
 namespace InEngine
@@ -20,38 +19,19 @@ namespace InEngine
             new ArgumentInterpreter().Interpret(args);
         }
 
-        /// <summary>
-        /// Start the server as a service or as a CLI program in the foreground.
-        /// </summary>
         public static void RunServer()
         {
             var settings = InEngineSettings.Make();
-            ServerHost = new ServerHost() {
+            ServerHost = new ServerHost
+            {
                 MailSettings = settings.Mail,
                 QueueSettings = settings.Queue,
             };
 
-            if (!Environment.UserInteractive && Type.GetType("Mono.Runtime") == null)
-            {
-                using (var service = new Service())
-                    ServiceBase.Run(service);
-            }
-            else
-            {
-                ServerHost.Start();
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadLine();
-                ServerHost.Dispose();
-            }
-        }
-
-        private static void Start(string[] args) => ServerHost.Start();
-
-        public class Service : ServiceBase
-        {
-            public Service() => ServiceName = Program.ServiceName;
-            protected override void OnStart(string[] args) => Start(args);
-            protected override void OnStop() => Stop();
+            ServerHost.Start();
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
+            ServerHost.Dispose();
         }
     }
 }

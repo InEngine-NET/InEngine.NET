@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -27,7 +27,6 @@
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Configuration.Install" />
   </ItemGroup>
   <ItemGroup>
