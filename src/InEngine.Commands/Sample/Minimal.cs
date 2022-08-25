@@ -3,15 +3,15 @@
 namespace InEngine.Commands.Sample
 {
     /*
-     * At a minimum, a command must implement the ICommand interface.
+     * At a minimum, a command must implement the AbstractCommand interface.
      *
      * A command result must be returned from the Run method.
      * The command result has an optional message. This is especially helpful
      * when the command does not finish successfully.
      */
-    public class Minimal : ICommand
+    public class Minimal : AbstractCommand
     {
-        public void Run()
+        public override void Run()
         {
         }
     }

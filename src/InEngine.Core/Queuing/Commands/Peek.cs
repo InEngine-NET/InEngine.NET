@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
-using Konsole;
+using InEngine.Core.Queuing.Message;
 using Konsole.Forms;
-using Newtonsoft.Json;
 
 namespace InEngine.Core.Queuing.Commands
 {
-    public class Peek : AbstractCommand
+    public class Peek : AbstractCommand, IHasQueueSettings
     {
-        [Option("from", DefaultValue = 0, HelpText = "The first message to peek at (0-indexed).")]
-        public long From { get; set; }
+        [Option("from", DefaultValue = 0, HelpText = "The first command to peek at (0-indexed).")]
+        public long From { get; set; } = 0;
 
-        [Option("to", DefaultValue = 10, HelpText = "The last message to peek at.")]
-        public long To { get; set; }
+        [Option("to", DefaultValue = 9, HelpText = "The last command to peek at.")]
+        public long To { get; set; } = 9;
 
         [Option("json", HelpText = "View the messages as JSON.")]
         public bool JsonFormat { get; set; }
@@ -32,6 +31,8 @@ namespace InEngine.Core.Queuing.Commands
         [Option("secondary", HelpText = "Peek at messages in secondary queues. Primary queues are used by default.")]
         public bool UseSecondaryQueue { get; set; }
 
+        public QueueSettings QueueSettings { get; set; }
+
         public override void Run()
         {
             if (From < 0)
@@ -40,37 +41,57 @@ namespace InEngine.Core.Queuing.Commands
                 throw new ArgumentException("--to cannot be negative");
             if (To < From)
                 throw new ArgumentException("--from cannot be greater than --to");
-            
+
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
                 throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
-            var broker = Queue.Make(UseSecondaryQueue);
-            if (PendingQueue) {
-                PrintMessages(broker.PeekPendingMessages(From, To), "Pending");
+            var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
+
+            try
+            {
+                if (PendingQueue)
+                    PrintMessages(queue.PeekPendingMessages(From, To), "Pending");
             }
-            if (InProgressQueue) {
-                PrintMessages(broker.PeekInProgressMessages(From, To), "In-progress");
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
             }
-            if (FailedQueue) {
-                PrintMessages(broker.PeekFailedMessages(From, To), "Failed");
+
+            try
+            {
+                if (InProgressQueue)
+                    PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+            }
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
+            }
+
+            try
+            {
+                if (FailedQueue)
+                    PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+            }
+            catch (Exception exception)
+            {
+                Log.Warn(exception);
             }
         }
 
-        public void PrintMessages(List<IMessage> messages, string queueName)
+        public void PrintMessages(List<ICommandEnvelope> messages, string queueName)
         {
             WarningText($"{queueName}:");
-            if (!messages.Any()) {
+            if (!messages.Any())
                 Line(" no messages available.");
-            }
-         
+
             Newline();
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
             messages.ForEach(x => {
-                var message = x as IMessage;
+                var commandEnvelope = x as ICommandEnvelope;
                 if (JsonFormat)
-                    Line(message.SerializeToJson());
+                    Line(commandEnvelope.SerializeToJson());
                 else
-                    konsoleForm.Write(Queue.ExtractCommandInstanceFromMessage(message));
+                    konsoleForm.Write(commandEnvelope.GetCommandInstanceAndIncrementRetry());
             });
         }
     }

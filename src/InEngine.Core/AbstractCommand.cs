@@ -1,35 +1,66 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
-using InEngine.Core.Scheduling;
+using InEngine.Core.LifeCycle;
 using Konsole;
 using Quartz;
-using RestSharp;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : ICommand, IFailed, IJob, IWrite
+    abstract public class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
     {
-        public ExecutionLifeCycle ExecutionLifeCycle { get; set; }
+        protected ILog Log { get; set; }
+        public CommandLifeCycle CommandLifeCycle { get; set; }
         public Write Write { get; set; }
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
+        public int SecondsBeforeTimeout { get; set; }
+        public MailSettings MailSettings { get; set; } 
 
         protected AbstractCommand()
         {
+            Log = LogManager.GetLogger(GetType());
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
             Write = new Write();
-            ExecutionLifeCycle = new ExecutionLifeCycle();
+            CommandLifeCycle = new CommandLifeCycle() {
+                MailSettings = MailSettings
+            };
+            SecondsBeforeTimeout = 300;
         }
 
         public virtual void Run()
         {
             throw new NotImplementedException();
+        }
+
+        public virtual void RunWithLifeCycle()
+        {
+            try
+            {
+                CommandLifeCycle.FirePreActions(this);
+                if (SecondsBeforeTimeout <= 0)
+                    Run();
+                else
+                {
+                    var task = Task.Run(() => Run());
+                    if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
+                        throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
+                }
+                CommandLifeCycle.FirePostActions(this);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(this, exception);
+                Failed(exception);
+                throw new CommandFailedException("Command failed. See inner exception for details.", exception);
+            }
         }
 
         public virtual void Failed(Exception exception)
@@ -50,73 +81,66 @@ namespace InEngine.Core
         #region Scheduling
         public virtual void Execute(IJobExecutionContext context)
         {
-            var properties = GetType().GetProperties();
-            context.MergedJobDataMap.ToList().ForEach(x => {
-                var property = properties.FirstOrDefault(y => y.Name == x.Key);
-                if (property != null)
-                    property.SetValue(this, x.Value);                
-            });
-
-            try
+            if (context != null)
             {
-                ExecutionLifeCycle.FirePreActions(this);
-                Run();
-                ExecutionLifeCycle.FirePostActions(this);
+                var properties = GetType().GetProperties();
+                context.MergedJobDataMap.ToList().ForEach(x => {
+                    var property = properties.FirstOrDefault(y => y.Name == x.Key);
+                    if (property != null)
+                        property.SetValue(this, x.Value);
+                });
             }
-            catch (Exception exception)
-            {
-                Failed(exception);
-            }
+            RunWithLifeCycle();
         }
         #endregion
 
         #region Console output
-        public IWrite Info(string val)
+        public IWrite Info(object val)
         {
             return Write.Info(val);
         }
 
-        public IWrite Warning(string val)
+        public IWrite Warning(object val)
         {
             return Write.Warning(val);
         }
 
-        public IWrite Error(string val)
+        public IWrite Error(object val)
         {
             return Write.Error(val);
         }
 
-        public IWrite Line(string val)
+        public IWrite Line(object val)
         {
             return Write.Line(val);
         }
 
-        public IWrite ColoredLine(string val, ConsoleColor consoleColor)
+        public IWrite ColoredLine(object val, ConsoleColor consoleColor)
         {
             return Write.ColoredLine(val, consoleColor);
         }
 
-        public IWrite InfoText(string val)
+        public IWrite InfoText(object val)
         {
             return Write.InfoText(val);
         }
 
-        public IWrite WarningText(string val)
+        public IWrite WarningText(object val)
         {
             return Write.WarningText(val);
         }
 
-        public IWrite ErrorText(string val)
+        public IWrite ErrorText(object val)
         {
             return Write.ErrorText(val);
         }
 
-        public IWrite Text(string val)
+        public IWrite Text(object val)
         {
             return Write.Text(val);
         }
 
-        public IWrite ColoredText(string val, ConsoleColor consoleColor)
+        public IWrite ColoredText(object val, ConsoleColor consoleColor)
         {
             return Write.ColoredText(val, consoleColor);
         }

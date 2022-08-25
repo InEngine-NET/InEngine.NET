@@ -8,12 +8,15 @@ copyright: © 2017 - Ethan Hann
 edit_uri: ''
 
 pages:
-- Quickstart: 'index.md'
+- Home:
+  - Quickstart: 'index.md'
+  - license.md
 - Documentation:
   - commands.md
   - scheduling.md
   - queuing.md
   - configuration.md
+  - server.md
 
 extra_css:
     - css/style.css
@@ -34,3 +37,4 @@ markdown_extensions:
       guess_lang: false
   - toc:
       permalink: true
+  - pymdownx.mark

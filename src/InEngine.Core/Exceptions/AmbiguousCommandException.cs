@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace InEngine.Core.Exceptions
 {
     public class AmbiguousCommandException : Exception

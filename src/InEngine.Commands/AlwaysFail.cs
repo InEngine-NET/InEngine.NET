@@ -17,6 +17,8 @@ namespace InEngine.Commands
         public override void Failed(Exception exception)
         {
             Error(exception.Message);
+            if (exception.InnerException != null)
+                Error(exception.InnerException.Message);
         }
     }
 }

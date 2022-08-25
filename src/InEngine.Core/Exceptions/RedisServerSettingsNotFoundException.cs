@@ -6,7 +6,6 @@ namespace InEngine.Core.Exceptions
     {
         public RedisServerSettingsNotFoundException(string instanceName) 
             : base(instanceName)
-        {
-        }
+        {}
     }
 }

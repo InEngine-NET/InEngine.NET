@@ -2,17 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using InEngine.Core.Commands;
+using System.Threading;
+using Common.Logging;
 using InEngine.Core.Exceptions;
+using InEngine.Core.IO;
+using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
+        static Mutex consumeLock = new Mutex();
+        public static FileClientSettings ClientSettings { get; set; }
+        public MailSettings MailSettings { get; set; }
+
+        public ILog Log { get; set; } = LogManager.GetLogger<FileClient>();
+        public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
         public bool UseCompression { get; set; }
-        public string QueuePath { get { return $"{QueueBaseName}_{QueueName}"; } }
+        public string QueuePath { get { return Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}"); } }
         public string PendingQueuePath { 
             get { 
                 var path = $"{QueuePath}_Pending";
@@ -21,6 +30,7 @@ namespace InEngine.Core.Queuing.Clients
                 return path;
             } 
         }
+
         public string InProgressQueuePath
         {
             get
@@ -42,52 +52,96 @@ namespace InEngine.Core.Queuing.Clients
             }
         }
 
-        public void Publish(ICommand command)
+        public void Publish(AbstractCommand command)
         {
-            if (!Directory.Exists(PendingQueuePath))
-                Directory.CreateDirectory(PendingQueuePath);
-            var serializedMessage = new Message()
-            {
+            PublishToQueue(new CommandEnvelope() {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
-                CommandAssemblyName = command.GetType().Assembly.GetName().Name + ".dll",
+                PluginName = command.GetType().Assembly.GetName().Name,
                 SerializedCommand = command.SerializeToJson(UseCompression)
-            }.SerializeToJson();
-            using (var streamWriter = File.CreateText(Path.Combine(PendingQueuePath, Guid.NewGuid().ToString()))) 
-            {
-                streamWriter.Write(serializedMessage);
-            }   
+            }, PendingQueuePath);
         }
 
-        public bool Consume()
+        void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
         {
-            var fileInfo = new DirectoryInfo(PendingQueuePath)
-                .GetFiles()
-                .OrderBy(x => x.LastWriteTimeUtc)
-                .FirstOrDefault();
-            if (fileInfo == null)
-                return false;
-            var inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
+            if (!Directory.Exists(queuePath))
+                Directory.CreateDirectory(queuePath);
 
-            try 
-            {
-                fileInfo.MoveTo(inProgressFilePath);
-            }
-            catch (FileNotFoundException)
-            {
-                // Another process probably consumed the file when it was read and moved.
-                return false;
-            }
+            File.WriteAllText(
+                Path.Combine(queuePath, Guid.NewGuid().ToString()),
+                commandEnvelope.SerializeToJson()
+            );
+        }
 
-            var message = File.ReadAllText(inProgressFilePath).DeserializeFromJson<Message>();
+        public void Consume(CancellationToken cancellationToken)
+        {
             try
             {
-                Queue.ExtractCommandInstanceFromMessage(message as IMessage).Run();
+                while(true) 
+                {
+                    try
+                    {
+                        if (Consume() == null)
+                            Thread.Sleep(5000);   
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(exception);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+            catch (OperationCanceledException exception)
+            {
+                Log.Debug(exception);
+                return;
             }
             catch (Exception exception)
             {
+                Log.Error(exception);
+            }
+        }
+
+        public ICommandEnvelope Consume()
+        {
+            FileInfo fileInfo;
+            var inProgressFilePath = String.Empty;
+
+            consumeLock.WaitOne();
+            fileInfo = new DirectoryInfo(PendingQueuePath)
+                .GetFiles()
+                .OrderBy(x => x.LastWriteTimeUtc)
+                .FirstOrDefault();
+            if (fileInfo != null) {
+                inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
+                fileInfo.MoveTo(inProgressFilePath);
+            }
+            if (fileInfo == null) {
+                consumeLock.ReleaseMutex();    
+                return null;
+            }
+            consumeLock.ReleaseMutex();
+
+            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
+            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
                 File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
-                throw new CommandFailedException("Failed to consume message.", exception);
+            });
+
+            try
+            {
+                command.WriteSummaryToConsole();
+                command.RunWithLifeCycle();
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception);
+                if (command.CommandLifeCycle.ShouldRetry()) {
+                    PublishToQueue(commandEnvelope, PendingQueuePath);
+                    File.Delete(Path.Combine(PendingQueuePath, fileInfo.Name));
+                }
+                else
+                    File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
+                throw new CommandFailedException("Failed to consume command.", exception);
             }
 
             try
@@ -96,9 +150,11 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                throw new CommandFailedException("Failed to move message from in-progress queue.", exception);
+                Log.Error(exception);
+                throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
             }
-            return true;
+
+            return commandEnvelope;
         }
 
         public void RepublishFailedMessages()
@@ -109,20 +165,8 @@ namespace InEngine.Core.Queuing.Clients
                 .ForEach(x => x.MoveTo(Path.Combine(PendingQueuePath, x.Name)));
         }
 
-        public long GetFailedQueueLength()
-        {
-            return new DirectoryInfo(FailedQueuePath).GetFiles().LongCount();
-        }
-
-        public long GetInProgressQueueLength()
-        {
-            return new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount();
-        }
-
-        public long GetPendingQueueLength()
-        {
-            return new DirectoryInfo(PendingQueuePath).GetFiles().LongCount();
-        }
+        public void Recover()
+        {}
 
         public bool ClearFailedQueue()
         {
@@ -148,22 +192,22 @@ namespace InEngine.Core.Queuing.Clients
             return true;
         }
 
-        public List<IMessage> PeekFailedMessages(long from, long to)
+        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
         {
             return PeekMessages(FailedQueuePath, from, to);
         }
 
-        public List<IMessage> PeekInProgressMessages(long from, long to)
+        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
         {
             return PeekMessages(InProgressQueuePath, from, to);
         }
 
-        public List<IMessage> PeekPendingMessages(long from, long to)
+        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
         {
             return PeekMessages(PendingQueuePath, from, to);
         }
 
-        public List<IMessage> PeekMessages(string queuePath, long from, long to)
+        public List<ICommandEnvelope> PeekMessages(string queuePath, long from, long to)
         {
             var maxResults = Convert.ToInt32(to + from);
             var files = new DirectoryInfo(queuePath)
@@ -172,12 +216,21 @@ namespace InEngine.Core.Queuing.Clients
                 .ToList();
 
             if (files.Count() <= maxResults)
-                return files.Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<Message>() as IMessage).ToList();
+                return files.Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
 
             return files
                 .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
-                .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<Message>() as IMessage)
+                .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope)
                 .ToList();
+        }
+
+        public Dictionary<string, long> GetQueueLengths()
+        {
+            return new Dictionary<string, long>() {
+                {"Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount()},
+                {"In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount()},
+                {"Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount()}
+            };
         }
     }
 }

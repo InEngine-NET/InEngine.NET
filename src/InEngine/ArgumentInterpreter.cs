@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
+using Common.Logging;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
-using NLog;
 using InEngine.Core.IO;
-using System.Collections.Generic;
+using InEngine.Core.Queuing;
 
 namespace InEngine
 {
     public class ArgumentInterpreter
     {
-        public Logger Logger { get; set; }
+        public ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
         public string CliLogo { get; set; }
         public IWrite Write { get; set; } = new Write();
 
         public ArgumentInterpreter()
         {
-            Logger = LogManager.GetCurrentClassLogger();
             CliLogo = @"
   ___       _____             _              _   _ _____ _____ 
  |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
@@ -30,7 +30,7 @@ namespace InEngine
 
         public void Interpret(string[] args)
         {
-            var plugins = Plugin.Load<IOptions>();
+            var pluginAssemblies = PluginAssembly.Load<AbstractPlugin>();
             var parser = new Parser(with => {
                 with.IgnoreUnknownArguments = true;
                 with.MutuallyExclusive = true;
@@ -43,40 +43,36 @@ namespace InEngine
                     ExitWithFailure("Could not parse arguments.");
 
                 if (!args.Any())
-                    PrintInEngineHelpTextAndExit(plugins, options);
+                    PrintInEngineHelpTextAndExit(pluginAssemblies, options);
 
                 InEngineSettings.ConfigurationFile = options.ConfigurationFile;
 
-                if (options.ShouldRunScheduler) 
+                if (options.ShouldRunServer) 
                 {
                     Write.Info(CliLogo);
-                    Write.Line("Starting the scheduler...").Newline();
-                    Program.RunScheduler();
+                    Write.Line("Starting...").Newline();
+                    Program.RunServer();
                     ExitWithSuccess();
                 }
 
-                var plugin = plugins.FirstOrDefault(x => x.Name == options.PluginName);
-                if (plugin == null)
-                    ExitWithFailure("Plugin does not exist: " + options.PluginName);
-                
-                var pluginOptionList = plugin.Make<IOptions>();
+                var pluginArgs = args.ToArray();
+                var firstPluginArg = pluginArgs.FirstOrDefault();
+                var firstArgIsConf = firstPluginArg.StartsWith("-c", StringComparison.OrdinalIgnoreCase) ||
+                                     firstPluginArg.StartsWith("--configuration", StringComparison.OrdinalIgnoreCase);
 
-                var pluginArgs = args.Skip(1).ToArray();
-
-                if (!pluginArgs.ToList().Any()) {
-                    PrintPluginHelpTextAndExit(plugin, pluginOptionList, pluginArgs);
-                }
-
-                if (new[] { "-p", "--plugin-name", "-c", "--configuration" }.Any(c => pluginArgs.First().StartsWith("-p", StringComparison.OrdinalIgnoreCase)))
+                if (firstArgIsConf)
                     pluginArgs = pluginArgs.Skip(1).ToArray();
 
-                // Need to remove plugin options    
-                var commandVerbName = pluginArgs.First();
-                foreach (var ops in pluginOptionList)
-                    foreach (var prop in ops.GetType().GetProperties())
-                        foreach (object attr in prop.GetCustomAttributes(true))
-                            if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
-                                    InterpretPluginArguments(pluginArgs, ops);
+                var commandVerbName = pluginArgs.FirstOrDefault();
+
+                foreach(var assembly in pluginAssemblies)
+                    foreach (var ops in assembly.Plugins)
+                        foreach (var prop in ops.GetType().GetProperties())
+                            foreach (object attr in prop.GetCustomAttributes(true))
+                                if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
+                                        InterpretPluginArguments(pluginArgs, ops);
+
+                PrintInEngineHelpTextAndExit(pluginAssemblies, options);
             }
         }
 
@@ -84,13 +80,13 @@ namespace InEngine
         {
             if (string.IsNullOrWhiteSpace(message))
                 message = "success";
-            Logger.Debug($"✔ {message}");
+            Log.Debug($"✔ {message}");
             Environment.Exit(ExitCodes.success);
         }
 
         public void ExitWithFailure(string message = null)
         {
-            Logger.Error(MakeErrorMessage(message));
+            Log.Error(MakeErrorMessage(message));
             Write.Error(message);
             Environment.Exit(ExitCodes.fail);
         }
@@ -98,7 +94,7 @@ namespace InEngine
         public void ExitWithFailure(Exception exception = null)
         {
             var ex = exception ?? new Exception("Unspecified failure");
-            Logger.Error(ex, MakeErrorMessage(ex.Message));
+            Log.Error(MakeErrorMessage(ex.Message), ex);
             Write.Error(ex.Message);
             Environment.Exit(ExitCodes.fail);
         }
@@ -110,20 +106,23 @@ namespace InEngine
             return $"✘ {message}";
         }
 
-        public void InterpretPluginArguments(string[] pluginArgs, IOptions pluginOptions)
+        public void InterpretPluginArguments(string[] pluginArgs, AbstractPlugin abstractPlugin)
         {
-            var isSuccessful = Parser.Default.ParseArguments(pluginArgs, pluginOptions, (verb, subOptions) => {
+            var isSuccessful = Parser.Default.ParseArguments(pluginArgs, abstractPlugin, (verb, subOptions) => {
                 try
                 {
-                    var lastArg = pluginArgs.ToList().LastOrDefault();
-                    if (subOptions == null && (lastArg == "-h" || lastArg == "--help"))
+                    var settings = InEngineSettings.Make();
+                    if (subOptions == null && (pluginArgs.Contains("-h") || pluginArgs.Contains("--help")))
                         ExitWithSuccess();
                     else if (subOptions == null)
-                        ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
-                    var command = subOptions as ICommand;
+                        ExitWithFailure("");
+                    var command = subOptions as AbstractCommand;
                     if (command is AbstractCommand)
                         (command as AbstractCommand).Name = verb.Normalize();
-                    command.Run();
+                    if (command is IHasQueueSettings)
+                        (command as IHasQueueSettings).QueueSettings = settings.Queue;
+                    command.MailSettings = settings.Mail;
+                    command.Run(); 
                     ExitWithSuccess();
                 }
                 catch (Exception exception)
@@ -136,7 +135,7 @@ namespace InEngine
                 ExitWithFailure(new CommandFailedException("Could not parse plugin arguments. Use -h, --help for usage."));
         }
 
-        public void PrintPluginHelpTextAndExit(Plugin plugin, List<IOptions> pluginOptionList, string[] pluginArgs)
+        public void PrintPluginHelpTextAndExit(PluginAssembly plugin, List<AbstractPlugin> pluginOptionList, string[] pluginArgs)
         {
             Write.Info(CliLogo);
             Write.Warning("Plugin: ");
@@ -163,15 +162,43 @@ namespace InEngine
             ExitWithSuccess();
         }
 
-        public void PrintInEngineHelpTextAndExit(List<Plugin> plugins, Options options)
+        public void PrintInEngineHelpTextAndExit(List<PluginAssembly> pluginAssemblies, Options options)
         {
             Write.Info(CliLogo);
-            Write.Warning("Usage:");
             Write.Text(options.GetUsage(""));
-            Write.Newline();
-            Write.Warning("Plugins:");
-            plugins.ForEach(x => Console.WriteLine($"  {x.Name}"));
-            ExitWithSuccess();   
+
+            /*
+             * Compute the max width of a command verb name to allow for proper padding.
+             */
+            var maxWidth = 0;
+            pluginAssemblies.ForEach(pluginAssembly => {
+                pluginAssembly.Plugins.ForEach(plugin => {
+                    foreach (var verb in plugin.GetVerbOptions())
+                        if (verb.LongName != null && verb.LongName.Length > maxWidth)
+                            maxWidth = verb.LongName.Length;
+                });
+            });
+
+            /*
+             * Print out each plugin's commands.
+             */
+            pluginAssemblies.ForEach(pluginAssembly => {
+                Write.Warning(pluginAssembly.Name);
+                pluginAssembly
+                    .Plugins
+                    .OrderBy(x => x.GetType().Name)
+                    .ToList()
+                    .ForEach(plugin => {
+                        plugin.GetVerbOptions().ToList().ForEach(verb => {
+                            var name = (verb.LongName ?? "");
+                            var padding = new string(' ', maxWidth - name.Length + 2);
+                            Write.InfoText($"  {name}")
+                                 .Line(padding + (verb.HelpText ?? ""));
+                        });
+                    });
+            });
+
+            ExitWithSuccess();
         }
     }
 }

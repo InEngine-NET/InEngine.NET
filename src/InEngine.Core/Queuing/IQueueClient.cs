@@ -1,24 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading;
+using Common.Logging;
+using InEngine.Core.Queuing.Message;
+using InEngine.Core.IO;
 
 namespace InEngine.Core.Queuing
 {
-    public interface IQueueClient
+    public interface IQueueClient : IHasMailSettings
     {
+        ILog Log { get; set; }
+        int Id { get; set; }
         string QueueBaseName { get; set; }
         string QueueName { get; set; }
         bool UseCompression { get; set; }
-        void Publish(ICommand command);
-        bool Consume();
-        long GetPendingQueueLength();
-        long GetInProgressQueueLength();
-        long GetFailedQueueLength();
+        void Publish(AbstractCommand command);
+        void Consume(CancellationToken cancellationToken);
+        ICommandEnvelope Consume();
+        void Recover();
+        Dictionary<string, long> GetQueueLengths();
         bool ClearPendingQueue();
         bool ClearInProgressQueue();
         bool ClearFailedQueue();
         void RepublishFailedMessages();
-        List<IMessage> PeekPendingMessages(long from, long to);
-        List<IMessage> PeekInProgressMessages(long from, long to);
-        List<IMessage> PeekFailedMessages(long from, long to);
+        List<ICommandEnvelope> PeekPendingMessages(long from, long to);
+        List<ICommandEnvelope> PeekInProgressMessages(long from, long to);
+        List<ICommandEnvelope> PeekFailedMessages(long from, long to);
     }
 }

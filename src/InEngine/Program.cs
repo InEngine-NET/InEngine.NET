@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.ServiceProcess;
-using Mono.Unix;
-using Mono.Unix.Native;
+using InEngine.Core;
+//using Mono.Unix;
+//using Mono.Unix.Native;
 
 namespace InEngine
 {
@@ -13,47 +14,41 @@ namespace InEngine
 
         static void Main(string[] args)
         {
+            /*
+             * Set current working directory as services use the system directory by default.
+             * Also, maybe run from the CLI from a different directory than the application root.
+             */
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             new ArgumentInterpreter().Interpret(args);
         }
 
         /// <summary>
-        /// Start the scheduler as a service or as a CLI program in the foreground.
+        /// Start the server as a service or as a CLI program in the foreground.
         /// </summary>
-        public static void RunScheduler()
+        public static void RunServer()
         {
-            var isRunningUnderMono = Type.GetType("Mono.Runtime") != null;
+            var settings = InEngineSettings.Make();
+            ServerHost = new ServerHost() {
+                MailSettings = settings.Mail,
+                QueueSettings = settings.Queue,
+            };
 
-            if (isRunningUnderMono) {
-                var serverHost = new ServerHost();
-                serverHost.Start();
-                Console.WriteLine("CTRL+C to exit.");
-                UnixSignal.WaitAny(new[] {
-                    new UnixSignal(Signum.SIGINT),
-                    new UnixSignal(Signum.SIGTERM),
-                    new UnixSignal(Signum.SIGQUIT),
-                    new UnixSignal(Signum.SIGHUP)
-                });
-            }
-            else if (!Environment.UserInteractive && !isRunningUnderMono)
+            if (!Environment.UserInteractive && Type.GetType("Mono.Runtime") == null)
             {
-                // Set current working directory as services use the system directory by default.
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 using (var service = new Service())
                     ServiceBase.Run(service);
             }
             else
             {
-                var serverHost = new ServerHost();
-                serverHost.Start();
-                Console.WriteLine("Press any key to stop...");
+                ServerHost.Start();
+                Console.WriteLine("Press any key to exit...");
                 Console.ReadLine();
-                serverHost.Dispose();
+                ServerHost.Dispose();
             }
         }
 
         static void Start(string[] args)
         {
-            ServerHost = new ServerHost();
             ServerHost.Start();
         }
 

@@ -166,6 +166,44 @@
         
       
       
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href=".." title="Home" class="md-tabs__link">
+          Home
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../commands/" title="Documentation" class="md-tabs__link md-tabs__link--active">
+          Documentation
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -212,10 +250,46 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Home
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Home
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href=".." title="Getting Started" class="md-nav__link">
-      Getting Started
+    <a href=".." title="Quickstart" class="md-nav__link">
+      Quickstart
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -309,6 +383,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" title="Overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
     Top-level Settings
   </a>
@@ -316,8 +397,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mail-settings" title="Mail Settings" class="md-nav__link">
+    Mail Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
     Queue Settings
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-settings" title="General Settings" class="md-nav__link">
+    General Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq" title="RabbitMQ" class="md-nav__link">
+    RabbitMQ
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" title="Redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file" title="File" class="md-nav__link">
+    File
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-settings" title="Logging Settings" class="md-nav__link">
+    Logging Settings
   </a>
   
 </li>
@@ -328,6 +457,18 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/" title="Server" class="md-nav__link">
+      Server
+    </a>
   </li>
 
         
@@ -357,6 +498,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" title="Overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#top-level-settings" title="Top-level Settings" class="md-nav__link">
     Top-level Settings
   </a>
@@ -364,8 +512,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mail-settings" title="Mail Settings" class="md-nav__link">
+    Mail Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#queue-settings" title="Queue Settings" class="md-nav__link">
     Queue Settings
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-settings" title="General Settings" class="md-nav__link">
+    General Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq" title="RabbitMQ" class="md-nav__link">
+    RabbitMQ
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" title="Redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file" title="File" class="md-nav__link">
+    File
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-settings" title="Logging Settings" class="md-nav__link">
+    Logging Settings
   </a>
   
 </li>
@@ -386,21 +582,43 @@
                 
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>Configuration is accomplished by modifying the appsettings.json file that comes with the InEngine.NET binary distribution. The -c, --configuration argument can also be used to specify an alternate configuration file.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Configuration is accomplished by modifying the <strong>appsettings.json</strong> file that comes with the InEngine.NET binary distribution.
+The <strong>-c, --configuration</strong> argument can also be used to specify an alternate configuration file.</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;InEngine&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="s2">&quot;path/to/MyCommandPlugin&quot;</span>
-    <span class="p">],</span>
+    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;MyPlugin&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/plugin/assembly&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;ExecWhitelist&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/foo.exe&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Mail&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;no-reply@inengine.net&quot;</span>
+    <span class="p">},</span>
     <span class="nt">&quot;Queue&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&quot;UseCompression&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span>  <span class="mi">16</span><span class="p">,</span>
-      <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-      <span class="nt">&quot;QueueName&quot;</span><span class="p">:</span> <span class="s2">&quot;InEngine:Queue&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;RedisHost&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;RedisPort&quot;</span><span class="p">:</span> <span class="mi">6379</span><span class="p">,</span>
-      <span class="nt">&quot;RedisDb&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="nt">&quot;RedisPassword&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="nt">&quot;PrimaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="nt">&quot;SecondaryQueueConsumers&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;QueueDriver&quot;</span><span class="p">:</span> <span class="s2">&quot;rabbitmq&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;QueueName&quot;</span><span class="p">:</span> <span class="s2">&quot;InEngineQueue&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Redis&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">6379</span><span class="p">,</span>
+        <span class="nt">&quot;Database&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Password&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;RabbitMQ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Port&quot;</span><span class="p">:</span> <span class="mi">5672</span><span class="p">,</span>
+        <span class="nt">&quot;Username&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Password&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;File&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;BasePath&quot;</span><span class="p">:</span> <span class="s2">&quot;../&quot;</span>
+      <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -419,12 +637,45 @@
 <tbody>
 <tr>
 <td>Plugins</td>
-<td>array of strings</td>
-<td>A list of paths of plugin assemblies, with ".dll" omitted from the assembly name.</td>
+<td>object</td>
+<td>A set of key/value pairs, where the value is the directory where the plugin is located and the key is the plugin name sans .dll extension.</td>
+</tr>
+<tr>
+<td>ExecWhitelist</td>
+<td>object</td>
+<td>A set of key/value pairs, where the value is the file system path of an executable and the key is a command alias.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mail-settings">Mail Settings<a class="headerlink" href="#mail-settings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>string</td>
+<td>The hostname of an SMTP server.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>integer</td>
+<td>The port of an SMTP server.</td>
+</tr>
+<tr>
+<td>From</td>
+<td>string</td>
+<td>The default email address used to send email from.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="queue-settings">Queue Settings<a class="headerlink" href="#queue-settings" title="Permanent link">&para;</a></h2>
+<h3 id="general-settings">General Settings<a class="headerlink" href="#general-settings" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -450,32 +701,119 @@
 <td>The number of consumers to schedule for the secondary queue.</td>
 </tr>
 <tr>
+<td>QueueDriver</td>
+<td>string</td>
+<td>The driver to use to interact with a queue data store.</td>
+</tr>
+<tr>
 <td>QueueName</td>
 <td>string</td>
 <td>The base name of the queue, used to form the Redis Queue keys.</td>
 </tr>
+</tbody>
+</table>
+<h3 id="rabbitmq">RabbitMQ<a class="headerlink" href="#rabbitmq" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
 <tr>
-<td>RedisHost</td>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>string</td>
+<td>The RabbitMQ hostname to connect to.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>integer</td>
+<td>RabbitMQ's port.</td>
+</tr>
+<tr>
+<td>Username</td>
+<td>string</td>
+<td>The RabbitMQ username to authenticate with.</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>string</td>
+<td>The RabbitMQ password to authenticate with.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis">Redis<a class="headerlink" href="#redis" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
 <td>string</td>
 <td>The Redis hostname to connect to.</td>
 </tr>
 <tr>
-<td>RedisPort</td>
+<td>Port</td>
 <td>integer</td>
 <td>Redis's port.</td>
 </tr>
 <tr>
-<td>RedisDb</td>
+<td>Database</td>
 <td>integer</td>
-<td>The Redis database - 0-15</td>
+<td>The Redis database - 0-15.</td>
 </tr>
 <tr>
-<td>RedisPassword</td>
+<td>Password</td>
 <td>string</td>
-<td>The Redis auth password</td>
+<td>The Redis auth password.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="file">File<a class="headerlink" href="#file" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasePath</td>
+<td>string</td>
+<td>The file system path where the queue directories should be located.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="logging-settings">Logging Settings<a class="headerlink" href="#logging-settings" title="Permanent link">&para;</a></h2>
+<p>Any exceptions thrown by a command will be logged, provided NLog is configured to log exceptions. 
+The <a href="https://github.com/NLog/NLog/wiki/Tutorial#configuration">NLog configuration</a> file needs to be setup with something like this: </p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
+      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;targets&gt;</span>
+        <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;logfile&quot;</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span> <span class="na">fileName=</span><span class="s">&quot;inengine.log&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/targets&gt;</span>
+
+    <span class="nt">&lt;rules&gt;</span>
+        <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Error&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;logfile&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/rules&gt;</span>
+<span class="nt">&lt;/nlog&gt;</span>
+</pre></div>
+
+
+<p>InEngine.Core does not depend explicitly on NLog, but rather <a href="http://net-commons.github.io/common-logging/">Common.Logging</a>.
+This means that any logging framework that Common.Logging supports can be used.
+Configuring Common.Logging to use a different logging framework is out of the scope of this documentation.</p>
                 
                   
                 
@@ -508,6 +846,20 @@
             </div>
           </a>
         
+        
+          <a href="../server/" title="Server" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Server
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>
