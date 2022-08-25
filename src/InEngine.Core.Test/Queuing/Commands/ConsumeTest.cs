@@ -11,9 +11,6 @@ namespace InEngine.Core.Test.Queuing.Commands
     public class ConsumeTest : TestBase<Consume>
     {
         [SetUp]
-        public void Setup()
-        {
-            InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
-        }
+        public void Setup() => InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
     }
 }

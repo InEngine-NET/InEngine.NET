@@ -22,7 +22,8 @@ namespace InEngine.Core.Test.Commands
         {
             var mockCommand1 = new Mock<AbstractCommand>();
             var mockCommand2 = new Mock<AbstractCommand>();
-            var commands = new[] {
+            var commands = new[]
+            {
                 mockCommand1.Object,
                 mockCommand2.Object,
             };
@@ -40,9 +41,10 @@ namespace InEngine.Core.Test.Commands
             var mockCommand1 = new Mock<AlwaysFail>();
             var mockCommand2 = new Mock<AlwaysFail>();
             var alwaysFail = new AlwaysFail();
-            var commands = new[] {
+            var commands = new AbstractCommand[]
+            {
                 mockCommand1.Object,
-                new AlwaysFail(),
+                alwaysFail,
                 mockCommand2.Object,
             };
             Subject.Commands = commands;
@@ -56,9 +58,10 @@ namespace InEngine.Core.Test.Commands
         [Test]
         public void ShouldRunChainOfDifferentCommands()
         {
-            Subject.Commands = new List<AbstractCommand>() {
+            Subject.Commands = new List<AbstractCommand>
+            {
                 new AlwaysSucceed(),
-                new Echo() { VerbatimText = "Hello, world!"},
+                new Echo() { VerbatimText = "Hello, world!" },
             };
 
             Subject.Run();
@@ -67,9 +70,10 @@ namespace InEngine.Core.Test.Commands
         [Test]
         public void ShouldRunChainOfDifferentCommandsAsAbstractCommand()
         {
-            Subject.Commands = new[] {
-                new AlwaysSucceed() as AbstractCommand,
-                new Echo() { VerbatimText = "Hello, world!"} as AbstractCommand,
+            Subject.Commands = new AbstractCommand[]
+            {
+                new AlwaysSucceed(),
+                new Echo(verbatimText: "Hello, world!"),
             };
 
             Subject.Run();

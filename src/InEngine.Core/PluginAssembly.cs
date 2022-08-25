@@ -12,14 +12,14 @@ namespace InEngine.Core
 {
     public class PluginAssembly
     {
-        ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
+        private ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
 
         public Assembly Assembly { get; set; }
-        public string Name { get { return Assembly.GetName().Name; } }
-        public string Version { get { return Assembly.GetName().Version.ToString(); } }
+        public string Name => Assembly.GetName().Name;
+        public string Version => Assembly.GetName().Version.ToString();
         public List<AbstractPlugin> Plugins { get; set; }
-        public volatile static bool isAssemblyResolverRegistered = false;
-        public static Mutex assemblyResolverLock = new Mutex();
+        public static volatile bool IsAssemblyResolverRegistered;
+        public static readonly Mutex AssemblyResolverLock = new();
 
         public PluginAssembly(Assembly assembly)
         {
@@ -75,6 +75,7 @@ namespace InEngine.Core
                     throw new PluginNotFoundException($"Could not load {assembly.GetName().Name} plugin.", exception);
                 }
             }
+
             if (!pluginList.Any())
                 throw new PluginNotFoundException("There are no plugins available.");
             return pluginList.OrderBy(x => x.Name).ToList();
@@ -82,32 +83,32 @@ namespace InEngine.Core
 
         public static void RegisterPluginAssemblyResolver()
         {
-            assemblyResolverLock.WaitOne();
-            if (!isAssemblyResolverRegistered) {
-                isAssemblyResolverRegistered = true;
+            AssemblyResolverLock.WaitOne();
+            if (!IsAssemblyResolverRegistered)
+            {
+                IsAssemblyResolverRegistered = true;
                 AppDomain.CurrentDomain.AssemblyResolve += LoadPluginEventHandler;
             }
-            assemblyResolverLock.ReleaseMutex();
+
+            AssemblyResolverLock.ReleaseMutex();
         }
 
-        static Assembly LoadPluginEventHandler(object sender, ResolveEventArgs args)
+        private static Assembly LoadPluginEventHandler(object sender, ResolveEventArgs args)
         {
             var assemblyName = new AssemblyName(args.Name).Name;
             var pluginName = assemblyName.Substring(0, assemblyName.Length - 4);
             var assemblyPath = MakeFullPluginAssemblyPath(pluginName);
-            if (!File.Exists(assemblyPath))
-                return null;
-            return Assembly.LoadFrom(assemblyPath);
+            return File.Exists(assemblyPath) ? Assembly.LoadFrom(assemblyPath) : null;
         }
 
-        static string MakeFullPluginAssemblyPath(string pluginName)
+        private static string MakeFullPluginAssemblyPath(string pluginName)
         {
             var plugins = InEngineSettings.Make().Plugins;
             var isCorePlugin = Assembly.GetCallingAssembly().GetName().Name == pluginName;
             if (!isCorePlugin && !plugins.ContainsKey(pluginName))
                 throw new PluginNotRegisteredException(pluginName);
             return Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
                 isCorePlugin ? "" : plugins[pluginName],
                 $"{pluginName}.dll"
             );
@@ -117,15 +118,17 @@ namespace InEngine.Core
         {
             return Assembly
                 .GetTypes()
-                .Where(x => x.IsClass && typeof(T).IsAssignableFrom(x) && !x.IsAbstract)
+                .Where(x => x.IsClass &&
+                            typeof(T).IsAssignableFrom(x) &&
+                            !x.IsAbstract &&
+                            !string.IsNullOrWhiteSpace(x.FullName)
+                )
                 .Select(x => Assembly.CreateInstance(x.FullName) as T)
                 .ToList();
         }
 
-        public AbstractCommand CreateCommandFromClass(string fullCommandName)
-        {
-            return Assembly.CreateInstance(fullCommandName) as AbstractCommand;
-        }
+        public AbstractCommand CreateCommandFromClass(string fullCommandName) =>
+            Assembly.CreateInstance(fullCommandName) as AbstractCommand;
 
         public AbstractCommand CreateCommandFromVerb(string verbName)
         {
@@ -133,10 +136,10 @@ namespace InEngine.Core
             var optionsList = Make<AbstractPlugin>();
 
             foreach (var options in optionsList)
-                foreach (var property in options.GetType().GetProperties())
-                    foreach (var attribute in property.GetCustomAttributes(true))
-                        if (attribute is VerbOptionAttribute && (attribute as VerbOptionAttribute).LongName == verbName)
-                            commandClassNames.Add(property.PropertyType.FullName);
+            foreach (var property in options.GetType().GetProperties())
+            foreach (var attribute in property.GetCustomAttributes(true))
+                if (attribute is VerbOptionAttribute optionAttribute && optionAttribute.LongName == verbName)
+                    commandClassNames.Add(property.PropertyType.FullName);
 
             var commandCount = commandClassNames.Count();
             if (commandCount > 1)
@@ -146,9 +149,6 @@ namespace InEngine.Core
             return Assembly.CreateInstance(commandClassNames.First()) as AbstractCommand;
         }
 
-        public Type GetCommandType(string commandClassName)
-        {
-            return Assembly.GetType(commandClassName);
-        }
+        public Type GetCommandType(string commandClassName) => Assembly.GetType(commandClassName);
     }
 }

@@ -7,6 +7,15 @@ namespace InEngine.Core.Commands
     /// </summary>
     public class Echo : AbstractCommand
     {
+        public Echo()
+        {
+        }
+
+        public Echo(string verbatimText)
+        {
+            VerbatimText = verbatimText;
+        }
+
         [Option("text", HelpText = "The text to echo.")]
         public string VerbatimText { get; set; }
 

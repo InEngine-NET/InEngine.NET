@@ -16,7 +16,8 @@ namespace InEngine.Core.IO
             message.From.Add(new MailboxAddress(fromAddress));
             message.To.Add(new MailboxAddress(toAddress));
             message.Subject = subject;
-            message.Body = new TextPart("plain") { 
+            message.Body = new TextPart("plain")
+            {
                 Text = body
             };
 

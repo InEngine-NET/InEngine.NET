@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
-	<PackageIconUrl>http://inengine.net/images/inengine-logo-32.png</PackageIconUrl>
+	<PackageIconUrl>https://inengine.net/images/inengine-logo-32.png</PackageIconUrl>
     <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
   </PropertyGroup>
   <ItemGroup>

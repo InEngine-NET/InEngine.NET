@@ -10,10 +10,7 @@ namespace InEngine.Core.Test.Scheduling
     public class ScheduleTest : TestBase<Schedule>
     {
         [SetUp]
-        public void Setup()
-        {
-            InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
-        }
+        public void Setup() => InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
 
         [Test]
         public void ShouldScheduleToRunCommandEverySecond()
@@ -26,8 +23,6 @@ namespace InEngine.Core.Test.Scheduling
         [Test]
         public void ShouldScheduleToRunLambdaEverySecond()
         {
-            var alwaysSucceed = new AlwaysSucceed();
-
             Subject.Command(() => Console.WriteLine("Hello, world!")).EverySecond();
         }
 
@@ -36,7 +31,7 @@ namespace InEngine.Core.Test.Scheduling
         {
             var alwaysSucceed = new AlwaysSucceed();
 
-            Subject.Command(new [] {
+            Subject.Command(new AbstractCommand[] {
                 new AlwaysSucceed(),
                 new AlwaysSucceed(),
                 new AlwaysSucceed(),

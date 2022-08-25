@@ -11,45 +11,56 @@ using RabbitMQ.Client.Events;
 
 namespace InEngine.Core.Queuing.Clients
 {
-    public class RabbitMQClient : IQueueClient, IDisposable
+    public class RabbitMqClient : IQueueClient, IDisposable
     {
-        public static RabbitMQClientSettings ClientSettings { get; set; } 
+        public static RabbitMQClientSettings ClientSettings { get; set; }
         public MailSettings MailSettings { get; set; }
 
         public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
-        public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
-        public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
+        public string PendingQueueName => QueueBaseName + $":{QueueName}:Pending";
+        public string FailedQueueName => QueueBaseName + $":{QueueName}:Failed";
         public bool UseCompression { get; set; }
-        public string DeadLetterExchangeName { get { return QueueBaseName + $":DeadLetter"; } }
-        public string ExchangeName { get { return QueueBaseName; } }
-        public string RoutingKey { get { return QueueName; } }
-        IConnection _connection;
-        public IConnection Connection { get {
-                if (_connection == null) {
-                    var factory = new ConnectionFactory() {
-                        HostName = ClientSettings.Host,
-                        Port = ClientSettings.Port,
-                        AutomaticRecoveryEnabled = true
-                    };
-                    if (!string.IsNullOrWhiteSpace(ClientSettings.Username) && 
-                        !string.IsNullOrWhiteSpace(ClientSettings.Password)) {
-                        factory.UserName = ClientSettings.Username;
-                        factory.Password = ClientSettings.Password;
-                    }
-                    _connection = factory.CreateConnection();
+        public string DeadLetterExchangeName => QueueBaseName + $":DeadLetter";
+        public string ExchangeName => QueueBaseName;
+        public string RoutingKey => QueueName;
+        private IConnection connection;
+
+        public IConnection Connection
+        {
+            get
+            {
+                if (connection != null)
+                    return connection;
+                var factory = new ConnectionFactory()
+                {
+                    HostName = ClientSettings.Host,
+                    Port = ClientSettings.Port,
+                    AutomaticRecoveryEnabled = true
+                };
+                if (!string.IsNullOrWhiteSpace(ClientSettings.Username) &&
+                    !string.IsNullOrWhiteSpace(ClientSettings.Password))
+                {
+                    factory.UserName = ClientSettings.Username;
+                    factory.Password = ClientSettings.Password;
                 }
-                return _connection; 
-            } 
+
+                connection = factory.CreateConnection();
+                return connection;
+            }
         }
-        IModel _channel;
-        public IModel Channel {
-            get {
-                if (_channel == null)
-                    _channel = Connection.CreateModel();
-                return _channel;
+
+        private IModel channel;
+
+        public IModel Channel
+        {
+            get
+            {
+                // if (channel == null)
+                //     channel = Connection.CreateModel();
+                return channel ??= Connection.CreateModel();
             }
         }
 
@@ -57,7 +68,8 @@ namespace InEngine.Core.Queuing.Clients
         {
             Channel.ExchangeDeclare(QueueBaseName, ExchangeType.Direct);
             Channel.ExchangeDeclare(DeadLetterExchangeName, ExchangeType.Direct);
-            Channel.QueueDeclare(PendingQueueName, true, false, false, new Dictionary<string, object> {
+            Channel.QueueDeclare(PendingQueueName, true, false, false, new Dictionary<string, object>
+            {
                 { "x-dead-letter-exchange", DeadLetterExchangeName }
             });
             Channel.QueueBind(PendingQueueName, ExchangeName, RoutingKey, null);
@@ -79,20 +91,22 @@ namespace InEngine.Core.Queuing.Clients
             var properties = Channel.CreateBasicProperties();
             properties.Persistent = true;
             Channel.BasicPublish(exchange: ExchangeName,
-                                 routingKey: RoutingKey,
-                                 basicProperties: properties,
-                                 mandatory: true,
-                                 body: body);
+                routingKey: RoutingKey,
+                basicProperties: properties,
+                mandatory: true,
+                body: body);
         }
 
         public void Recover()
-        { }
+        {
+        }
 
         public void Consume(CancellationToken cancellationToken)
         {
             InitChannel();
             var consumer = new EventingBasicConsumer(Channel);
-            consumer.Received += (model, result) => {
+            consumer.Received += (model, result) =>
+            {
                 var eventingConsumer = (EventingBasicConsumer)model;
 
                 var serializedMessage = Encoding.UTF8.GetString(result.Body);
@@ -100,7 +114,8 @@ namespace InEngine.Core.Queuing.Clients
                 if (commandEnvelope == null)
                     throw new CommandFailedException("Could not deserialize the command.");
 
-                var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+                var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+                {
                     eventingConsumer.Model.BasicNack(result.DeliveryTag, false, false);
                 });
 
@@ -120,6 +135,7 @@ namespace InEngine.Core.Queuing.Clients
                         throw new CommandFailedException("Failed to run consumed command.", exception);
                     }
                 }
+
                 Log.Debug("Acknowledging message...");
                 eventingConsumer.Model.BasicAck(result.DeliveryTag, false);
             };
@@ -138,7 +154,8 @@ namespace InEngine.Core.Queuing.Clients
             if (commandEnvelope == null)
                 throw new CommandFailedException("Could not deserialize the command.");
 
-            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+            {
                 Channel.BasicNack(result.DeliveryTag, false, false);
             });
 
@@ -158,6 +175,7 @@ namespace InEngine.Core.Queuing.Clients
                     throw new CommandFailedException("Failed to run consumed command.", exception);
                 }
             }
+
             Channel.BasicAck(result.DeliveryTag, false);
             return commandEnvelope;
         }
@@ -175,6 +193,7 @@ namespace InEngine.Core.Queuing.Clients
         }
 
         #region Not implemented
+
         public bool ClearInProgressQueue()
         {
             throw new NotImplementedException();
@@ -199,6 +218,7 @@ namespace InEngine.Core.Queuing.Clients
         {
             throw new NotImplementedException();
         }
+
         #endregion
 
         public void Dispose()
@@ -210,9 +230,10 @@ namespace InEngine.Core.Queuing.Clients
         public Dictionary<string, long> GetQueueLengths()
         {
             InitChannel();
-            return new Dictionary<string, long>() {
-                {"Pending", Channel.MessageCount(PendingQueueName)},
-                {"Failed", Channel.MessageCount(FailedQueueName)}
+            return new Dictionary<string, long>()
+            {
+                { "Pending", Channel.MessageCount(PendingQueueName) },
+                { "Failed", Channel.MessageCount(FailedQueueName) }
             };
         }
     }

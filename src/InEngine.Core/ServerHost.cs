@@ -16,7 +16,8 @@ namespace InEngine.Core
         {
             SuperScheduler = new SuperScheduler();
             SuperScheduler.Initialize(MailSettings);
-            Dequeue = new Dequeue() {
+            Dequeue = new Dequeue()
+            {
                 QueueSettings = QueueSettings,
                 MailSettings = MailSettings,
             };
@@ -25,10 +26,7 @@ namespace InEngine.Core
             StartDequeueAsync();
         }
 
-        public async void StartDequeueAsync()
-        {
-            await Dequeue.StartAsync();
-        }
+        public async void StartDequeueAsync() => await Dequeue.StartAsync();
 
         public void Dispose()
         {
@@ -37,4 +35,3 @@ namespace InEngine.Core
         }
     }
 }
-    

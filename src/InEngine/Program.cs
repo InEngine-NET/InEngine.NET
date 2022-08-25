@@ -2,8 +2,6 @@
 using System.IO;
 using System.ServiceProcess;
 using InEngine.Core;
-//using Mono.Unix;
-//using Mono.Unix.Native;
 
 namespace InEngine
 {
@@ -12,7 +10,7 @@ namespace InEngine
         public const string ServiceName = "InEngine.NET";
         public static ServerHost ServerHost { get; set; }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             /*
              * Set current working directory as services use the system directory by default.
@@ -47,32 +45,13 @@ namespace InEngine
             }
         }
 
-        static void Start(string[] args)
-        {
-            ServerHost.Start();
-        }
-
-        static void Stop()
-        {
-            ServerHost.Dispose();
-        }
+        private static void Start(string[] args) => ServerHost.Start();
 
         public class Service : ServiceBase
         {
-            public Service()
-            {
-                ServiceName = Program.ServiceName;
-            }
-
-            protected override void OnStart(string[] args)
-            {
-                Start(args);
-            }
-
-            protected override void OnStop()
-            {
-                Stop();
-            }
+            public Service() => ServiceName = Program.ServiceName;
+            protected override void OnStart(string[] args) => Start(args);
+            protected override void OnStop() => Stop();
         }
     }
 }

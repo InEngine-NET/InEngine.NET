@@ -6,7 +6,7 @@ using InEngine.Core.Scheduling;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractPlugin : IPlugin
+    public abstract class AbstractPlugin : IPlugin
     {
         public virtual void Schedule(ISchedule schedule)
         {}
@@ -19,7 +19,7 @@ namespace InEngine.Core
             return helpText;
         }
 
-        public IList<VerbOptionAttribute> GetVerbOptions()
+        public IEnumerable<VerbOptionAttribute> GetVerbOptions()
         {
             return GetType()
                 .GetProperties()
