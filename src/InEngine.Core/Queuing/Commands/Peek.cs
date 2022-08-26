@@ -8,6 +8,8 @@ using Konsole.Forms;
 
 namespace InEngine.Core.Queuing.Commands
 {
+    using Microsoft.Extensions.Logging;
+
     public class Peek : AbstractCommand, IHasQueueSettings
     {
         [Option("from", DefaultValue = 0, HelpText = "The first command to peek at (0-indexed).")]
@@ -43,7 +45,8 @@ namespace InEngine.Core.Queuing.Commands
                 throw new ArgumentException("--from cannot be greater than --to");
 
             if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
-                throw new CommandFailedException("Must specify at least one queue to peek in. Use -h to see available options.");
+                throw new CommandFailedException(
+                    "Must specify at least one queue to peek in. Use -h to see available options.");
             var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
 
             try
@@ -53,7 +56,7 @@ namespace InEngine.Core.Queuing.Commands
             }
             catch (Exception exception)
             {
-                Log.Warn(exception);
+                Log.LogWarning(exception.Message);
             }
 
             try
@@ -63,7 +66,7 @@ namespace InEngine.Core.Queuing.Commands
             }
             catch (Exception exception)
             {
-                Log.Warn(exception);
+                Log.LogWarning(exception.Message);
             }
 
             try
@@ -73,7 +76,7 @@ namespace InEngine.Core.Queuing.Commands
             }
             catch (Exception exception)
             {
-                Log.Warn(exception);
+                Log.LogWarning(exception.Message);
             }
         }
 
@@ -86,7 +89,8 @@ namespace InEngine.Core.Queuing.Commands
             Newline();
 
             var konsoleForm = new Form(120, new ThinBoxStyle());
-            messages.ForEach(x => {
+            messages.ForEach(x =>
+            {
                 var commandEnvelope = x as ICommandEnvelope;
                 if (JsonFormat)
                     Line(commandEnvelope.SerializeToJson());

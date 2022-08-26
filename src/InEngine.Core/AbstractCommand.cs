@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.LifeCycle;
@@ -10,9 +9,12 @@ using Quartz;
 
 namespace InEngine.Core
 {
+    using Microsoft.Extensions.Logging;
+
     public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
     {
-        protected ILog Log { get; }
+        protected readonly ILogger<AbstractCommand> Log;
+
         public CommandLifeCycle CommandLifeCycle { get; set; } = new CommandLifeCycle();
         public Write Write { get; set; } = new Write();
         public ProgressBar ProgressBar { get; internal set; }
@@ -30,7 +32,7 @@ namespace InEngine.Core
 
         protected AbstractCommand()
         {
-            Log = LogManager.GetLogger(GetType());
+            Log = LogManager.GetLogger<AbstractCommand>();
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
@@ -55,7 +57,7 @@ namespace InEngine.Core
             }
             catch (Exception exception)
             {
-                Log.Error(this, exception);
+                Log.LogError(exception.Message, exception);
                 Failed(exception);
                 throw new CommandFailedException("Command failed. See inner exception for details.", exception);
             }

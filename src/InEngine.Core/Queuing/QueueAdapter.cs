@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing
 {
     public class QueueAdapter : IQueueClient
     {
-        public ILog Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
         public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
         public IQueueClient QueueClient { get; set; }
         public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }

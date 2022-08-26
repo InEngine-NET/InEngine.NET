@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing.Clients
 {
+
     public class RabbitMqClient : IQueueClient, IDisposable
     {
         public static RabbitMQClientSettings ClientSettings { get; set; }
         public MailSettings MailSettings { get; set; }
 
-        public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
@@ -126,7 +127,7 @@ namespace InEngine.Core.Queuing.Clients
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception);
+                    Log.LogError(exception.Message, exception);
                     if (command.CommandLifeCycle.ShouldRetry())
                         eventingConsumer.Model.BasicNack(result.DeliveryTag, false, true);
                     else
@@ -136,7 +137,7 @@ namespace InEngine.Core.Queuing.Clients
                     }
                 }
 
-                Log.Debug("Acknowledging message...");
+                Log.LogDebug("Acknowledging message...");
                 eventingConsumer.Model.BasicAck(result.DeliveryTag, false);
             };
             Channel.BasicConsume(queue: PendingQueueName, autoAck: false, consumer: consumer);
@@ -166,7 +167,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
                 if (command.CommandLifeCycle.ShouldRetry())
                     Channel.BasicNack(result.DeliveryTag, false, true);
                 else
