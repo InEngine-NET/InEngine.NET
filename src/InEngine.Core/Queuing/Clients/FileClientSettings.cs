@@ -1,7 +1,6 @@
-﻿namespace InEngine.Core.Queuing.Clients
+﻿namespace InEngine.Core.Queuing.Clients;
+
+public class FileClientSettings
 {
-    public class FileClientSettings
-    {
-        public string BasePath { get; set; }
-    }
+    public string BasePath { get; set; }
 }

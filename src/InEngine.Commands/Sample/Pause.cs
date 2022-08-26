@@ -1,13 +1,12 @@
 ﻿using System.Threading;
 using InEngine.Core;
 
-namespace InEngine.Commands.Sample
+namespace InEngine.Commands.Sample;
+
+public class Pause : AbstractCommand
 {
-    public class Pause : AbstractCommand
+    public override void Run()
     {
-        public override void Run()
-        {
-            Thread.Sleep(3000);
-        }
+        Thread.Sleep(3000);
     }
 }

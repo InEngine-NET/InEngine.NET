@@ -10,7 +10,6 @@ public static class LogManager
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
             .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug);
-        // .AddConsole();
     });
 
     public static ILogger<T> GetLogger<T>() => LoggerFactory.CreateLogger<T>();

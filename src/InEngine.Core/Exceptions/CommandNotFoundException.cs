@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace InEngine.Core.Exceptions
+namespace InEngine.Core.Exceptions;
+
+public class CommandNotFoundException : Exception
 {
-    public class CommandNotFoundException : Exception
+    public CommandNotFoundException(string command)
+        : base($"Command not found: {command}")
     {
-        public CommandNotFoundException(string command)
-            : base($"Command not found: {command}")
-        {
-        }
     }
 }

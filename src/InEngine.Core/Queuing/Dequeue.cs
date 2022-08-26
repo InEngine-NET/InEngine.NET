@@ -6,56 +6,55 @@ using System.Threading.Tasks;
 using InEngine.Core.IO;
 using Microsoft.Extensions.Logging;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing;
+
+public class Dequeue : IDisposable
 {
-    public class Dequeue : IDisposable
+    IList<QueueAdapter> queueAdapters;
+    public CancellationTokenSource CancellationTokenSource { get; set; }
+    public QueueSettings QueueSettings { get; set; }
+    public MailSettings MailSettings { get; set; }
+    public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+
+    public Dequeue()
     {
-        IList<QueueAdapter> queueAdapters;
-        public CancellationTokenSource CancellationTokenSource { get; set; }
-        public QueueSettings QueueSettings { get; set; }
-        public MailSettings MailSettings { get; set; }
-        public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+        queueAdapters = new List<QueueAdapter>();
+        CancellationTokenSource = new CancellationTokenSource();
+    }
 
-        public Dequeue()
-        {
-            queueAdapters = new List<QueueAdapter>();
-            CancellationTokenSource = new CancellationTokenSource();
-        }
+    public async Task StartAsync()
+    {
+        var allTasks = new List<Task>();
+        Log.LogDebug("Start dequeue tasks for primary queue...");
+        allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
+        Log.LogDebug("Start dequeue tasks for secondary queue...");
+        allTasks.AddRange(MakeTasks(false, QueueSettings.SecondaryQueueConsumers));
+        await Task.WhenAll(allTasks);
 
-        public async Task StartAsync()
-        {
-            var allTasks = new List<Task>();
-            Log.LogDebug("Start dequeue tasks for primary queue...");
-            allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
-            Log.LogDebug("Start dequeue tasks for secondary queue...");
-            allTasks.AddRange(MakeTasks(false, QueueSettings.SecondaryQueueConsumers));
-            await Task.WhenAll(allTasks);
+        // Recover from restart, if necessary.
+        QueueAdapter.Make(false, QueueSettings, MailSettings).Recover();
+        QueueAdapter.Make(true, QueueSettings, MailSettings).Recover();
+    }
 
-            // Recover from restart, if necessary.
-            QueueAdapter.Make(false, QueueSettings, MailSettings).Recover();
-            QueueAdapter.Make(true, QueueSettings, MailSettings).Recover();
-        }
+    IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
+    {
+        return Enumerable.Range(0, numberOfTasks).Select((i) => {
+            Log.LogDebug($"Registering Dequeuer #{i}");
+            return Task.Factory.StartNew(() => {
+                var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
+                queue.Id = i;
+                queueAdapters.Add(queue);
+                queue.Consume(CancellationTokenSource.Token);
+            }, TaskCreationOptions.LongRunning);
+        }).ToList();
+    }
 
-        IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
-        {
-            return Enumerable.Range(0, numberOfTasks).Select((i) => {
-                Log.LogDebug($"Registering Dequeuer #{i}");
-                return Task.Factory.StartNew(() => {
-                    var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
-                    queue.Id = i;
-                    queueAdapters.Add(queue);
-                    queue.Consume(CancellationTokenSource.Token);
-                }, TaskCreationOptions.LongRunning);
-            }).ToList();
-        }
-
-        public void Dispose()
-        {
-            queueAdapters.ToList().ForEach(x => {
-                if (x is IDisposable)
-                    (x as IDisposable).Dispose();
-            });
-            CancellationTokenSource.Cancel();
-        }
+    public void Dispose()
+    {
+        queueAdapters.ToList().ForEach(x => {
+            if (x is IDisposable)
+                (x as IDisposable).Dispose();
+        });
+        CancellationTokenSource.Cancel();
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using InEngine.Core.Scheduling;
 
-namespace InEngine.Core.LifeCycle
+namespace InEngine.Core.LifeCycle;
+
+public interface IHasCommandLifeCycle
 {
-    public interface IHasCommandLifeCycle
-    {
-        CommandLifeCycle CommandLifeCycle { get; set; }
-    }
+    CommandLifeCycle CommandLifeCycle { get; set; }
 }
