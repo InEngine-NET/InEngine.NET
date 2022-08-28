@@ -1,4 +1,5 @@
-﻿using InEngine.Core;
+﻿using System.Threading.Tasks;
+using InEngine.Core;
 
 namespace InEngine.Commands;
 
@@ -7,5 +8,8 @@ namespace InEngine.Commands;
 /// </summary>
 public class AlwaysSucceed : AbstractCommand
 {
-    public override void Run() => Info("This command always succeeds.");
+    public override async Task Run()
+    {
+        await Task.Run(() => Info("This command always succeeds."));
+    }
 }

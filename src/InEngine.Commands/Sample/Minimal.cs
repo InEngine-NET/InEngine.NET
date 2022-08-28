@@ -1,6 +1,9 @@
-﻿using InEngine.Core;
+﻿using System.Threading.Tasks;
+using InEngine.Core;
 
 namespace InEngine.Commands.Sample;
+
+using System;
 
 /*
  * At a minimum, a command must implement the AbstractCommand interface.
@@ -11,7 +14,8 @@ namespace InEngine.Commands.Sample;
  */
 public class Minimal : AbstractCommand
 {
-    public override void Run()
+    public override async Task Run()
     {
+        await Task.Run(() => Console.WriteLine("This is an example of a minimal command."));
     }
 }

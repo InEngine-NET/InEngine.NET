@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 
@@ -9,7 +10,10 @@ namespace InEngine.Commands;
 /// </summary>
 public class AlwaysFail : AbstractCommand
 {
-    public override void Run() => throw new CommandFailedException("This command always fails.");
+    public override async Task Run()
+    {
+        await Task.Run(() => throw new CommandFailedException("This command always fails."));
+    }
 
     public override void Failed(Exception exception)
     {

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Threading;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using CommandLine;
 using InEngine.Core.Exceptions;
 
@@ -20,16 +23,19 @@ public class Exec : AbstractCommand
 
     public IDictionary<string, string> ExecWhitelist { get; set; }
 
-    public override void Run()
+    public override async Task Run()
     {
         ExecWhitelist ??= InEngineSettings.Make().ExecWhitelist;
         if (!ExecWhitelist.ContainsKey(Executable))
             throw new CommandFailedException("Executable is not whitelisted.");
         var fileName = ExecWhitelist[Executable];
         if (!File.Exists(fileName))
-            throw new CommandFailedException(
-                $"Cannot run {fileName}. It either does not exist or is inaccessible. Exiting...");
-        var process = new Process()
+        {
+            var message = $"Cannot run {fileName}. It either does not exist or is inaccessible. Exiting...";
+            throw new CommandFailedException(message);
+        }
+            
+        var process = new Process
         {
             StartInfo = new ProcessStartInfo(fileName, Arguments)
             {
@@ -41,15 +47,20 @@ public class Exec : AbstractCommand
             }
         };
         var commandWithArguments = $"{fileName} {Arguments}";
+        
         process.Start();
-
-        if (process.WaitForExit(Timeout * 1000))
-            return;
-
-        Error($"The command ({commandWithArguments}) has timed out and is about to be killed...");
-        process.Kill();
-        Error($"The command ({commandWithArguments}) has been killed.");
-        throw new CommandFailedException(
-            $"The command ({commandWithArguments}) timed out after {Timeout} second(s).");
+        
+        var timeoutSignal = new CancellationTokenSource(TimeSpan.FromSeconds(Timeout));
+        try 
+        {
+            await process.WaitForExitAsync(timeoutSignal.Token).ConfigureAwait(false);
+        } catch (OperationCanceledException)
+        {
+            Error($"The command ({commandWithArguments}) has timed out and is about to be killed...");
+            process.Kill();
+            Error($"The command ({commandWithArguments}) has been killed.");
+            var message = $"The command ({commandWithArguments}) timed out after {Timeout} second(s).";
+            throw new CommandFailedException(message);
+        }
     }
 }

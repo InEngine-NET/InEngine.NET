@@ -1,12 +1,13 @@
 ﻿using InEngine.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace InEngine.Commands.Sample;
 
 public class SayHello : AbstractCommand
 {
-    public override void Run()
+    public override async Task Run()
     {
-        Console.WriteLine("hello");
+        await Task.Run(() => Console.WriteLine("hello"));
     }
 }

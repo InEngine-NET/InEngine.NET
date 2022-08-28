@@ -38,15 +38,15 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
         SchedulerGroup = GetType().AssemblyQualifiedName;
     }
 
-    public virtual void Run() => throw new NotImplementedException();
+    public abstract Task Run();
 
-    public virtual void RunWithLifeCycle()
+    public virtual async Task RunWithLifeCycle()
     {
         try
         {
             CommandLifeCycle.FirePreActions(this);
             if (SecondsBeforeTimeout <= 0)
-                Run();
+                await Run();
             else
             {
                 var task = Task.Run(Run);
@@ -75,7 +75,7 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
     #endregion
 
     #region Scheduling
-    public virtual void Execute(IJobExecutionContext context)
+    public virtual async Task Execute(IJobExecutionContext context)
     {
         if (context != null)
         {
@@ -86,7 +86,7 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
                     property.SetValue(this, x.Value);
             });
         }
-        RunWithLifeCycle();
+        await RunWithLifeCycle();
     }
     #endregion
 

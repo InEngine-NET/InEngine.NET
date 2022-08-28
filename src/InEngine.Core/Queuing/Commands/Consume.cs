@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using CommandLine;
 using InEngine.Core.Queuing.Message;
 
@@ -18,36 +19,40 @@ public class Consume : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override void Run()
+    protected QueueAdapter QueueAdapter { get; set; }
+
+    public bool ConsumeMessage()
     {
-        var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
-        ICommandEnvelope commandEnvelope;
-        while (ShouldConsumeAll)
-            try
-            {
-                commandEnvelope = queue.Consume();
-                if (commandEnvelope == null) 
-                    Thread.Sleep(5000);
-            }
-            catch (Exception exception)
-            {
-                Error(exception.Message);
-            }
+        try
+        {
+            var commandEnvelope = QueueAdapter.Consume();
+            return commandEnvelope != null;
+        }
+        catch (Exception exception)
+        {
+            Error(exception.Message);
+            return false;
+        }
+    }
+
+    public override async Task Run()
+    {
+        QueueAdapter = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
 
         if (ShouldConsumeAll)
-            return;
+        {
+            while (ShouldConsumeAll)
+                if (!ConsumeMessage())
+                    Thread.Sleep(1000);
+        }
+        else
+        {
+            for (var i = 0; i < Count; i++)
+                if (!ConsumeMessage())
+                    break;   
+        }
 
-        for (var i = 0; i < Count; i++)
-            try
-            {
-                commandEnvelope = queue.Consume();
-                if (commandEnvelope == null)
-                    return;
-            }
-            catch (Exception exception)
-            {
-                Error(exception.Message);
-            }
+        await Task.Run(() => Line("Finished consuming messages."));
     }
 
     public override void Failed(Exception exception)

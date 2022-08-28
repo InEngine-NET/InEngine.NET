@@ -5,6 +5,7 @@ using CommandLine;
 using InEngine.Core.Exceptions;
 using InEngine.Core.Queuing.Message;
 using Konsole.Forms;
+using System.Threading.Tasks;
 
 namespace InEngine.Core.Queuing.Commands;
 
@@ -35,7 +36,7 @@ public class Peek : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override void Run()
+    public override async Task Run()
     {
         if (From < 0)
             throw new ArgumentException("--from cannot be negative");
@@ -56,27 +57,27 @@ public class Peek : AbstractCommand, IHasQueueSettings
         }
         catch (Exception exception)
         {
-            Log.LogWarning(exception.Message);
+            Log.LogWarning(exception, "Error while peeking at pending queue");
         }
 
         try
         {
             if (InProgressQueue)
-                PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+                PrintMessages(queue.PeekInProgressMessages(From, To), "InProgress");
         }
         catch (Exception exception)
         {
-            Log.LogWarning(exception.Message);
+            Log.LogWarning(exception, "Error while peeking at in-progress queue");
         }
 
         try
         {
             if (FailedQueue)
-                PrintMessages(queue.PeekInProgressMessages(From, To), "In-progress");
+                PrintMessages(queue.PeekInProgressMessages(From, To), "Failed");
         }
         catch (Exception exception)
         {
-            Log.LogWarning(exception.Message);
+            Log.LogWarning(exception, "Error while peeking at failed queue");
         }
     }
 

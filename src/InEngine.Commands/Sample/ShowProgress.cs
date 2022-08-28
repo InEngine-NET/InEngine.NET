@@ -1,4 +1,5 @@
 ﻿using InEngine.Core;
+using System.Threading.Tasks;
 
 namespace InEngine.Commands.Sample;
 
@@ -12,7 +13,7 @@ public class ShowProgress : AbstractCommand
      * Note that the override keyword is necessary in the Run method 
      * signature as the base class method is virtual.
      */
-    public override void Run()
+    public override async Task Run()
     {
         // Define the ticks (aka steps) for the command...
         var maxTicks = 100000;
@@ -22,7 +23,7 @@ public class ShowProgress : AbstractCommand
         for (var i = 0; i <= maxTicks;i++)
         {
             // Update the command's progress
-            UpdateProgress(i);
+            await Task.Run(() => UpdateProgress(i));
         }
     }
 }
