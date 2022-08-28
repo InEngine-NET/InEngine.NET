@@ -40,6 +40,7 @@ public class RedisClient : IQueueClient
     public static ConnectionMultiplexer Connection => lazyConnection.Value;
 
     public ConnectionMultiplexer _connectionMultiplexer;
+    private bool isDisposed;
 
     public IDatabase Redis => Connection.GetDatabase(ClientSettings.Database);
 
@@ -178,5 +179,21 @@ public class RedisClient : IQueueClient
             { "In-progress", Redis.ListLength(InProgressQueueName) },
             { "Failed", Redis.ListLength(FailedQueueName) }
         };
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
+        _connectionMultiplexer?.Dispose();
+        isDisposed = true;
     }
 }

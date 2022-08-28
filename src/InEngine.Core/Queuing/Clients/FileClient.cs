@@ -205,4 +205,9 @@ public class FileClient : IQueueClient
             { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().Length }
         };
     }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 }

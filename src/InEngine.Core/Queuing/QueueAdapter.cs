@@ -11,6 +11,7 @@ namespace InEngine.Core.Queuing;
 public class QueueAdapter : IQueueClient
 {
     public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+    private bool isDisposed;
 
     public int Id
     {
@@ -100,4 +101,21 @@ public class QueueAdapter : IQueueClient
         QueueClient.PeekInProgressMessages(from, to);
     public List<ICommandEnvelope> PeekFailedMessages(long from, long to) => QueueClient.PeekFailedMessages(from, to);
     public Dictionary<string, long> GetQueueLengths() => QueueClient.GetQueueLengths();
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
+        QueueClient?.Dispose();
+        QueueClient = null;
+        isDisposed = true;
+    }
 }

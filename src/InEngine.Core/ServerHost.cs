@@ -11,6 +11,7 @@ public class ServerHost : IDisposable, IHasMailSettings, IHasQueueSettings
     public Dequeue Dequeue { get; set; }
     public MailSettings MailSettings { get; set; }
     public QueueSettings QueueSettings { get; set; }
+    private bool isDisposed; 
 
     public void Start()
     {
@@ -30,7 +31,19 @@ public class ServerHost : IDisposable, IHasMailSettings, IHasQueueSettings
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
         SuperScheduler?.Shutdown();
         Dequeue.Dispose();
+        Dequeue = null;
+        isDisposed = true;
     }
 }

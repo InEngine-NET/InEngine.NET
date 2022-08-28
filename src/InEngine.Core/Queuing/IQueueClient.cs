@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing;
 
-public interface IQueueClient : IHasMailSettings
+using System;
+
+public interface IQueueClient : IHasMailSettings, IDisposable
 {
     ILogger Log { get; set; }
     int Id { get; set; }

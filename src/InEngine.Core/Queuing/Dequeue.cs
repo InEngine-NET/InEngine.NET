@@ -11,6 +11,7 @@ namespace InEngine.Core.Queuing;
 public class Dequeue : IDisposable
 {
     private readonly IList<QueueAdapter> queueAdapters;
+    private bool isDisposed;
     public CancellationTokenSource CancellationTokenSource { get; set; }
     public QueueSettings QueueSettings { get; set; }
     public MailSettings MailSettings { get; set; }
@@ -51,10 +52,18 @@ public class Dequeue : IDisposable
 
     public void Dispose()
     {
-        queueAdapters.ToList().ForEach(x => {
-            if (x is IDisposable)
-                (x as IDisposable).Dispose();
-        });
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
+        queueAdapters.ToList().ForEach(x => ((IDisposable)x)?.Dispose());
         CancellationTokenSource.Cancel();
+        isDisposed = true;
     }
 }

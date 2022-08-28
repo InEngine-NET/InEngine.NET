@@ -15,9 +15,24 @@ public class SyncClient : IQueueClient
 
     public ILogger Log { get; set; } = LogManager.GetLogger<SyncClient>();
     public int Id { get; set; } = 0;
-    public string QueueBaseName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public string QueueName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public bool UseCompression { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public string QueueBaseName
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
+
+    public string QueueName
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
+
+    public bool UseCompression
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
 
     public void Publish(AbstractCommand command)
     {
@@ -25,7 +40,8 @@ public class SyncClient : IQueueClient
     }
 
     public void Recover()
-    {}
+    {
+    }
 
     public void Consume(CancellationToken cancellationToken)
     {
@@ -75,5 +91,10 @@ public class SyncClient : IQueueClient
     public Dictionary<string, long> GetQueueLengths()
     {
         return new Dictionary<string, long>();
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }
