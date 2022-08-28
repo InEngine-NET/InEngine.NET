@@ -2,19 +2,20 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <PackageVersion>5.0.0</PackageVersion>
   </PropertyGroup>
   
   <PropertyGroup>
     <Version>4.0.0</Version>
-    <FileVersion>4.0.0</FileVersion>
+    <FileVersion>5.0.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
-    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <Copyright>Copyright © 2022 Ethan Hann</Copyright>
 	<Product>InEngine.NET</Product>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
-	<PackageIconUrl>https://inengine.net/images/inengine-logo-32.png</PackageIconUrl>
+	<PackageIconUrl>https://inengine-net.github.io/InEngine.NET/images/inengine-logo-32.png</PackageIconUrl>
     <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
   </PropertyGroup>
   <ItemGroup>
@@ -24,9 +25,6 @@
   <ItemGroup>
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration.Install" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Install.ps1">

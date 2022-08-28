@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <PackageVersion>5.0.0</PackageVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Version>4.0.0</Version>
-    <FileVersion>4.0.0</FileVersion>
+    <FileVersion>5.0.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
-    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <Copyright>Copyright © 2022 Ethan Hann</Copyright>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
