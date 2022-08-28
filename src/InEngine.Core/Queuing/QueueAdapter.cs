@@ -1,117 +1,121 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
+using Microsoft.Extensions.Logging;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing;
+
+public class QueueAdapter : IQueueClient
 {
-    public class QueueAdapter : IQueueClient
+    public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+    private bool isDisposed;
+
+    public int Id
     {
-        public ILog Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
-        public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
-        public IQueueClient QueueClient { get; set; }
-        public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
-        public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
-        public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
-        public MailSettings MailSettings { get => QueueClient.MailSettings; set => QueueClient.MailSettings = value; }
+        get => QueueClient.Id;
+        set => QueueClient.Id = value;
+    }
 
-        public static QueueAdapter Make(bool useSecondaryQueue, QueueSettings queueSettings, MailSettings mailSettings)
+    public IQueueClient QueueClient { get; set; }
+
+    public string QueueBaseName
+    {
+        get => QueueClient.QueueBaseName;
+        set => QueueClient.QueueBaseName = value;
+    }
+
+    public string QueueName
+    {
+        get => QueueClient.QueueName;
+        set => QueueClient.QueueName = value;
+    }
+
+    public bool UseCompression
+    {
+        get => QueueClient.UseCompression;
+        set => QueueClient.UseCompression = value;
+    }
+
+    public MailSettings MailSettings
+    {
+        get => QueueClient.MailSettings;
+        set => QueueClient.MailSettings = value;
+    }
+
+    public static QueueAdapter Make(bool useSecondaryQueue, QueueSettings queueSettings, MailSettings mailSettings)
+    {
+        var queueDriverName = queueSettings.QueueDriver.ToLower();
+        var queue = new QueueAdapter();
+
+        switch (queueDriverName)
         {
-            var queueDriverName = queueSettings.QueueDriver.ToLower();
-            var queue = new QueueAdapter();
-
-            if (queueDriverName == "redis") {
+            case "redis":
                 RedisClient.ClientSettings = queueSettings.Redis;
-                queue.QueueClient = new RedisClient() {
+                queue.QueueClient = new RedisClient()
+                {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression,
-                };   
-            }
-            else if (queueDriverName == "rabbitmq") {
-                RabbitMQClient.ClientSettings = queueSettings.RabbitMQ;
-                queue.QueueClient = new RabbitMQClient() {
+                };
+                break;
+            case "rabbitmq":
+                RabbitMqClient.ClientSettings = queueSettings.RabbitMQ;
+                queue.QueueClient = new RabbitMqClient()
+                {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression
                 };
-            }
-            else if (queueDriverName == "file") {
+                break;
+            case "file":
                 FileClient.ClientSettings = queueSettings.File;
-                queue.QueueClient = new FileClient() {
+                queue.QueueClient = new FileClient()
+                {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression
                 };
-            }
-            else if (queueDriverName == "sync")
+                break;
+            case "sync":
                 queue.QueueClient = new SyncClient();
-            else
+                break;
+            default:
                 throw new Exception("Unspecified or unknown queue driver.");
-
-            queue.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
-            queue.MailSettings = mailSettings;
-            return queue;
         }
 
-        public void Publish(AbstractCommand command)
-        {
-            QueueClient.Publish(command);
-        }
+        queue.QueueName = useSecondaryQueue ? QueueNames.Secondary : QueueNames.Primary;
+        queue.MailSettings = mailSettings;
+        return queue;
+    }
 
-        public void Consume(CancellationToken CancellationToken)
-        {
-            QueueClient.Consume(CancellationToken);
-        }
+    public void Publish(AbstractCommand command) => QueueClient.Publish(command);
+    public void Consume(CancellationToken cancellationToken) => QueueClient.Consume(cancellationToken);
+    public ICommandEnvelope Consume() => QueueClient.Consume();
+    public void Recover() => QueueClient.Recover();
+    public bool ClearPendingQueue() => QueueClient.ClearPendingQueue();
+    public bool ClearInProgressQueue() => QueueClient.ClearInProgressQueue();
+    public bool ClearFailedQueue() => QueueClient.ClearFailedQueue();
+    public void RepublishFailedMessages() => QueueClient.RepublishFailedMessages();
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to) => QueueClient.PeekPendingMessages(from, to);
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to) =>
+        QueueClient.PeekInProgressMessages(from, to);
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to) => QueueClient.PeekFailedMessages(from, to);
+    public Dictionary<string, long> GetQueueLengths() => QueueClient.GetQueueLengths();
 
-        public ICommandEnvelope Consume()
-        {
-            return QueueClient.Consume();
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        public void Recover()
-        {
-            QueueClient.Recover();
-        }
-
-        public bool ClearPendingQueue()
-        {
-            return QueueClient.ClearPendingQueue();
-        }
-
-        public bool ClearInProgressQueue()
-        {
-            return QueueClient.ClearInProgressQueue();
-        }
-
-        public bool ClearFailedQueue()
-        {
-            return QueueClient.ClearFailedQueue();
-        }
-
-        public void RepublishFailedMessages()
-        {
-            QueueClient.RepublishFailedMessages();
-        }
-
-        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-        {
-            return QueueClient.PeekPendingMessages(from, to);
-        }
-
-        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-        {
-            return QueueClient.PeekInProgressMessages(from, to);
-        }
-
-        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-        {
-            return QueueClient.PeekFailedMessages(from, to);
-        }
-
-        public Dictionary<string, long> GetQueueLengths()
-        {
-            return QueueClient.GetQueueLengths();
-        }
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
+        QueueClient?.Dispose();
+        QueueClient = null;
+        isDisposed = true;
     }
 }

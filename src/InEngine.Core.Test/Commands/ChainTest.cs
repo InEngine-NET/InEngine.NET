@@ -1,78 +1,79 @@
 ﻿using System.Collections.Generic;
-using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
 using Moq;
 using NUnit.Framework;
-using Quartz;
 
-namespace InEngine.Core.Test.Commands
+namespace InEngine.Core.Test.Commands;
+
+[TestFixture]
+public class ChainTest : TestBase<Chain>
 {
-    [TestFixture]
-    public class ChainTest : TestBase<Chain>
+    [SetUp]
+    public void Setup()
     {
-        [SetUp]
-        public void Setup()
+    }
+
+    [Test]
+    public void ShouldRunChainOfCommands()
+    {
+        var mockCommand1 = new Mock<AbstractCommand>();
+        var mockCommand2 = new Mock<AbstractCommand>();
+        var commands = new[]
         {
-        }
+            mockCommand1.Object,
+            mockCommand2.Object,
+        };
+        Subject.Commands = commands;
 
-        [Test]
-        public void ShouldRunChainOfCommands()
+        Subject.RunAsync();
+
+        mockCommand1.Verify(x => x.RunAsync(), Times.Once());
+        mockCommand2.Verify(x => x.RunAsync(), Times.Once());
+    }
+
+    [Test]
+    public void ShouldRunChainOfCommandsAndFail()
+    {
+        var mockCommand1 = new Mock<AlwaysFail>();
+        var mockCommand2 = new Mock<AlwaysFail>();
+        var alwaysFail = new AlwaysFail();
+        var commands = new AbstractCommand[]
         {
-            var mockCommand1 = new Mock<AbstractCommand>();
-            var mockCommand2 = new Mock<AbstractCommand>();
-            var commands = new[] {
-                mockCommand1.Object,
-                mockCommand2.Object,
-            };
-            Subject.Commands = commands;
+            mockCommand1.Object,
+            alwaysFail,
+            mockCommand2.Object,
+        };
+        Subject.Commands = commands;
 
-            Subject.Run();
+        Assert.That(Subject.RunAsync, Throws.TypeOf<CommandChainFailedException>());
 
-            mockCommand1.Verify(x => x.Run(), Times.Once());
-            mockCommand2.Verify(x => x.Run(), Times.Once());
-        }
+        mockCommand1.Verify(x => x.RunAsync(), Times.Once());
+        mockCommand2.Verify(x => x.RunAsync(), Times.Never());
+    }
 
-        [Test]
-        public void ShouldRunChainOfCommandsAndFail()
+    [Test]
+    public void ShouldRunChainOfDifferentCommands()
+    {
+        Subject.Commands = new List<AbstractCommand>
         {
-            var mockCommand1 = new Mock<AlwaysFail>();
-            var mockCommand2 = new Mock<AlwaysFail>();
-            var alwaysFail = new AlwaysFail();
-            var commands = new[] {
-                mockCommand1.Object,
-                new AlwaysFail(),
-                mockCommand2.Object,
-            };
-            Subject.Commands = commands;
+            new AlwaysSucceed(),
+            new Echo() { VerbatimText = "Hello, world!" },
+        };
 
-            Assert.That(Subject.Run, Throws.TypeOf<CommandChainFailedException>());
+        Subject.RunAsync();
+    }
 
-            mockCommand1.Verify(x => x.Run(), Times.Once());
-            mockCommand2.Verify(x => x.Run(), Times.Never());
-        }
-
-        [Test]
-        public void ShouldRunChainOfDifferentCommands()
+    [Test]
+    public void ShouldRunChainOfDifferentCommandsAsAbstractCommand()
+    {
+        Subject.Commands = new AbstractCommand[]
         {
-            Subject.Commands = new List<AbstractCommand>() {
-                new AlwaysSucceed(),
-                new Echo() { VerbatimText = "Hello, world!"},
-            };
+            new AlwaysSucceed(),
+            new Echo(verbatimText: "Hello, world!"),
+        };
 
-            Subject.Run();
-        }
-
-        [Test]
-        public void ShouldRunChainOfDifferentCommandsAsAbstractCommand()
-        {
-            Subject.Commands = new[] {
-                new AlwaysSucceed() as AbstractCommand,
-                new Echo() { VerbatimText = "Hello, world!"} as AbstractCommand,
-            };
-
-            Subject.Run();
-        }
+        Subject.RunAsync();
     }
 }

@@ -1,16 +1,16 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 
-namespace InEngine.Core.Commands
+namespace InEngine.Core.Commands;
+
+public class Sleep : AbstractCommand
 {
-    public class Sleep : AbstractCommand
-    {
-        public int MillisecondsTimeout { get; set; }
+    public int MillisecondsTimeout { get; set; }
 
-        public override void Run()
-        {
-            Warning("Going to sleep...");
-            Thread.Sleep(MillisecondsTimeout);
-            Info("Done sleeping!");
-        }
+    public override void Run()
+    {
+        Warning("Going to sleep...");
+        Thread.Sleep(MillisecondsTimeout);
+        Info("Done sleeping!");
     }
 }

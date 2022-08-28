@@ -1,8 +1,7 @@
-﻿namespace InEngine.Core
+﻿namespace InEngine.Core;
+
+public static class ExitCodes
 {
-    public static class ExitCodes
-    {
-        public static readonly int success = 0;
-        public static readonly int fail = 1;
-    }
+    public const int Success = 0;
+    public const int Fail = 1;
 }

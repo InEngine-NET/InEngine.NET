@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace InEngine.Core.Exceptions
-{
-    public class PluginNotRegisteredException : Exception
-    {
-        public PluginNotRegisteredException(string message = "") : base(message)
-        {}
+namespace InEngine.Core.Exceptions;
 
-        public PluginNotRegisteredException(string message, Exception innerException) : base(message, innerException)
-        {}
+public class PluginNotRegisteredException : Exception
+{
+    public PluginNotRegisteredException(string message = "") : base(message)
+    {
+    }
+
+    public PluginNotRegisteredException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

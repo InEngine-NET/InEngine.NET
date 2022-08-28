@@ -1,7 +1,6 @@
-﻿namespace InEngine.Core.IO
+﻿namespace InEngine.Core.IO;
+
+public interface IHasMailSettings
 {
-    public interface IHasMailSettings
-    {
-        MailSettings MailSettings { get; set; }
-    }
+    MailSettings MailSettings { get; set; }
 }
