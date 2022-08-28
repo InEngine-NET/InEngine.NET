@@ -8,245 +8,244 @@ using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 using Microsoft.Extensions.Logging;
 
-namespace InEngine.Core.Queuing.Clients
+namespace InEngine.Core.Queuing.Clients;
+
+public class FileClient : IQueueClient
 {
-    public class FileClient : IQueueClient
+    private static readonly Mutex ConsumeLock = new Mutex();
+    public static FileClientSettings ClientSettings { get; set; }
+    public MailSettings MailSettings { get; set; }
+
+    public ILogger Log { get; set; } = LogManager.GetLogger<FileClient>();
+    public int Id { get; set; } = 0;
+    public string QueueBaseName { get; set; }
+    public string QueueName { get; set; }
+    public bool UseCompression { get; set; }
+
+    public string QueuePath => Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}");
+
+    public string PendingQueuePath
     {
-        private static readonly Mutex ConsumeLock = new Mutex();
-        public static FileClientSettings ClientSettings { get; set; }
-        public MailSettings MailSettings { get; set; }
-
-        public ILogger Log { get; set; } = LogManager.GetLogger<FileClient>();
-        public int Id { get; set; } = 0;
-        public string QueueBaseName { get; set; }
-        public string QueueName { get; set; }
-        public bool UseCompression { get; set; }
-
-        public string QueuePath => Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}");
-
-        public string PendingQueuePath
+        get
         {
-            get
-            {
-                var path = $"{QueuePath}_Pending";
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                return path;
-            }
+            var path = $"{QueuePath}_Pending";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
         }
+    }
 
-        public string InProgressQueuePath
+    public string InProgressQueuePath
+    {
+        get
         {
-            get
-            {
-                var path = $"{QueuePath}_InProgress";
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                return path;
-            }
+            var path = $"{QueuePath}_InProgress";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
         }
+    }
 
-        public string FailedQueuePath
+    public string FailedQueuePath
+    {
+        get
         {
-            get
-            {
-                var path = $"{QueuePath}_Failed";
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                return path;
-            }
+            var path = $"{QueuePath}_Failed";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
         }
+    }
 
-        public void Publish(AbstractCommand command)
+    public void Publish(AbstractCommand command)
+    {
+        PublishToQueue(new CommandEnvelope()
         {
-            PublishToQueue(new CommandEnvelope()
+            IsCompressed = UseCompression,
+            CommandClassName = command.GetType().FullName,
+            PluginName = command.GetType().Assembly.GetName().Name,
+            SerializedCommand = command.SerializeToJson(UseCompression)
+        }, PendingQueuePath);
+    }
+
+    void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
+    {
+        if (!Directory.Exists(queuePath))
+            Directory.CreateDirectory(queuePath);
+
+        File.WriteAllText(
+            Path.Combine(queuePath, Guid.NewGuid().ToString()),
+            commandEnvelope.SerializeToJson()
+        );
+    }
+
+    public void Consume(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (true)
             {
-                IsCompressed = UseCompression,
-                CommandClassName = command.GetType().FullName,
-                PluginName = command.GetType().Assembly.GetName().Name,
-                SerializedCommand = command.SerializeToJson(UseCompression)
-            }, PendingQueuePath);
-        }
-
-        void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
-        {
-            if (!Directory.Exists(queuePath))
-                Directory.CreateDirectory(queuePath);
-
-            File.WriteAllText(
-                Path.Combine(queuePath, Guid.NewGuid().ToString()),
-                commandEnvelope.SerializeToJson()
-            );
-        }
-
-        public void Consume(CancellationToken cancellationToken)
-        {
-            try
-            {
-                while (true)
+                try
                 {
-                    try
-                    {
-                        if (Consume() == null)
-                            Thread.Sleep(5000);
-                    }
-                    catch (Exception exception)
-                    {
-                        Log.LogError(exception.Message, exception);
-                    }
-
-                    cancellationToken.ThrowIfCancellationRequested();
+                    if (Consume() == null)
+                        Thread.Sleep(5000);
                 }
-            }
-            catch (OperationCanceledException exception)
-            {
-                Log.LogError(exception.Message, exception);
-            }
-            catch (Exception exception)
-            {
-                Log.LogError(exception.Message, exception);
+                catch (Exception exception)
+                {
+                    Log.LogError(exception.Message, exception);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
         }
-
-        public ICommandEnvelope Consume()
+        catch (OperationCanceledException exception)
         {
-            FileInfo fileInfo;
-            var inProgressFilePath = String.Empty;
+            Log.LogError(exception.Message, exception);
+        }
+        catch (Exception exception)
+        {
+            Log.LogError(exception.Message, exception);
+        }
+    }
 
-            ConsumeLock.WaitOne();
-            fileInfo = new DirectoryInfo(PendingQueuePath)
-                .GetFiles()
-                .OrderBy(x => x.LastWriteTimeUtc)
-                .FirstOrDefault();
-            if (fileInfo != null)
-            {
-                inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
-                fileInfo.MoveTo(inProgressFilePath);
-            }
+    public ICommandEnvelope Consume()
+    {
+        FileInfo fileInfo;
+        var inProgressFilePath = String.Empty;
 
-            if (fileInfo == null)
-            {
-                ConsumeLock.ReleaseMutex();
-                return null;
-            }
+        ConsumeLock.WaitOne();
+        fileInfo = new DirectoryInfo(PendingQueuePath)
+            .GetFiles()
+            .OrderBy(x => x.LastWriteTimeUtc)
+            .FirstOrDefault();
+        if (fileInfo != null)
+        {
+            inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
+            fileInfo.MoveTo(inProgressFilePath);
+        }
 
+        if (fileInfo == null)
+        {
             ConsumeLock.ReleaseMutex();
+            return null;
+        }
 
-            var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
-            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+        ConsumeLock.ReleaseMutex();
+
+        var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
+        var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+        {
+            File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
+        });
+
+        try
+        {
+            command.WriteSummaryToConsole();
+            command.RunWithLifeCycle();
+        }
+        catch (Exception exception)
+        {
+            Log.LogError(exception.Message, exception);
+            if (command.CommandLifeCycle.ShouldRetry())
             {
+                PublishToQueue(commandEnvelope, PendingQueuePath);
+                File.Delete(Path.Combine(PendingQueuePath, fileInfo.Name));
+            }
+            else
                 File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
-            });
 
-            try
-            {
-                command.WriteSummaryToConsole();
-                command.RunWithLifeCycle();
-            }
-            catch (Exception exception)
-            {
-                Log.LogError(exception.Message, exception);
-                if (command.CommandLifeCycle.ShouldRetry())
-                {
-                    PublishToQueue(commandEnvelope, PendingQueuePath);
-                    File.Delete(Path.Combine(PendingQueuePath, fileInfo.Name));
-                }
-                else
-                    File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
-
-                throw new CommandFailedException("Failed to consume command.", exception);
-            }
-
-            try
-            {
-                File.Delete(inProgressFilePath);
-            }
-            catch (Exception exception)
-            {
-                Log.LogError(exception.Message, exception);
-                throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
-            }
-
-            return commandEnvelope;
+            throw new CommandFailedException("Failed to consume command.", exception);
         }
 
-        public void RepublishFailedMessages()
+        try
         {
-            new DirectoryInfo(FailedQueuePath)
-                .GetFiles()
-                .ToList()
-                .ForEach(x => x.MoveTo(Path.Combine(PendingQueuePath, x.Name)));
+            File.Delete(inProgressFilePath);
         }
-
-        public void Recover()
+        catch (Exception exception)
         {
+            Log.LogError(exception.Message, exception);
+            throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
         }
 
-        public bool ClearFailedQueue()
+        return commandEnvelope;
+    }
+
+    public void RepublishFailedMessages()
+    {
+        new DirectoryInfo(FailedQueuePath)
+            .GetFiles()
+            .ToList()
+            .ForEach(x => x.MoveTo(Path.Combine(PendingQueuePath, x.Name)));
+    }
+
+    public void Recover()
+    {
+    }
+
+    public bool ClearFailedQueue()
+    {
+        return ClearQueue(FailedQueuePath);
+    }
+
+    public bool ClearInProgressQueue()
+    {
+        return ClearQueue(InProgressQueuePath);
+    }
+
+    public bool ClearPendingQueue()
+    {
+        return ClearQueue(PendingQueuePath);
+    }
+
+    public bool ClearQueue(string queuePath)
+    {
+        new DirectoryInfo(queuePath)
+            .GetFiles()
+            .ToList()
+            .ForEach(x => x.Delete());
+        return true;
+    }
+
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
+    {
+        return PeekMessages(FailedQueuePath, from, to);
+    }
+
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
+    {
+        return PeekMessages(InProgressQueuePath, from, to);
+    }
+
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
+    {
+        return PeekMessages(PendingQueuePath, from, to);
+    }
+
+    public List<ICommandEnvelope> PeekMessages(string queuePath, long from, long to)
+    {
+        var maxResults = Convert.ToInt32(to + from);
+        var files = new DirectoryInfo(queuePath)
+            .GetFiles()
+            .OrderBy(x => x.LastWriteTimeUtc)
+            .ToList();
+
+        if (files.Count() <= maxResults)
+            return files.Select(x =>
+                File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
+
+        return files
+            .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
+            .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope)
+            .ToList();
+    }
+
+    public Dictionary<string, long> GetQueueLengths()
+    {
+        return new Dictionary<string, long>()
         {
-            return ClearQueue(FailedQueuePath);
-        }
-
-        public bool ClearInProgressQueue()
-        {
-            return ClearQueue(InProgressQueuePath);
-        }
-
-        public bool ClearPendingQueue()
-        {
-            return ClearQueue(PendingQueuePath);
-        }
-
-        public bool ClearQueue(string queuePath)
-        {
-            new DirectoryInfo(queuePath)
-                .GetFiles()
-                .ToList()
-                .ForEach(x => x.Delete());
-            return true;
-        }
-
-        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-        {
-            return PeekMessages(FailedQueuePath, from, to);
-        }
-
-        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-        {
-            return PeekMessages(InProgressQueuePath, from, to);
-        }
-
-        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-        {
-            return PeekMessages(PendingQueuePath, from, to);
-        }
-
-        public List<ICommandEnvelope> PeekMessages(string queuePath, long from, long to)
-        {
-            var maxResults = Convert.ToInt32(to + from);
-            var files = new DirectoryInfo(queuePath)
-                .GetFiles()
-                .OrderBy(x => x.LastWriteTimeUtc)
-                .ToList();
-
-            if (files.Count() <= maxResults)
-                return files.Select(x =>
-                    File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
-
-            return files
-                .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
-                .Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope)
-                .ToList();
-        }
-
-        public Dictionary<string, long> GetQueueLengths()
-        {
-            return new Dictionary<string, long>()
-            {
-                { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount() },
-                { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount() },
-                { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount() }
-            };
-        }
+            { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount() },
+            { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount() },
+            { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount() }
+        };
     }
 }

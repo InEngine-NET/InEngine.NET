@@ -6,112 +6,111 @@ using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
 using Microsoft.Extensions.Logging;
 
-namespace InEngine.Core.Queuing
+namespace InEngine.Core.Queuing;
+
+public class QueueAdapter : IQueueClient
 {
-    public class QueueAdapter : IQueueClient
+    public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+    public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
+    public IQueueClient QueueClient { get; set; }
+    public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
+    public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
+    public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
+    public MailSettings MailSettings { get => QueueClient.MailSettings; set => QueueClient.MailSettings = value; }
+
+    public static QueueAdapter Make(bool useSecondaryQueue, QueueSettings queueSettings, MailSettings mailSettings)
     {
-        public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
-        public int Id { get { return QueueClient.Id; } set { QueueClient.Id = value; } }
-        public IQueueClient QueueClient { get; set; }
-        public string QueueBaseName { get => QueueClient.QueueBaseName; set => QueueClient.QueueBaseName = value; }
-        public string QueueName { get => QueueClient.QueueName; set => QueueClient.QueueName = value; }
-        public bool UseCompression { get => QueueClient.UseCompression; set => QueueClient.UseCompression = value; }
-        public MailSettings MailSettings { get => QueueClient.MailSettings; set => QueueClient.MailSettings = value; }
+        var queueDriverName = queueSettings.QueueDriver.ToLower();
+        var queue = new QueueAdapter();
 
-        public static QueueAdapter Make(bool useSecondaryQueue, QueueSettings queueSettings, MailSettings mailSettings)
-        {
-            var queueDriverName = queueSettings.QueueDriver.ToLower();
-            var queue = new QueueAdapter();
-
-            if (queueDriverName == "redis") {
-                RedisClient.ClientSettings = queueSettings.Redis;
-                queue.QueueClient = new RedisClient() {
-                    QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression,
-                };   
-            }
-            else if (queueDriverName == "rabbitmq") {
-                RabbitMqClient.ClientSettings = queueSettings.RabbitMQ;
-                queue.QueueClient = new RabbitMqClient() {
-                    QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression
-                };
-            }
-            else if (queueDriverName == "file") {
-                FileClient.ClientSettings = queueSettings.File;
-                queue.QueueClient = new FileClient() {
-                    QueueBaseName = queueSettings.QueueName,
-                    UseCompression = queueSettings.UseCompression
-                };
-            }
-            else if (queueDriverName == "sync")
-                queue.QueueClient = new SyncClient();
-            else
-                throw new Exception("Unspecified or unknown queue driver.");
-
-            queue.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
-            queue.MailSettings = mailSettings;
-            return queue;
+        if (queueDriverName == "redis") {
+            RedisClient.ClientSettings = queueSettings.Redis;
+            queue.QueueClient = new RedisClient() {
+                QueueBaseName = queueSettings.QueueName,
+                UseCompression = queueSettings.UseCompression,
+            };   
         }
-
-        public void Publish(AbstractCommand command)
-        {
-            QueueClient.Publish(command);
+        else if (queueDriverName == "rabbitmq") {
+            RabbitMqClient.ClientSettings = queueSettings.RabbitMQ;
+            queue.QueueClient = new RabbitMqClient() {
+                QueueBaseName = queueSettings.QueueName,
+                UseCompression = queueSettings.UseCompression
+            };
         }
-
-        public void Consume(CancellationToken CancellationToken)
-        {
-            QueueClient.Consume(CancellationToken);
+        else if (queueDriverName == "file") {
+            FileClient.ClientSettings = queueSettings.File;
+            queue.QueueClient = new FileClient() {
+                QueueBaseName = queueSettings.QueueName,
+                UseCompression = queueSettings.UseCompression
+            };
         }
+        else if (queueDriverName == "sync")
+            queue.QueueClient = new SyncClient();
+        else
+            throw new Exception("Unspecified or unknown queue driver.");
 
-        public ICommandEnvelope Consume()
-        {
-            return QueueClient.Consume();
-        }
+        queue.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
+        queue.MailSettings = mailSettings;
+        return queue;
+    }
 
-        public void Recover()
-        {
-            QueueClient.Recover();
-        }
+    public void Publish(AbstractCommand command)
+    {
+        QueueClient.Publish(command);
+    }
 
-        public bool ClearPendingQueue()
-        {
-            return QueueClient.ClearPendingQueue();
-        }
+    public void Consume(CancellationToken CancellationToken)
+    {
+        QueueClient.Consume(CancellationToken);
+    }
 
-        public bool ClearInProgressQueue()
-        {
-            return QueueClient.ClearInProgressQueue();
-        }
+    public ICommandEnvelope Consume()
+    {
+        return QueueClient.Consume();
+    }
 
-        public bool ClearFailedQueue()
-        {
-            return QueueClient.ClearFailedQueue();
-        }
+    public void Recover()
+    {
+        QueueClient.Recover();
+    }
 
-        public void RepublishFailedMessages()
-        {
-            QueueClient.RepublishFailedMessages();
-        }
+    public bool ClearPendingQueue()
+    {
+        return QueueClient.ClearPendingQueue();
+    }
 
-        public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-        {
-            return QueueClient.PeekPendingMessages(from, to);
-        }
+    public bool ClearInProgressQueue()
+    {
+        return QueueClient.ClearInProgressQueue();
+    }
 
-        public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-        {
-            return QueueClient.PeekInProgressMessages(from, to);
-        }
+    public bool ClearFailedQueue()
+    {
+        return QueueClient.ClearFailedQueue();
+    }
 
-        public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-        {
-            return QueueClient.PeekFailedMessages(from, to);
-        }
+    public void RepublishFailedMessages()
+    {
+        QueueClient.RepublishFailedMessages();
+    }
 
-        public Dictionary<string, long> GetQueueLengths()
-        {
-            return QueueClient.GetQueueLengths();
-        }
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
+    {
+        return QueueClient.PeekPendingMessages(from, to);
+    }
+
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
+    {
+        return QueueClient.PeekInProgressMessages(from, to);
+    }
+
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
+    {
+        return QueueClient.PeekFailedMessages(from, to);
+    }
+
+    public Dictionary<string, long> GetQueueLengths()
+    {
+        return QueueClient.GetQueueLengths();
     }
 }

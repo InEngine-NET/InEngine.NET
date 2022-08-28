@@ -1,7 +1,6 @@
-﻿namespace InEngine.Core.Queuing
+﻿namespace InEngine.Core.Queuing;
+
+public interface IHasQueueSettings
 {
-    public interface IHasQueueSettings
-    {
-        QueueSettings QueueSettings { get; set; }
-    }
+    QueueSettings QueueSettings { get; set; }
 }

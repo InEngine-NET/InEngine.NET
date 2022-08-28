@@ -2,35 +2,34 @@
 using System.IO;
 using InEngine.Core;
 
-namespace InEngine
+namespace InEngine;
+
+class Program
 {
-    class Program
+    public static ServerHost ServerHost { get; set; }
+
+    private static void Main(string[] args)
     {
-        public static ServerHost ServerHost { get; set; }
+        /*
+         * Set current working directory as services use the system directory by default.
+         * Also, maybe run from the CLI from a different directory than the application root.
+         */
+        Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+        new ArgumentInterpreter().Interpret(args);
+    }
 
-        private static void Main(string[] args)
+    public static void RunServer()
+    {
+        var settings = InEngineSettings.Make();
+        ServerHost = new ServerHost
         {
-            /*
-             * Set current working directory as services use the system directory by default.
-             * Also, maybe run from the CLI from a different directory than the application root.
-             */
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            new ArgumentInterpreter().Interpret(args);
-        }
+            MailSettings = settings.Mail,
+            QueueSettings = settings.Queue,
+        };
 
-        public static void RunServer()
-        {
-            var settings = InEngineSettings.Make();
-            ServerHost = new ServerHost
-            {
-                MailSettings = settings.Mail,
-                QueueSettings = settings.Queue,
-            };
-
-            ServerHost.Start();
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
-            ServerHost.Dispose();
-        }
+        ServerHost.Start();
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadLine();
+        ServerHost.Dispose();
     }
 }

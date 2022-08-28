@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace InEngine.Core.Exceptions
+namespace InEngine.Core.Exceptions;
+
+public class LifecycleActionFailedException : Exception
 {
-    public class LifecycleActionFailedException : Exception
+    public LifecycleActionFailedException(string message, Exception exception) : base(message, exception)
     {
-        public LifecycleActionFailedException(string message, Exception exception) : base(message, exception)
-        {
-        }
     }
 }

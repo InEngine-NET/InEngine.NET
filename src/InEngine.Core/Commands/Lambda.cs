@@ -1,24 +1,23 @@
 ﻿using System;
 using Serialize.Linq.Nodes;
 
-namespace InEngine.Core.Commands
+namespace InEngine.Core.Commands;
+
+public class Lambda : AbstractCommand
 {
-    public class Lambda : AbstractCommand
+    public ExpressionNode ExpressionNode { get; set; }
+
+    public Lambda()
     {
-        public ExpressionNode ExpressionNode { get; set; }
+    }
 
-        public Lambda()
-        {
-        }
+    public Lambda(ExpressionNode expressionNode) : this()
+    {
+        ExpressionNode = expressionNode;
+    }
 
-        public Lambda(ExpressionNode expressionNode) : this()
-        {
-            ExpressionNode = expressionNode;
-        }
-
-        public override void Run()
-        {
-            ExpressionNode.ToExpression<Action>().Compile()();
-        }
+    public override void Run()
+    {
+        ExpressionNode.ToExpression<Action>().Compile()();
     }
 }

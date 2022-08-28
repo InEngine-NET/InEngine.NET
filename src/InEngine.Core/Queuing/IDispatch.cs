@@ -1,7 +1,6 @@
-﻿namespace InEngine.Core.Queuing
+﻿namespace InEngine.Core.Queuing;
+
+public interface IDispatch
 {
-    public interface IDispatch
-    {
-        void Dispatch();
-    }
+    void Dispatch();
 }
