@@ -4,12 +4,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <Version>4.0.1</Version>
-    <FileVersion>4.0.1</FileVersion>
+    <FileVersion>5.0.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
-    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <Copyright>Copyright © 2022 Ethan Hann</Copyright>
     <PackageId>InEngine.Core</PackageId>
-    <PackageVersion>4.0.1</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
     <PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
