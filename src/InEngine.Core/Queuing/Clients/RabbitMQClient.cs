@@ -53,6 +53,7 @@ public class RabbitMqClient : IQueueClient, IDisposable
     }
 
     private IModel channel;
+    private bool isDisposed;
 
     public IModel Channel => channel ??= Connection.CreateModel();
 
@@ -193,11 +194,23 @@ public class RabbitMqClient : IQueueClient, IDisposable
     public void RepublishFailedMessages() => throw new NotImplementedException();
 
     #endregion
-
+    
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (isDisposed) 
+            return;
+        if (!disposing) 
+            return;
         if (Connection is { IsOpen: true })
             Connection.Close();
+        Connection.Dispose();
+        isDisposed = true;
     }
 
     public Dictionary<string, long> GetQueueLengths()
