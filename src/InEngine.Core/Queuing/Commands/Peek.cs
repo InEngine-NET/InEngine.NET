@@ -36,7 +36,7 @@ public class Peek : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override async Task Run()
+    public override void Run()
     {
         if (From < 0)
             throw new ArgumentException("--from cannot be negative");

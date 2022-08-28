@@ -9,7 +9,7 @@ using System.Globalization;
 
 public class ListScheduledCommands : AbstractCommand
 {
-    public override async Task Run()
+    public override async Task RunAsync()
     {
         var superScheduler = new SuperScheduler();
         superScheduler.Initialize();

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace InEngine.Core.Queuing.Commands;
 
@@ -7,7 +7,7 @@ public class Length : AbstractCommand, IHasQueueSettings
 {
     public QueueSettings QueueSettings { get; set; }
 
-    public override async Task Run()
+    public override void Run()
     {
         PrintQueueLengths(QueueAdapter.Make(false, QueueSettings, MailSettings));
         PrintQueueLengths(QueueAdapter.Make(true, QueueSettings, MailSettings));

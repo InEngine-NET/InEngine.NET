@@ -13,10 +13,10 @@ public class ShowProgress : AbstractCommand
      * Note that the override keyword is necessary in the Run method 
      * signature as the base class method is virtual.
      */
-    public override async Task Run()
+    public override async Task RunAsync()
     {
         // Define the ticks (aka steps) for the command...
-        var maxTicks = 100000;
+        const int maxTicks = 100000;
         SetProgressBarMaxTicks(maxTicks);
 
         // Do some work...

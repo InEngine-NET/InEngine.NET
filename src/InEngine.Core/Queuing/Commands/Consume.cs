@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
-using InEngine.Core.Queuing.Message;
 
 namespace InEngine.Core.Queuing.Commands;
 
@@ -35,7 +33,7 @@ public class Consume : AbstractCommand, IHasQueueSettings
         }
     }
 
-    public override async Task Run()
+    public override void Run()
     {
         QueueAdapter = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
 
@@ -52,7 +50,7 @@ public class Consume : AbstractCommand, IHasQueueSettings
                     break;   
         }
 
-        await Task.Run(() => Line("Finished consuming messages."));
+        Line("Finished consuming messages.");
     }
 
     public override void Failed(Exception exception)

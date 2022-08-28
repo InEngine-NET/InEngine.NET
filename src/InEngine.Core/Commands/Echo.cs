@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using CommandLine;
+﻿using CommandLine;
 
 namespace InEngine.Core.Commands;
 
@@ -17,5 +16,5 @@ public class Echo : AbstractCommand
     [Option("text", HelpText = "The text to echo.")]
     public string VerbatimText { get; init; }
 
-    public override async Task Run() => await Task.Run(() => Line(VerbatimText));
+    public override void Run() =>  Line(VerbatimText);
 }

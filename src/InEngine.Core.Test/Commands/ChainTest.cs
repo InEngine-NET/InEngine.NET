@@ -27,10 +27,10 @@ public class ChainTest : TestBase<Chain>
         };
         Subject.Commands = commands;
 
-        Subject.Run();
+        Subject.RunAsync();
 
-        mockCommand1.Verify(x => x.Run(), Times.Once());
-        mockCommand2.Verify(x => x.Run(), Times.Once());
+        mockCommand1.Verify(x => x.RunAsync(), Times.Once());
+        mockCommand2.Verify(x => x.RunAsync(), Times.Once());
     }
 
     [Test]
@@ -47,10 +47,10 @@ public class ChainTest : TestBase<Chain>
         };
         Subject.Commands = commands;
 
-        Assert.That(Subject.Run, Throws.TypeOf<CommandChainFailedException>());
+        Assert.That(Subject.RunAsync, Throws.TypeOf<CommandChainFailedException>());
 
-        mockCommand1.Verify(x => x.Run(), Times.Once());
-        mockCommand2.Verify(x => x.Run(), Times.Never());
+        mockCommand1.Verify(x => x.RunAsync(), Times.Once());
+        mockCommand2.Verify(x => x.RunAsync(), Times.Never());
     }
 
     [Test]
@@ -62,7 +62,7 @@ public class ChainTest : TestBase<Chain>
             new Echo() { VerbatimText = "Hello, world!" },
         };
 
-        Subject.Run();
+        Subject.RunAsync();
     }
 
     [Test]
@@ -74,6 +74,6 @@ public class ChainTest : TestBase<Chain>
             new Echo(verbatimText: "Hello, world!"),
         };
 
-        Subject.Run();
+        Subject.RunAsync();
     }
 }

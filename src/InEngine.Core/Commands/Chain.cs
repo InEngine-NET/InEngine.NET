@@ -11,14 +11,14 @@ public class Chain : AbstractCommand
 {
     public IList<AbstractCommand> Commands { get; set; } = new List<AbstractCommand>();
 
-    public override async Task Run()
+    public override async Task RunAsync()
     {
         foreach (var x in Commands.ToList())
         {
             try
             {
                 x.WriteSummaryToConsole();
-                await x.Run();
+                await x.RunAsync();
             }
             catch (Exception exception)
             {

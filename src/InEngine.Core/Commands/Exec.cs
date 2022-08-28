@@ -23,7 +23,7 @@ public class Exec : AbstractCommand
 
     public IDictionary<string, string> ExecWhitelist { get; set; }
 
-    public override async Task Run()
+    public override async Task RunAsync()
     {
         ExecWhitelist ??= InEngineSettings.Make().ExecWhitelist;
         if (!ExecWhitelist.ContainsKey(Executable))

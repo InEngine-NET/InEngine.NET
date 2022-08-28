@@ -7,10 +7,10 @@ public class Sleep : AbstractCommand
 {
     public int MillisecondsTimeout { get; set; }
 
-    public override async Task Run()
+    public override void Run()
     {
         Warning("Going to sleep...");
         Thread.Sleep(MillisecondsTimeout);
-        await Task.Run(() => Info("Done sleeping!"));
+        Info("Done sleeping!");
     }
 }

@@ -24,11 +24,12 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
     public int SecondsBeforeTimeout { get; set; } = 300;
 
     private MailSettings mailSettings;
+
     public MailSettings MailSettings
     {
         get => mailSettings;
         set => CommandLifeCycle.MailSettings = mailSettings = value;
-    } 
+    }
 
     protected AbstractCommand()
     {
@@ -38,7 +39,11 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
         SchedulerGroup = GetType().AssemblyQualifiedName;
     }
 
-    public abstract Task Run();
+    public virtual void Run()
+    {
+    }
+
+    public virtual async Task RunAsync() => await Task.Run(Run).ConfigureAwait(false);
 
     public virtual async Task RunWithLifeCycle()
     {
@@ -46,13 +51,14 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
         {
             CommandLifeCycle.FirePreActions(this);
             if (SecondsBeforeTimeout <= 0)
-                await Run();
+                await RunAsync();
             else
             {
-                var task = Task.Run(Run);
+                var task = Task.Run(RunAsync);
                 if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
                     throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
             }
+
             CommandLifeCycle.FirePostActions(this);
         }
         catch (Exception exception)
@@ -65,9 +71,11 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
     }
 
     public virtual void Failed(Exception exception)
-    {}
+    {
+    }
 
     #region ProgressBar
+
     public void SetProgressBarMaxTicks(int maxTicks) => ProgressBar = new ProgressBar(maxTicks);
 
     public void UpdateProgress(int tick) => ProgressBar.Refresh(tick, Name);
@@ -75,22 +83,27 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
     #endregion
 
     #region Scheduling
+
     public virtual async Task Execute(IJobExecutionContext context)
     {
         if (context != null)
         {
             var properties = GetType().GetProperties();
-            context.MergedJobDataMap.ToList().ForEach(x => {
+            context.MergedJobDataMap.ToList().ForEach(x =>
+            {
                 var property = properties.FirstOrDefault(y => y.Name == x.Key);
                 if (property != null)
                     property.SetValue(this, x.Value);
             });
         }
+
         await RunWithLifeCycle();
     }
+
     #endregion
 
     #region Console output
+
     public IWrite Info(object val) => Write.Info(val);
     public IWrite Warning(object val) => Write.Warning(val);
     public IWrite Error(object val) => Write.Error(val);

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System;
+﻿using System;
 using System.Linq;
 using CommandLine;
 using InEngine.Core.Exceptions;
@@ -27,7 +26,7 @@ public class Publish : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override async Task Run()
+    public override void Run()
     {
         var command = Command;
 
