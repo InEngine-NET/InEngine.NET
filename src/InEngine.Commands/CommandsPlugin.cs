@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CommandLine;
 using InEngine.Core;
 using InEngine.Core.Commands;
@@ -18,11 +17,11 @@ public class CommandsPlugin : AbstractPlugin
     public override void Schedule(ISchedule schedule)
     {
         schedule.Command(new Echo { VerbatimText = "Core Echo command." })
-            .EverySecond()
-            .Before(x => Console.WriteLine("Before"))
-            .After(x => Console.WriteLine("After"))
-            .PingBefore("http://www.google.com")
-            .PingAfter("http://www.google.com")
+            .EveryMinute()
+            .Before(x => x.Line($"Before {x.Name}"))
+            .After(x => x.Line($"After {x.Name}"))
+            .PingBefore("https://www.google.com")
+            .PingAfter("https://www.google.com")
             .WriteOutputTo("AlwaysSucceedWrite.log")
             .AppendOutputTo("AlwaysSucceedAppend.log")
             .EmailOutputTo("example@inengine.net");
@@ -30,12 +29,12 @@ public class CommandsPlugin : AbstractPlugin
         schedule.Command(new AbstractCommand[] {
             new Echo { VerbatimText = "Chain Link 1" },
             new Echo { VerbatimText = "Chain Link 2" },
-        }).EverySecond();
+        }).EveryFiveMinutes();
 
         schedule.Command(new List<AbstractCommand> {
             new Echo { VerbatimText = "Chain Link A" },
             new AlwaysFail(),
             new Echo { VerbatimText = "Chain Link C" },
-        }).EverySecond();
+        }).EveryFifteenMinutes();
     }
 }

@@ -4,7 +4,7 @@ using InEngine.Core;
 
 namespace InEngine;
 
-class Program
+public static class Program
 {
     public static ServerHost ServerHost { get; set; }
 
@@ -12,7 +12,7 @@ class Program
     {
         /*
          * Set current working directory as services use the system directory by default.
-         * Also, maybe run from the CLI from a different directory than the application root.
+         * Also, allow running the CLI from a different directory than the application root.
          */
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
         new ArgumentInterpreter().Interpret(args);
