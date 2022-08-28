@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using InEngine.Core.Exceptions;
+using System.Threading.Tasks;
 
 namespace InEngine.Core.Queuing.Commands;
 
@@ -19,7 +20,7 @@ public class Flush : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override void Run()
+    public override async Task Run()
     {
         if (PendingQueue == false && FailedQueue == false && InProgressQueue == false)
             throw new CommandFailedException("Must specify at least one queue to clear. Use -h to see available options.");

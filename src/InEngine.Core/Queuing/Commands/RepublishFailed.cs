@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
+using System.Linq;
 using CommandLine;
 
 namespace InEngine.Core.Queuing.Commands;
@@ -13,7 +14,7 @@ public class RepublishFailed : AbstractCommand, IHasQueueSettings
 
     public QueueSettings QueueSettings { get; set; }
 
-    public override void Run()
+    public override async Task Run()
     {
         var queue = QueueAdapter.Make(UseSecondaryQueue, QueueSettings, MailSettings);
         Enumerable.Range(0, Limit)

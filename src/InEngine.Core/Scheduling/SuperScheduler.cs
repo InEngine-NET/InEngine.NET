@@ -17,12 +17,13 @@ public class SuperScheduler
 
     public void Initialize(MailSettings mailSettings = null)
     {
-        Scheduler = new StdSchedulerFactory(new NameValueCollection {
+        var schedulerFactory = new StdSchedulerFactory(new NameValueCollection {
             ["quartz.scheduler.instanceName"] = SchedulerInstanceName,
             ["quartz.threadPool.type"] = SchedulerThreadPoolType,
             ["quartz.threadPool.threadCount"] = SchedulerThreadCount,
             ["quartz.threadPool.threadPriority"] = SchedulerThreadPriority
-        }).GetScheduler();
+        });
+        Scheduler = schedulerFactory.GetScheduler().Result;
 
         Schedule.MailSettings = mailSettings;
 
