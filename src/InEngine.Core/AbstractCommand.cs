@@ -9,6 +9,7 @@ using Quartz;
 
 namespace InEngine.Core;
 
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycle, IHasMailSettings
@@ -54,9 +55,16 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
                 await RunAsync();
             else
             {
-                var task = Task.Run(RunAsync);
-                if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
-                    throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
+                var timeoutSignal = new CancellationTokenSource(TimeSpan.FromSeconds(SecondsBeforeTimeout));
+                try
+                {
+                    await RunAsync().WaitAsync(timeoutSignal.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw new CommandFailedException(
+                        $"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
+                }
             }
 
             CommandLifeCycle.FirePostActions(this);
