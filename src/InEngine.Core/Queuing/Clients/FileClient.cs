@@ -116,7 +116,7 @@ public class FileClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycle();
+            command.RunWithLifeCycle().RunSynchronously();
         }
         catch (Exception exception)
         {

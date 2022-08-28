@@ -36,7 +36,7 @@ public class SyncClient : IQueueClient
 
     public void Publish(AbstractCommand command)
     {
-        command.RunAsync();
+        command.RunAsync().RunSynchronously();
     }
 
     public void Recover()

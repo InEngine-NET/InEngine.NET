@@ -122,7 +122,7 @@ public class RedisClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycle();
+            command.RunWithLifeCycle().RunSynchronously();
         }
         catch (Exception exception)
         {
