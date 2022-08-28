@@ -19,15 +19,15 @@ public class RedisClient : IQueueClient
     public ILogger Log { get; set; } = LogManager.GetLogger<RedisClient>();
     public int Id { get; set; } = 0;
     public string QueueBaseName { get; set; } = "InEngineQueue";
-    public string QueueName { get; set; } = "Primary";
+    public string QueueName { get; set; } = QueueNames.Primary;
 
-    public string RecoveryQueueName => QueueBaseName + $":{QueueName}:Recovery";
+    public string RecoveryQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Recovery}";
 
-    public string PendingQueueName => QueueBaseName + $":{QueueName}:Pending";
+    public string PendingQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Pending}";
 
-    public string InProgressQueueName => QueueBaseName + $":{QueueName}:InProgress";
+    public string InProgressQueueName => QueueBaseName + $":{QueueName}:{QueueNames.InProgress}";
 
-    public string FailedQueueName => QueueBaseName + $":{QueueName}:Failed";
+    public string FailedQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Failed}";
 
     public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
     {
@@ -175,9 +175,9 @@ public class RedisClient : IQueueClient
     {
         return new Dictionary<string, long>
         {
-            { "Pending", Redis.ListLength(PendingQueueName) },
-            { "In-progress", Redis.ListLength(InProgressQueueName) },
-            { "Failed", Redis.ListLength(FailedQueueName) }
+            { QueueNames.Pending, Redis.ListLength(PendingQueueName) },
+            { QueueNames.InProgress, Redis.ListLength(InProgressQueueName) },
+            { QueueNames.Failed, Redis.ListLength(FailedQueueName) }
         };
     }
 

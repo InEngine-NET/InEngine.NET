@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing.Clients;
 
-public class RabbitMqClient : IQueueClient, IDisposable
+public class RabbitMqClient : IQueueClient
 {
     public static RabbitMQClientSettings ClientSettings { get; set; }
     public MailSettings MailSettings { get; set; }
@@ -19,11 +19,11 @@ public class RabbitMqClient : IQueueClient, IDisposable
     public ILogger Log { get; set; } = LogManager.GetLogger<SyncClient>();
     public int Id { get; set; } = 0;
     public string QueueBaseName { get; set; } = "InEngineQueue";
-    public string QueueName { get; set; } = "Primary";
-    public string PendingQueueName => QueueBaseName + $":{QueueName}:Pending";
-    public string FailedQueueName => QueueBaseName + $":{QueueName}:Failed";
+    public string QueueName { get; set; } = QueueNames.Primary;
+    public string PendingQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Pending}";
+    public string FailedQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Failed}";
     public bool UseCompression { get; set; }
-    public string DeadLetterExchangeName => QueueBaseName + $":DeadLetter";
+    public string DeadLetterExchangeName => QueueBaseName + $":{QueueNames.DeadLetter}";
     public string ExchangeName => QueueBaseName;
     public string RoutingKey => QueueName;
     private IConnection connection;
@@ -218,8 +218,8 @@ public class RabbitMqClient : IQueueClient, IDisposable
         InitChannel();
         return new Dictionary<string, long>()
         {
-            { "Pending", Channel.MessageCount(PendingQueueName) },
-            { "Failed", Channel.MessageCount(FailedQueueName) }
+            { QueueNames.Pending, Channel.MessageCount(PendingQueueName) },
+            { QueueNames.Failed, Channel.MessageCount(FailedQueueName) }
         };
     }
 }
