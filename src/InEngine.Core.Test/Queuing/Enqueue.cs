@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Queuing;
@@ -11,7 +10,7 @@ using Serialize.Linq.Extensions;
 namespace InEngine.Core.Test.Queuing;
 
 [TestFixture]
-public class EnqueueTest : TestBase
+public class EnqueueTest
 {
     public Mock<QueueAdapter> MockQueueAdapter { get; set; }
 
