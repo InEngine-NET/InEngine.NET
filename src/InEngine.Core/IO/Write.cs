@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace InEngine.Core.IO;
 
-public class Write : IWrite
+public class Write : IConsoleWrite
 {
     static readonly Mutex consoleOutputLock = new Mutex();
     static readonly Mutex fileOutputLock = new Mutex();
@@ -26,60 +26,60 @@ public class Write : IWrite
         IsBufferEnabled = isBufferEnabled;
     }
 
-    public IWrite Newline(int count = 1)
+    public IConsoleWrite Newline(int count = 1)
     {
         for (var i = 0; i < count; i++)
             Console.WriteLine();
         return this;
     }
 
-    public IWrite Info(object val)
+    public IConsoleWrite Info(object val)
     {
         return ColoredLine(val, InfoColor);
     }
 
-    public IWrite Error(object val)
+    public IConsoleWrite Error(object val)
     {
         return ColoredLine(val, ErrorColor);
     }
 
-    public IWrite Warning(object val)
+    public IConsoleWrite Warning(object val)
     {
         return ColoredLine(val, WarningColor);
     }
 
-    public IWrite Line(object val)
+    public IConsoleWrite Line(object val)
     {
         return ColoredLine(val, LineColor);
     }
 
-    public IWrite ColoredLine(object val, ConsoleColor consoleColor)
+    public IConsoleWrite ColoredLine(object val, ConsoleColor consoleColor)
     {
         WriteColoredLineOrText(val, consoleColor, true);
         return this;
     }
 
-    public IWrite InfoText(object val)
+    public IConsoleWrite InfoText(object val)
     {
         return ColoredText(val, InfoColor);
     }
 
-    public IWrite ErrorText(object val)
+    public IConsoleWrite ErrorText(object val)
     {
         return ColoredText(val, ErrorColor);
     }
 
-    public IWrite WarningText(object val)
+    public IConsoleWrite WarningText(object val)
     {
         return ColoredText(val, WarningColor);
     }
 
-    public IWrite Text(object val)
+    public IConsoleWrite Text(object val)
     {
         return ColoredText(val, LineColor);
     }
 
-    public IWrite ColoredText(object val, ConsoleColor consoleColor)
+    public IConsoleWrite ColoredText(object val, ConsoleColor consoleColor)
     {
         WriteColoredLineOrText(val, consoleColor, false);
         return this;

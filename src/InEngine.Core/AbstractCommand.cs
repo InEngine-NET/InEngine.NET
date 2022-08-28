@@ -11,7 +11,7 @@ namespace InEngine.Core;
 
 using Microsoft.Extensions.Logging;
 
-public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
+public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycle, IHasMailSettings
 {
     protected readonly ILogger<AbstractCommand> Log;
 
@@ -104,17 +104,17 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
 
     #region Console output
 
-    public IWrite Info(object val) => Write.Info(val);
-    public IWrite Warning(object val) => Write.Warning(val);
-    public IWrite Error(object val) => Write.Error(val);
-    public IWrite Line(object val) => Write.Line(val);
-    public IWrite ColoredLine(object val, ConsoleColor consoleColor) => Write.ColoredLine(val, consoleColor);
-    public IWrite InfoText(object val) => Write.InfoText(val);
-    public IWrite WarningText(object val) => Write.WarningText(val);
-    public IWrite ErrorText(object val) => Write.ErrorText(val);
-    public IWrite Text(object val) => Write.Text(val);
-    public IWrite ColoredText(object val, ConsoleColor consoleColor) => Write.ColoredText(val, consoleColor);
-    public IWrite Newline(int count = 1) => Write.Newline(count);
+    public IConsoleWrite Info(object val) => Write.Info(val);
+    public IConsoleWrite Warning(object val) => Write.Warning(val);
+    public IConsoleWrite Error(object val) => Write.Error(val);
+    public IConsoleWrite Line(object val) => Write.Line(val);
+    public IConsoleWrite ColoredLine(object val, ConsoleColor consoleColor) => Write.ColoredLine(val, consoleColor);
+    public IConsoleWrite InfoText(object val) => Write.InfoText(val);
+    public IConsoleWrite WarningText(object val) => Write.WarningText(val);
+    public IConsoleWrite ErrorText(object val) => Write.ErrorText(val);
+    public IConsoleWrite Text(object val) => Write.Text(val);
+    public IConsoleWrite ColoredText(object val, ConsoleColor consoleColor) => Write.ColoredText(val, consoleColor);
+    public IConsoleWrite Newline(int count = 1) => Write.Newline(count);
     public string FlushBuffer() => Write.FlushBuffer();
     public void ToFile(string path, string text, bool shouldAppend = false) => Write.ToFile(path, text, shouldAppend);
 

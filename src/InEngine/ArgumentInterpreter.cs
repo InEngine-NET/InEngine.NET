@@ -15,7 +15,7 @@ public class ArgumentInterpreter
 {
     public ILogger Log { get; } = LogManager.GetLogger<PluginAssembly>();
     public string CliLogo { get; }
-    public IWrite Write { get; } = new Write();
+    public IConsoleWrite Write { get; } = new Write();
 
     public ArgumentInterpreter()
     {
