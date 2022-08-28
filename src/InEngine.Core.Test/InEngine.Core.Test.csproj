@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BeekmanLabs.UnitTesting" Version="0.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="NUnit.Console" Version="3.7.0" />
