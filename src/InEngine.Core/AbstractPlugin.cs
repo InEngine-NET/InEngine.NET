@@ -4,31 +4,30 @@ using CommandLine;
 using CommandLine.Text;
 using InEngine.Core.Scheduling;
 
-namespace InEngine.Core
+namespace InEngine.Core;
+
+public abstract class AbstractPlugin : IPlugin
 {
-    abstract public class AbstractPlugin : IPlugin
+    public virtual void Schedule(ISchedule schedule)
+    {}
+
+    [HelpVerbOption]
+    public virtual string GetUsage(string verb)
     {
-        public virtual void Schedule(ISchedule schedule)
-        {}
+        var helpText = HelpText.AutoBuild(this, verb);
+        helpText.Heading = $"{GetType().Assembly.GetName().Name} {GetType().Assembly.GetName().Version.ToString()}";
+        return helpText;
+    }
 
-        [HelpVerbOption]
-        public virtual string GetUsage(string verb)
-        {
-            var helpText = HelpText.AutoBuild(this, verb);
-            helpText.Heading = $"{GetType().Assembly.GetName().Name} {GetType().Assembly.GetName().Version.ToString()}";
-            return helpText;
-        }
-
-        public IList<VerbOptionAttribute> GetVerbOptions()
-        {
-            return GetType()
-                .GetProperties()
-                .SelectMany(property => {
-                    return property.GetCustomAttributes(typeof(VerbOptionAttribute), true)
-                                   .Select(verb => verb as VerbOptionAttribute);
-                })
-                .OrderBy(x => x.LongName)
-                .ToList();
-        }
+    public IEnumerable<VerbOptionAttribute> GetVerbOptions()
+    {
+        return GetType()
+            .GetProperties()
+            .SelectMany(property => {
+                return property.GetCustomAttributes(typeof(VerbOptionAttribute), true)
+                    .Select(verb => verb as VerbOptionAttribute);
+            })
+            .OrderBy(x => x.LongName)
+            .ToList();
     }
 }

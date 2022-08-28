@@ -1,20 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net47;net462;net461</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
+    <PackageVersion>5.0.0</PackageVersion>
   </PropertyGroup>
   
   <PropertyGroup>
     <Version>4.0.0</Version>
-    <FileVersion>4.0.0</FileVersion>
+    <FileVersion>5.0.0</FileVersion>
     <Authors>Ethan Hann</Authors>
     <Description>Plugin-based queuing and scheduling command server.</Description>
-    <Copyright>Copyright © 2017 Ethan Hann</Copyright>
+    <Copyright>Copyright © 2022 Ethan Hann</Copyright>
 	<Product>InEngine.NET</Product>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseUrl>https://github.com/InEngine-NET/InEngine.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/InEngine-NET/InEngine.NET</PackageProjectUrl>
-	<PackageIconUrl>http://inengine.net/images/inengine-logo-32.png</PackageIconUrl>
+	<PackageIconUrl>https://inengine-net.github.io/InEngine.NET/images/inengine-logo-32.png</PackageIconUrl>
     <PackageTags>Integration Scheduler Queue Server Quartz.NET Redis</PackageTags>
   </PropertyGroup>
   <ItemGroup>
@@ -24,20 +25,12 @@
   <ItemGroup>
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="Common.Logging.NLog41" Version="3.4.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Configuration.Install" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Uninstall.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inengine">
@@ -58,6 +51,19 @@
     <None Update="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>text.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
 

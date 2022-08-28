@@ -1,7 +1,6 @@
 ﻿using System;
 
-namespace InEngine.Core.Scheduling
-{
-    public class DoNotAutoWireAttribute : Attribute
-    {}
-}
+namespace InEngine.Core.Scheduling;
+
+public class DoNotAutoWireAttribute : Attribute
+{}

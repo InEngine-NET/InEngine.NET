@@ -1,10 +1,9 @@
 ﻿using InEngine.Core.Scheduling;
 
-namespace InEngine.Core
+namespace InEngine.Core;
+
+public interface IPlugin
 {
-    public interface IPlugin
-    {
-        void Schedule(ISchedule schedule);
-        string GetUsage(string verb);
-    }
+    void Schedule(ISchedule schedule);
+    string GetUsage(string verb);
 }

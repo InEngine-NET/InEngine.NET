@@ -1,47 +1,40 @@
 ﻿using System;
-using BeekmanLabs.UnitTesting;
 using InEngine.Commands;
 using InEngine.Core.Scheduling;
 using NUnit.Framework;
 
-namespace InEngine.Core.Test.Scheduling
+namespace InEngine.Core.Test.Scheduling;
+
+[TestFixture]
+public class ScheduleTest : TestBase<Schedule>
 {
-    [TestFixture]
-    public class ScheduleTest : TestBase<Schedule>
+    [SetUp]
+    public void Setup() => InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
+
+    [Test]
+    public void ShouldScheduleToRunCommandEverySecond()
     {
-        [SetUp]
-        public void Setup()
-        {
-            InEngineSettings.BasePath = TestContext.CurrentContext.TestDirectory;
-        }
+        var alwaysSucceed = new AlwaysSucceed();
 
-        [Test]
-        public void ShouldScheduleToRunCommandEverySecond()
-        {
-            var alwaysSucceed = new AlwaysSucceed();
+        Subject.Command(alwaysSucceed).EverySecond();
+    }
 
-            Subject.Command(alwaysSucceed).EverySecond();
-        }
+    [Test]
+    public void ShouldScheduleToRunLambdaEverySecond()
+    {
+        Subject.Command(() => Console.WriteLine("Hello, world!")).EverySecond();
+    }
 
-        [Test]
-        public void ShouldScheduleToRunLambdaEverySecond()
-        {
-            var alwaysSucceed = new AlwaysSucceed();
+    [Test]
+    public void ShouldScheduleCommandChain()
+    {
+        var alwaysSucceed = new AlwaysSucceed();
 
-            Subject.Command(() => Console.WriteLine("Hello, world!")).EverySecond();
-        }
-
-        [Test]
-        public void ShouldScheduleCommandChain()
-        {
-            var alwaysSucceed = new AlwaysSucceed();
-
-            Subject.Command(new [] {
-                new AlwaysSucceed(),
-                new AlwaysSucceed(),
-                new AlwaysSucceed(),
-                new AlwaysSucceed()
-            }).EverySecond();
-        }
+        Subject.Command(new AbstractCommand[] {
+            new AlwaysSucceed(),
+            new AlwaysSucceed(),
+            new AlwaysSucceed(),
+            new AlwaysSucceed()
+        }).EverySecond();
     }
 }

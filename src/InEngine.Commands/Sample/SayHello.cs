@@ -1,13 +1,8 @@
 ﻿using InEngine.Core;
-using System;
 
-namespace InEngine.Commands.Sample
+namespace InEngine.Commands.Sample;
+
+public class SayHello : AbstractCommand
 {
-    public class SayHello : AbstractCommand
-    {
-        public override void Run()
-        {
-            Console.WriteLine("hello");
-        }
-    }
+    public override void Run() => Line("hello");
 }
