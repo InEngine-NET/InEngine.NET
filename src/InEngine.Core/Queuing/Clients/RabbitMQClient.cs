@@ -115,7 +115,7 @@ public class RabbitMqClient : IQueueClient
             try
             {
                 command.WriteSummaryToConsole();
-                command.RunWithLifeCycle();
+                command.RunWithLifeCycle().RunSynchronously();
             }
             catch (Exception exception)
             {
@@ -155,7 +155,7 @@ public class RabbitMqClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycle();
+            command.RunWithLifeCycle().RunSynchronously();
         }
         catch (Exception exception)
         {
