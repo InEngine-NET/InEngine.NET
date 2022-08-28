@@ -83,7 +83,7 @@ public class QueueAdapter : IQueueClient
                 throw new Exception("Unspecified or unknown queue driver.");
         }
 
-        queue.QueueName = useSecondaryQueue ? "Secondary" : "Primary";
+        queue.QueueName = useSecondaryQueue ? QueueNames.Secondary : QueueNames.Primary;
         queue.MailSettings = mailSettings;
         return queue;
     }

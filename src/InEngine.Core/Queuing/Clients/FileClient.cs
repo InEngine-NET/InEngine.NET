@@ -31,9 +31,9 @@ public class FileClient : IQueueClient
         return path;
     }
 
-    public string PendingQueuePath => EnsureQueueExists($"{QueuePath}_Pending");
-    public string InProgressQueuePath => EnsureQueueExists($"{QueuePath}_InProgress");
-    public string FailedQueuePath => EnsureQueueExists($"{QueuePath}_Failed");
+    public string PendingQueuePath => EnsureQueueExists($"{QueuePath}_{QueueNames.Pending}");
+    public string InProgressQueuePath => EnsureQueueExists($"{QueuePath}_{QueueNames.InProgress}");
+    public string FailedQueuePath => EnsureQueueExists($"{QueuePath}_{QueueNames.Failed}");
 
     public void Publish(AbstractCommand command)
     {
@@ -200,14 +200,11 @@ public class FileClient : IQueueClient
     {
         return new Dictionary<string, long>()
         {
-            { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().Length },
-            { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().Length },
-            { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().Length }
+            { QueueNames.Pending, new DirectoryInfo(PendingQueuePath).GetFiles().Length },
+            { QueueNames.InProgress, new DirectoryInfo(InProgressQueuePath).GetFiles().Length },
+            { QueueNames.Failed, new DirectoryInfo(FailedQueuePath).GetFiles().Length }
         };
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() => GC.SuppressFinalize(this);
 }
