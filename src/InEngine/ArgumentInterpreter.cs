@@ -120,7 +120,7 @@ public class ArgumentInterpreter
                 if (command is IHasQueueSettings)
                     (command as IHasQueueSettings).QueueSettings = settings.Queue;
                 command.MailSettings = settings.Mail;
-                command.Run(); 
+                command.RunAsync(); 
                 ExitWithSuccess();
             }
             catch (Exception exception)

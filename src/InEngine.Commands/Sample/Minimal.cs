@@ -14,8 +14,5 @@ using System;
  */
 public class Minimal : AbstractCommand
 {
-    public override async Task Run()
-    {
-        await Task.Run(() => Console.WriteLine("This is an example of a minimal command."));
-    }
+    public override void Run() => Line("This is an example of a minimal command.");
 }
