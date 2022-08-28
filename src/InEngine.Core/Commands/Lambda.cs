@@ -8,7 +8,8 @@ namespace InEngine.Core.Commands
         public ExpressionNode ExpressionNode { get; set; }
 
         public Lambda()
-        {}
+        {
+        }
 
         public Lambda(ExpressionNode expressionNode) : this()
         {

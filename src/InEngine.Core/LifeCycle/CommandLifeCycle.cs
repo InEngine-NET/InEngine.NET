@@ -25,7 +25,7 @@ namespace InEngine.Core.LifeCycle
         public bool ShouldEmailOutput { get; set; }
         public string EmailOutputToAddress { get; set; }
 
-        public int MaximumRetries { get; set;  }
+        public int MaximumRetries { get; set; }
         public int CurrentTry { get; set; }
 
         public CommandLifeCycle IncrementRetry()
@@ -48,7 +48,8 @@ namespace InEngine.Core.LifeCycle
             }
             catch (Exception exception)
             {
-                throw new LifecycleActionFailedException($"Ping to {PingBeforeUrl} failed before running command.", exception);
+                throw new LifecycleActionFailedException($"Ping to {PingBeforeUrl} failed before running command.",
+                    exception);
             }
 
             try
@@ -57,8 +58,9 @@ namespace InEngine.Core.LifeCycle
             }
             catch (Exception exception)
             {
-                throw new LifecycleActionFailedException($"Failed to invoke action after command ran successfully.", exception);
-            }   
+                throw new LifecycleActionFailedException($"Failed to invoke action after command ran successfully.",
+                    exception);
+            }
         }
 
         public void FirePostActions(AbstractCommand command)
@@ -69,7 +71,8 @@ namespace InEngine.Core.LifeCycle
             }
             catch (Exception exception)
             {
-                throw new LifecycleActionFailedException($"Failed to invoke action after command ran successfully.", exception);
+                throw new LifecycleActionFailedException($"Failed to invoke action after command ran successfully.",
+                    exception);
             }
 
             try
@@ -79,7 +82,8 @@ namespace InEngine.Core.LifeCycle
             }
             catch (Exception exception)
             {
-                throw new LifecycleActionFailedException($"Ping failed for {PingAfterUrl} after command ran successfully.", exception);
+                throw new LifecycleActionFailedException(
+                    $"Ping failed for {PingAfterUrl} after command ran successfully.", exception);
             }
 
             var emailSubject = $"Command completed: {command.Name}";
@@ -87,7 +91,8 @@ namespace InEngine.Core.LifeCycle
             try
             {
                 if (ShouldEmailOutput)
-                    new Mail() {
+                    new Mail()
+                    {
                         Host = MailSettings.Host,
                         Port = MailSettings.Port,
                         Username = MailSettings.Username,

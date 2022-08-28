@@ -12,7 +12,8 @@ namespace InEngine.Core.Commands
 
         public override void Run()
         {
-            Commands.ToList().ForEach(x => { 
+            Commands.ToList().ForEach(x =>
+            {
                 try
                 {
                     x.WriteSummaryToConsole();

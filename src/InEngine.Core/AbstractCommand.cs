@@ -10,17 +10,23 @@ using Quartz;
 
 namespace InEngine.Core
 {
-    abstract public class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
+    public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHasMailSettings
     {
-        protected ILog Log { get; set; }
-        public CommandLifeCycle CommandLifeCycle { get; set; }
-        public Write Write { get; set; }
+        protected ILog Log { get; }
+        public CommandLifeCycle CommandLifeCycle { get; set; } = new CommandLifeCycle();
+        public Write Write { get; set; } = new Write();
         public ProgressBar ProgressBar { get; internal set; }
         public string Name { get; set; }
         public string SchedulerGroup { get; set; }
         public string ScheduleId { get; set; }
-        public int SecondsBeforeTimeout { get; set; }
-        public MailSettings MailSettings { get; set; } 
+        public int SecondsBeforeTimeout { get; set; } = 300;
+
+        private MailSettings mailSettings;
+        public MailSettings MailSettings
+        {
+            get => mailSettings;
+            set => CommandLifeCycle.MailSettings = mailSettings = value;
+        } 
 
         protected AbstractCommand()
         {
@@ -28,17 +34,9 @@ namespace InEngine.Core
             ScheduleId = Guid.NewGuid().ToString();
             Name = GetType().FullName;
             SchedulerGroup = GetType().AssemblyQualifiedName;
-            Write = new Write();
-            CommandLifeCycle = new CommandLifeCycle() {
-                MailSettings = MailSettings
-            };
-            SecondsBeforeTimeout = 300;
         }
 
-        public virtual void Run()
-        {
-            throw new NotImplementedException();
-        }
+        public virtual void Run() => throw new NotImplementedException();
 
         public virtual void RunWithLifeCycle()
         {
@@ -49,7 +47,7 @@ namespace InEngine.Core
                     Run();
                 else
                 {
-                    var task = Task.Run(() => Run());
+                    var task = Task.Run(Run);
                     if (!task.Wait(TimeSpan.FromSeconds(SecondsBeforeTimeout)))
                         throw new Exception($"Scheduled command timed out after {SecondsBeforeTimeout} second(s).");
                 }
@@ -67,15 +65,10 @@ namespace InEngine.Core
         {}
 
         #region ProgressBar
-        public void SetProgressBarMaxTicks(int maxTicks)
-        {
-            ProgressBar = new ProgressBar(maxTicks);
-        }
+        public void SetProgressBarMaxTicks(int maxTicks) => ProgressBar = new ProgressBar(maxTicks);
 
-        public void UpdateProgress(int tick)
-        {
-            ProgressBar.Refresh(tick, Name);
-        }
+        public void UpdateProgress(int tick) => ProgressBar.Refresh(tick, Name);
+
         #endregion
 
         #region Scheduling
@@ -95,70 +88,20 @@ namespace InEngine.Core
         #endregion
 
         #region Console output
-        public IWrite Info(object val)
-        {
-            return Write.Info(val);
-        }
+        public IWrite Info(object val) => Write.Info(val);
+        public IWrite Warning(object val) => Write.Warning(val);
+        public IWrite Error(object val) => Write.Error(val);
+        public IWrite Line(object val) => Write.Line(val);
+        public IWrite ColoredLine(object val, ConsoleColor consoleColor) => Write.ColoredLine(val, consoleColor);
+        public IWrite InfoText(object val) => Write.InfoText(val);
+        public IWrite WarningText(object val) => Write.WarningText(val);
+        public IWrite ErrorText(object val) => Write.ErrorText(val);
+        public IWrite Text(object val) => Write.Text(val);
+        public IWrite ColoredText(object val, ConsoleColor consoleColor) => Write.ColoredText(val, consoleColor);
+        public IWrite Newline(int count = 1) => Write.Newline(count);
+        public string FlushBuffer() => Write.FlushBuffer();
+        public void ToFile(string path, string text, bool shouldAppend = false) => Write.ToFile(path, text, shouldAppend);
 
-        public IWrite Warning(object val)
-        {
-            return Write.Warning(val);
-        }
-
-        public IWrite Error(object val)
-        {
-            return Write.Error(val);
-        }
-
-        public IWrite Line(object val)
-        {
-            return Write.Line(val);
-        }
-
-        public IWrite ColoredLine(object val, ConsoleColor consoleColor)
-        {
-            return Write.ColoredLine(val, consoleColor);
-        }
-
-        public IWrite InfoText(object val)
-        {
-            return Write.InfoText(val);
-        }
-
-        public IWrite WarningText(object val)
-        {
-            return Write.WarningText(val);
-        }
-
-        public IWrite ErrorText(object val)
-        {
-            return Write.ErrorText(val);
-        }
-
-        public IWrite Text(object val)
-        {
-            return Write.Text(val);
-        }
-
-        public IWrite ColoredText(object val, ConsoleColor consoleColor)
-        {
-            return Write.ColoredText(val, consoleColor);
-        }
-
-        public IWrite Newline(int count = 1)
-        {
-            return Write.Newline(count);
-        }
-
-        public string FlushBuffer()
-        {
-            return Write.FlushBuffer();
-        }
-
-        public void ToFile(string path, string text, bool shouldAppend = false)
-        {
-            Write.ToFile(path, text, shouldAppend);
-        }
         #endregion
     }
 }

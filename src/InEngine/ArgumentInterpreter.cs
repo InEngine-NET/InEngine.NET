@@ -37,43 +37,40 @@ namespace InEngine
             });
             var options = new Options();
 
-            if (parser.ParseArguments(args, options))
-            {
-                if (options == null)
-                    ExitWithFailure("Could not parse arguments.");
+            if (!parser.ParseArguments(args, options)) 
+                return;
 
-                if (!args.Any())
-                    PrintInEngineHelpTextAndExit(pluginAssemblies, options);
-
-                InEngineSettings.ConfigurationFile = options.ConfigurationFile;
-
-                if (options.ShouldRunServer) 
-                {
-                    Write.Info(CliLogo);
-                    Write.Line("Starting...").Newline();
-                    Program.RunServer();
-                    ExitWithSuccess();
-                }
-
-                var pluginArgs = args.ToArray();
-                var firstPluginArg = pluginArgs.FirstOrDefault();
-                var firstArgIsConf = firstPluginArg.StartsWith("-c", StringComparison.OrdinalIgnoreCase) ||
-                                     firstPluginArg.StartsWith("--configuration", StringComparison.OrdinalIgnoreCase);
-
-                if (firstArgIsConf)
-                    pluginArgs = pluginArgs.Skip(1).ToArray();
-
-                var commandVerbName = pluginArgs.FirstOrDefault();
-
-                foreach(var assembly in pluginAssemblies)
-                    foreach (var ops in assembly.Plugins)
-                        foreach (var prop in ops.GetType().GetProperties())
-                            foreach (object attr in prop.GetCustomAttributes(true))
-                                if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
-                                        InterpretPluginArguments(pluginArgs, ops);
-
+            if (!args.Any())
                 PrintInEngineHelpTextAndExit(pluginAssemblies, options);
+
+            InEngineSettings.ConfigurationFile = options.ConfigurationFile;
+
+            if (options.ShouldRunServer) 
+            {
+                Write.Info(CliLogo);
+                Write.Line("Starting...").Newline();
+                Program.RunServer();
+                ExitWithSuccess();
             }
+
+            var pluginArgs = args.ToArray();
+            var firstPluginArg = pluginArgs.FirstOrDefault();
+            var firstArgIsConf = firstPluginArg.StartsWith("-c", StringComparison.OrdinalIgnoreCase) ||
+                                 firstPluginArg.StartsWith("--configuration", StringComparison.OrdinalIgnoreCase);
+
+            if (firstArgIsConf)
+                pluginArgs = pluginArgs.Skip(1).ToArray();
+
+            var commandVerbName = pluginArgs.FirstOrDefault();
+
+            foreach(var assembly in pluginAssemblies)
+            foreach (var ops in assembly.Plugins)
+            foreach (var prop in ops.GetType().GetProperties())
+            foreach (var attr in prop.GetCustomAttributes(true))
+                if (attr is VerbOptionAttribute commandVerb && (commandVerb.LongName == commandVerbName || commandVerb.ShortName.ToString() == commandVerbName))
+                    InterpretPluginArguments(pluginArgs, ops);
+
+            PrintInEngineHelpTextAndExit(pluginAssemblies, options);
         }
 
         public void ExitWithSuccess(string message = null)
@@ -81,14 +78,14 @@ namespace InEngine
             if (string.IsNullOrWhiteSpace(message))
                 message = "success";
             Log.Debug($"✔ {message}");
-            Environment.Exit(ExitCodes.success);
+            Environment.Exit(ExitCodes.Success);
         }
 
         public void ExitWithFailure(string message = null)
         {
             Log.Error(MakeErrorMessage(message));
             Write.Error(message);
-            Environment.Exit(ExitCodes.fail);
+            Environment.Exit(ExitCodes.Fail);
         }
 
         public void ExitWithFailure(Exception exception = null)
@@ -96,7 +93,7 @@ namespace InEngine
             var ex = exception ?? new Exception("Unspecified failure");
             Log.Error(MakeErrorMessage(ex.Message), ex);
             Write.Error(ex.Message);
-            Environment.Exit(ExitCodes.fail);
+            Environment.Exit(ExitCodes.Fail);
         }
 
         protected string MakeErrorMessage(string message = null)

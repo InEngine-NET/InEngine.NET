@@ -27,7 +27,7 @@ namespace InEngine.Commands
                     .AppendOutputTo("AlwaysSucceedAppend.log")
                     .EmailOutputTo("example@inengine.net");
 
-            schedule.Command(new[] {
+            schedule.Command(new AbstractCommand[] {
                 new Echo { VerbatimText = "Chain Link 1" },
                 new Echo { VerbatimText = "Chain Link 2" },
             }).EverySecond();

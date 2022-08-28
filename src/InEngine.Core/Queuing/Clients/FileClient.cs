@@ -12,7 +12,7 @@ namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
-        static Mutex consumeLock = new Mutex();
+        static readonly Mutex consumeLock = new Mutex();
         public static FileClientSettings ClientSettings { get; set; }
         public MailSettings MailSettings { get; set; }
 
@@ -21,14 +21,21 @@ namespace InEngine.Core.Queuing.Clients
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
         public bool UseCompression { get; set; }
-        public string QueuePath { get { return Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}"); } }
-        public string PendingQueuePath { 
-            get { 
+
+        public string QueuePath
+        {
+            get { return Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}"); }
+        }
+
+        public string PendingQueuePath
+        {
+            get
+            {
                 var path = $"{QueuePath}_Pending";
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 return path;
-            } 
+            }
         }
 
         public string InProgressQueuePath
@@ -41,6 +48,7 @@ namespace InEngine.Core.Queuing.Clients
                 return path;
             }
         }
+
         public string FailedQueuePath
         {
             get
@@ -54,7 +62,8 @@ namespace InEngine.Core.Queuing.Clients
 
         public void Publish(AbstractCommand command)
         {
-            PublishToQueue(new CommandEnvelope() {
+            PublishToQueue(new CommandEnvelope()
+            {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
                 PluginName = command.GetType().Assembly.GetName().Name,
@@ -77,17 +86,18 @@ namespace InEngine.Core.Queuing.Clients
         {
             try
             {
-                while(true) 
+                while (true)
                 {
                     try
                     {
                         if (Consume() == null)
-                            Thread.Sleep(5000);   
+                            Thread.Sleep(5000);
                     }
                     catch (Exception exception)
                     {
                         Log.Error(exception);
                     }
+
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
@@ -112,18 +122,23 @@ namespace InEngine.Core.Queuing.Clients
                 .GetFiles()
                 .OrderBy(x => x.LastWriteTimeUtc)
                 .FirstOrDefault();
-            if (fileInfo != null) {
+            if (fileInfo != null)
+            {
                 inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
                 fileInfo.MoveTo(inProgressFilePath);
             }
-            if (fileInfo == null) {
-                consumeLock.ReleaseMutex();    
+
+            if (fileInfo == null)
+            {
+                consumeLock.ReleaseMutex();
                 return null;
             }
+
             consumeLock.ReleaseMutex();
 
             var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
-            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+            var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+            {
                 File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
             });
 
@@ -135,12 +150,14 @@ namespace InEngine.Core.Queuing.Clients
             catch (Exception exception)
             {
                 Log.Error(exception);
-                if (command.CommandLifeCycle.ShouldRetry()) {
+                if (command.CommandLifeCycle.ShouldRetry())
+                {
                     PublishToQueue(commandEnvelope, PendingQueuePath);
                     File.Delete(Path.Combine(PendingQueuePath, fileInfo.Name));
                 }
                 else
                     File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
+
                 throw new CommandFailedException("Failed to consume command.", exception);
             }
 
@@ -166,7 +183,8 @@ namespace InEngine.Core.Queuing.Clients
         }
 
         public void Recover()
-        {}
+        {
+        }
 
         public bool ClearFailedQueue()
         {
@@ -216,7 +234,8 @@ namespace InEngine.Core.Queuing.Clients
                 .ToList();
 
             if (files.Count() <= maxResults)
-                return files.Select(x => File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
+                return files.Select(x =>
+                    File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
 
             return files
                 .GetRange(Convert.ToInt32(from), Convert.ToInt32(to))
@@ -226,10 +245,11 @@ namespace InEngine.Core.Queuing.Clients
 
         public Dictionary<string, long> GetQueueLengths()
         {
-            return new Dictionary<string, long>() {
-                {"Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount()},
-                {"In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount()},
-                {"Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount()}
+            return new Dictionary<string, long>()
+            {
+                { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount() },
+                { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount() },
+                { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount() }
             };
         }
     }

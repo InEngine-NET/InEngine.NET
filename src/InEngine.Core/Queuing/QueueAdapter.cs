@@ -31,8 +31,8 @@ namespace InEngine.Core.Queuing
                 };   
             }
             else if (queueDriverName == "rabbitmq") {
-                RabbitMQClient.ClientSettings = queueSettings.RabbitMQ;
-                queue.QueueClient = new RabbitMQClient() {
+                RabbitMqClient.ClientSettings = queueSettings.RabbitMQ;
+                queue.QueueClient = new RabbitMqClient() {
                     QueueBaseName = queueSettings.QueueName,
                     UseCompression = queueSettings.UseCompression
                 };

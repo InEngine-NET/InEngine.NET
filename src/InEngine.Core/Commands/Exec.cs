@@ -14,7 +14,8 @@ namespace InEngine.Core.Commands
         [Option('a', "args", HelpText = "Arguments for the CLI program/command.")]
         public string Arguments { get; set; }
 
-        [Option('t', "timeout", DefaultValue = 900, HelpText = "The number of seconds to wait before killing the running process.")]
+        [Option('t', "timeout", DefaultValue = 900,
+            HelpText = "The number of seconds to wait before killing the running process.")]
         public int Timeout { get; set; }
 
         public IDictionary<string, string> ExecWhitelist { get; set; }
@@ -27,25 +28,31 @@ namespace InEngine.Core.Commands
                 throw new CommandFailedException("Executable is not whitelisted.");
             var fileName = ExecWhitelist[Executable];
             if (!File.Exists(fileName))
-                throw new CommandFailedException($"Cannot run {fileName}. It either does not exist or is inaccessible. Exiting...");
-            var process = new Process() { 
-                StartInfo = new ProcessStartInfo(fileName, Arguments) {
+                throw new CommandFailedException(
+                    $"Cannot run {fileName}. It either does not exist or is inaccessible. Exiting...");
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo(fileName, Arguments)
+                {
                     UseShellExecute = false,
                     ErrorDialog = false,
                     RedirectStandardError = false,
                     RedirectStandardInput = false,
                     RedirectStandardOutput = false,
-                } 
+                }
             };
             var commandWithArguments = $"{fileName} {Arguments}";
             process.Start();
-            if (process.WaitForExit(Timeout * 1000)) {
+            if (process.WaitForExit(Timeout * 1000))
+            {
                 return;
             }
+
             Error($"The command ({commandWithArguments}) has timed out and is about to be killed...");
             process.Kill();
             Error($"The command ({commandWithArguments}) has been killed.");
-            throw new CommandFailedException($"The command ({commandWithArguments}) timed out after {Timeout} second(s).");
+            throw new CommandFailedException(
+                $"The command ({commandWithArguments}) timed out after {Timeout} second(s).");
         }
     }
 }

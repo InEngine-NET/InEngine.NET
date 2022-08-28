@@ -7,8 +7,8 @@ namespace InEngine.Core.IO
 {
     public class Write : IWrite
     {
-        static Mutex consoleOutputLock = new Mutex();
-        static Mutex fileOutputLock = new Mutex();
+        static readonly Mutex consoleOutputLock = new Mutex();
+        static readonly Mutex fileOutputLock = new Mutex();
 
         public ConsoleColor InfoColor { get; set; } = ConsoleColor.Green;
         public ConsoleColor WarningColor { get; set; } = ConsoleColor.Yellow;
@@ -18,7 +18,8 @@ namespace InEngine.Core.IO
         public bool IsBufferEnabled { get; set; }
 
         public Write() : this(true)
-        {}
+        {
+        }
 
         public Write(bool isBufferEnabled)
         {
@@ -95,11 +96,13 @@ namespace InEngine.Core.IO
             else
                 Console.Write(val);
             Console.ResetColor();
-            if (IsBufferEnabled) {
+            if (IsBufferEnabled)
+            {
                 Buffer.Add(val.ToString());
                 if (writeLine)
                     Buffer.Add(Environment.NewLine);
             }
+
             consoleOutputLock.ReleaseMutex();
         }
 
@@ -117,7 +120,7 @@ namespace InEngine.Core.IO
                 File.AppendAllText(path, text);
             else
                 File.WriteAllText(path, text);
-            
+
             fileOutputLock.ReleaseMutex();
         }
     }
