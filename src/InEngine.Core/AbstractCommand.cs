@@ -57,9 +57,10 @@ public abstract class AbstractCommand : IJob, IWrite, IHasCommandLifeCycle, IHas
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            const string message = "Command failed";
+            Log.LogError(exception, message);
             Failed(exception);
-            throw new CommandFailedException("Command failed. See inner exception for details.", exception);
+            throw new CommandFailedException(message, exception);
         }
     }
 

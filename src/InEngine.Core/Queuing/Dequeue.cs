@@ -10,7 +10,7 @@ namespace InEngine.Core.Queuing;
 
 public class Dequeue : IDisposable
 {
-    IList<QueueAdapter> queueAdapters;
+    private readonly IList<QueueAdapter> queueAdapters;
     public CancellationTokenSource CancellationTokenSource { get; set; }
     public QueueSettings QueueSettings { get; set; }
     public MailSettings MailSettings { get; set; }
@@ -39,7 +39,7 @@ public class Dequeue : IDisposable
     IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
     {
         return Enumerable.Range(0, numberOfTasks).Select((i) => {
-            Log.LogDebug($"Registering Dequeuer #{i}");
+            Log.LogDebug("Registering Dequeuer {I}", i);
             return Task.Factory.StartNew(() => {
                 var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
                 queue.Id = i;

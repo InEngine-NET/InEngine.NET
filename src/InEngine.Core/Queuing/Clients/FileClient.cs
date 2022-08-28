@@ -24,38 +24,16 @@ public class FileClient : IQueueClient
 
     public string QueuePath => Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}");
 
-    public string PendingQueuePath
+    public static string EnsureQueueExists(string path)
     {
-        get
-        {
-            var path = $"{QueuePath}_Pending";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
+        if (path != null && !Directory.Exists(path))
+            Directory.CreateDirectory(path);
+        return path;
     }
 
-    public string InProgressQueuePath
-    {
-        get
-        {
-            var path = $"{QueuePath}_InProgress";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-    }
-
-    public string FailedQueuePath
-    {
-        get
-        {
-            var path = $"{QueuePath}_Failed";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-    }
+    public string PendingQueuePath => EnsureQueueExists($"{QueuePath}_Pending");
+    public string InProgressQueuePath => EnsureQueueExists($"{QueuePath}_InProgress");
+    public string FailedQueuePath => EnsureQueueExists($"{QueuePath}_Failed");
 
     public void Publish(AbstractCommand command)
     {
@@ -68,11 +46,9 @@ public class FileClient : IQueueClient
         }, PendingQueuePath);
     }
 
-    void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
+    private void PublishToQueue(CommandEnvelope commandEnvelope, string queuePath)
     {
-        if (!Directory.Exists(queuePath))
-            Directory.CreateDirectory(queuePath);
-
+        EnsureQueueExists(queuePath);
         File.WriteAllText(
             Path.Combine(queuePath, Guid.NewGuid().ToString()),
             commandEnvelope.SerializeToJson()
@@ -92,7 +68,7 @@ public class FileClient : IQueueClient
                 }
                 catch (Exception exception)
                 {
-                    Log.LogError(exception.Message, exception);
+                    Log.LogError(exception, "There was an error while consuming a queue");
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -100,24 +76,23 @@ public class FileClient : IQueueClient
         }
         catch (OperationCanceledException exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "OperationCanceledException");
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "Generic exception");
         }
     }
 
     public ICommandEnvelope Consume()
     {
         FileInfo fileInfo;
-        var inProgressFilePath = String.Empty;
+        var inProgressFilePath = string.Empty;
 
         ConsumeLock.WaitOne();
         fileInfo = new DirectoryInfo(PendingQueuePath)
             .GetFiles()
-            .OrderBy(x => x.LastWriteTimeUtc)
-            .FirstOrDefault();
+            .MinBy(x => x.LastWriteTimeUtc);
         if (fileInfo != null)
         {
             inProgressFilePath = Path.Combine(InProgressQueuePath, fileInfo.Name);
@@ -145,7 +120,7 @@ public class FileClient : IQueueClient
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "Exception while consuming a command");
             if (command.CommandLifeCycle.ShouldRetry())
             {
                 PublishToQueue(commandEnvelope, PendingQueuePath);
@@ -163,8 +138,9 @@ public class FileClient : IQueueClient
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
-            throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
+            const string message = "Failed to move command from in-progress queue.";
+            Log.LogError(exception, message);
+            throw new CommandFailedException(message, exception);
         }
 
         return commandEnvelope;
@@ -182,20 +158,9 @@ public class FileClient : IQueueClient
     {
     }
 
-    public bool ClearFailedQueue()
-    {
-        return ClearQueue(FailedQueuePath);
-    }
-
-    public bool ClearInProgressQueue()
-    {
-        return ClearQueue(InProgressQueuePath);
-    }
-
-    public bool ClearPendingQueue()
-    {
-        return ClearQueue(PendingQueuePath);
-    }
+    public bool ClearFailedQueue() => ClearQueue(FailedQueuePath);
+    public bool ClearInProgressQueue() => ClearQueue(InProgressQueuePath);
+    public bool ClearPendingQueue() => ClearQueue(PendingQueuePath);
 
     public bool ClearQueue(string queuePath)
     {
@@ -206,20 +171,12 @@ public class FileClient : IQueueClient
         return true;
     }
 
-    public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-    {
-        return PeekMessages(FailedQueuePath, from, to);
-    }
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to) => PeekMessages(FailedQueuePath, from, to);
 
-    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-    {
-        return PeekMessages(InProgressQueuePath, from, to);
-    }
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to) =>
+        PeekMessages(InProgressQueuePath, from, to);
 
-    public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-    {
-        return PeekMessages(PendingQueuePath, from, to);
-    }
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to) => PeekMessages(PendingQueuePath, from, to);
 
     public List<ICommandEnvelope> PeekMessages(string queuePath, long from, long to)
     {
@@ -229,7 +186,7 @@ public class FileClient : IQueueClient
             .OrderBy(x => x.LastWriteTimeUtc)
             .ToList();
 
-        if (files.Count() <= maxResults)
+        if (files.Count <= maxResults)
             return files.Select(x =>
                 File.ReadAllText(x.FullName).DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
 
@@ -243,9 +200,9 @@ public class FileClient : IQueueClient
     {
         return new Dictionary<string, long>()
         {
-            { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().LongCount() },
-            { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().LongCount() },
-            { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().LongCount() }
+            { "Pending", new DirectoryInfo(PendingQueuePath).GetFiles().Length },
+            { "In-progress", new DirectoryInfo(InProgressQueuePath).GetFiles().Length },
+            { "Failed", new DirectoryInfo(FailedQueuePath).GetFiles().Length }
         };
     }
 }

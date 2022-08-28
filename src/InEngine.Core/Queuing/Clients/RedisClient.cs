@@ -20,21 +20,29 @@ public class RedisClient : IQueueClient
     public int Id { get; set; } = 0;
     public string QueueBaseName { get; set; } = "InEngineQueue";
     public string QueueName { get; set; } = "Primary";
-    public string RecoveryQueueName { get { return QueueBaseName + $":{QueueName}:Recovery"; } }
-    public string PendingQueueName { get { return QueueBaseName + $":{QueueName}:Pending"; } }
-    public string InProgressQueueName { get { return QueueBaseName + $":{QueueName}:InProgress"; } }
-    public string FailedQueueName { get { return QueueBaseName + $":{QueueName}:Failed"; } }
-    public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => { 
+
+    public string RecoveryQueueName => QueueBaseName + $":{QueueName}:Recovery";
+
+    public string PendingQueueName => QueueBaseName + $":{QueueName}:Pending";
+
+    public string InProgressQueueName => QueueBaseName + $":{QueueName}:InProgress";
+
+    public string FailedQueueName => QueueBaseName + $":{QueueName}:Failed";
+
+    public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+    {
         var redisConfig = ConfigurationOptions.Parse($"{ClientSettings.Host}:{ClientSettings.Port}");
-        redisConfig.Password = string.IsNullOrWhiteSpace(ClientSettings.Password) ? 
-            null : 
-            ClientSettings.Password;
+        redisConfig.Password = string.IsNullOrWhiteSpace(ClientSettings.Password) ? null : ClientSettings.Password;
         redisConfig.AbortOnConnectFail = false;
-        return ConnectionMultiplexer.Connect(redisConfig); 
+        return ConnectionMultiplexer.Connect(redisConfig);
     });
-    public static ConnectionMultiplexer Connection { get { return lazyConnection.Value; } } 
+
+    public static ConnectionMultiplexer Connection => lazyConnection.Value;
+
     public ConnectionMultiplexer _connectionMultiplexer;
-    public IDatabase Redis { get { return Connection.GetDatabase(ClientSettings.Database); } }
+
+    public IDatabase Redis => Connection.GetDatabase(ClientSettings.Database);
+
     public bool UseCompression { get; set; }
     public RedisChannel RedisChannel { get; set; }
 
@@ -49,7 +57,8 @@ public class RedisClient : IQueueClient
         InitChannel();
         Redis.ListLeftPush(
             PendingQueueName,
-            new CommandEnvelope() {
+            new CommandEnvelope()
+            {
                 IsCompressed = UseCompression,
                 CommandClassName = command.GetType().FullName,
                 PluginName = command.GetType().Assembly.GetName().Name,
@@ -77,17 +86,20 @@ public class RedisClient : IQueueClient
         try
         {
             InitChannel();
-            Connection.GetSubscriber().Subscribe(RedisChannel, delegate {
-                Task.Factory.StartNew(Consume, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            });
+            Connection.GetSubscriber().Subscribe(RedisChannel,
+                delegate
+                {
+                    Task.Factory.StartNew(Consume, cancellationToken, TaskCreationOptions.LongRunning,
+                        TaskScheduler.Default);
+                });
         }
         catch (OperationCanceledException exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "OperationCanceledException while consuming message");
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "Generic error while consuming message");
         }
     }
 
@@ -101,10 +113,11 @@ public class RedisClient : IQueueClient
         if (commandEnvelope == null)
             throw new CommandFailedException("Could not deserialize the command.");
 
-        var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() => {
+        var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
+        {
             Redis.ListLeftPush(FailedQueueName, commandEnvelope.SerializeToJson());
         });
-    
+
         try
         {
             command.WriteSummaryToConsole();
@@ -112,7 +125,7 @@ public class RedisClient : IQueueClient
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "Error running task");
             Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
             if (command.CommandLifeCycle.ShouldRetry())
                 Redis.ListLeftPush(PendingQueueName, commandEnvelope.SerializeToJson());
@@ -129,61 +142,41 @@ public class RedisClient : IQueueClient
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
-            throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue: {InProgressQueueName}", exception);
+            const string message = "Failed to remove completed commandEnvelope from queue";
+            Log.LogError(exception, message);
+            throw new CommandFailedException(message, exception);
         }
 
         return commandEnvelope;
     }
 
-    public bool ClearPendingQueue()
-    {
-        return Redis.KeyDelete(PendingQueueName);
-    }
+    public bool ClearPendingQueue() => Redis.KeyDelete(PendingQueueName);
 
-    public bool ClearInProgressQueue()
-    {
-        return Redis.KeyDelete(InProgressQueueName);
-    }
+    public bool ClearInProgressQueue() => Redis.KeyDelete(InProgressQueueName);
 
-    public bool ClearFailedQueue()
-    {
-        return Redis.KeyDelete(FailedQueueName);
-    }
+    public bool ClearFailedQueue() => Redis.KeyDelete(FailedQueueName);
 
-    public void RepublishFailedMessages()
-    {
-        Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
-    }
+    public void RepublishFailedMessages() => Redis.ListRightPopLeftPush(FailedQueueName, PendingQueueName);
 
-    public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-    {
-        return GetMessages(PendingQueueName, from, to);
-    }
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to) => GetMessages(PendingQueueName, from, to);
 
-    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-    {
-        return GetMessages(InProgressQueueName, from, to);
-    }
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to) =>
+        GetMessages(InProgressQueueName, from, to);
 
-    public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-    {
-        return GetMessages(FailedQueueName, from, to);
-    }
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to) => GetMessages(FailedQueueName, from, to);
 
-    public List<ICommandEnvelope> GetMessages(string queueName, long from, long to)
-    {
-        return Redis.ListRange(queueName, from, to)
+    public List<ICommandEnvelope> GetMessages(string queueName, long from, long to) =>
+        Redis.ListRange(queueName, from, to)
             .ToStringArray()
             .Select(x => x.DeserializeFromJson<CommandEnvelope>() as ICommandEnvelope).ToList();
-    }
 
     public Dictionary<string, long> GetQueueLengths()
     {
-        return new Dictionary<string, long> {
-            {"Pending", Redis.ListLength(PendingQueueName)},
-            {"In-progress", Redis.ListLength(InProgressQueueName)},
-            {"Failed", Redis.ListLength(FailedQueueName)}
+        return new Dictionary<string, long>
+        {
+            { "Pending", Redis.ListLength(PendingQueueName) },
+            { "In-progress", Redis.ListLength(InProgressQueueName) },
+            { "Failed", Redis.ListLength(FailedQueueName) }
         };
     }
 }

@@ -22,8 +22,7 @@ public class Exec : AbstractCommand
 
     public override void Run()
     {
-        if (ExecWhitelist == null)
-            ExecWhitelist = InEngineSettings.Make().ExecWhitelist;
+        ExecWhitelist ??= InEngineSettings.Make().ExecWhitelist;
         if (!ExecWhitelist.ContainsKey(Executable))
             throw new CommandFailedException("Executable is not whitelisted.");
         var fileName = ExecWhitelist[Executable];
@@ -43,10 +42,9 @@ public class Exec : AbstractCommand
         };
         var commandWithArguments = $"{fileName} {Arguments}";
         process.Start();
+
         if (process.WaitForExit(Timeout * 1000))
-        {
             return;
-        }
 
         Error($"The command ({commandWithArguments}) has timed out and is about to be killed...");
         process.Kill();

@@ -54,15 +54,7 @@ public class RabbitMqClient : IQueueClient, IDisposable
 
     private IModel channel;
 
-    public IModel Channel
-    {
-        get
-        {
-            // if (channel == null)
-            //     channel = Connection.CreateModel();
-            return channel ??= Connection.CreateModel();
-        }
-    }
+    public IModel Channel => channel ??= Connection.CreateModel();
 
     public void InitChannel()
     {
@@ -126,7 +118,7 @@ public class RabbitMqClient : IQueueClient, IDisposable
             }
             catch (Exception exception)
             {
-                Log.LogError(exception.Message, exception);
+                Log.LogError(exception, "Error running task");
                 if (command.CommandLifeCycle.ShouldRetry())
                     eventingConsumer.Model.BasicNack(result.DeliveryTag, false, true);
                 else
@@ -166,7 +158,7 @@ public class RabbitMqClient : IQueueClient, IDisposable
         }
         catch (Exception exception)
         {
-            Log.LogError(exception.Message, exception);
+            Log.LogError(exception, "Error running task");
             if (command.CommandLifeCycle.ShouldRetry())
                 Channel.BasicNack(result.DeliveryTag, false, true);
             else
@@ -194,36 +186,17 @@ public class RabbitMqClient : IQueueClient, IDisposable
 
     #region Not implemented
 
-    public bool ClearInProgressQueue()
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<ICommandEnvelope> PeekFailedMessages(long from, long to)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<ICommandEnvelope> PeekPendingMessages(long from, long to)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void RepublishFailedMessages()
-    {
-        throw new NotImplementedException();
-    }
+    public bool ClearInProgressQueue() => throw new NotImplementedException();
+    public List<ICommandEnvelope> PeekFailedMessages(long from, long to) => throw new NotImplementedException();
+    public List<ICommandEnvelope> PeekInProgressMessages(long from, long to) => throw new NotImplementedException();
+    public List<ICommandEnvelope> PeekPendingMessages(long from, long to) => throw new NotImplementedException();
+    public void RepublishFailedMessages() => throw new NotImplementedException();
 
     #endregion
 
     public void Dispose()
     {
-        if (Connection != null && Connection.IsOpen)
+        if (Connection is { IsOpen: true })
             Connection.Close();
     }
 

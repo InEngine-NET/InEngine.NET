@@ -11,13 +11,7 @@ public class Lambda : AbstractCommand
     {
     }
 
-    public Lambda(ExpressionNode expressionNode) : this()
-    {
-        ExpressionNode = expressionNode;
-    }
+    public Lambda(ExpressionNode expressionNode) : this() => ExpressionNode = expressionNode;
 
-    public override void Run()
-    {
-        ExpressionNode.ToExpression<Action>().Compile()();
-    }
+    public override void Run() => ExpressionNode.ToExpression<Action>().Compile()();
 }
