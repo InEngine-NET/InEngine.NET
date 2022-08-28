@@ -23,19 +23,11 @@
     <ProjectReference Include="..\InEngine.Commands\InEngine.Commands.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Install.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Uninstall.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="inengine">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
