@@ -11,16 +11,10 @@ public class Echo : AbstractCommand
     {
     }
 
-    public Echo(string verbatimText)
-    {
-        VerbatimText = verbatimText;
-    }
+    public Echo(string verbatimText) => VerbatimText = verbatimText;
 
     [Option("text", HelpText = "The text to echo.")]
-    public string VerbatimText { get; set; }
+    public string VerbatimText { get; init; }
 
-    public override void Run()
-    {
-        Line(VerbatimText);
-    }
+    public override void Run() => Line(VerbatimText);
 }

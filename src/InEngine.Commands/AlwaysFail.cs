@@ -9,10 +9,7 @@ namespace InEngine.Commands;
 /// </summary>
 public class AlwaysFail : AbstractCommand
 {
-    public override void Run()
-    {
-        throw new CommandFailedException("This command always fails.");
-    }
+    public override void Run() => throw new CommandFailedException("This command always fails.");
 
     public override void Failed(Exception exception)
     {

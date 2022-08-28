@@ -37,8 +37,9 @@ public class PluginAssembly
         }
         catch (Exception exception)
         {
-            LogManager.GetLogger<PluginAssembly>().LogError(exception.Message, exception);
-            throw new PluginNotFoundException($"Plugin not found at {path}", exception);
+            const string message = $"Plugin not found";
+            LogManager.GetLogger<PluginAssembly>().LogError(exception, message);
+            throw new PluginNotFoundException(message, exception);
         }
     }
 
@@ -54,8 +55,9 @@ public class PluginAssembly
         }
         catch (Exception exception)
         {
-            LogManager.GetLogger<PluginAssembly>().LogError(exception.Message, exception);
-            throw new PluginNotFoundException("Could not load InEngine.Core plugin.", exception);
+            const string message = "Could not load InEngine.Core plugin.";
+            LogManager.GetLogger<PluginAssembly>().LogError(exception, message);
+            throw new PluginNotFoundException(message, exception);
         }
 
         var assemblies = InEngineSettings
@@ -96,7 +98,9 @@ public class PluginAssembly
     private static Assembly LoadPluginEventHandler(object sender, ResolveEventArgs args)
     {
         var assemblyName = new AssemblyName(args.Name).Name;
-        var pluginName = assemblyName.Substring(0, assemblyName.Length - 4);
+        if (assemblyName == null) 
+            return null;
+        var pluginName = assemblyName[..^4];
         var assemblyPath = MakeFullPluginAssemblyPath(pluginName);
         return File.Exists(assemblyPath) ? Assembly.LoadFrom(assemblyPath) : null;
     }

@@ -21,7 +21,7 @@ public class Chain : AbstractCommand
             }
             catch (Exception exception)
             {
-                Log.LogError($"Chain command failed at command #{x}", exception);
+                Log.LogError(exception, "Chain command failed");
                 x.Failed(exception);
                 throw new CommandChainFailedException(x.Name, exception);
             }
