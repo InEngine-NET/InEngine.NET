@@ -3,29 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing.Clients
 {
     public class FileClient : IQueueClient
     {
-        static readonly Mutex consumeLock = new Mutex();
+        private static readonly Mutex ConsumeLock = new Mutex();
         public static FileClientSettings ClientSettings { get; set; }
         public MailSettings MailSettings { get; set; }
 
-        public ILog Log { get; set; } = LogManager.GetLogger<FileClient>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<FileClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; }
         public string QueueName { get; set; }
         public bool UseCompression { get; set; }
 
-        public string QueuePath
-        {
-            get { return Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}"); }
-        }
+        public string QueuePath => Path.Combine(ClientSettings.BasePath, $"{QueueBaseName}_{QueueName}");
 
         public string PendingQueuePath
         {
@@ -95,7 +92,7 @@ namespace InEngine.Core.Queuing.Clients
                     }
                     catch (Exception exception)
                     {
-                        Log.Error(exception);
+                        Log.LogError(exception.Message, exception);
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -103,12 +100,11 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (OperationCanceledException exception)
             {
-                Log.Debug(exception);
-                return;
+                Log.LogError(exception.Message, exception);
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
             }
         }
 
@@ -117,7 +113,7 @@ namespace InEngine.Core.Queuing.Clients
             FileInfo fileInfo;
             var inProgressFilePath = String.Empty;
 
-            consumeLock.WaitOne();
+            ConsumeLock.WaitOne();
             fileInfo = new DirectoryInfo(PendingQueuePath)
                 .GetFiles()
                 .OrderBy(x => x.LastWriteTimeUtc)
@@ -130,11 +126,11 @@ namespace InEngine.Core.Queuing.Clients
 
             if (fileInfo == null)
             {
-                consumeLock.ReleaseMutex();
+                ConsumeLock.ReleaseMutex();
                 return null;
             }
 
-            consumeLock.ReleaseMutex();
+            ConsumeLock.ReleaseMutex();
 
             var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
             var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
@@ -149,7 +145,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
                 if (command.CommandLifeCycle.ShouldRetry())
                 {
                     PublishToQueue(commandEnvelope, PendingQueuePath);
@@ -167,7 +163,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
                 throw new CommandFailedException("Failed to move command from in-progress queue.", exception);
             }
 

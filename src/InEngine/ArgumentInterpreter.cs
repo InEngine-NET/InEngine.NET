@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
-using Common.Logging;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
@@ -10,11 +9,13 @@ using InEngine.Core.Queuing;
 
 namespace InEngine
 {
+    using Microsoft.Extensions.Logging;
+
     public class ArgumentInterpreter
     {
-        public ILog Log { get; set; } = LogManager.GetLogger<PluginAssembly>();
-        public string CliLogo { get; set; }
-        public IWrite Write { get; set; } = new Write();
+        public ILogger Log { get; } = LogManager.GetLogger<PluginAssembly>();
+        public string CliLogo { get; }
+        public IWrite Write { get; } = new Write();
 
         public ArgumentInterpreter()
         {
@@ -77,13 +78,13 @@ namespace InEngine
         {
             if (string.IsNullOrWhiteSpace(message))
                 message = "success";
-            Log.Debug($"✔ {message}");
+            Log.LogDebug($"✔ {message}");
             Environment.Exit(ExitCodes.Success);
         }
 
         public void ExitWithFailure(string message = null)
         {
-            Log.Error(MakeErrorMessage(message));
+            Log.LogError(MakeErrorMessage(message));
             Write.Error(message);
             Environment.Exit(ExitCodes.Fail);
         }
@@ -91,7 +92,7 @@ namespace InEngine
         public void ExitWithFailure(Exception exception = null)
         {
             var ex = exception ?? new Exception("Unspecified failure");
-            Log.Error(MakeErrorMessage(ex.Message), ex);
+            Log.LogError(MakeErrorMessage(ex.Message), ex);
             Write.Error(ex.Message);
             Environment.Exit(ExitCodes.Fail);
         }

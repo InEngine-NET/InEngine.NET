@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
 using InEngine.Core.IO;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing
 {
@@ -14,7 +14,7 @@ namespace InEngine.Core.Queuing
         public CancellationTokenSource CancellationTokenSource { get; set; }
         public QueueSettings QueueSettings { get; set; }
         public MailSettings MailSettings { get; set; }
-        public ILog Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<QueueAdapter>();
 
         public Dequeue()
         {
@@ -25,9 +25,9 @@ namespace InEngine.Core.Queuing
         public async Task StartAsync()
         {
             var allTasks = new List<Task>();
-            Log.Debug("Start dequeue tasks for primary queue...");
+            Log.LogDebug("Start dequeue tasks for primary queue...");
             allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
-            Log.Debug("Start dequeue tasks for secondary queue...");
+            Log.LogDebug("Start dequeue tasks for secondary queue...");
             allTasks.AddRange(MakeTasks(false, QueueSettings.SecondaryQueueConsumers));
             await Task.WhenAll(allTasks);
 
@@ -39,7 +39,7 @@ namespace InEngine.Core.Queuing
         IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
         {
             return Enumerable.Range(0, numberOfTasks).Select((i) => {
-                Log.Debug($"Registering Dequeuer #{i}");
+                Log.LogDebug($"Registering Dequeuer #{i}");
                 return Task.Factory.StartNew(() => {
                     var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
                     queue.Id = i;

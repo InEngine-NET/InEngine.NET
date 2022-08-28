@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 using StackExchange.Redis;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing.Clients
 {
@@ -16,7 +16,7 @@ namespace InEngine.Core.Queuing.Clients
         public static RedisClientSettings ClientSettings { get; set; }
         public MailSettings MailSettings { get; set; }
 
-        public ILog Log { get; set; } = LogManager.GetLogger<RedisClient>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<RedisClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get; set; } = "InEngineQueue";
         public string QueueName { get; set; } = "Primary";
@@ -83,12 +83,11 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (OperationCanceledException exception)
             {
-                Log.Debug(exception);
-                return;
+                Log.LogError(exception.Message, exception);
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
             }
         }
 
@@ -113,7 +112,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
                 Redis.ListRemove(InProgressQueueName, serializedMessage, 1);
                 if (command.CommandLifeCycle.ShouldRetry())
                     Redis.ListLeftPush(PendingQueueName, commandEnvelope.SerializeToJson());
@@ -130,7 +129,7 @@ namespace InEngine.Core.Queuing.Clients
             }
             catch (Exception exception)
             {
-                Log.Error(exception);
+                Log.LogError(exception.Message, exception);
                 throw new CommandFailedException($"Failed to remove completed commandEnvelope from queue: {InProgressQueueName}", exception);
             }
 

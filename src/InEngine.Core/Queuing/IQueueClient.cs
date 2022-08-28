@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.Queuing.Message;
 using InEngine.Core.IO;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine.Core.Queuing
 {
     public interface IQueueClient : IHasMailSettings
     {
-        ILog Log { get; set; }
+        ILogger Log { get; set; }
         int Id { get; set; }
         string QueueBaseName { get; set; }
         string QueueName { get; set; }

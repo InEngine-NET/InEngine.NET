@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Common.Logging;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 
+
 namespace InEngine.Core.Queuing.Clients
 {
+    using Microsoft.Extensions.Logging;
+
     public class SyncClient : IQueueClient
     {
         public MailSettings MailSettings { get; set; }
 
-        public ILog Log { get; set; } = LogManager.GetLogger<SyncClient>();
+        public ILogger Log { get; set; } = LogManager.GetLogger<SyncClient>();
         public int Id { get; set; } = 0;
         public string QueueBaseName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string QueueName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

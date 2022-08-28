@@ -6,7 +6,6 @@ namespace InEngine
 {
     class Program
     {
-        public const string ServiceName = "InEngine.NET";
         public static ServerHost ServerHost { get; set; }
 
         private static void Main(string[] args)
