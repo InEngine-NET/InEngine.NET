@@ -6,10 +6,10 @@ using InEngine.Core;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing;
+using System.Resources;
+using Microsoft.Extensions.Logging;
 
 namespace InEngine;
-
-using Microsoft.Extensions.Logging;
 
 public class ArgumentInterpreter
 {
@@ -19,14 +19,8 @@ public class ArgumentInterpreter
 
     public ArgumentInterpreter()
     {
-        CliLogo = @"
-  ___       _____             _              _   _ _____ _____ 
- |_ _|_ __ | ____|_ __   __ _(_)_ __   ___  | \ | | ____|_   _|
-  | || '_ \|  _| | '_ \ / _` | | '_ \ / _ \ |  \| |  _|   | |  
-  | || | | | |___| | | | (_| | | | | |  __/_| |\  | |___  | |  
- |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
-                        |___/ 
-";
+        var resourceManager = new ResourceManager("InEngine.resources", typeof(ArgumentInterpreter).Assembly);
+        CliLogo = resourceManager.GetString("cliLogo");
     }
 
     public void Interpret(string[] args)
