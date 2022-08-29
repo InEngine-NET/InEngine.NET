@@ -139,6 +139,8 @@ public class RabbitMqClient : IQueueClient
             eventingConsumer.Model.BasicAck(result.DeliveryTag, false);
         };
         Channel.BasicConsume(queue: PendingQueueName, autoAck: false, consumer: consumer);
+
+        await Task.Yield();
     }
 
     public async Task<ICommandEnvelope> Consume()
