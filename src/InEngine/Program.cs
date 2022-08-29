@@ -28,7 +28,7 @@ public static class Program
         };
 
         ServerHost.Start();
-        Console.WriteLine("Press any key to exit...");
+        Console.WriteLine(resources.foregroundServerInputPrompt);
         Console.ReadLine();
         ServerHost.Dispose();
     }

@@ -6,7 +6,6 @@ using InEngine.Core;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing;
-using System.Resources;
 using Microsoft.Extensions.Logging;
 
 namespace InEngine;
@@ -19,8 +18,7 @@ public class ArgumentInterpreter
 
     public ArgumentInterpreter()
     {
-        var resourceManager = new ResourceManager("InEngine.resources", typeof(ArgumentInterpreter).Assembly);
-        CliLogo = resourceManager.GetString("cliLogo");
+        CliLogo = resources.cliLogo;
     }
 
     public void Interpret(string[] args)

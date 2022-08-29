@@ -26,4 +26,7 @@
  |___|_| |_|_____|_| |_|\__, |_|_| |_|\___(_|_| \_|_____| |_|  
                         |___/ </value>
     </data>
+    <data name="foregroundServerInputPrompt" xml:space="preserve">
+        <value>Press any key to exit...</value>
+    </data>
 </root>

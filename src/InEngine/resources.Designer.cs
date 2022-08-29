@@ -50,5 +50,11 @@ namespace InEngine {
                 return ResourceManager.GetString("cliLogo", resourceCulture);
             }
         }
+        
+        internal static string foregroundServerInputPrompt {
+            get {
+                return ResourceManager.GetString("foregroundServerInputPrompt", resourceCulture);
+            }
+        }
     }
 }
