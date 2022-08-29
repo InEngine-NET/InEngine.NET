@@ -24,7 +24,7 @@ public class CommandEnvelope : ICommandEnvelope
         }
         catch (Exception exception)
         {
-            actionOnFail.Invoke();
+            actionOnFail?.Invoke();
             throw new CommandNotExtractableFromEnvelopeException(CommandClassName, exception);
         }
     }

@@ -8,7 +8,7 @@ using CommandLine;
 public class Sleep : AbstractCommand
 {
     [Option("duration", HelpText = "The number of seconds to sleep.")]
-    public int DurationInSeconds { get; set; }
+    public int DurationInSeconds { get; set; } = 3;
 
     public override async Task RunAsync()
     {

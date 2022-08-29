@@ -25,29 +25,26 @@ public class Dequeue : IDisposable
 
     public async Task StartAsync()
     {
-        var allTasks = new List<Task>();
         Log.LogDebug("Start dequeue tasks for primary queue...");
-        allTasks.AddRange(MakeTasks(true, QueueSettings.PrimaryQueueConsumers));
+        await AddConsumers(false, QueueSettings.PrimaryQueueConsumers);
         Log.LogDebug("Start dequeue tasks for secondary queue...");
-        allTasks.AddRange(MakeTasks(false, QueueSettings.SecondaryQueueConsumers));
-        await Task.WhenAll(allTasks);
+        await AddConsumers(true, QueueSettings.SecondaryQueueConsumers);
 
         // Recover from restart, if necessary.
         QueueAdapter.Make(false, QueueSettings, MailSettings).Recover();
         QueueAdapter.Make(true, QueueSettings, MailSettings).Recover();
     }
 
-    IList<Task> MakeTasks(bool useSecondaryQueue = false, int numberOfTasks = 0)
+    private async Task AddConsumers(bool useSecondaryQueue = false, int numberOfTasks = 0)
     {
-        return Enumerable.Range(0, numberOfTasks).Select((i) => {
+        for (var i = 0; i < numberOfTasks; i++)
+        {
             Log.LogDebug("Registering Dequeuer {I}", i);
-            return Task.Factory.StartNew(() => {
-                var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
-                queue.Id = i;
-                queueAdapters.Add(queue);
-                queue.Consume(CancellationTokenSource.Token);
-            }, TaskCreationOptions.LongRunning);
-        }).ToList();
+            var queue = QueueAdapter.Make(useSecondaryQueue, QueueSettings, MailSettings);
+            queue.Id = i;
+            queueAdapters.Add(queue);
+            await queue.Consume(CancellationTokenSource.Token);
+        }
     }
 
     public void Dispose()

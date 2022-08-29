@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
@@ -29,7 +30,7 @@ public class RedisClient : IQueueClient
 
     public string FailedQueueName => QueueBaseName + $":{QueueName}:{QueueNames.Failed}";
 
-    public static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+    public static readonly Lazy<ConnectionMultiplexer> LazyConnection = new(() =>
     {
         var redisConfig = ConfigurationOptions.Parse($"{ClientSettings.Host}:{ClientSettings.Port}");
         redisConfig.Password = string.IsNullOrWhiteSpace(ClientSettings.Password) ? null : ClientSettings.Password;
@@ -37,9 +38,8 @@ public class RedisClient : IQueueClient
         return ConnectionMultiplexer.Connect(redisConfig);
     });
 
-    public static ConnectionMultiplexer Connection => lazyConnection.Value;
+    public static ConnectionMultiplexer Connection => LazyConnection.Value;
 
-    public ConnectionMultiplexer _connectionMultiplexer;
     private bool isDisposed;
 
     public IDatabase Redis => Connection.GetDatabase(ClientSettings.Database);
@@ -87,12 +87,11 @@ public class RedisClient : IQueueClient
         try
         {
             InitChannel();
-            Connection.GetSubscriber().Subscribe(RedisChannel,
-                delegate
-                {
-                    Task.Factory.StartNew(Consume, cancellationToken, TaskCreationOptions.LongRunning,
-                        TaskScheduler.Default);
-                });
+            var channelMessageQueue = await Connection.GetSubscriber().SubscribeAsync(RedisChannel);
+            channelMessageQueue.OnMessage(async _ =>
+            {
+                await Consume();
+            });
         }
         catch (OperationCanceledException exception)
         {
@@ -108,8 +107,7 @@ public class RedisClient : IQueueClient
     {
         var rawRedisMessageValue = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
         var serializedMessage = rawRedisMessageValue.ToString();
-        if (serializedMessage == null)
-            return null;
+
         var commandEnvelope = serializedMessage.DeserializeFromJson<CommandEnvelope>();
         if (commandEnvelope == null)
             throw new CommandFailedException("Could not deserialize the command.");
@@ -189,11 +187,10 @@ public class RedisClient : IQueueClient
 
     private void Dispose(bool disposing)
     {
-        if (isDisposed) 
+        if (isDisposed)
             return;
-        if (!disposing) 
+        if (!disposing)
             return;
-        _connectionMultiplexer?.Dispose();
         isDisposed = true;
     }
 }

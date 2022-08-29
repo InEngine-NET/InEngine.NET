@@ -64,8 +64,7 @@ public class FileClient : IQueueClient
             {
                 try
                 {
-                    if (await Consume() == null)
-                        Thread.Sleep(5000);
+                    await Consume();
                 }
                 catch (Exception exception)
                 {
@@ -108,7 +107,7 @@ public class FileClient : IQueueClient
 
         ConsumeLock.ReleaseMutex();
 
-        var commandEnvelope = File.ReadAllText(inProgressFilePath).DeserializeFromJson<CommandEnvelope>();
+        var commandEnvelope = (await File.ReadAllTextAsync(inProgressFilePath)).DeserializeFromJson<CommandEnvelope>();
         var command = commandEnvelope.GetCommandInstanceAndIncrementRetry(() =>
         {
             File.Move(inProgressFilePath, Path.Combine(FailedQueuePath, fileInfo.Name));
