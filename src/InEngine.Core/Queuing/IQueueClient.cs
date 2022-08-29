@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.Queuing.Message;
 using InEngine.Core.IO;
 using Microsoft.Extensions.Logging;
@@ -16,8 +17,8 @@ public interface IQueueClient : IHasMailSettings, IDisposable
     string QueueName { get; set; }
     bool UseCompression { get; set; }
     void Publish(AbstractCommand command);
-    void Consume(CancellationToken cancellationToken);
-    ICommandEnvelope Consume();
+    Task Consume(CancellationToken cancellationToken);
+    Task<ICommandEnvelope> Consume();
     void Recover();
     Dictionary<string, long> GetQueueLengths();
     bool ClearPendingQueue();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
 
@@ -43,12 +44,12 @@ public class SyncClient : IQueueClient
     {
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public ICommandEnvelope Consume()
+    public async Task<ICommandEnvelope> Consume()
     {
         throw new NotImplementedException();
     }

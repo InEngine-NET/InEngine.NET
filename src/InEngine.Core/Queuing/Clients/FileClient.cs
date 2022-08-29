@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
@@ -55,7 +56,7 @@ public class FileClient : IQueueClient
         );
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         try
         {
@@ -63,7 +64,7 @@ public class FileClient : IQueueClient
             {
                 try
                 {
-                    if (Consume() == null)
+                    if (await Consume() == null)
                         Thread.Sleep(5000);
                 }
                 catch (Exception exception)
@@ -84,7 +85,7 @@ public class FileClient : IQueueClient
         }
     }
 
-    public ICommandEnvelope Consume()
+    public async Task<ICommandEnvelope> Consume()
     {
         FileInfo fileInfo;
         var inProgressFilePath = string.Empty;
@@ -116,7 +117,7 @@ public class FileClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycleAsync().RunSynchronously();
+            await command.RunWithLifeCycleAsync();
         }
         catch (Exception exception)
         {

@@ -82,7 +82,7 @@ public class RedisClient : IQueueClient
             PublishToChannel();
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         try
         {
@@ -104,7 +104,7 @@ public class RedisClient : IQueueClient
         }
     }
 
-    public ICommandEnvelope Consume()
+    public async Task<ICommandEnvelope> Consume()
     {
         var rawRedisMessageValue = Redis.ListRightPopLeftPush(PendingQueueName, InProgressQueueName);
         var serializedMessage = rawRedisMessageValue.ToString();
@@ -122,7 +122,7 @@ public class RedisClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycleAsync().RunSynchronously();
+            await command.RunWithLifeCycleAsync();
         }
         catch (Exception exception)
         {

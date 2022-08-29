@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.Exceptions;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Message;
@@ -94,13 +95,18 @@ public class RabbitMqClient : IQueueClient
     {
     }
 
-    public void Consume(CancellationToken cancellationToken)
+    public async Task Consume(CancellationToken cancellationToken)
     {
         InitChannel();
         var consumer = new EventingBasicConsumer(Channel);
-        consumer.Received += (model, result) =>
+        consumer.Received += async (model, result) =>
         {
             var eventingConsumer = (EventingBasicConsumer)model;
+            if (eventingConsumer == null)
+            {
+                Log.LogWarning("EventingBasicConsumer is null while attempting to consume messages");
+                return;
+            }
 
             var serializedMessage = Encoding.UTF8.GetString(result.Body);
             var commandEnvelope = serializedMessage.DeserializeFromJson<CommandEnvelope>();
@@ -115,7 +121,7 @@ public class RabbitMqClient : IQueueClient
             try
             {
                 command.WriteSummaryToConsole();
-                command.RunWithLifeCycleAsync().RunSynchronously();
+                await command.RunWithLifeCycleAsync();
             }
             catch (Exception exception)
             {
@@ -135,7 +141,7 @@ public class RabbitMqClient : IQueueClient
         Channel.BasicConsume(queue: PendingQueueName, autoAck: false, consumer: consumer);
     }
 
-    public ICommandEnvelope Consume()
+    public async Task<ICommandEnvelope> Consume()
     {
         InitChannel();
         var result = Channel.BasicGet(PendingQueueName, false);
@@ -155,7 +161,7 @@ public class RabbitMqClient : IQueueClient
         try
         {
             command.WriteSummaryToConsole();
-            command.RunWithLifeCycleAsync().RunSynchronously();
+            await command.RunWithLifeCycleAsync();
         }
         catch (Exception exception)
         {

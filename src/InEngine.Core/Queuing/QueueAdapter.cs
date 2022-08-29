@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing.Clients;
 using InEngine.Core.Queuing.Message;
@@ -89,8 +90,8 @@ public class QueueAdapter : IQueueClient
     }
 
     public void Publish(AbstractCommand command) => QueueClient.Publish(command);
-    public void Consume(CancellationToken cancellationToken) => QueueClient.Consume(cancellationToken);
-    public ICommandEnvelope Consume() => QueueClient.Consume();
+    public async Task Consume(CancellationToken cancellationToken) => await QueueClient.Consume(cancellationToken);
+    public async Task<ICommandEnvelope> Consume() => await QueueClient.Consume();
     public void Recover() => QueueClient.Recover();
     public bool ClearPendingQueue() => QueueClient.ClearPendingQueue();
     public bool ClearInProgressQueue() => QueueClient.ClearInProgressQueue();
