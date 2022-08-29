@@ -1,7 +1,7 @@
 ﻿using System;
-using InEngine.Commands;
+using InEngine.Core.Commands;
 using InEngine.Core.Scheduling;
-using NUnit.Framework;
+using InEngineTesting;
 
 namespace InEngine.Core.Test.Scheduling;
 

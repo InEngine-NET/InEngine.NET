@@ -1,10 +1,11 @@
 ﻿using InEngine.Commands;
 using InEngine.Core.Queuing.Commands;
 using Moq;
-using NUnit.Framework;
 using Quartz;
 
 namespace InEngine.Core.Test.Queuing.Commands;
+
+using InEngineTesting;
 
 [TestFixture]
 public class ConsumeTest : TestBase<Consume>

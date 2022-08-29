@@ -4,7 +4,6 @@ using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Queuing;
 using Moq;
-using NUnit.Framework;
 using Serialize.Linq.Extensions;
 
 namespace InEngine.Core.Test.Queuing;

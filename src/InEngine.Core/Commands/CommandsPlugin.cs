@@ -9,7 +9,13 @@ public class CommandPlugin : AbstractPlugin
 
     [VerbOption("exec", HelpText = "Execute an external program.")]
     public Exec Exec { get; set; }
-    
+
     [VerbOption("sleep", HelpText = "Sleep (in seconds)")]
     public Sleep Sleep { get; set; }
+
+    [VerbOption("fail", HelpText = "Always fail. Useful for end-to-end testing.")]
+    public AlwaysFail AlwaysFail { get; set; }
+
+    [VerbOption("succeed", HelpText = "A null operation command. Literally does nothing.")]
+    public AlwaysSucceed AlwaysSucceed { get; set; }
 }

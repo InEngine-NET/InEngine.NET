@@ -17,7 +17,7 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
     protected readonly ILogger<AbstractCommand> Log;
 
     public CommandLifeCycle CommandLifeCycle { get; set; } = new CommandLifeCycle();
-    public Write Write { get; set; } = new Write();
+    public IConsoleWrite Write { get; set; } = new Write();
     public ProgressBar ProgressBar { get; internal set; }
     public string Name { get; set; }
     public string SchedulerGroup { get; set; }
@@ -49,8 +49,8 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
         Run();
         await Task.CompletedTask;
     }
-
-    public virtual async Task RunWithLifeCycle()
+    
+    public virtual async Task RunWithLifeCycleAsync()
     {
         try
         {
@@ -109,7 +109,7 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
             });
         }
 
-        await RunWithLifeCycle();
+        await RunWithLifeCycleAsync();
     }
 
     #endregion

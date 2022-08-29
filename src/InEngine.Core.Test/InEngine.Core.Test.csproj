@@ -15,14 +15,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit.Console" Version="3.7.0" />
-    <PackageReference Include="NUnit.ConsoleRunner" Version="3.7.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit.Console" Version="3.15.2" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.15.2" />
     <PackageReference Include="Quartz" Version="3.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InEngine.Core\InEngine.Core.csproj" />
 	<ProjectReference Include="..\InEngine.Commands\InEngine.Commands.csproj" />
+	<ProjectReference Include="..\InEngineTesting\InEngineTesting.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

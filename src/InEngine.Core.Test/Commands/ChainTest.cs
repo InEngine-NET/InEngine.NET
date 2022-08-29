@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using InEngine.Commands;
 using InEngine.Core.Commands;
 using InEngine.Core.Exceptions;
+using System.Threading.Tasks;
+using InEngineTesting;
 using Moq;
-using NUnit.Framework;
 
 namespace InEngine.Core.Test.Commands;
 
@@ -16,7 +16,7 @@ public class ChainTest : TestBase<Chain>
     }
 
     [Test]
-    public void ShouldRunChainOfCommands()
+    public async Task ShouldRunChainOfCommands()
     {
         var mockCommand1 = new Mock<AbstractCommand>();
         var mockCommand2 = new Mock<AbstractCommand>();
@@ -27,7 +27,7 @@ public class ChainTest : TestBase<Chain>
         };
         Subject.Commands = commands;
 
-        Subject.RunAsync();
+        await Subject.RunAsync();
 
         mockCommand1.Verify(x => x.RunAsync(), Times.Once());
         mockCommand2.Verify(x => x.RunAsync(), Times.Once());
@@ -47,26 +47,26 @@ public class ChainTest : TestBase<Chain>
         };
         Subject.Commands = commands;
 
-        Assert.That(Subject.RunAsync, Throws.TypeOf<CommandChainFailedException>());
+        Assert.ThrowsAsync<CommandChainFailedException>(async () => await Subject.RunAsync());
 
         mockCommand1.Verify(x => x.RunAsync(), Times.Once());
         mockCommand2.Verify(x => x.RunAsync(), Times.Never());
     }
 
     [Test]
-    public void ShouldRunChainOfDifferentCommands()
+    public async Task ShouldRunChainOfDifferentCommands()
     {
         Subject.Commands = new List<AbstractCommand>
         {
             new AlwaysSucceed(),
-            new Echo() { VerbatimText = "Hello, world!" },
+            new Echo { VerbatimText = "Hello, world!" },
         };
 
-        Subject.RunAsync();
+        await Subject.RunAsync();
     }
 
     [Test]
-    public void ShouldRunChainOfDifferentCommandsAsAbstractCommand()
+    public async Task ShouldRunChainOfDifferentCommandsAsAbstractCommand()
     {
         Subject.Commands = new AbstractCommand[]
         {
@@ -74,6 +74,6 @@ public class ChainTest : TestBase<Chain>
             new Echo(verbatimText: "Hello, world!"),
         };
 
-        Subject.RunAsync();
+        await Subject.RunAsync();
     }
 }

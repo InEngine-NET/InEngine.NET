@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CommandLine;
 using InEngine.Core;
 using InEngine.Core.Commands;
 using InEngine.Core.Scheduling;
@@ -8,12 +7,6 @@ namespace InEngine.Commands;
 
 public class CommandsPlugin : AbstractPlugin
 {
-    [VerbOption("fail", HelpText = "Always fail. Useful for end-to-end testing.")]
-    public AlwaysFail AlwaysFail { get; set; }
-
-    [VerbOption("succeed", HelpText = "A null operation command. Literally does nothing.")]
-    public AlwaysSucceed Null { get; set; }
-
     public override void Schedule(ISchedule schedule)
     {
         schedule.Command(new Echo { VerbatimText = "Core Echo command." })

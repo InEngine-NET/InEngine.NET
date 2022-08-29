@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace InEngine.Core.Test;
+namespace InEngineTesting;
 
 public abstract class TestBase<TSubject> where TSubject : new()
 {

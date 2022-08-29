@@ -1,9 +1,7 @@
-﻿using InEngine.Core;
-
-namespace InEngine.Commands;
+﻿namespace InEngine.Core.Commands;
 
 /// <summary>
-/// Dummy command for testing and sample code.
+/// Dummy command for testing.
 /// </summary>
 public class AlwaysSucceed : AbstractCommand
 {
