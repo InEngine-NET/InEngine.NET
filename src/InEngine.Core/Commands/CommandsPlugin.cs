@@ -9,4 +9,7 @@ public class CommandPlugin : AbstractPlugin
 
     [VerbOption("exec", HelpText = "Execute an external program.")]
     public Exec Exec { get; set; }
+    
+    [VerbOption("sleep", HelpText = "Sleep (in seconds)")]
+    public Sleep Sleep { get; set; }
 }
