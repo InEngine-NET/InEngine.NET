@@ -44,7 +44,11 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
     {
     }
 
-    public virtual async Task RunAsync() => await Task.Run(Run).ConfigureAwait(false);
+    public virtual async Task RunAsync()
+    {
+        Run();
+        await Task.CompletedTask;
+    }
 
     public virtual async Task RunWithLifeCycle()
     {
@@ -110,18 +114,38 @@ public abstract class AbstractCommand : IJob, IConsoleWrite, IHasCommandLifeCycl
 
     #endregion
 
-    #region Console output
+    #region Console Output
 
     public IConsoleWrite Info(object val) => Write.Info(val);
     public IConsoleWrite Warning(object val) => Write.Warning(val);
     public IConsoleWrite Error(object val) => Write.Error(val);
     public IConsoleWrite Line(object val) => Write.Line(val);
-    public IConsoleWrite ColoredLine(object val, ConsoleColor consoleColor) => Write.ColoredLine(val, consoleColor);
+    public IConsoleWrite LineWithColor(object val, ConsoleColor consoleColor) => Write.LineWithColor(val, consoleColor);
     public IConsoleWrite InfoText(object val) => Write.InfoText(val);
     public IConsoleWrite WarningText(object val) => Write.WarningText(val);
     public IConsoleWrite ErrorText(object val) => Write.ErrorText(val);
     public IConsoleWrite Text(object val) => Write.Text(val);
-    public IConsoleWrite ColoredText(object val, ConsoleColor consoleColor) => Write.ColoredText(val, consoleColor);
+
+    public IConsoleWrite TextWithColor(object val, ConsoleColor consoleColor, bool writeLine) =>
+        Write.TextWithColor(val, consoleColor, writeLine);
+
+    public async Task NewlineAsync(int count = 1) => await Write.NewlineAsync(count);
+    public async Task InfoAsync(object val) => await Write.InfoAsync(val);
+    public async Task WarningAsync(object val) => await Write.WarningAsync(val);
+    public async Task ErrorAsync(object val) => await Write.ErrorAsync(val);
+    public async Task LineAsync(object val) => await Write.LineAsync(val);
+
+    public async Task LineWithColorAsync(object val, ConsoleColor consoleColor) =>
+        await Write.LineWithColorAsync(val, consoleColor);
+
+    public async Task InfoTextAsync(object val) => await Write.InfoTextAsync(val);
+    public async Task WarningTextAsync(object val) => await Write.WarningTextAsync(val);
+    public async Task ErrorTextAsync(object val) => await Write.ErrorTextAsync(val);
+    public async Task TextAsync(object val) => await Write.TextAsync(val);
+
+    public async Task TextWithColorAsync(object val, ConsoleColor consoleColor, bool writeLine = false) =>
+        await Write.TextWithColorAsync(val, consoleColor, writeLine);
+
     public IConsoleWrite Newline(int count = 1) => Write.Newline(count);
     public string FlushBuffer() => Write.FlushBuffer();
     public void ToFile(string path, string text, bool shouldAppend = false) => Write.ToFile(path, text, shouldAppend);
