@@ -16,7 +16,7 @@ public class MinimalTest : TestBase<Minimal>
 
         await Subject.RunAsync();
 
-        mockWrite.Verify(x => x.Info(expected), Times.Once());
+        mockWrite.Verify(x => x.Line(expected), Times.Once());
         Assert.Pass();
     }
 }
