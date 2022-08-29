@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommandLine;
 using InEngine.Core;
 using InEngine.Core.Exceptions;
@@ -21,7 +22,7 @@ public class ArgumentInterpreter
         CliLogo = resources.cliLogo;
     }
 
-    public void Interpret(string[] args)
+    public async Task Interpret(string[] args)
     {
         var pluginAssemblies = PluginAssembly.Load<AbstractPlugin>();
         var parser = new Parser(with => {
@@ -42,7 +43,7 @@ public class ArgumentInterpreter
         {
             Write.Info(CliLogo);
             Write.Line("Starting...").Newline();
-            Program.RunServer();
+            await Program.RunServerAsync();
             ExitWithSuccess();
         }
 

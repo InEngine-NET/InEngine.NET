@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using InEngine.Core.IO;
 using InEngine.Core.Queuing;
 using InEngine.Core.Scheduling;
@@ -13,7 +14,7 @@ public class ServerHost : IDisposable, IHasMailSettings, IHasQueueSettings
     public QueueSettings QueueSettings { get; set; }
     private bool isDisposed; 
 
-    public void Start()
+    public async Task StartAsync()
     {
         SuperScheduler = new SuperScheduler();
         SuperScheduler.Initialize(MailSettings);
@@ -24,10 +25,8 @@ public class ServerHost : IDisposable, IHasMailSettings, IHasQueueSettings
         };
 
         SuperScheduler.Start();
-        StartDequeueAsync();
+        await Dequeue.StartAsync();
     }
-
-    public async void StartDequeueAsync() => await Dequeue.StartAsync();
 
     public void Dispose()
     {

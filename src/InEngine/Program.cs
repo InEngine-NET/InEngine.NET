@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using InEngine.Core;
 
 namespace InEngine;
@@ -8,17 +9,17 @@ public static class Program
 {
     public static ServerHost ServerHost { get; set; }
 
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         /*
          * Set current working directory as services use the system directory by default.
          * Also, allow running the CLI from a different directory than the application root.
          */
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-        new ArgumentInterpreter().Interpret(args);
+        await new ArgumentInterpreter().Interpret(args);
     }
 
-    public static void RunServer()
+    public static async Task RunServerAsync()
     {
         var settings = InEngineSettings.Make();
         ServerHost = new ServerHost
@@ -27,7 +28,7 @@ public static class Program
             QueueSettings = settings.Queue,
         };
 
-        ServerHost.Start();
+        await ServerHost.StartAsync();
         Console.WriteLine(resources.foregroundServerInputPrompt);
         Console.ReadLine();
         ServerHost.Dispose();
