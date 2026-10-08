@@ -5,13 +5,6 @@ use serde::Deserialize;
 use crate::error::ConfigError;
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ConfigFile {
-    #[serde(rename = "InEngine")]
-    pub inengine: Settings,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct Settings {
     #[serde(default)]
     pub plugins: HashMap<String, String>,
@@ -34,13 +27,12 @@ impl Settings {
                 ConfigError::Io(e)
             }
         })?;
-        let config_file: ConfigFile = serde_json::from_str(&content)?;
-        Ok(config_file.inengine)
+        let settings: Settings = toml::from_str(&content)?;
+        Ok(settings)
     }
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct MailSettings {
     #[serde(default = "default_mail_host")]
     pub host: String,
@@ -88,7 +80,6 @@ impl Default for QueueDriver {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct QueueSettings {
     #[serde(default)]
     pub use_compression: bool,
@@ -129,7 +120,6 @@ fn default_queue_name() -> String {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct RedisSettings {
     #[serde(default = "default_redis_host")]
     pub host: String,
@@ -161,7 +151,6 @@ fn default_redis_port() -> u16 {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct FileSettings {
     #[serde(default = "default_file_base_path")]
     pub base_path: String,
@@ -184,39 +173,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_valid_appsettings() {
+    fn parse_valid_toml() {
         // Arrange
-        let json = r#"{
-            "InEngine": {
-                "Plugins": {},
-                "ExecWhitelist": {},
-                "Mail": {
-                    "Host": "localhost",
-                    "Port": 1025,
-                    "From": "no-reply@inengine.net"
-                },
-                "Queue": {
-                    "UseCompression": false,
-                    "PrimaryQueueConsumers": 1,
-                    "SecondaryQueueConsumers": 1,
-                    "QueueDriver": "file",
-                    "QueueName": "InEngineQueue",
-                    "Redis": {
-                        "Host": "127.0.0.1",
-                        "Port": 6379,
-                        "Database": 0,
-                        "Password": ""
-                    },
-                    "File": {
-                        "BasePath": "../"
-                    }
-                }
-            }
-        }"#;
+        let toml_str = r#"
+[mail]
+host = "localhost"
+port = 1025
+from = "no-reply@inengine.net"
+
+[queue]
+use_compression = false
+primary_queue_consumers = 1
+secondary_queue_consumers = 1
+queue_driver = "file"
+queue_name = "InEngineQueue"
+
+[queue.redis]
+host = "127.0.0.1"
+port = 6379
+database = 0
+password = ""
+
+[queue.file]
+base_path = "../"
+"#;
 
         // Act
-        let config: ConfigFile = serde_json::from_str(json).unwrap();
-        let settings = config.inengine;
+        let settings: Settings = toml::from_str(toml_str).unwrap();
 
         // Assert
         assert_eq!(settings.mail.host, "localhost");
@@ -234,13 +217,12 @@ mod tests {
     }
 
     #[test]
-    fn parse_minimal_json_uses_defaults() {
+    fn parse_minimal_toml_uses_defaults() {
         // Arrange
-        let json = r#"{ "InEngine": {} }"#;
+        let toml_str = "";
 
         // Act
-        let config: ConfigFile = serde_json::from_str(json).unwrap();
-        let settings = config.inengine;
+        let settings: Settings = toml::from_str(toml_str).unwrap();
 
         // Assert
         assert_eq!(settings.mail.host, "localhost");
@@ -255,7 +237,7 @@ mod tests {
     }
 
     #[test]
-    fn defaults_match_dotnet() {
+    fn defaults_match_expected_values() {
         // Arrange
         let defaults = QueueSettings::default();
 
@@ -279,7 +261,7 @@ mod tests {
     #[test]
     fn load_missing_file_returns_file_not_found() {
         // Arrange
-        let path = "/nonexistent/path/appsettings.json";
+        let path = "/nonexistent/path/inengine.toml";
 
         // Act
         let result = Settings::load(path);
@@ -294,11 +276,11 @@ mod tests {
     }
 
     #[test]
-    fn load_invalid_json_returns_parse_error() {
+    fn load_invalid_toml_returns_parse_error() {
         // Arrange
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("bad.json");
-        std::fs::write(&path, "not json at all").unwrap();
+        let path = dir.path().join("bad.toml");
+        std::fs::write(&path, "[invalid toml !!!").unwrap();
 
         // Act
         let result = Settings::load(path.to_str().unwrap());
@@ -315,40 +297,35 @@ mod tests {
     #[test]
     fn reject_invalid_queue_driver() {
         // Arrange
-        let json = r#"{
-            "InEngine": {
-                "Queue": {
-                    "QueueDriver": "postgres"
-                }
-            }
-        }"#;
+        let toml_str = r#"
+[queue]
+queue_driver = "postgres"
+"#;
 
         // Act
-        let result: Result<ConfigFile, _> = serde_json::from_str(json);
+        let result: Result<Settings, _> = toml::from_str(toml_str);
 
         // Assert
         assert!(result.is_err());
     }
 
     #[test]
-    fn pascal_case_field_names_deserialize() {
+    fn snake_case_field_names_deserialize() {
         // Arrange
-        let json = r#"{
-            "InEngine": {
-                "ExecWhitelist": { "hello": "/usr/bin/hello" },
-                "Queue": {
-                    "UseCompression": true,
-                    "PrimaryQueueConsumers": 4,
-                    "SecondaryQueueConsumers": 2,
-                    "QueueDriver": "redis",
-                    "QueueName": "MyQueue"
-                }
-            }
-        }"#;
+        let toml_str = r#"
+[exec_whitelist]
+hello = "/usr/bin/hello"
+
+[queue]
+use_compression = true
+primary_queue_consumers = 4
+secondary_queue_consumers = 2
+queue_driver = "redis"
+queue_name = "MyQueue"
+"#;
 
         // Act
-        let config: ConfigFile = serde_json::from_str(json).unwrap();
-        let settings = config.inengine;
+        let settings: Settings = toml::from_str(toml_str).unwrap();
 
         // Assert
         assert_eq!(
@@ -366,10 +343,10 @@ mod tests {
     fn load_valid_file() {
         // Arrange
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("appsettings.json");
+        let path = dir.path().join("inengine.toml");
         std::fs::write(
             &path,
-            r#"{ "InEngine": { "Queue": { "QueueDriver": "redis" } } }"#,
+            "[queue]\nqueue_driver = \"redis\"\n",
         )
         .unwrap();
 

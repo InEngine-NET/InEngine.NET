@@ -20,7 +20,7 @@ pub enum ConfigError {
     FileNotFound { path: String },
 
     #[error("configuration parse error: {0}")]
-    Parse(#[from] serde_json::Error),
+    Parse(#[from] toml::de::Error),
 
     #[error("IO error reading configuration: {0}")]
     Io(std::io::Error),

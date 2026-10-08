@@ -1,0 +1,26 @@
+[plugins]
+
+[exec_whitelist]
+
+[mail]
+host = "localhost"
+port = 25
+from = "no-reply@inengine.net"
+username = ""
+password = ""
+
+[queue]
+use_compression = false
+primary_queue_consumers = 4
+secondary_queue_consumers = 2
+queue_driver = "file"
+queue_name = "InEngineQueue"
+
+[queue.redis]
+host = "127.0.0.1"
+port = 6379
+database = 0
+password = ""
+
+[queue.file]
+base_path = "../"

@@ -9,7 +9,7 @@ pub struct Cli {
     #[arg(
         short = 'c',
         long = "configuration",
-        default_value = "./appsettings.json",
+        default_value = "./inengine.toml",
         help = "Path to the configuration file"
     )]
     pub config: String,

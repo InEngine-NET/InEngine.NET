@@ -36,9 +36,8 @@ mod tests {
     #[test]
     fn command_can_be_called_via_run() {
         // Arrange
-        let json = r#"{ "InEngine": {} }"#;
-        let config: crate::config::ConfigFile = serde_json::from_str(json).unwrap();
-        let settings = Arc::new(config.inengine);
+        let settings: crate::config::Settings = toml::from_str("").unwrap();
+        let settings = Arc::new(settings);
         let mut ctx = CommandContext {
             output: Output::new(false),
             settings,
