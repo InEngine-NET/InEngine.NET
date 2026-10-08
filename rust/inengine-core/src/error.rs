@@ -19,8 +19,8 @@ pub enum ConfigError {
     #[error("configuration file not found: {path}")]
     FileNotFound { path: String },
 
-    #[error("configuration parse error: {0}")]
-    Parse(#[from] toml::de::Error),
+    #[error("invalid configuration:\n{diagnostics}")]
+    Invalid { diagnostics: String },
 
     #[error("IO error reading configuration: {0}")]
     Io(std::io::Error),

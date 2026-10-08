@@ -36,7 +36,9 @@ mod tests {
     #[test]
     fn command_can_be_called_via_run() {
         // Arrange
-        let settings: crate::config::Settings = toml::from_str("").unwrap();
+        let settings = crate::config::from_spec(&crate::config::SettingsSpec::default())
+            .settings
+            .expect("the default settings are valid");
         let settings = Arc::new(settings);
         let mut ctx = CommandContext {
             output: Output::new(false),

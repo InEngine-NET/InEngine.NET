@@ -42,6 +42,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "annotate-snippets"
+version = "0.12.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f211a51805bc641f3ad5b7664c77d2547af685cc33b4cd8d31964027a46f13f1"
+dependencies = [
+ "anstyle",
+ "memchr",
+ "unicode-width",
+]
+
+[[package]]
 name = "anstream"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -333,6 +344,28 @@ dependencies = [
  "pin-project-lite",
  "tokio",
  "tokio-util",
+]
+
+[[package]]
+name = "confval"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f20f46384ba508477c62421f3107be92c0505abcb5f2396bcb276386fb9a0a7b"
+dependencies = [
+ "annotate-snippets",
+ "confval-derive",
+ "toml_edit",
+]
+
+[[package]]
+name = "confval-derive"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e9f6f9317db5ad3e857668cbe838f7a49dad5e56f0c0c06a3b3fcbdf1c640ec"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -1327,6 +1360,7 @@ version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
  "chrono",
+ "confval",
  "cron",
  "crossterm",
  "flate2",
@@ -1340,7 +1374,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tokio-util",
- "toml",
  "tracing",
  "uuid",
  "wasmtime",
@@ -2764,6 +2797,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "toml_edit"
+version = "0.25.16+spec-1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88f38f3af8bf71841c67a990f4e2b52143b2d0a1a994c72513ff4c14977fc722"
+dependencies = [
+ "indexmap",
+ "toml_datetime",
+ "toml_parser",
+ "toml_writer",
+ "winnow 1.0.4",
+]
+
+[[package]]
 name = "toml_parser"
 version = "1.1.4+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3617,6 +3663,9 @@ name = "winnow"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
+dependencies = [
+ "memchr",
+]
 
 [[package]]
 name = "wit-component"

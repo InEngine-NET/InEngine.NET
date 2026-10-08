@@ -1,0 +1,58 @@
+# InEngine configuration.
+#
+# Every setting below is shown at its default value. A setting that is omitted
+# takes the same default, so copy this file and keep only the lines you change.
+# InEngine reads ./inengine.toml unless the --configuration (-c) flag names
+# another file. No command line flag overrides an individual setting.
+
+# Plugin directories keyed by plugin name. The server loads every .wasm file in each
+# directory. A relative path resolves against the working directory.
+[plugins]
+# sample = "plugins/sample"
+
+# Executables the exec command may run, keyed by the name a caller passes.
+[exec_whitelist]
+# hello = "/usr/bin/hello"
+
+# The SMTP server that sends command notification mail.
+[mail]
+# The SMTP host name.
+host = "localhost"
+# The SMTP port.
+port = 25
+# The sender address. Leave empty when no command sends mail.
+from = ""
+# The SMTP user name. Leave empty to send without authentication.
+username = ""
+# The SMTP password. Used only when a user name is set.
+password = ""
+
+# The queue that holds published commands.
+[queue]
+# Compress message payloads before they are queued.
+use_compression = false
+# The number of consumers for the primary queue.
+primary_queue_consumers = 8
+# The number of consumers for the secondary queue.
+secondary_queue_consumers = 8
+# The queue backend, "file" or "redis".
+queue_driver = "file"
+# The base name of the queue. It becomes part of file names and Redis keys.
+queue_name = "InEngineQueue"
+
+# The Redis server. Used only when queue_driver is "redis".
+[queue.redis]
+# The Redis host name or address.
+host = "127.0.0.1"
+# The Redis port.
+port = 6379
+# The Redis logical database index.
+database = 0
+# The Redis password. Leave empty when the server has no password.
+password = ""
+
+# The file queue. Used only when queue_driver is "file".
+[queue.file]
+# The directory that holds the queue files. A relative path resolves against the
+# working directory.
+base_path = "../"

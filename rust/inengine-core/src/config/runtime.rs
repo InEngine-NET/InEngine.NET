@@ -1,0 +1,78 @@
+use std::collections::HashMap;
+
+use confval::prelude::*;
+
+use super::spec::{FileSpec, MailSpec, QueueSpec, RedisSpec, SettingsSpec};
+use super::vocabulary::QueueDriver;
+
+#[derive(Debug, Clone, confval::Config)]
+#[confval(lower_from = SettingsSpec)]
+pub struct Settings {
+    pub plugins: HashMap<String, String>,
+    pub exec_whitelist: HashMap<String, String>,
+    #[confval(nested)]
+    pub mail: MailSettings,
+    #[confval(nested)]
+    pub queue: QueueSettings,
+}
+
+#[derive(Debug, Clone, confval::Config)]
+#[confval(lower_from = MailSpec)]
+pub struct MailSettings {
+    pub host: String,
+    #[confval(lower(from = port, with = narrow::i64_to_u16))]
+    pub port: u16,
+    pub from: String,
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, confval::Config)]
+#[confval(lower_from = QueueSpec)]
+pub struct QueueSettings {
+    pub use_compression: bool,
+    #[confval(lower(from = primary_queue_consumers, with = narrow::i64_to_usize))]
+    pub primary_queue_consumers: usize,
+    #[confval(lower(from = secondary_queue_consumers, with = narrow::i64_to_usize))]
+    pub secondary_queue_consumers: usize,
+    #[confval(lower(from = queue_driver, with = narrow::keyword::<QueueDriver>))]
+    pub queue_driver: QueueDriver,
+    pub queue_name: String,
+    #[confval(nested)]
+    pub redis: RedisSettings,
+    #[confval(nested)]
+    pub file: FileSettings,
+}
+
+#[derive(Debug, Clone, confval::Config)]
+#[confval(lower_from = RedisSpec)]
+pub struct RedisSettings {
+    pub host: String,
+    #[confval(lower(from = port, with = narrow::i64_to_u16))]
+    pub port: u16,
+    #[confval(lower(from = database, with = i64_to_u8))]
+    pub database: u8,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, confval::Config)]
+#[confval(lower_from = FileSpec)]
+pub struct FileSettings {
+    pub base_path: String,
+}
+
+fn i64_to_u8(value: &Located<i64>, report: &mut Report) -> Option<u8> {
+    match u8::try_from(value.value) {
+        Ok(narrowed) => Some(narrowed),
+        Err(_) => {
+            report
+                .error(format!(
+                    "value {} is out of range for u8, so a validation rule is missing",
+                    value.value
+                ))
+                .at(value.span)
+                .emit();
+            None
+        }
+    }
+}

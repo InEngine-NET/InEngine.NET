@@ -1,6 +1,7 @@
 mod cli;
 
 use std::io::IsTerminal;
+use std::path::Path;
 use std::process::ExitCode;
 use std::sync::Arc;
 
@@ -11,7 +12,7 @@ use inengine_core::command::{Command, CommandContext};
 use inengine_core::error::CommandError;
 use inengine_core::commands::echo::Echo;
 use inengine_core::commands::exec::Exec;
-use inengine_core::config::Settings;
+use inengine_core::config;
 use inengine_core::output::Output;
 use inengine_core::queue::registry::CommandRegistry;
 use inengine_core::queue_commands::management::{Flush, Length, Peek, RepublishFailed, Status};
@@ -33,13 +34,24 @@ async fn main() -> ExitCode {
 
     let cli = Cli::parse();
 
-    let settings = match Settings::load(&cli.config) {
-        Ok(s) => Arc::new(s),
+    let loaded = match config::load(Path::new(&cli.config)) {
+        Ok(loaded) => loaded,
         Err(e) => {
             eprintln!("Error: {e}");
             return ExitCode::FAILURE;
         }
     };
+    if loaded.report.has_issues() {
+        if std::io::stderr().is_terminal() {
+            eprint!("{}", loaded.render_pretty());
+        } else {
+            eprint!("{}", loaded.render_plain());
+        }
+    }
+    let Some(settings) = loaded.settings else {
+        return ExitCode::FAILURE;
+    };
+    let settings = Arc::new(settings);
 
     if cli.server {
         let mut registry = CommandRegistry::new();
