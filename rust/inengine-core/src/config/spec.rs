@@ -51,10 +51,10 @@ pub struct QueueSpec {
     /// Compress message payloads before they are queued.
     #[confval(default = false)]
     pub use_compression: Located<bool>,
-    /// The number of consumers for the primary queue.
+    /// The number of consumers for the primary queue. Zero effectively disables the queue.
     #[confval(default = 8, range = CONSUMERS)]
     pub primary_queue_consumers: Located<i64>,
-    /// The number of consumers for the secondary queue.
+    /// The number of consumers for the secondary queue. Zero effectively disables the queue.
     #[confval(default = 8, range = CONSUMERS)]
     pub secondary_queue_consumers: Located<i64>,
     /// The queue backend, "file" or "redis".
