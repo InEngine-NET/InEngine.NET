@@ -12,7 +12,6 @@ pub(super) fn new_message_name() -> OsString {
     OsString::from(uuid::Uuid::now_v7().simple().to_string())
 }
 
-/// The names of the stored messages in `dir`, in name order. Hidden names are skipped.
 pub(super) fn list_messages(dir: &Path) -> io::Result<Vec<OsString>> {
     let mut names = Vec::new();
     for entry in fs::read_dir(dir)? {
@@ -32,7 +31,6 @@ pub(super) fn list_messages(dir: &Path) -> io::Result<Vec<OsString>> {
     Ok(names)
 }
 
-/// The original names of the messages that an unfinished settle left in `dir`.
 pub(super) fn list_settling(dir: &Path) -> io::Result<Vec<OsString>> {
     let mut names = Vec::new();
     for entry in fs::read_dir(dir)? {
@@ -49,8 +47,7 @@ pub(super) fn settling_name(name: &OsStr) -> OsString {
     hidden_name(name, SETTLING_SUFFIX)
 }
 
-/// Writes `contents` to `dir/name` so that a reader sees either no file or the whole file,
-/// and syncs the directory so that the new name survives a power loss.
+/// Syncs the directory too, so that the new name survives a power loss.
 pub(super) fn write_atomic(dir: &Path, name: &OsStr, contents: &[u8]) -> io::Result<()> {
     let temp_path = dir.join(hidden_name(name, TEMP_SUFFIX));
     let mut file = File::create_new(&temp_path)?;

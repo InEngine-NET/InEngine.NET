@@ -6,7 +6,6 @@ use crate::queue::delivery::{settle, Attempt, Delivery, SettleError, SettleOutco
 use crate::queue::handle::Queue;
 use crate::queue::registry::CommandRegistry;
 
-/// What happened to one delivery: the attempt and the settle operation that followed it.
 #[derive(Debug)]
 pub struct ProcessedDelivery {
     pub message_id: String,
@@ -14,7 +13,6 @@ pub struct ProcessedDelivery {
     pub settled: Result<SettleOutcome, SettleError>,
 }
 
-/// The attempt result with the error that caused a failure.
 #[derive(Debug)]
 pub enum AttemptReport {
     Succeeded,
@@ -32,8 +30,6 @@ impl AttemptReport {
     }
 }
 
-/// Builds the command in `delivery` from `registry`, runs it with `run`, and settles the
-/// delivery with the result.
 pub async fn process_delivery<F, Fut>(
     queue: &Queue,
     delivery: Delivery,

@@ -7,12 +7,10 @@ use serde::{Deserialize, Serialize};
 use crate::command::{Command, CommandContext, CommandResult};
 use crate::error::CommandError;
 
-/// Runs a whitelisted executable.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Exec {
     /// The name of the executable in `exec_whitelist`.
     pub executable: String,
-    /// Arguments passed to the executable, each as one argument.
     #[serde(default)]
     pub arguments: Vec<String>,
     /// Seconds before the process is killed. Zero means no limit.

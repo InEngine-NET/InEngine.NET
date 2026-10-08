@@ -20,7 +20,6 @@ pub struct SettingsSpec {
     /// The SMTP server that sends command notification mail.
     #[confval(nested, default)]
     pub mail: Located<MailSpec>,
-    /// The queue that holds published commands.
     #[confval(nested, default)]
     pub queue: Located<QueueSpec>,
 }
@@ -28,19 +27,17 @@ pub struct SettingsSpec {
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct MailSpec {
-    /// The SMTP host name.
     #[confval(default = "localhost".to_string(), length = HOSTNAME_LEN)]
     pub host: Located<String>,
-    /// The SMTP port.
     #[confval(default = 25, range = PORT)]
     pub port: Located<i64>,
-    /// The sender address. Leave empty when no command sends mail.
+    /// Leave empty when no command sends mail.
     #[confval(default = String::new())]
     pub from: Located<String>,
-    /// The SMTP user name. Leave empty to send without authentication.
+    /// Leave empty to send without authentication.
     #[confval(default = String::new())]
     pub username: Located<String>,
-    /// The SMTP password. Used only when a user name is set.
+    /// Used only when a user name is set.
     #[confval(default = String::new())]
     pub password: Located<String>,
 }
@@ -48,19 +45,17 @@ pub struct MailSpec {
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct QueueSpec {
-    /// Compress message payloads before they are queued.
     #[confval(default = false)]
     pub use_compression: Located<bool>,
-    /// The number of consumers for the primary queue. Zero effectively disables the queue.
+    /// Zero turns the queue off.
     #[confval(default = 8, range = CONSUMERS)]
     pub primary_queue_consumers: Located<i64>,
-    /// The number of consumers for the secondary queue. Zero effectively disables the queue.
+    /// Zero turns the queue off.
     #[confval(default = 8, range = CONSUMERS)]
     pub secondary_queue_consumers: Located<i64>,
-    /// The queue backend, "file" or "redis".
     #[confval(default = "file".to_string(), keywords = QueueDriver)]
     pub queue_driver: Located<String>,
-    /// The base name of the queue. It becomes part of file names and Redis keys.
+    /// Becomes part of file names and Redis keys.
     #[confval(default = "InEngineQueue".to_string(), format = QueueName)]
     pub queue_name: Located<String>,
     /// How many times a failed message is retried. A message that fails every attempt runs
@@ -73,10 +68,9 @@ pub struct QueueSpec {
     /// run twice.
     #[confval(default = false)]
     pub recover_on_start: Located<bool>,
-    /// The Redis server, version 6.2 or later. Used only when queue_driver is "redis".
+    /// Needs Redis 6.2 or later.
     #[confval(nested, default)]
     pub redis: Located<RedisSpec>,
-    /// The file queue. Used only when queue_driver is "file".
     #[confval(nested, default)]
     pub file: Located<FileSpec>,
 }
@@ -84,16 +78,13 @@ pub struct QueueSpec {
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct RedisSpec {
-    /// The Redis host name or address.
     #[confval(default = "127.0.0.1".to_string(), length = HOSTNAME_LEN)]
     pub host: Located<String>,
-    /// The Redis port.
     #[confval(default = 6379, range = PORT)]
     pub port: Located<i64>,
-    /// The Redis logical database index.
     #[confval(default = 0, range = REDIS_DATABASE)]
     pub database: Located<i64>,
-    /// The Redis password. Leave empty when the server has no password.
+    /// Leave empty when the server has no password.
     #[confval(default = String::new())]
     pub password: Located<String>,
 }
@@ -101,8 +92,7 @@ pub struct RedisSpec {
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct FileSpec {
-    /// The directory that holds the queue files. A relative path resolves against the
-    /// working directory.
+    /// A relative path resolves against the working directory.
     #[confval(default = "../".to_string(), length = PATH_LEN)]
     pub base_path: Located<String>,
 }

@@ -9,11 +9,9 @@ use inengine_core::commands::echo::Echo;
 use inengine_core::config::{self, Settings, SettingsSpec};
 use inengine_core::queue::{CommandEnvelope, Delivery, PeekedMessage, Queue, QueueLengths};
 
-/// A queue under test, with the driver-specific ways to put a bad element in pending.
 pub trait QueueFixture {
     fn queue(&self) -> &Queue;
 
-    /// Opens the other lane of the same queue.
     async fn open_other_lane(&self) -> Queue;
 
     /// Adds an element that is not an envelope, so that it is claimed before any later message.

@@ -52,7 +52,6 @@ impl Command for Flush {
     }
 }
 
-/// Prints the stage lengths of both lanes.
 pub struct Length;
 
 impl Command for Length {
@@ -65,7 +64,7 @@ impl Command for Length {
     }
 }
 
-/// Prints the stage lengths of both lanes, the same as [`Length`].
+/// An alias of [`Length`].
 pub struct Status;
 
 impl Command for Status {
@@ -213,10 +212,6 @@ impl Command for RepublishFailed {
     }
 }
 
-/// Returns every in-progress message of one lane to pending.
-///
-/// Stop every other consumer of the queue first. Recovery cannot tell a message left by a
-/// crash from one that another consumer is still processing, so that message would run twice.
 pub struct Recover {
     pub lane: QueueLane,
 }

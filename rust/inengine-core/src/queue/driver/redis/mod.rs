@@ -14,16 +14,11 @@ use crate::queue::handle::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const CONNECTION_TIMEOUT: Duration = Duration::from_secs(5);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(30);
-/// The longest blocking dequeue. It is 5 seconds shorter than the response timeout, so the
-/// reply arrives before the client stops waiting.
-///
-/// If the reply is more than 5 seconds late, the client stops waiting but the server can
-/// still claim an element. That element stays in progress until a recovery.
+/// Shorter than the response timeout, so that the reply arrives before the client stops
+/// waiting. A later reply leaves the claimed element in progress until a recovery.
 const MAX_BLOCKING_WAIT: Duration = RESPONSE_TIMEOUT.saturating_sub(Duration::from_secs(5));
 const BULK_MOVE_BATCH: usize = 1000;
 
-/// A queue lane stored in three Redis lists.
-///
 /// Pending messages are pushed on the left and claimed from the right, so the right end
 /// holds the oldest message.
 pub(crate) struct RedisDriver {
@@ -236,8 +231,6 @@ impl RedisDriver {
         Ok(moved)
     }
 
-    /// Removes `element` from in-progress and pushes `replacement` onto `destination`, or
-    /// does nothing when `element` is no longer in progress.
     async fn move_if_present(
         &self,
         element: &[u8],

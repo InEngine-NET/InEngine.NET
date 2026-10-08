@@ -14,7 +14,6 @@ use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
 const DEQUEUE_WAIT: Duration = Duration::from_secs(5);
 const RETRY_DELAY: Duration = Duration::from_secs(5);
 
-/// The tasks that take messages from both queue lanes and run them.
 pub struct QueueConsumers {
     settings: Arc<Settings>,
     registry: Arc<CommandRegistry>,

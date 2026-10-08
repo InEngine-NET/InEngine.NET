@@ -5,7 +5,6 @@ range_constraint!(pub(crate) CONSUMERS, i64, min: 0, max: 1024);
 range_constraint!(pub(crate) MAX_RETRIES, i64, min: 0, max: 100);
 range_constraint!(pub(crate) REDIS_DATABASE, i64, min: 0, max: 255);
 length_constraint!(
-    /// A host name is required, and a DNS name is at most 253 characters.
     pub(crate) HOSTNAME_LEN, min: 1, max: 253
 );
 length_constraint!(

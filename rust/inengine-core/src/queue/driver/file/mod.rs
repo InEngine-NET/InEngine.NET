@@ -16,8 +16,6 @@ use crate::queue::handle::{PeekedMessage, QueueLane, QueueLengths, Stage};
 const STALE_TEMP_AGE: Duration = Duration::from_secs(60 * 60);
 const POLL_INTERVAL: Duration = Duration::from_secs(1);
 
-/// A queue lane stored as one file per message in three directories.
-///
 /// Each claim lists the pending directory, so a claim gets slower as the backlog grows.
 pub(crate) struct FileDriver {
     lane: QueueLane,
@@ -241,8 +239,6 @@ impl FileDriver {
         }
     }
 
-    /// The paths of the messages in `stage`, oldest first. The in-progress stage also
-    /// includes the settling files.
     fn stage_entries(&self, stage: Stage) -> Result<Vec<PathBuf>, QueueError> {
         let dir = self.stage_dir(stage);
         let mut entries: Vec<(OsString, PathBuf)> = dir::list_messages(dir)?

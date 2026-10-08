@@ -1,9 +1,3 @@
-//! Loads `inengine.toml` into [`Settings`].
-//!
-//! The file is parsed into span-tracked spec types, validated so that every
-//! problem is reported in one pass, and lowered into the runtime types only
-//! when the report holds no errors.
-
 mod constraints;
 mod runtime;
 mod spec;
@@ -20,8 +14,6 @@ pub use runtime::{FileSettings, MailSettings, QueueSettings, RedisSettings, Sett
 pub use spec::{FileSpec, MailSpec, QueueSpec, RedisSpec, SettingsSpec};
 pub use vocabulary::QueueDriver;
 
-/// The result of a configuration load.
-///
 /// `settings` is `None` when the report holds an error. The report can hold
 /// warnings in both cases, so render it whenever it holds any issue.
 pub struct Loaded {
@@ -31,7 +23,6 @@ pub struct Loaded {
 }
 
 impl Loaded {
-    /// Renders the report without color, for logs and non-terminal output.
     pub fn render_plain(&self) -> String {
         let mut out = String::new();
         match self.report.render_plain(&self.sources, &mut out) {
@@ -40,7 +31,6 @@ impl Loaded {
         }
     }
 
-    /// Renders the report with color and source snippets, for a terminal.
     pub fn render_pretty(&self) -> String {
         let mut out = String::new();
         match self.report.render_pretty(&self.sources, &mut out) {
@@ -50,8 +40,6 @@ impl Loaded {
     }
 }
 
-/// Reads and checks the configuration file at `path`.
-///
 /// A missing or unreadable file is an `Err`. Every problem inside the file is
 /// in the returned report.
 pub fn load(path: &Path) -> Result<Loaded, ConfigError> {
@@ -67,7 +55,7 @@ pub fn load(path: &Path) -> Result<Loaded, ConfigError> {
     Ok(from_text(&path.display().to_string(), &text))
 }
 
-/// Parses and checks configuration text. `name` labels the text in diagnostics.
+/// `name` labels the text in diagnostics.
 pub fn from_text(name: &str, text: &str) -> Loaded {
     let mut sources = SourceMap::new();
     let mut report = Report::new();
@@ -81,9 +69,6 @@ pub fn from_text(name: &str, text: &str) -> Loaded {
     }
 }
 
-/// Checks a spec built in code and lowers it.
-///
-/// `SettingsSpec::default()` gives the same settings as an empty file.
 pub fn from_spec(spec: &SettingsSpec) -> Loaded {
     let mut report = Report::new();
     let settings = check_and_lower(spec, &mut report);

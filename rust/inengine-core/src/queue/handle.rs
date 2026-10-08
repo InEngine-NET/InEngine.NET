@@ -27,7 +27,6 @@ impl QueueLane {
     }
 }
 
-/// Where a message is: waiting for a consumer, claimed by a consumer, or failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Stage {
     Pending,
@@ -57,7 +56,6 @@ impl Stage {
     }
 }
 
-/// The number of messages in each stage of one lane.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct QueueLengths {
     pub pending: usize,
@@ -65,7 +63,6 @@ pub struct QueueLengths {
     pub failed: usize,
 }
 
-/// A stored message as `peek` reads it.
 #[derive(Debug, Clone)]
 pub enum PeekedMessage {
     Envelope(CommandEnvelope),
@@ -88,8 +85,6 @@ impl PeekedMessage {
     }
 }
 
-/// An open connection to one lane of the configured queue.
-///
 /// Give each consumer its own `Queue`. A Redis queue has one connection, and a blocking
 /// dequeue delays every other request on that connection.
 pub struct Queue {
@@ -102,7 +97,6 @@ enum Backend {
 }
 
 impl Queue {
-    /// Opens `lane` with the driver that `settings` selects.
     pub async fn open(lane: QueueLane, settings: &QueueSettings) -> Result<Queue, QueueError> {
         let backend = match settings.queue_driver {
             QueueDriver::File => Backend::File(FileDriver::open(
@@ -124,7 +118,6 @@ impl Queue {
         }
     }
 
-    /// Adds a message to the back of the pending stage.
     pub async fn publish(&self, envelope: &CommandEnvelope) -> Result<(), QueueError> {
         match &self.backend {
             Backend::File(driver) => driver.publish(envelope),
@@ -132,8 +125,6 @@ impl Queue {
         }
     }
 
-    /// Claims the oldest pending message, waiting up to `wait` for one to arrive.
-    ///
     /// An element that does not parse is moved to the failed stage and skipped.
     /// This future is not cancel safe. If it is dropped, the driver can still claim a message
     /// that no caller receives, so let it finish. It finishes within `wait`.
@@ -144,7 +135,6 @@ impl Queue {
         }
     }
 
-    /// Removes a processed message from the in-progress stage.
     pub async fn acknowledge(&self, delivery: Delivery) -> Result<(), SettleError> {
         let settled = match (&self.backend, delivery.receipt()) {
             (Backend::File(driver), Receipt::File(name)) if self.owns(&delivery) => {
@@ -158,18 +148,14 @@ impl Queue {
         finish_settle(delivery, settled)
     }
 
-    /// Moves a message, with its updated attempt count, to the back of the pending stage.
     pub async fn retry(&self, delivery: Delivery) -> Result<(), SettleError> {
         self.move_claimed(delivery, Stage::Pending).await
     }
 
-    /// Moves a message, with its updated attempt count, to the failed stage.
     pub async fn fail(&self, delivery: Delivery) -> Result<(), SettleError> {
         self.move_claimed(delivery, Stage::Failed).await
     }
 
-    /// Returns every in-progress message to pending and reports how many moved.
-    ///
     /// Stop every other consumer of the queue first. Recovery cannot tell a message left by a
     /// crash from one that another consumer is still processing, so that message would run
     /// twice.
@@ -187,7 +173,6 @@ impl Queue {
         }
     }
 
-    /// Removes every message in `stage` and reports how many were removed.
     pub async fn clear(&self, stage: Stage) -> Result<usize, QueueError> {
         match &self.backend {
             Backend::File(driver) => driver.clear(stage),
@@ -195,8 +180,6 @@ impl Queue {
         }
     }
 
-    /// Reads the messages at the positions in `range`, oldest first.
-    ///
     /// Position 0 of the pending stage is the next message to be claimed. A reversed range
     /// reads nothing.
     pub async fn peek(
@@ -214,7 +197,6 @@ impl Queue {
         }
     }
 
-    /// Moves up to `limit` failed messages back to pending and reports how many moved.
     pub async fn republish_failed(&self, limit: usize) -> Result<usize, QueueError> {
         match &self.backend {
             Backend::File(driver) => driver.republish_failed(limit),

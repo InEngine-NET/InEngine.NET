@@ -9,7 +9,6 @@ use common::{claim, expected_lengths, publish_echo, settings_with_queue_base, Qu
 use inengine_core::config::{QueueDriver, QueueSettings};
 use inengine_core::queue::{Queue, QueueLane, SettleError, Stage};
 
-/// A Redis queue on a unique name that deletes its keys when dropped.
 struct RedisFixture {
     name: String,
     queue: Queue,

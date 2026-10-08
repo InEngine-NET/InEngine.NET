@@ -92,7 +92,6 @@ impl Validate for FileSpec {
     fn validate(&self, _report: &mut Report) {}
 }
 
-/// Reports an empty path as an error and a path that does not exist as a warning.
 fn check_path_entry(report: &mut Report, what: &str, path: &Located<String>, consequence: &str) {
     if path.value.trim().is_empty() {
         report

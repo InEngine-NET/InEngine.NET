@@ -1,6 +1,3 @@
-//! Cases that every queue driver must pass. Each driver's test file runs them through
-//! `queue_contract_tests!`.
-
 use std::time::{Duration, Instant};
 
 use inengine_core::queue::{PeekedMessage, SettleError, Stage};

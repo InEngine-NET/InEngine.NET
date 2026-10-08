@@ -5,7 +5,6 @@ use confval::prelude::*;
 use inengine_core::config::{self, Loaded, QueueDriver, Settings, SettingsSpec};
 use inengine_core::error::ConfigError;
 
-/// Each issue as (severity, 1-based line, message), in report order.
 fn issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
     loaded
         .report

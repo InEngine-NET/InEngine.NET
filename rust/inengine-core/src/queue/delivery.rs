@@ -4,10 +4,6 @@ use crate::error::QueueError;
 use crate::queue::envelope::CommandEnvelope;
 use crate::queue::handle::{Queue, QueueLane};
 
-/// A message claimed from the pending stage, with the receipt that its driver uses to settle it.
-///
-/// Settle every delivery with [`settle`], or with [`Queue::acknowledge`], [`Queue::retry`],
-/// or [`Queue::fail`]. A delivery that is dropped unsettled stays in the in-progress stage.
 #[derive(Debug)]
 #[must_use = "a dropped delivery stays in the in-progress stage"]
 pub struct Delivery {
@@ -18,9 +14,8 @@ pub struct Delivery {
 
 #[derive(Debug)]
 pub(crate) enum Receipt {
-    /// The file name inside the in-progress directory.
     File(OsString),
-    /// The exact bytes of the element that the claim returned.
+    /// The exact bytes the claim returned, because Redis removes an element only by an exact match.
     Redis(Vec<u8>),
 }
 
@@ -65,7 +60,6 @@ pub enum SettleError {
 }
 
 impl SettleError {
-    /// Returns the delivery from `Rejected` or `Interrupted`, and `None` for `Lost`.
     pub fn into_delivery(self) -> Option<Delivery> {
         match self {
             SettleError::Lost => None,
@@ -76,7 +70,6 @@ impl SettleError {
     }
 }
 
-/// The result of running the command in a delivery.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Attempt {
     Succeeded,
@@ -99,7 +92,6 @@ pub enum SettleOutcome {
     MovedToFailed,
 }
 
-/// Chooses what happens to a delivery after an attempt.
 pub fn decide(attempt: Attempt, envelope: &CommandEnvelope) -> SettleAction {
     match attempt {
         Attempt::Succeeded => SettleAction::Acknowledge,
@@ -108,7 +100,6 @@ pub fn decide(attempt: Attempt, envelope: &CommandEnvelope) -> SettleAction {
     }
 }
 
-/// Applies the action that [`decide`] chooses for the attempt.
 pub async fn settle(
     queue: &Queue,
     delivery: Delivery,
