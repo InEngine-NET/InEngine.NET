@@ -65,11 +65,7 @@ impl PluginLoader {
         Ok(())
     }
 
-    fn load_directory(
-        &mut self,
-        plugin_name: &str,
-        dir: &Path,
-    ) -> Result<(), PluginError> {
+    fn load_directory(&mut self, plugin_name: &str, dir: &Path) -> Result<(), PluginError> {
         let entries = std::fs::read_dir(dir).map_err(|e| PluginError::Load {
             name: plugin_name.to_string(),
             reason: e.to_string(),
@@ -96,11 +92,7 @@ impl PluginLoader {
         Ok(())
     }
 
-    fn load_component(
-        &self,
-        plugin_name: &str,
-        path: &Path,
-    ) -> Result<LoadedPlugin, PluginError> {
+    fn load_component(&self, plugin_name: &str, path: &Path) -> Result<LoadedPlugin, PluginError> {
         let component =
             wasmtime::component::Component::from_file(&self.engine, path).map_err(|e| {
                 PluginError::Load {
@@ -137,13 +129,12 @@ impl PluginLoader {
             .collect();
 
         let scheduling_iface = instance.inengine_plugin_scheduling();
-        let raw_schedules =
-            scheduling_iface
-                .call_list_schedules(&mut store)
-                .map_err(|e| PluginError::Load {
-                    name: plugin_name.to_string(),
-                    reason: e.to_string(),
-                })?;
+        let raw_schedules = scheduling_iface
+            .call_list_schedules(&mut store)
+            .map_err(|e| PluginError::Load {
+                name: plugin_name.to_string(),
+                reason: e.to_string(),
+            })?;
 
         let schedule_entries = raw_schedules
             .into_iter()
@@ -184,7 +175,10 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let mut loader = PluginLoader::new().unwrap();
         let mut dirs = HashMap::new();
-        dirs.insert("test".to_string(), temp_dir.path().to_str().unwrap().to_string());
+        dirs.insert(
+            "test".to_string(),
+            temp_dir.path().to_str().unwrap().to_string(),
+        );
 
         // Act
         loader.load_from_directories(&dirs).unwrap();
@@ -217,7 +211,10 @@ mod tests {
 
         let mut loader = PluginLoader::new().unwrap();
         let mut dirs = HashMap::new();
-        dirs.insert("test".to_string(), temp_dir.path().to_str().unwrap().to_string());
+        dirs.insert(
+            "test".to_string(),
+            temp_dir.path().to_str().unwrap().to_string(),
+        );
 
         // Act
         loader.load_from_directories(&dirs).unwrap();

@@ -28,16 +28,13 @@ impl CommandRegistry {
             .insert(command_name.to_string(), Box::new(constructor));
     }
 
-    pub fn build(
-        &self,
-        command_name: &str,
-        json: &str,
-    ) -> Result<Box<dyn Command>, QueueError> {
-        let constructor = self.constructors.get(command_name).ok_or_else(|| {
-            QueueError::UnknownCommand {
-                name: command_name.to_string(),
-            }
-        })?;
+    pub fn build(&self, command_name: &str, json: &str) -> Result<Box<dyn Command>, QueueError> {
+        let constructor =
+            self.constructors
+                .get(command_name)
+                .ok_or_else(|| QueueError::UnknownCommand {
+                    name: command_name.to_string(),
+                })?;
         constructor(json)
     }
 
@@ -84,8 +81,7 @@ mod tests {
         let registry = CommandRegistry::new();
 
         // Act
-        let result =
-            registry.build("nonexistent::Command", r#"{}"#);
+        let result = registry.build("nonexistent::Command", r#"{}"#);
 
         // Assert
         let err = result.err().expect("expected an error");

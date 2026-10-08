@@ -12,9 +12,11 @@ pub fn compress(text: &str) -> Result<String, QueueError> {
         return Ok(String::new());
     }
     let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-    encoder.write_all(text.as_bytes()).map_err(|e| QueueError::Compression {
-        message: format!("gzip compression failed: {e}"),
-    })?;
+    encoder
+        .write_all(text.as_bytes())
+        .map_err(|e| QueueError::Compression {
+            message: format!("gzip compression failed: {e}"),
+        })?;
     let compressed = encoder.finish().map_err(|e| QueueError::Compression {
         message: format!("gzip finalization failed: {e}"),
     })?;
@@ -32,9 +34,11 @@ pub fn decompress(compressed: &str) -> Result<String, QueueError> {
         })?;
     let mut decoder = GzDecoder::new(&bytes[..]);
     let mut result = String::new();
-    decoder.read_to_string(&mut result).map_err(|e| QueueError::Compression {
-        message: format!("gzip decompression failed: {e}"),
-    })?;
+    decoder
+        .read_to_string(&mut result)
+        .map_err(|e| QueueError::Compression {
+            message: format!("gzip decompression failed: {e}"),
+        })?;
     Ok(result)
 }
 

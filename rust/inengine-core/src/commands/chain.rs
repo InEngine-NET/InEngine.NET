@@ -104,9 +104,7 @@ mod tests {
     #[test]
     fn empty_chain_returns_ok() {
         // Arrange
-        let chain = Chain {
-            commands: vec![],
-        };
+        let chain = Chain { commands: vec![] };
         let mut ctx = make_ctx();
 
         // Act

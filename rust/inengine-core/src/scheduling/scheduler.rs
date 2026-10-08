@@ -39,7 +39,15 @@ impl Scheduler {
             };
 
             handles.push(tokio::spawn(async move {
-                run_job(command, &command_name, cron_schedule, settings, lifecycle, token).await;
+                run_job(
+                    command,
+                    &command_name,
+                    cron_schedule,
+                    settings,
+                    lifecycle,
+                    token,
+                )
+                .await;
             }));
         }
 

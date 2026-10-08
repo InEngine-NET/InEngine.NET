@@ -49,7 +49,7 @@ impl Output {
     }
 
     pub fn newlines(&mut self, count: usize) -> &mut Self {
-        self.buffer.extend(std::iter::repeat(b'\n').take(count));
+        self.buffer.extend(std::iter::repeat_n(b'\n', count));
         self
     }
 

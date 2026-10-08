@@ -100,10 +100,9 @@ pub async fn run_with_lifecycle(
             .map_err(|e| {
                 CommandError::failed_with(format!("failed to open {path} for append"), e)
             })?;
-        file.write_all(output_text.as_bytes())
-            .map_err(|e| {
-                CommandError::failed_with(format!("failed to append output to {path}"), e)
-            })?;
+        file.write_all(output_text.as_bytes()).map_err(|e| {
+            CommandError::failed_with(format!("failed to append output to {path}"), e)
+        })?;
     }
 
     if let Some(ref address) = lifecycle.email_output_to {
@@ -156,18 +155,17 @@ pub async fn send_email(
                     )
                 })?,
         )
-        .to(to
-            .parse()
-            .map_err(|e: lettre::address::AddressError| {
-                CommandError::failed_with(format!("invalid to address: {to}"), e)
-            })?)
+        .to(to.parse().map_err(|e: lettre::address::AddressError| {
+            CommandError::failed_with(format!("invalid to address: {to}"), e)
+        })?)
         .subject(subject)
         .header(ContentType::TEXT_PLAIN)
         .body(body.to_string())
         .map_err(|e| CommandError::failed_with("failed to build email message", e))?;
 
-    let mut transport_builder = AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&mail_settings.host)
-        .port(mail_settings.port);
+    let mut transport_builder =
+        AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&mail_settings.host)
+            .port(mail_settings.port);
 
     if !mail_settings.username.is_empty() {
         transport_builder = transport_builder.credentials(Credentials::new(
@@ -236,7 +234,10 @@ mod tests {
         }
         fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
             let n = self.counter.fetch_add(1, Ordering::SeqCst);
-            self.order_slot.lock().unwrap().push((self.label.clone(), n));
+            self.order_slot
+                .lock()
+                .unwrap()
+                .push((self.label.clone(), n));
             Ok(())
         }
     }

@@ -5,7 +5,7 @@ wit_bindgen::generate!({
 
 struct SamplePlugin;
 
-export_plugin!(SamplePlugin);
+export!(SamplePlugin);
 
 impl exports::inengine::plugin::commands::Guest for SamplePlugin {
     fn list_commands() -> Vec<exports::inengine::plugin::commands::CommandDescriptor> {

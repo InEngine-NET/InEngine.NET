@@ -265,7 +265,10 @@ mod tests {
     fn invalid_cron_returns_error() {
         let result = make_unscheduled_job().cron("not a cron");
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), ScheduleError::InvalidCron { .. }));
+        assert!(matches!(
+            result.unwrap_err(),
+            ScheduleError::InvalidCron { .. }
+        ));
     }
 
     #[test]
@@ -324,12 +327,8 @@ mod tests {
         let ctx = make_ctx();
         let mut schedule = Schedule::new(ctx.settings.clone());
         let cmds: Vec<Box<dyn Command>> = vec![
-            Box::new(TestCmd {
-                label: "a".into(),
-            }),
-            Box::new(TestCmd {
-                label: "b".into(),
-            }),
+            Box::new(TestCmd { label: "a".into() }),
+            Box::new(TestCmd { label: "b".into() }),
         ];
 
         // Act

@@ -21,13 +21,12 @@ impl Command for WasmCommand {
         let mut store = wasmtime::Store::new(&self.engine, ());
         let linker = wasmtime::component::Linker::new(&self.engine);
 
-        let instance =
-            Plugin::instantiate(&mut store, &self.component, &linker).map_err(|e| {
-                CommandError::failed(format!(
-                    "failed to instantiate plugin '{}' for command '{}': {e}",
-                    self.plugin_name, self.command_name
-                ))
-            })?;
+        let instance = Plugin::instantiate(&mut store, &self.component, &linker).map_err(|e| {
+            CommandError::failed(format!(
+                "failed to instantiate plugin '{}' for command '{}': {e}",
+                self.plugin_name, self.command_name
+            ))
+        })?;
 
         let commands_iface = instance.inengine_plugin_commands();
         let result = commands_iface
