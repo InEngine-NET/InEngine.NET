@@ -264,7 +264,7 @@ async fn republish_gives_a_failed_message_a_new_name_in_pending() {
     let fixture = FileFixture::new().await;
     publish_echo(&fixture.queue, "one", 0).await;
     let delivery = claim(&fixture.queue).await;
-    fixture.queue.fail(delivery).await.expect("fail");
+    fixture.queue.move_to_failed(delivery).await.expect("fail");
     let failed_names = fixture.names_in(Stage::Failed);
 
     // Act

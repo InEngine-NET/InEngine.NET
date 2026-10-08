@@ -1,5 +1,6 @@
 use std::str::FromStr;
 use std::sync::Arc;
+use std::time::Duration;
 
 use crate::command::Command;
 use crate::commands::chain::Chain;
@@ -12,7 +13,7 @@ pub enum ScheduleError {
     InvalidCron { expression: String, reason: String },
 }
 
-pub struct JobRegistration {
+pub struct ScheduledJob {
     pub command: Arc<dyn Command>,
     pub command_name: String,
     pub cron_expression: String,
@@ -20,16 +21,16 @@ pub struct JobRegistration {
     pub lifecycle: CommandLifecycle,
 }
 
-impl std::fmt::Debug for JobRegistration {
+impl std::fmt::Debug for ScheduledJob {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("JobRegistration")
+        f.debug_struct("ScheduledJob")
             .field("command_name", &self.command_name)
             .field("cron_expression", &self.cron_expression)
             .finish()
     }
 }
 
-impl JobRegistration {
+impl ScheduledJob {
     pub fn ping_before(mut self, url: &str) -> Self {
         self.lifecycle.ping_before_url = Some(url.to_string());
         self
@@ -55,68 +56,68 @@ impl JobRegistration {
         self
     }
 
-    pub fn with_timeout(mut self, seconds: u64) -> Self {
-        self.lifecycle.timeout_seconds = seconds;
+    pub fn timeout(mut self, timeout: Duration) -> Self {
+        self.lifecycle.timeout = Some(timeout);
         self
     }
 
-    pub fn before<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
-        self.lifecycle.before_action = Some(Box::new(f));
+    pub fn before_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
+        self.lifecycle.before_run = Some(Box::new(f));
         self
     }
 
-    pub fn after<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
-        self.lifecycle.after_action = Some(Box::new(f));
+    pub fn after_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
+        self.lifecycle.after_run = Some(Box::new(f));
         self
     }
 }
 
-pub struct ScheduleBuilder {
-    pub registrations: Vec<JobRegistration>,
+pub struct Schedule {
+    pub jobs: Vec<ScheduledJob>,
     pub settings: Arc<Settings>,
 }
 
-impl ScheduleBuilder {
+impl Schedule {
     pub fn new(settings: Arc<Settings>) -> Self {
         Self {
-            registrations: Vec::new(),
+            jobs: Vec::new(),
             settings,
         }
     }
 
-    pub fn command(&self, cmd: impl Command + 'static) -> Occurrence {
+    pub fn command(&self, cmd: impl Command + 'static) -> UnscheduledJob {
         let name = cmd.name().to_string();
-        Occurrence {
+        UnscheduledJob {
             command: Arc::new(cmd),
             command_name: name,
         }
     }
 
-    pub fn commands(&self, cmds: Vec<Box<dyn Command>>) -> Occurrence {
-        Occurrence {
+    pub fn commands(&self, cmds: Vec<Box<dyn Command>>) -> UnscheduledJob {
+        UnscheduledJob {
             command: Arc::new(Chain { commands: cmds }),
             command_name: "chain".to_string(),
         }
     }
 
-    pub fn add(&mut self, registration: JobRegistration) {
-        self.registrations.push(registration);
+    pub fn add(&mut self, job: ScheduledJob) {
+        self.jobs.push(job);
     }
 }
 
-pub struct Occurrence {
+pub struct UnscheduledJob {
     command: Arc<dyn Command>,
     command_name: String,
 }
 
-impl Occurrence {
-    pub fn cron(self, expression: &str) -> Result<JobRegistration, ScheduleError> {
+impl UnscheduledJob {
+    pub fn cron(self, expression: &str) -> Result<ScheduledJob, ScheduleError> {
         let cron_schedule =
             cron::Schedule::from_str(expression).map_err(|e| ScheduleError::InvalidCron {
                 expression: expression.to_string(),
                 reason: e.to_string(),
             })?;
-        Ok(JobRegistration {
+        Ok(ScheduledJob {
             command: self.command,
             command_name: self.command_name,
             cron_expression: expression.to_string(),
@@ -125,43 +126,43 @@ impl Occurrence {
         })
     }
 
-    pub fn every_second(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_second(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("* * * * * *")
     }
 
-    pub fn every_minute(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_minute(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 * * * * *")
     }
 
-    pub fn every_five_minutes(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_five_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */5 * * * *")
     }
 
-    pub fn every_ten_minutes(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_ten_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */10 * * * *")
     }
 
-    pub fn every_fifteen_minutes(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_fifteen_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */15 * * * *")
     }
 
-    pub fn every_thirty_minutes(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn every_thirty_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */30 * * * *")
     }
 
-    pub fn hourly(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn hourly(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 0 * * * *")
     }
 
-    pub fn hourly_at(self, minutes: u32) -> Result<JobRegistration, ScheduleError> {
+    pub fn hourly_at(self, minutes: u32) -> Result<ScheduledJob, ScheduleError> {
         self.cron(&format!("0 {minutes} * * * *"))
     }
 
-    pub fn daily(self) -> Result<JobRegistration, ScheduleError> {
+    pub fn daily(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 0 0 * * *")
     }
 
-    pub fn daily_at(self, hours: u32, minutes: u32) -> Result<JobRegistration, ScheduleError> {
+    pub fn daily_at(self, hours: u32, minutes: u32) -> Result<ScheduledJob, ScheduleError> {
         self.cron(&format!("0 {minutes} {hours} * * *"))
     }
 }
@@ -187,8 +188,8 @@ mod tests {
         }
     }
 
-    fn make_occurrence() -> Occurrence {
-        Occurrence {
+    fn make_unscheduled_job() -> UnscheduledJob {
+        UnscheduledJob {
             command: Arc::new(TestCmd { label: "t".into() }),
             command_name: "t".into(),
         }
@@ -196,73 +197,73 @@ mod tests {
 
     #[test]
     fn every_second_produces_correct_cron() {
-        let reg = make_occurrence().every_second().unwrap();
-        assert_eq!(reg.cron_expression, "* * * * * *");
+        let job = make_unscheduled_job().every_second().unwrap();
+        assert_eq!(job.cron_expression, "* * * * * *");
     }
 
     #[test]
     fn every_minute_produces_correct_cron() {
-        let reg = make_occurrence().every_minute().unwrap();
-        assert_eq!(reg.cron_expression, "0 * * * * *");
+        let job = make_unscheduled_job().every_minute().unwrap();
+        assert_eq!(job.cron_expression, "0 * * * * *");
     }
 
     #[test]
     fn every_five_minutes_produces_correct_cron() {
-        let reg = make_occurrence().every_five_minutes().unwrap();
-        assert_eq!(reg.cron_expression, "0 */5 * * * *");
+        let job = make_unscheduled_job().every_five_minutes().unwrap();
+        assert_eq!(job.cron_expression, "0 */5 * * * *");
     }
 
     #[test]
     fn every_ten_minutes_produces_correct_cron() {
-        let reg = make_occurrence().every_ten_minutes().unwrap();
-        assert_eq!(reg.cron_expression, "0 */10 * * * *");
+        let job = make_unscheduled_job().every_ten_minutes().unwrap();
+        assert_eq!(job.cron_expression, "0 */10 * * * *");
     }
 
     #[test]
     fn every_fifteen_minutes_produces_correct_cron() {
-        let reg = make_occurrence().every_fifteen_minutes().unwrap();
-        assert_eq!(reg.cron_expression, "0 */15 * * * *");
+        let job = make_unscheduled_job().every_fifteen_minutes().unwrap();
+        assert_eq!(job.cron_expression, "0 */15 * * * *");
     }
 
     #[test]
     fn every_thirty_minutes_produces_correct_cron() {
-        let reg = make_occurrence().every_thirty_minutes().unwrap();
-        assert_eq!(reg.cron_expression, "0 */30 * * * *");
+        let job = make_unscheduled_job().every_thirty_minutes().unwrap();
+        assert_eq!(job.cron_expression, "0 */30 * * * *");
     }
 
     #[test]
     fn hourly_produces_correct_cron() {
-        let reg = make_occurrence().hourly().unwrap();
-        assert_eq!(reg.cron_expression, "0 0 * * * *");
+        let job = make_unscheduled_job().hourly().unwrap();
+        assert_eq!(job.cron_expression, "0 0 * * * *");
     }
 
     #[test]
     fn hourly_at_produces_correct_cron() {
-        let reg = make_occurrence().hourly_at(27).unwrap();
-        assert_eq!(reg.cron_expression, "0 27 * * * *");
+        let job = make_unscheduled_job().hourly_at(27).unwrap();
+        assert_eq!(job.cron_expression, "0 27 * * * *");
     }
 
     #[test]
     fn daily_produces_correct_cron() {
-        let reg = make_occurrence().daily().unwrap();
-        assert_eq!(reg.cron_expression, "0 0 0 * * *");
+        let job = make_unscheduled_job().daily().unwrap();
+        assert_eq!(job.cron_expression, "0 0 0 * * *");
     }
 
     #[test]
     fn daily_at_produces_correct_cron() {
-        let reg = make_occurrence().daily_at(22, 30).unwrap();
-        assert_eq!(reg.cron_expression, "0 30 22 * * *");
+        let job = make_unscheduled_job().daily_at(22, 30).unwrap();
+        assert_eq!(job.cron_expression, "0 30 22 * * *");
     }
 
     #[test]
     fn custom_cron_stores_expression() {
-        let reg = make_occurrence().cron("15 * * * * *").unwrap();
-        assert_eq!(reg.cron_expression, "15 * * * * *");
+        let job = make_unscheduled_job().cron("15 * * * * *").unwrap();
+        assert_eq!(job.cron_expression, "15 * * * * *");
     }
 
     #[test]
     fn invalid_cron_returns_error() {
-        let result = make_occurrence().cron("not a cron");
+        let result = make_unscheduled_job().cron("not a cron");
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), ScheduleError::InvalidCron { .. }));
     }
@@ -271,57 +272,57 @@ mod tests {
     fn register_single_command() {
         // Arrange
         let ctx = make_ctx();
-        let mut builder = ScheduleBuilder::new(ctx.settings.clone());
+        let mut schedule = Schedule::new(ctx.settings.clone());
 
         // Act
-        let reg = builder
+        let job = schedule
             .command(TestCmd {
                 label: "hello".into(),
             })
             .every_five_minutes()
             .unwrap();
-        builder.add(reg);
+        schedule.add(job);
 
         // Assert
-        assert_eq!(builder.registrations.len(), 1);
-        assert_eq!(builder.registrations[0].command_name, "hello");
-        assert_eq!(builder.registrations[0].cron_expression, "0 */5 * * * *");
+        assert_eq!(schedule.jobs.len(), 1);
+        assert_eq!(schedule.jobs[0].command_name, "hello");
+        assert_eq!(schedule.jobs[0].cron_expression, "0 */5 * * * *");
     }
 
     #[test]
     fn register_two_commands() {
         // Arrange
         let ctx = make_ctx();
-        let mut builder = ScheduleBuilder::new(ctx.settings.clone());
+        let mut schedule = Schedule::new(ctx.settings.clone());
 
         // Act
-        let reg1 = builder
+        let job1 = schedule
             .command(TestCmd {
                 label: "first".into(),
             })
             .every_second()
             .unwrap();
-        builder.add(reg1);
+        schedule.add(job1);
 
-        let reg2 = builder
+        let job2 = schedule
             .command(TestCmd {
                 label: "second".into(),
             })
             .daily()
             .unwrap();
-        builder.add(reg2);
+        schedule.add(job2);
 
         // Assert
-        assert_eq!(builder.registrations.len(), 2);
-        assert_eq!(builder.registrations[0].command_name, "first");
-        assert_eq!(builder.registrations[1].command_name, "second");
+        assert_eq!(schedule.jobs.len(), 2);
+        assert_eq!(schedule.jobs[0].command_name, "first");
+        assert_eq!(schedule.jobs[1].command_name, "second");
     }
 
     #[test]
     fn register_chain_of_commands() {
         // Arrange
         let ctx = make_ctx();
-        let mut builder = ScheduleBuilder::new(ctx.settings.clone());
+        let mut schedule = Schedule::new(ctx.settings.clone());
         let cmds: Vec<Box<dyn Command>> = vec![
             Box::new(TestCmd {
                 label: "a".into(),
@@ -332,11 +333,11 @@ mod tests {
         ];
 
         // Act
-        let reg = builder.commands(cmds).hourly().unwrap();
-        builder.add(reg);
+        let job = schedule.commands(cmds).hourly().unwrap();
+        schedule.add(job);
 
         // Assert
-        assert_eq!(builder.registrations.len(), 1);
-        assert_eq!(builder.registrations[0].command_name, "chain");
+        assert_eq!(schedule.jobs.len(), 1);
+        assert_eq!(schedule.jobs[0].command_name, "chain");
     }
 }

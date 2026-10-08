@@ -2,11 +2,11 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use super::{block_on, command_failed, open_queue};
+use super::{block_on, open_queue};
 use crate::command::{Command, CommandContext, CommandResult};
 use crate::error::CommandError;
 use crate::queue::{
-    process_delivery, AttemptReport, CommandEnvelope, CommandRegistry, QueueLane, SettleOutcome,
+    process_delivery, Attempt, CommandEnvelope, CommandRegistry, QueueLane, SettleOutcome,
 };
 
 pub struct Publish {
@@ -25,8 +25,9 @@ pub struct Publish {
 impl Publish {
     fn payload(&self) -> Result<String, CommandError> {
         if let Some(json) = &self.json {
-            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(json)
-                .map_err(|error| command_failed("the payload is not a JSON object", error))?;
+            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(json).map_err(
+                |error| CommandError::failed_with("the payload is not a JSON object", error),
+            )?;
             return Ok(json.clone());
         }
         let fields: serde_json::Map<String, serde_json::Value> = self
@@ -41,7 +42,7 @@ impl Publish {
             })
             .collect();
         serde_json::to_string(&fields)
-            .map_err(|error| command_failed("could not serialize args", error))
+            .map_err(|error| CommandError::failed_with("could not serialize args", error))
     }
 }
 
@@ -55,26 +56,24 @@ impl Command for Publish {
             .command_class
             .as_deref()
             .or(self.command_verb.as_deref())
-            .ok_or_else(|| CommandError::Failed {
-                message: "specify --class or --command".to_string(),
-            })?;
+            .ok_or_else(|| CommandError::failed("specify --class or --command"))?;
         let settings = &ctx.settings.queue;
-        let envelope = CommandEnvelope::from_fields(
+        let envelope = CommandEnvelope::new(
             class_name,
             &self.plugin_name,
             &self.payload()?,
             settings.use_compression,
             self.max_retries.unwrap_or(settings.max_retries),
         )
-        .map_err(|error| command_failed("could not create the envelope", error))?;
+        .map_err(|error| CommandError::failed_with("could not create the envelope", error))?;
         block_on(async {
             let queue = open_queue(self.lane, settings).await?;
             queue
                 .publish(&envelope)
                 .await
-                .map_err(|error| command_failed("could not publish", error))
+                .map_err(|error| CommandError::failed_with("could not publish", error))
         })?;
-        ctx.output.info(&format!(
+        ctx.output.info_line(&format!(
             "published {class_name} to the {} queue",
             self.lane.as_str()
         ));
@@ -83,8 +82,8 @@ impl Command for Publish {
 }
 
 pub struct Consume {
-    pub consume_all: bool,
-    pub count: usize,
+    /// `None` consumes until the pending stage is empty.
+    pub limit: Option<usize>,
     pub lane: QueueLane,
     pub registry: Arc<CommandRegistry>,
 }
@@ -127,17 +126,13 @@ impl Command for Consume {
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
         let settings = ctx.settings.clone();
-        let limit = if self.consume_all {
-            usize::MAX
-        } else {
-            self.count
-        };
+        let limit = self.limit.unwrap_or(usize::MAX);
         block_on(async {
             let queue = open_queue(self.lane, &settings.queue).await?;
             let mut tally = ConsumeTally::default();
             for _ in 0..limit {
                 let dequeued = queue.dequeue(Duration::ZERO).await.map_err(|error| {
-                    command_failed(&format!("could not dequeue ({tally})"), error)
+                    CommandError::failed_with(format!("could not dequeue ({tally})"), error)
                 })?;
                 let Some(delivery) = dequeued else {
                     break;
@@ -148,37 +143,28 @@ impl Command for Consume {
                 .await;
                 let id = &processed.message_id;
                 match &processed.attempt {
-                    AttemptReport::Succeeded => {}
-                    AttemptReport::CommandFailed(error) => {
-                        ctx.output.error(&format!("message {id}: {error}"));
+                    Attempt::Succeeded => {}
+                    Attempt::CommandFailed(error) => {
+                        ctx.output.error_line(&format!("message {id}: {error}"));
                     }
-                    AttemptReport::Unrunnable(error) => {
-                        ctx.output.error(&format!(
+                    Attempt::Unrunnable(error) => {
+                        ctx.output.error_line(&format!(
                             "could not build the command for message {id}: {error}"
                         ));
                     }
                 }
                 let outcome = processed.settled.map_err(|error| {
-                    command_failed(&format!("stopped at message {id} ({tally})"), error)
+                    CommandError::failed_with(format!("stopped at message {id} ({tally})"), error)
                 })?;
                 tally.record(outcome);
-                ctx.output
-                    .line(&format!("{id}: {}", outcome_label(outcome)));
+                ctx.output.line(&format!("{id}: {}", outcome.label()));
             }
             if tally.incomplete() > 0 {
-                return Err(CommandError::Failed {
-                    message: format!("some messages did not complete ({tally})"),
-                });
+                return Err(CommandError::failed(format!(
+                    "some messages did not complete ({tally})"
+                )));
             }
             Ok(())
         })
-    }
-}
-
-fn outcome_label(outcome: SettleOutcome) -> &'static str {
-    match outcome {
-        SettleOutcome::Acknowledged => "completed",
-        SettleOutcome::Retried => "returned to pending for a retry",
-        SettleOutcome::MovedToFailed => "moved to failed",
     }
 }

@@ -2,7 +2,7 @@ use std::ffi::OsString;
 
 use crate::error::QueueError;
 use crate::queue::envelope::CommandEnvelope;
-use crate::queue::handle::{Queue, QueueLane};
+use crate::queue::{Queue, QueueLane};
 
 #[derive(Debug)]
 #[must_use = "a dropped delivery stays in the in-progress stage"]
@@ -71,7 +71,7 @@ impl SettleError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Attempt {
+pub enum AttemptKind {
     Succeeded,
     CommandFailed,
     /// The command could not be built from the registry, so a retry would fail the same way.
@@ -92,27 +92,39 @@ pub enum SettleOutcome {
     MovedToFailed,
 }
 
-pub fn decide(attempt: Attempt, envelope: &CommandEnvelope) -> SettleAction {
-    match attempt {
-        Attempt::Succeeded => SettleAction::Acknowledge,
-        Attempt::CommandFailed if envelope.should_retry() => SettleAction::Retry,
-        Attempt::CommandFailed | Attempt::Unrunnable => SettleAction::MoveToFailed,
+impl SettleAction {
+    pub fn for_attempt(kind: AttemptKind, envelope: &CommandEnvelope) -> Self {
+        match kind {
+            AttemptKind::Succeeded => Self::Acknowledge,
+            AttemptKind::CommandFailed if envelope.has_retries_left() => Self::Retry,
+            AttemptKind::CommandFailed | AttemptKind::Unrunnable => Self::MoveToFailed,
+        }
+    }
+}
+
+impl SettleOutcome {
+    pub fn label(self) -> &'static str {
+        match self {
+            SettleOutcome::Acknowledged => "completed",
+            SettleOutcome::Retried => "returned to pending for a retry",
+            SettleOutcome::MovedToFailed => "moved to failed",
+        }
     }
 }
 
 pub async fn settle(
     queue: &Queue,
     delivery: Delivery,
-    attempt: Attempt,
+    kind: AttemptKind,
 ) -> Result<SettleOutcome, SettleError> {
-    match decide(attempt, &delivery.envelope) {
+    match SettleAction::for_attempt(kind, &delivery.envelope) {
         SettleAction::Acknowledge => queue
             .acknowledge(delivery)
             .await
             .map(|()| SettleOutcome::Acknowledged),
         SettleAction::Retry => queue.retry(delivery).await.map(|()| SettleOutcome::Retried),
         SettleAction::MoveToFailed => queue
-            .fail(delivery)
+            .move_to_failed(delivery)
             .await
             .map(|()| SettleOutcome::MovedToFailed),
     }
@@ -122,42 +134,49 @@ pub async fn settle(
 mod tests {
     use super::*;
 
-    fn envelope(current_try: u32, max_retries: u32) -> CommandEnvelope {
+    fn envelope(attempts: u32, max_retries: u32) -> CommandEnvelope {
         let mut envelope =
-            CommandEnvelope::from_fields("class", "plugin", "{}", false, max_retries)
-                .expect("envelope");
-        envelope.current_try = current_try;
+            CommandEnvelope::new("class", "plugin", "{}", false, max_retries).expect("envelope");
+        envelope.attempts = attempts;
         envelope
     }
 
     #[test]
-    fn decide_follows_the_policy_table() {
+    fn for_attempt_follows_the_policy_table() {
         // Arrange
         let cases = [
             (
-                Attempt::Succeeded,
+                AttemptKind::Succeeded,
                 envelope(1, 0),
                 SettleAction::Acknowledge,
             ),
             (
-                Attempt::Succeeded,
+                AttemptKind::Succeeded,
                 envelope(5, 2),
                 SettleAction::Acknowledge,
             ),
-            (Attempt::CommandFailed, envelope(1, 2), SettleAction::Retry),
-            (Attempt::CommandFailed, envelope(2, 2), SettleAction::Retry),
             (
-                Attempt::CommandFailed,
+                AttemptKind::CommandFailed,
+                envelope(1, 2),
+                SettleAction::Retry,
+            ),
+            (
+                AttemptKind::CommandFailed,
+                envelope(2, 2),
+                SettleAction::Retry,
+            ),
+            (
+                AttemptKind::CommandFailed,
                 envelope(3, 2),
                 SettleAction::MoveToFailed,
             ),
             (
-                Attempt::CommandFailed,
+                AttemptKind::CommandFailed,
                 envelope(1, 0),
                 SettleAction::MoveToFailed,
             ),
             (
-                Attempt::Unrunnable,
+                AttemptKind::Unrunnable,
                 envelope(1, 5),
                 SettleAction::MoveToFailed,
             ),
@@ -166,7 +185,7 @@ mod tests {
         // Act
         let actions: Vec<_> = cases
             .iter()
-            .map(|(attempt, envelope, _)| decide(*attempt, envelope))
+            .map(|(attempt, envelope, _)| SettleAction::for_attempt(*attempt, envelope))
             .collect();
 
         // Assert

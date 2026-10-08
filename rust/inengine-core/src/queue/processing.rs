@@ -2,30 +2,30 @@ use std::future::Future;
 
 use crate::command::{Command, CommandResult};
 use crate::error::{CommandError, QueueError};
-use crate::queue::delivery::{settle, Attempt, Delivery, SettleError, SettleOutcome};
-use crate::queue::handle::Queue;
+use crate::queue::delivery::{settle, AttemptKind, Delivery, SettleError, SettleOutcome};
 use crate::queue::registry::CommandRegistry;
+use crate::queue::Queue;
 
 #[derive(Debug)]
 pub struct ProcessedDelivery {
     pub message_id: String,
-    pub attempt: AttemptReport,
+    pub attempt: Attempt,
     pub settled: Result<SettleOutcome, SettleError>,
 }
 
 #[derive(Debug)]
-pub enum AttemptReport {
+pub enum Attempt {
     Succeeded,
     CommandFailed(CommandError),
     Unrunnable(QueueError),
 }
 
-impl AttemptReport {
-    pub fn attempt(&self) -> Attempt {
+impl Attempt {
+    pub fn kind(&self) -> AttemptKind {
         match self {
-            AttemptReport::Succeeded => Attempt::Succeeded,
-            AttemptReport::CommandFailed(_) => Attempt::CommandFailed,
-            AttemptReport::Unrunnable(_) => Attempt::Unrunnable,
+            Attempt::Succeeded => AttemptKind::Succeeded,
+            Attempt::CommandFailed(_) => AttemptKind::CommandFailed,
+            Attempt::Unrunnable(_) => AttemptKind::Unrunnable,
         }
     }
 }
@@ -43,12 +43,12 @@ where
     let message_id = delivery.envelope.id.clone();
     let attempt = match delivery.envelope.to_command(registry) {
         Ok(command) => match run(command).await {
-            Ok(()) => AttemptReport::Succeeded,
-            Err(error) => AttemptReport::CommandFailed(error),
+            Ok(()) => Attempt::Succeeded,
+            Err(error) => Attempt::CommandFailed(error),
         },
-        Err(error) => AttemptReport::Unrunnable(error),
+        Err(error) => Attempt::Unrunnable(error),
     };
-    let settled = settle(queue, delivery, attempt.attempt()).await;
+    let settled = settle(queue, delivery, attempt.kind()).await;
     ProcessedDelivery {
         message_id,
         attempt,

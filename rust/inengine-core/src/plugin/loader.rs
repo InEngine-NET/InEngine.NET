@@ -29,7 +29,7 @@ pub struct LoadedPlugin {
 }
 
 pub struct PluginLoader {
-    pub engine: Arc<wasmtime::Engine>,
+    engine: Arc<wasmtime::Engine>,
     pub plugins: Vec<LoadedPlugin>,
 }
 
@@ -37,7 +37,7 @@ impl PluginLoader {
     pub fn new() -> Result<Self, PluginError> {
         let mut config = wasmtime::Config::new();
         config.wasm_component_model(true);
-        let engine = wasmtime::Engine::new(&config).map_err(|e| PluginError::LoadFailed {
+        let engine = wasmtime::Engine::new(&config).map_err(|e| PluginError::Load {
             name: "engine".to_string(),
             reason: e.to_string(),
         })?;
@@ -70,7 +70,7 @@ impl PluginLoader {
         plugin_name: &str,
         dir: &Path,
     ) -> Result<(), PluginError> {
-        let entries = std::fs::read_dir(dir).map_err(|e| PluginError::LoadFailed {
+        let entries = std::fs::read_dir(dir).map_err(|e| PluginError::Load {
             name: plugin_name.to_string(),
             reason: e.to_string(),
         })?;
@@ -103,7 +103,7 @@ impl PluginLoader {
     ) -> Result<LoadedPlugin, PluginError> {
         let component =
             wasmtime::component::Component::from_file(&self.engine, path).map_err(|e| {
-                PluginError::LoadFailed {
+                PluginError::Load {
                     name: plugin_name.to_string(),
                     reason: e.to_string(),
                 }
@@ -113,7 +113,7 @@ impl PluginLoader {
         let linker = wasmtime::component::Linker::new(&self.engine);
 
         let instance = Plugin::instantiate(&mut store, &component, &linker).map_err(|e| {
-            PluginError::LoadFailed {
+            PluginError::Load {
                 name: plugin_name.to_string(),
                 reason: e.to_string(),
             }
@@ -123,7 +123,7 @@ impl PluginLoader {
         let raw_descriptors =
             commands_iface
                 .call_list_commands(&mut store)
-                .map_err(|e| PluginError::LoadFailed {
+                .map_err(|e| PluginError::Load {
                     name: plugin_name.to_string(),
                     reason: e.to_string(),
                 })?;
@@ -140,7 +140,7 @@ impl PluginLoader {
         let raw_schedules =
             scheduling_iface
                 .call_list_schedules(&mut store)
-                .map_err(|e| PluginError::LoadFailed {
+                .map_err(|e| PluginError::Load {
                     name: plugin_name.to_string(),
                     reason: e.to_string(),
                 })?;
@@ -229,7 +229,7 @@ mod tests {
     #[test]
     fn plugin_error_load_failed_has_correct_fields() {
         // Arrange
-        let err = PluginError::LoadFailed {
+        let err = PluginError::Load {
             name: "my-plugin".to_string(),
             reason: "file not found".to_string(),
         };
@@ -261,7 +261,7 @@ mod tests {
     #[test]
     fn plugin_error_runtime_error_has_correct_fields() {
         // Arrange
-        let err = PluginError::RuntimeError {
+        let err = PluginError::Runtime {
             plugin: "my-plugin".to_string(),
             message: "something broke".to_string(),
         };

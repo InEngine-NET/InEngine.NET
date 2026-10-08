@@ -36,7 +36,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok());
-        assert_eq!(ctx.output.flush_buffer(), "hello\n");
+        assert_eq!(ctx.output.take_buffer(), "hello\n");
     }
 
     #[test]
@@ -52,6 +52,6 @@ mod tests {
 
         // Assert
         assert!(result.is_ok());
-        assert_eq!(ctx.output.flush_buffer(), "\n");
+        assert_eq!(ctx.output.take_buffer(), "\n");
     }
 }

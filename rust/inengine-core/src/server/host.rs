@@ -8,17 +8,17 @@ use crate::queue::registry::CommandRegistry;
 use crate::scheduling::scheduler::Scheduler;
 use crate::server::consumers::QueueConsumers;
 
-pub struct ServerHost {
+pub struct Server {
     pub settings: Arc<Settings>,
     pub registry: Arc<CommandRegistry>,
 }
 
-impl ServerHost {
+impl Server {
     pub fn new(settings: Arc<Settings>, registry: Arc<CommandRegistry>) -> Self {
         Self { settings, registry }
     }
 
-    pub async fn start(&self, cancel: CancellationToken) {
+    pub async fn run(&self, cancel: CancellationToken) {
         info!("starting server");
 
         let scheduler = Scheduler::new(self.settings.clone());
@@ -29,8 +29,8 @@ impl ServerHost {
         let consumers_cancel = cancel.clone();
 
         tokio::join!(
-            scheduler.start(scheduler_cancel),
-            consumers.start(consumers_cancel),
+            scheduler.run(scheduler_cancel),
+            consumers.run(consumers_cancel),
         );
 
         info!("server stopped");
@@ -50,13 +50,13 @@ mod tests {
         // Arrange
         let dir = tempfile::tempdir().expect("temporary directory");
         let registry = Arc::new(CommandRegistry::new());
-        let host = ServerHost::new(settings_in(&dir), registry);
+        let server = Server::new(settings_in(&dir), registry);
         let cancel = CancellationToken::new();
         let cancel_clone = cancel.clone();
 
         // Act
         let handle = tokio::spawn(async move {
-            host.start(cancel_clone).await;
+            server.run(cancel_clone).await;
         });
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
         cancel.cancel();
@@ -71,12 +71,12 @@ mod tests {
         // Arrange
         let dir = tempfile::tempdir().expect("temporary directory");
         let registry = Arc::new(CommandRegistry::new());
-        let host = ServerHost::new(settings_in(&dir), registry);
+        let server = Server::new(settings_in(&dir), registry);
         let cancel = CancellationToken::new();
 
         // Act
         cancel.cancel();
-        host.start(cancel).await;
+        server.run(cancel).await;
 
         // Assert (reaching here without panic is the test)
     }

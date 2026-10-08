@@ -10,17 +10,17 @@ use crate::queue::registry::CommandRegistry;
 pub struct CommandEnvelope {
     pub id: String,
     pub plugin_name: String,
-    pub command_class_name: String,
-    pub serialized_command: String,
+    pub command_name: String,
+    pub payload: String,
     pub queued_at: DateTime<Utc>,
     pub is_compressed: bool,
-    pub current_try: u32,
+    pub attempts: u32,
     pub max_retries: u32,
 }
 
 impl CommandEnvelope {
-    pub fn from_fields(
-        command_class_name: &str,
+    pub fn new(
+        command_name: &str,
         plugin_name: &str,
         json: &str,
         use_compression: bool,
@@ -34,11 +34,11 @@ impl CommandEnvelope {
         Ok(Self {
             id: uuid::Uuid::now_v7().to_string(),
             plugin_name: plugin_name.to_string(),
-            command_class_name: command_class_name.to_string(),
-            serialized_command: serialized,
+            command_name: command_name.to_string(),
+            payload: serialized,
             queued_at: Utc::now(),
             is_compressed: use_compression,
-            current_try: 0,
+            attempts: 0,
             max_retries,
         })
     }
@@ -49,7 +49,7 @@ impl CommandEnvelope {
         max_retries: u32,
     ) -> Result<Self, QueueError> {
         let json = serde_json::to_string(cmd)?;
-        Self::from_fields(
+        Self::new(
             std::any::type_name::<T>(),
             "inengine-core",
             &json,
@@ -60,15 +60,15 @@ impl CommandEnvelope {
 
     pub fn to_command(&self, registry: &CommandRegistry) -> Result<Box<dyn Command>, QueueError> {
         let json = if self.is_compressed {
-            decompress(&self.serialized_command)?
+            decompress(&self.payload)?
         } else {
-            self.serialized_command.clone()
+            self.payload.clone()
         };
-        registry.deserialize_command(&self.command_class_name, &json)
+        registry.build(&self.command_name, &json)
     }
 
-    pub fn should_retry(&self) -> bool {
-        self.current_try <= self.max_retries
+    pub fn has_retries_left(&self) -> bool {
+        self.attempts <= self.max_retries
     }
 }
 
@@ -95,7 +95,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok());
-        assert_eq!(ctx.output.flush_buffer(), "hello\n");
+        assert_eq!(ctx.output.take_buffer(), "hello\n");
     }
 
     #[test]
@@ -111,10 +111,7 @@ mod tests {
 
         // Assert
         assert!(envelope.is_compressed);
-        assert_ne!(
-            envelope.serialized_command,
-            r#"{"text":"compressed payload"}"#
-        );
+        assert_ne!(envelope.payload, r#"{"text":"compressed payload"}"#);
 
         // Act
         let cmd = envelope.to_command(&registry).unwrap();
@@ -123,7 +120,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok());
-        assert_eq!(ctx.output.flush_buffer(), "compressed payload\n");
+        assert_eq!(ctx.output.take_buffer(), "compressed payload\n");
     }
 
     #[test]
@@ -150,11 +147,11 @@ mod tests {
         let envelope = CommandEnvelope {
             id: "test-id".to_string(),
             plugin_name: "unknown".to_string(),
-            command_class_name: "unknown::Command".to_string(),
-            serialized_command: "{}".to_string(),
+            command_name: "unknown::Command".to_string(),
+            payload: "{}".to_string(),
             queued_at: Utc::now(),
             is_compressed: false,
-            current_try: 0,
+            attempts: 0,
             max_retries: 0,
         };
         let registry = CommandRegistry::new();
@@ -164,42 +161,42 @@ mod tests {
 
         // Assert
         let err = result.err().expect("expected an error");
-        assert!(matches!(err, QueueError::CommandNotFound { .. }));
+        assert!(matches!(err, QueueError::UnknownCommand { .. }));
     }
 
     #[test]
-    fn should_retry_returns_true_when_tries_remain() {
+    fn has_retries_left_is_true_when_retries_remain() {
         // Arrange
         let envelope = CommandEnvelope {
             id: "test".to_string(),
             plugin_name: "test".to_string(),
-            command_class_name: "test".to_string(),
-            serialized_command: "{}".to_string(),
+            command_name: "test".to_string(),
+            payload: "{}".to_string(),
             queued_at: Utc::now(),
             is_compressed: false,
-            current_try: 1,
+            attempts: 1,
             max_retries: 3,
         };
 
         // Act / Assert
-        assert!(envelope.should_retry());
+        assert!(envelope.has_retries_left());
     }
 
     #[test]
-    fn should_retry_returns_false_when_exhausted() {
+    fn has_retries_left_is_false_when_exhausted() {
         // Arrange
         let envelope = CommandEnvelope {
             id: "test".to_string(),
             plugin_name: "test".to_string(),
-            command_class_name: "test".to_string(),
-            serialized_command: "{}".to_string(),
+            command_name: "test".to_string(),
+            payload: "{}".to_string(),
             queued_at: Utc::now(),
             is_compressed: false,
-            current_try: 4,
+            attempts: 4,
             max_retries: 3,
         };
 
         // Act / Assert
-        assert!(!envelope.should_retry());
+        assert!(!envelope.has_retries_left());
     }
 }

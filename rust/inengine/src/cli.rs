@@ -15,11 +15,11 @@ pub struct Cli {
     pub config: String,
 
     #[command(subcommand)]
-    pub subcommand: Option<Subcommand>,
+    pub subcommand: Option<CliCommand>,
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum Subcommand {
+pub enum CliCommand {
     Echo(EchoArgs),
     Exec(ExecArgs),
     #[command(subcommand)]
@@ -217,7 +217,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Echo(args)) => assert_eq!(args.text, "hello"),
+            Some(CliCommand::Echo(args)) => assert_eq!(args.text, "hello"),
             other => panic!("expected Echo, got: {other:?}"),
         }
     }
@@ -229,7 +229,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Echo(args)) => assert_eq!(args.text, ""),
+            Some(CliCommand::Echo(args)) => assert_eq!(args.text, ""),
             other => panic!("expected Echo, got: {other:?}"),
         }
     }
@@ -241,7 +241,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Exec(args)) => {
+            Some(CliCommand::Exec(args)) => {
                 assert_eq!(args.executable, "foo");
                 assert_eq!(args.arguments, vec!["flag1", "two words"]);
                 assert_eq!(args.timeout, 900);
@@ -278,7 +278,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Publish(args))) => {
+            Some(CliCommand::Queue(QueueSubcommand::Publish(args))) => {
                 assert_eq!(args.plugin, "inengine-core");
                 assert_eq!(
                     args.class.as_deref(),
@@ -298,7 +298,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Consume(args))) => {
+            Some(CliCommand::Queue(QueueSubcommand::Consume(args))) => {
                 assert!(args.all);
             }
             other => panic!("expected Queue Consume, got: {other:?}"),
@@ -312,7 +312,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Flush(args))) => {
+            Some(CliCommand::Queue(QueueSubcommand::Flush(args))) => {
                 assert!(args.pending);
                 assert!(args.failed);
                 assert!(!args.in_progress);
@@ -329,7 +329,7 @@ mod tests {
         // Assert
         assert!(matches!(
             cli.subcommand,
-            Some(Subcommand::Schedule(ScheduleSubcommand::List))
+            Some(CliCommand::Schedule(ScheduleSubcommand::List))
         ));
     }
 
@@ -349,7 +349,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Peek(args))) => {
+            Some(CliCommand::Queue(QueueSubcommand::Peek(args))) => {
                 assert!(args.pending);
                 assert_eq!(args.from, 0);
                 assert_eq!(args.to, 5);
@@ -374,7 +374,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Plugin(args)) => {
+            Some(CliCommand::Plugin(args)) => {
                 assert_eq!(args.name, "sample-plugin");
                 assert_eq!(args.command, "greet");
                 assert_eq!(args.args, vec!["name=Ethan"]);
@@ -393,7 +393,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Recover(args))) => assert!(args.secondary),
+            Some(CliCommand::Queue(QueueSubcommand::Recover(args))) => assert!(args.secondary),
             other => panic!("expected Recover, got: {other:?}"),
         }
     }
@@ -420,7 +420,7 @@ mod tests {
 
         // Assert
         match cli.subcommand {
-            Some(Subcommand::Queue(QueueSubcommand::Publish(args))) => {
+            Some(CliCommand::Queue(QueueSubcommand::Publish(args))) => {
                 assert_eq!(args.json.as_deref(), Some("{}"));
                 assert_eq!(args.max_retries, Some(100));
                 assert!(args.args.is_empty());

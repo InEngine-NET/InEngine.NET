@@ -30,8 +30,7 @@ async fn open_primary(settings: &Settings) -> Queue {
 
 fn consume_one() -> Consume {
     Consume {
-        consume_all: false,
-        count: 1,
+        limit: Some(1),
         lane: QueueLane::Primary,
         registry: Arc::new(CommandRegistry::new()),
     }
@@ -88,7 +87,7 @@ async fn consume_acknowledges_a_successful_message() {
         expected_lengths(0, 0, 0)
     );
     assert_eq!(
-        ctx.output.flush_buffer(),
+        ctx.output.take_buffer(),
         format!("hi\n{}: completed\n", envelope.id)
     );
 }
@@ -126,7 +125,7 @@ async fn consume_of_a_failing_exec_message_moves_it_to_failed_and_returns_an_err
         expected_lengths(0, 0, 1)
     );
     assert_eq!(
-        ctx.output.flush_buffer(),
+        ctx.output.take_buffer(),
         format!(
             "message {id}: command failed: /usr/bin/false exited with code 1\n\
              {id}: moved to failed\n",
@@ -141,8 +140,7 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
     let dir = tempfile::tempdir().expect("temporary directory");
     let settings = settings_with_queue_base(dir.path());
     let queue = open_primary(&settings).await;
-    let envelope =
-        CommandEnvelope::from_fields("no::Such", "nowhere", "{}", false, 3).expect("envelope");
+    let envelope = CommandEnvelope::new("no::Such", "nowhere", "{}", false, 3).expect("envelope");
     queue.publish(&envelope).await.expect("publish");
     let mut ctx = context(settings);
 
@@ -156,7 +154,7 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
         expected_lengths(0, 0, 1)
     );
     assert_eq!(
-        ctx.output.flush_buffer(),
+        ctx.output.take_buffer(),
         format!(
             "could not build the command for message {id}: \
              command not found in registry: no::Such\n{id}: moved to failed\n",
@@ -214,14 +212,14 @@ async fn a_message_published_with_json_runs_with_that_payload() {
         ..publish_echo_command(None)
     };
     publish.run(&mut ctx).expect("publish");
-    ctx.output.flush_buffer();
+    ctx.output.take_buffer();
 
     // Act
     let result = consume_one().run(&mut ctx);
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
-    assert!(ctx.output.flush_buffer().starts_with("from json\n"));
+    assert!(ctx.output.take_buffer().starts_with("from json\n"));
     assert_eq!(
         queue.lengths().await.expect("lengths"),
         expected_lengths(0, 0, 0)
@@ -254,7 +252,7 @@ async fn the_recover_command_returns_in_progress_messages_to_pending() {
         expected_lengths(1, 0, 0)
     );
     assert_eq!(
-        ctx.output.flush_buffer(),
+        ctx.output.take_buffer(),
         "in-progress messages returned to pending in the Primary queue: 1\n"
     );
 }

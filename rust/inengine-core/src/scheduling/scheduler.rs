@@ -5,36 +5,36 @@ use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info};
 
 use crate::config::Settings;
-use crate::scheduling::schedule::ScheduleBuilder;
+use crate::scheduling::schedule::Schedule;
 use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
 
 pub struct Scheduler {
-    pub schedule: ScheduleBuilder,
+    pub schedule: Schedule,
 }
 
 impl Scheduler {
     pub fn new(settings: Arc<Settings>) -> Self {
         Self {
-            schedule: ScheduleBuilder::new(settings),
+            schedule: Schedule::new(settings),
         }
     }
 
-    pub async fn start(&self, cancel: CancellationToken) {
+    pub async fn run(&self, cancel: CancellationToken) {
         let mut handles = Vec::new();
 
-        for reg in &self.schedule.registrations {
-            let command = reg.command.clone();
-            let command_name = reg.command_name.clone();
-            let cron_schedule = reg.cron_schedule.clone();
+        for job in &self.schedule.jobs {
+            let command = job.command.clone();
+            let command_name = job.command_name.clone();
+            let cron_schedule = job.cron_schedule.clone();
             let settings = self.schedule.settings.clone();
             let token = cancel.clone();
             let lifecycle = CommandLifecycle {
-                ping_before_url: reg.lifecycle.ping_before_url.clone(),
-                ping_after_url: reg.lifecycle.ping_after_url.clone(),
-                write_output_to: reg.lifecycle.write_output_to.clone(),
-                append_output_to: reg.lifecycle.append_output_to.clone(),
-                email_output_to: reg.lifecycle.email_output_to.clone(),
-                timeout_seconds: reg.lifecycle.timeout_seconds,
+                ping_before_url: job.lifecycle.ping_before_url.clone(),
+                ping_after_url: job.lifecycle.ping_after_url.clone(),
+                write_output_to: job.lifecycle.write_output_to.clone(),
+                append_output_to: job.lifecycle.append_output_to.clone(),
+                email_output_to: job.lifecycle.email_output_to.clone(),
+                timeout: job.lifecycle.timeout,
                 ..Default::default()
             };
 
@@ -122,9 +122,7 @@ mod tests {
         }
 
         fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
-            Err(CommandError::Failed {
-                message: "intentional".to_string(),
-            })
+            Err(CommandError::failed("intentional"))
         }
     }
 
@@ -134,20 +132,20 @@ mod tests {
         let ctx = make_ctx();
         let count = Arc::new(AtomicUsize::new(0));
         let mut scheduler = Scheduler::new(ctx.settings.clone());
-        let reg = scheduler
+        let job = scheduler
             .schedule
             .command(CountingCommand {
                 count: count.clone(),
             })
             .every_second()
             .unwrap();
-        scheduler.schedule.add(reg);
+        scheduler.schedule.add(job);
         let cancel = CancellationToken::new();
         let cancel_clone = cancel.clone();
 
         // Act
         let handle = tokio::spawn(async move {
-            scheduler.start(cancel_clone).await;
+            scheduler.run(cancel_clone).await;
         });
         tokio::time::sleep(std::time::Duration::from_secs(2)).await;
         cancel.cancel();
@@ -185,7 +183,7 @@ mod tests {
 
         // Act
         let handle = tokio::spawn(async move {
-            scheduler.start(cancel_clone).await;
+            scheduler.run(cancel_clone).await;
         });
         tokio::time::sleep(std::time::Duration::from_secs(2)).await;
         cancel.cancel();

@@ -6,7 +6,7 @@ use tracing::{debug, error, info, info_span, warn, Instrument};
 
 use crate::config::{QueueSettings, Settings};
 use crate::queue::{
-    process_delivery, settle, Attempt, AttemptReport, CommandRegistry, Delivery, Queue, QueueLane,
+    process_delivery, settle, Attempt, AttemptKind, CommandRegistry, Delivery, Queue, QueueLane,
     SettleError, SettleOutcome,
 };
 use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
@@ -48,7 +48,7 @@ impl QueueConsumers {
     }
 
     /// Runs the consumers until `cancel` fires and every running command has finished.
-    pub async fn start(&self, cancel: CancellationToken) {
+    pub async fn run(&self, cancel: CancellationToken) {
         let mut handles = Vec::new();
         for lane in QueueLane::ALL {
             let count = consumer_count(&self.settings.queue, lane);
@@ -89,7 +89,7 @@ async fn recover_or_report_in_progress(
     timing: ConsumerTiming,
     cancel: &CancellationToken,
 ) {
-    let Some(queue) = open_until_cancelled(lane, settings, timing, cancel).await else {
+    let Some(queue) = open_with_retry(lane, settings, timing, cancel).await else {
         return;
     };
     if settings.recover_on_start {
@@ -117,7 +117,7 @@ async fn recover_or_report_in_progress(
     }
 }
 
-async fn open_until_cancelled(
+async fn open_with_retry(
     lane: QueueLane,
     settings: &QueueSettings,
     timing: ConsumerTiming,
@@ -159,7 +159,7 @@ struct Consumer {
 impl Consumer {
     async fn run(self) {
         let Some(queue) =
-            open_until_cancelled(self.lane, &self.settings.queue, self.timing, &self.cancel).await
+            open_with_retry(self.lane, &self.settings.queue, self.timing, &self.cancel).await
         else {
             return;
         };
@@ -188,23 +188,23 @@ impl Consumer {
         .await;
         let id = &processed.message_id;
         match &processed.attempt {
-            AttemptReport::Succeeded => {}
-            AttemptReport::CommandFailed(error) => error!("message {id} failed: {error}"),
-            AttemptReport::Unrunnable(error) => {
+            Attempt::Succeeded => {}
+            Attempt::CommandFailed(error) => error!("message {id} failed: {error}"),
+            Attempt::Unrunnable(error) => {
                 error!("could not build the command for message {id}: {error}")
             }
         }
-        self.finish_settle(queue, id, processed.attempt.attempt(), processed.settled)
+        self.settle_until_done(queue, id, processed.attempt.kind(), processed.settled)
             .await;
     }
 
     /// Logs the settle result. After an `Interrupted` error, settles again until the settle
     /// succeeds or the server stops.
-    async fn finish_settle(
+    async fn settle_until_done(
         &self,
         queue: &Queue,
         id: &str,
-        attempt: Attempt,
+        attempt: AttemptKind,
         mut settled: Result<SettleOutcome, SettleError>,
     ) {
         loop {
@@ -271,8 +271,8 @@ mod tests {
             text: "orphan".into(),
         })
         .expect("json");
-        let envelope = CommandEnvelope::from_fields(class, "inengine-core", &json, false, 0)
-            .expect("envelope");
+        let envelope =
+            CommandEnvelope::new(class, "inengine-core", &json, false, 0).expect("envelope");
         queue.publish(&envelope).await.expect("publish");
         let delivery = queue
             .dequeue(Duration::ZERO)
@@ -295,7 +295,7 @@ mod tests {
             stopper.cancel();
             Instant::now()
         });
-        consumers.start(cancel).await;
+        consumers.run(cancel).await;
         let stopped_at = Instant::now();
         stopped_at.duration_since(cancelled_at.await.expect("stopper"))
     }

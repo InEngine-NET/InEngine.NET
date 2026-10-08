@@ -17,15 +17,15 @@ use inengine_core::output::Output;
 use inengine_core::queue::registry::CommandRegistry;
 use inengine_core::queue::QueueLane;
 use inengine_core::queue_commands::management::{
-    Flush, Length, Peek, Recover, RepublishFailed, Status,
+    Clear, Length, Peek, Recover, RepublishFailed, Status,
 };
 use inengine_core::queue_commands::messaging::{Consume, Publish};
-use inengine_core::server::host::ServerHost;
+use inengine_core::server::host::Server;
 
 use inengine_core::plugin::loader::PluginLoader;
 use inengine_core::plugin::wasm_command::WasmCommand;
 
-use cli::{Cli, QueueSubcommand, ScheduleSubcommand, Subcommand};
+use cli::{Cli, CliCommand, QueueSubcommand, ScheduleSubcommand};
 
 #[tokio::main]
 async fn main() -> ExitCode {
@@ -105,8 +105,8 @@ async fn main() -> ExitCode {
             });
         }
 
-        let host = ServerHost::new(settings, registry);
-        host.start(cancel).await;
+        let server = Server::new(settings, registry);
+        server.run(cancel).await;
         return ExitCode::SUCCESS;
     }
 
@@ -125,11 +125,11 @@ async fn main() -> ExitCode {
     };
 
     let result = match subcommand {
-        Subcommand::Echo(args) => {
+        CliCommand::Echo(args) => {
             let cmd = Echo { text: args.text };
             cmd.run(&mut ctx)
         }
-        Subcommand::Exec(args) => {
+        CliCommand::Exec(args) => {
             let cmd = Exec {
                 executable: args.executable,
                 arguments: args.arguments,
@@ -137,7 +137,7 @@ async fn main() -> ExitCode {
             };
             cmd.run(&mut ctx)
         }
-        Subcommand::Queue(queue_cmd) => match queue_cmd {
+        CliCommand::Queue(queue_cmd) => match queue_cmd {
             QueueSubcommand::Publish(args) => {
                 let cmd = Publish {
                     plugin_name: args.plugin,
@@ -152,15 +152,14 @@ async fn main() -> ExitCode {
             }
             QueueSubcommand::Consume(args) => {
                 let cmd = Consume {
-                    consume_all: args.all,
-                    count: args.count,
+                    limit: (!args.all).then_some(args.count),
                     lane: lane_from_secondary_flag(args.secondary),
                     registry: Arc::new(CommandRegistry::new()),
                 };
                 cmd.run(&mut ctx)
             }
             QueueSubcommand::Flush(args) => {
-                let cmd = Flush {
+                let cmd = Clear {
                     pending: args.pending,
                     failed: args.failed,
                     in_progress: args.in_progress,
@@ -201,36 +200,36 @@ async fn main() -> ExitCode {
                 cmd.run(&mut ctx)
             }
         },
-        Subcommand::Schedule(schedule_cmd) => match schedule_cmd {
+        CliCommand::Schedule(schedule_cmd) => match schedule_cmd {
             ScheduleSubcommand::List => {
                 use chrono::Utc;
                 use inengine_core::scheduling::scheduler::Scheduler;
 
                 let scheduler = Scheduler::new(ctx.settings.clone());
-                if scheduler.schedule.registrations.is_empty() {
+                if scheduler.schedule.jobs.is_empty() {
                     ctx.output.line("No scheduled commands.");
                 } else {
                     ctx.output
-                        .info_text(&format!("{:<20}", "Command"))
-                        .info_text(&format!("{:<25}", "Cron Expression"))
-                        .info("Next Fire Time");
-                    for reg in &scheduler.schedule.registrations {
-                        let next = reg
+                        .info(&format!("{:<20}", "Command"))
+                        .info(&format!("{:<25}", "Cron Expression"))
+                        .info_line("Next Fire Time");
+                    for job in &scheduler.schedule.jobs {
+                        let next = job
                             .cron_schedule
                             .upcoming(Utc)
                             .next()
                             .map(|t| t.to_string())
                             .unwrap_or_else(|| "none".to_string());
                         ctx.output
-                            .text(&format!("{:<20}", reg.command_name))
-                            .text(&format!("{:<25}", reg.cron_expression))
+                            .text(&format!("{:<20}", job.command_name))
+                            .text(&format!("{:<25}", job.cron_expression))
                             .line(&next);
                     }
                 }
                 Ok(())
             }
         },
-        Subcommand::Plugin(args) => {
+        CliCommand::Plugin(args) => {
             let plugin_loader = match PluginLoader::new() {
                 Ok(mut loader) => {
                     if let Err(e) = loader.load_from_directories(&ctx.settings.plugins) {
@@ -240,7 +239,7 @@ async fn main() -> ExitCode {
                 }
                 Err(e) => {
                     eprintln!("Error initializing plugin loader: {e}");
-                    ctx.output.print_to_stdout();
+                    ctx.output.print();
                     return ExitCode::FAILURE;
                 }
             };
@@ -269,14 +268,15 @@ async fn main() -> ExitCode {
                     };
                     cmd.run(&mut ctx)
                 }
-                None => Err(CommandError::Failed {
-                    message: format!("plugin '{}' not found", args.name),
-                }),
+                None => Err(CommandError::failed(format!(
+                    "plugin '{}' not found",
+                    args.name
+                ))),
             }
         }
     };
 
-    ctx.output.print_to_stdout();
+    ctx.output.print();
 
     match result {
         Ok(()) => ExitCode::SUCCESS,

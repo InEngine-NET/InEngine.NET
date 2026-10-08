@@ -23,22 +23,20 @@ impl Command for WasmCommand {
 
         let instance =
             Plugin::instantiate(&mut store, &self.component, &linker).map_err(|e| {
-                CommandError::Failed {
-                    message: format!(
-                        "failed to instantiate plugin '{}' for command '{}': {e}",
-                        self.plugin_name, self.command_name
-                    ),
-                }
+                CommandError::failed(format!(
+                    "failed to instantiate plugin '{}' for command '{}': {e}",
+                    self.plugin_name, self.command_name
+                ))
             })?;
 
         let commands_iface = instance.inengine_plugin_commands();
         let result = commands_iface
             .call_run_command(&mut store, &self.command_name, &self.args_json)
-            .map_err(|e| CommandError::Failed {
-                message: format!(
+            .map_err(|e| {
+                CommandError::failed(format!(
                     "runtime error calling '{}' in plugin '{}': {e}",
                     self.command_name, self.plugin_name
-                ),
+                ))
             })?;
 
         match result {
@@ -48,12 +46,10 @@ impl Command for WasmCommand {
                 }
                 Ok(())
             }
-            Err(err_msg) => Err(CommandError::Failed {
-                message: format!(
-                    "command '{}' in plugin '{}' failed: {err_msg}",
-                    self.command_name, self.plugin_name
-                ),
-            }),
+            Err(err_msg) => Err(CommandError::failed(format!(
+                "command '{}' in plugin '{}' failed: {err_msg}",
+                self.command_name, self.plugin_name
+            ))),
         }
     }
 }

@@ -1,17 +1,32 @@
+type BoxedError = Box<dyn std::error::Error + Send + Sync>;
+
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
     #[error("command failed: {message}")]
-    Failed { message: String },
-
-    #[error("command failed: {message}")]
-    FailedWithSource {
+    Failed {
         message: String,
         #[source]
-        source: Box<dyn std::error::Error + Send + Sync>,
+        source: Option<BoxedError>,
     },
 
     #[error("command timed out after {seconds} seconds")]
     Timeout { seconds: u64 },
+}
+
+impl CommandError {
+    pub fn failed(message: impl Into<String>) -> Self {
+        Self::Failed {
+            message: message.into(),
+            source: None,
+        }
+    }
+
+    pub fn failed_with(message: impl Into<String>, source: impl Into<BoxedError>) -> Self {
+        Self::Failed {
+            message: message.into(),
+            source: Some(source.into()),
+        }
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -40,21 +55,18 @@ pub enum QueueError {
     #[error("redis error: {0}")]
     Redis(#[from] redis::RedisError),
 
-    #[error("command not found in registry: {type_name}")]
-    CommandNotFound { type_name: String },
-
-    #[error("queue error: {message}")]
-    Other { message: String },
+    #[error("command not found in registry: {name}")]
+    UnknownCommand { name: String },
 }
 
 #[derive(Debug, thiserror::Error)]
 pub enum PluginError {
     #[error("failed to load plugin '{name}': {reason}")]
-    LoadFailed { name: String, reason: String },
+    Load { name: String, reason: String },
 
     #[error("command not found in plugin '{plugin}': {command}")]
     CommandNotFound { plugin: String, command: String },
 
     #[error("plugin runtime error in '{plugin}': {message}")]
-    RuntimeError { plugin: String, message: String },
+    Runtime { plugin: String, message: String },
 }

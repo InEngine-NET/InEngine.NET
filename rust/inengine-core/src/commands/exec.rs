@@ -27,8 +27,11 @@ impl Command for Exec {
             .settings
             .exec_whitelist
             .get(&self.executable)
-            .ok_or_else(|| CommandError::Failed {
-                message: format!("executable is not whitelisted: {}", self.executable),
+            .ok_or_else(|| {
+                CommandError::failed(format!(
+                    "executable is not whitelisted: {}",
+                    self.executable
+                ))
             })?
             .clone();
 
@@ -41,9 +44,7 @@ impl Command for Exec {
         if output.status.success() {
             Ok(())
         } else {
-            Err(CommandError::Failed {
-                message: describe_failure(&path, output.status),
-            })
+            Err(CommandError::failed(describe_failure(&path, output.status)))
         }
     }
 }
@@ -68,13 +69,10 @@ impl Exec {
             .kill_on_drop(true)
             .spawn()
             .map_err(|error| match error.kind() {
-                io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied => CommandError::Failed {
-                    message: format!("cannot run {path}: it does not exist or is inaccessible"),
-                },
-                _ => CommandError::FailedWithSource {
-                    message: format!("failed to spawn {path}"),
-                    source: Box::new(error),
-                },
+                io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied => CommandError::failed(
+                    format!("cannot run {path}: it does not exist or is inaccessible"),
+                ),
+                _ => CommandError::failed_with(format!("failed to spawn {path}"), error),
             })?;
         let waited = if self.timeout == 0 {
             child.wait_with_output().await
@@ -85,10 +83,8 @@ impl Exec {
                     seconds: self.timeout,
                 })?
         };
-        waited.map_err(|error| CommandError::FailedWithSource {
-            message: format!("error waiting for {path}"),
-            source: Box::new(error),
-        })
+        waited
+            .map_err(|error| CommandError::failed_with(format!("error waiting for {path}"), error))
     }
 }
 
@@ -221,7 +217,7 @@ mod tests {
             err.to_string(),
             "command failed: /bin/sh exited with code 3"
         );
-        assert_eq!(ctx.output.flush_buffer(), "partial\n");
+        assert_eq!(ctx.output.take_buffer(), "partial\n");
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -234,7 +230,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok(), "{result:?}");
-        assert_eq!(ctx.output.flush_buffer(), "to-stdout\nto-stderr\n");
+        assert_eq!(ctx.output.take_buffer(), "to-stdout\nto-stderr\n");
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -247,7 +243,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok(), "{result:?}");
-        assert_eq!(ctx.output.flush_buffer(), "a b|c|");
+        assert_eq!(ctx.output.take_buffer(), "a b|c|");
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -260,6 +256,6 @@ mod tests {
 
         // Assert
         assert!(result.is_ok(), "{result:?}");
-        assert_eq!(ctx.output.flush_buffer(), "done\n");
+        assert_eq!(ctx.output.take_buffer(), "done\n");
     }
 }

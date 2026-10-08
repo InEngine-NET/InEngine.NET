@@ -20,22 +20,22 @@ impl CommandRegistry {
         registry
     }
 
-    pub fn register<F>(&mut self, type_name: &str, constructor: F)
+    pub fn register<F>(&mut self, command_name: &str, constructor: F)
     where
         F: Fn(&str) -> Result<Box<dyn Command>, QueueError> + Send + Sync + 'static,
     {
         self.constructors
-            .insert(type_name.to_string(), Box::new(constructor));
+            .insert(command_name.to_string(), Box::new(constructor));
     }
 
-    pub fn deserialize_command(
+    pub fn build(
         &self,
-        type_name: &str,
+        command_name: &str,
         json: &str,
     ) -> Result<Box<dyn Command>, QueueError> {
-        let constructor = self.constructors.get(type_name).ok_or_else(|| {
-            QueueError::CommandNotFound {
-                type_name: type_name.to_string(),
+        let constructor = self.constructors.get(command_name).ok_or_else(|| {
+            QueueError::UnknownCommand {
+                name: command_name.to_string(),
             }
         })?;
         constructor(json)
@@ -64,14 +64,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserialize_echo_command() {
+    fn build_echo_command() {
         // Arrange
         let registry = CommandRegistry::new();
         let json = r#"{"text":"hello"}"#;
 
         // Act
         let cmd = registry
-            .deserialize_command("inengine_core::commands::echo::Echo", json)
+            .build("inengine_core::commands::echo::Echo", json)
             .unwrap();
 
         // Assert
@@ -79,16 +79,16 @@ mod tests {
     }
 
     #[test]
-    fn unregistered_type_returns_command_not_found() {
+    fn unregistered_name_returns_unknown_command() {
         // Arrange
         let registry = CommandRegistry::new();
 
         // Act
         let result =
-            registry.deserialize_command("nonexistent::Command", r#"{}"#);
+            registry.build("nonexistent::Command", r#"{}"#);
 
         // Assert
         let err = result.err().expect("expected an error");
-        assert!(matches!(err, QueueError::CommandNotFound { .. }));
+        assert!(matches!(err, QueueError::UnknownCommand { .. }));
     }
 }

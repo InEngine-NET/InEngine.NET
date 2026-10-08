@@ -92,22 +92,27 @@ impl Validate for FileSpec {
     fn validate(&self, _report: &mut Report) {}
 }
 
-fn check_path_entry(report: &mut Report, what: &str, path: &Located<String>, consequence: &str) {
+fn check_path_entry(
+    report: &mut Report,
+    label: &str,
+    path: &Located<String>,
+    effect_if_missing: &str,
+) {
     if path.value.trim().is_empty() {
         report
-            .error(format!("{what} has an empty path"))
+            .error(format!("{label} has an empty path"))
             .at(path.span)
             .help("Set the path, or remove the entry.")
             .emit();
     } else if !Path::new(&path.value).exists() {
         report
             .warning(format!(
-                "{what} points to \"{}\", which does not exist",
+                "{label} points to \"{}\", which does not exist",
                 path.value
             ))
             .at(path.span)
             .help(format!(
-                "A relative path resolves against the working directory. {consequence}"
+                "A relative path resolves against the working directory. {effect_if_missing}"
             ))
             .emit();
     }

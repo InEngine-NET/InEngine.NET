@@ -1,7 +1,6 @@
 pub mod management;
 pub mod messaging;
 
-use std::error::Error;
 use std::future::Future;
 
 use crate::config::QueueSettings;
@@ -15,16 +14,6 @@ fn block_on<F: Future>(future: F) -> F::Output {
 
 async fn open_queue(lane: QueueLane, settings: &QueueSettings) -> Result<Queue, CommandError> {
     Queue::open(lane, settings).await.map_err(|error| {
-        command_failed(
-            &format!("could not open the {} queue", lane.as_str()),
-            error,
-        )
+        CommandError::failed_with(format!("could not open the {} queue", lane.as_str()), error)
     })
-}
-
-fn command_failed(context: &str, error: impl Error + Send + Sync + 'static) -> CommandError {
-    CommandError::FailedWithSource {
-        message: context.to_string(),
-        source: Box::new(error),
-    }
 }

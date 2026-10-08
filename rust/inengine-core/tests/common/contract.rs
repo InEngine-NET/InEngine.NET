@@ -38,21 +38,19 @@ pub async fn retry_returns_the_message_to_the_back_of_pending_with_the_attempt_c
     let next = claim(queue).await;
     let retried = claim(queue).await;
     assert_eq!(next.envelope.id, second);
-    assert_eq!(next.envelope.current_try, 1);
+    assert_eq!(next.envelope.attempts, 1);
     assert_eq!(retried.envelope.id, first);
-    assert_eq!(retried.envelope.current_try, 2);
+    assert_eq!(retried.envelope.attempts, 2);
 }
 
-pub async fn fail_moves_the_message_to_failed_with_the_attempt_counted(
-    fixture: &impl QueueFixture,
-) {
+pub async fn move_to_failed_keeps_the_attempt_count(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     let id = publish_echo(queue, "one", 0).await;
     let delivery = claim(queue).await;
 
     // Act
-    let result = queue.fail(delivery).await;
+    let result = queue.move_to_failed(delivery).await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
@@ -68,7 +66,7 @@ pub async fn fail_moves_the_message_to_failed_with_the_attempt_counted(
     {
         [PeekedMessage::Envelope(envelope)] => {
             assert_eq!(envelope.id, id);
-            assert_eq!(envelope.current_try, 1);
+            assert_eq!(envelope.attempts, 1);
         }
         other => panic!("expected one envelope, got {other:?}"),
     }
@@ -110,7 +108,9 @@ pub async fn retry_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl 
     );
 }
 
-pub async fn fail_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl QueueFixture) {
+pub async fn move_to_failed_after_a_clear_reports_lost_and_writes_nothing(
+    fixture: &impl QueueFixture,
+) {
     // Arrange
     let queue = fixture.queue();
     publish_echo(queue, "one", 0).await;
@@ -118,7 +118,7 @@ pub async fn fail_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl Q
     queue.clear(Stage::InProgress).await.expect("clear");
 
     // Act
-    let result = queue.fail(delivery).await;
+    let result = queue.move_to_failed(delivery).await;
 
     // Assert
     assert!(matches!(result, Err(SettleError::Lost)), "{result:?}");
@@ -278,7 +278,7 @@ pub async fn republish_moves_the_first_failed_messages_to_pending(fixture: &impl
     let second = publish_echo(queue, "second", 0).await;
     for _ in 0..2 {
         let delivery = claim(queue).await;
-        queue.fail(delivery).await.expect("fail");
+        queue.move_to_failed(delivery).await.expect("fail");
     }
 
     // Act
@@ -301,7 +301,7 @@ pub async fn clear_removes_every_message_in_the_stage_and_reports_the_count(
         publish_echo(queue, text, 0).await;
     }
     let delivery = claim(queue).await;
-    queue.fail(delivery).await.expect("fail");
+    queue.move_to_failed(delivery).await.expect("fail");
 
     // Act
     let removed = queue.clear(Stage::Pending).await.expect("clear");

@@ -11,7 +11,7 @@ use tracing::warn;
 use crate::error::QueueError;
 use crate::queue::delivery::{Delivery, Receipt};
 use crate::queue::envelope::CommandEnvelope;
-use crate::queue::handle::{PeekedMessage, QueueLane, QueueLengths, Stage};
+use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const STALE_TEMP_AGE: Duration = Duration::from_secs(60 * 60);
 const POLL_INTERVAL: Duration = Duration::from_secs(1);
@@ -130,7 +130,7 @@ impl FileDriver {
                 moved += 1;
             }
         }
-        for name in dir::list_settling(&self.in_progress)? {
+        for name in dir::unfinished_settles(&self.in_progress)? {
             let claimed = self.in_progress.join(dir::settling_name(&name));
             if dir::rename_if_present(&claimed, &self.pending.join(&name))? {
                 moved += 1;
@@ -141,9 +141,9 @@ impl FileDriver {
 
     pub(crate) fn lengths(&self) -> Result<QueueLengths, QueueError> {
         Ok(QueueLengths {
-            pending: self.stage_entries(Stage::Pending)?.len(),
-            in_progress: self.stage_entries(Stage::InProgress)?.len(),
-            failed: self.stage_entries(Stage::Failed)?.len(),
+            pending: self.stage_paths(Stage::Pending)?.len(),
+            in_progress: self.stage_paths(Stage::InProgress)?.len(),
+            failed: self.stage_paths(Stage::Failed)?.len(),
         })
     }
 
@@ -170,12 +170,7 @@ impl FileDriver {
     ) -> Result<Vec<PeekedMessage>, QueueError> {
         let mut messages = Vec::new();
         let count = last.saturating_sub(first).saturating_add(1);
-        for path in self
-            .stage_entries(stage)?
-            .into_iter()
-            .skip(first)
-            .take(count)
-        {
+        for path in self.stage_paths(stage)?.into_iter().skip(first).take(count) {
             match fs::read(path) {
                 Ok(raw) => messages.push(PeekedMessage::parse(&raw)),
                 Err(error) if error.kind() == io::ErrorKind::NotFound => {}
@@ -211,7 +206,7 @@ impl FileDriver {
             };
             match parsed {
                 Ok(mut envelope) => {
-                    envelope.current_try += 1;
+                    envelope.attempts += 1;
                     return Ok(Some(Delivery::new(
                         envelope,
                         self.lane,
@@ -239,7 +234,7 @@ impl FileDriver {
         }
     }
 
-    fn stage_entries(&self, stage: Stage) -> Result<Vec<PathBuf>, QueueError> {
+    fn stage_paths(&self, stage: Stage) -> Result<Vec<PathBuf>, QueueError> {
         let dir = self.stage_dir(stage);
         let mut entries: Vec<(OsString, PathBuf)> = dir::list_messages(dir)?
             .into_iter()
@@ -247,7 +242,7 @@ impl FileDriver {
             .collect();
         if stage == Stage::InProgress {
             entries.extend(
-                dir::list_settling(dir)?
+                dir::unfinished_settles(dir)?
                     .into_iter()
                     .map(|name| (name.clone(), dir.join(dir::settling_name(&name)))),
             );

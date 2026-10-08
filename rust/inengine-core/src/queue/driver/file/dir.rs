@@ -31,11 +31,11 @@ pub(super) fn list_messages(dir: &Path) -> io::Result<Vec<OsString>> {
     Ok(names)
 }
 
-pub(super) fn list_settling(dir: &Path) -> io::Result<Vec<OsString>> {
+pub(super) fn unfinished_settles(dir: &Path) -> io::Result<Vec<OsString>> {
     let mut names = Vec::new();
     for entry in fs::read_dir(dir)? {
         let name = entry?.file_name();
-        if let Some(original) = original_from_hidden_name(&name, SETTLING_SUFFIX) {
+        if let Some(original) = strip_hidden_suffix(&name, SETTLING_SUFFIX) {
             names.push(original);
         }
     }
@@ -68,7 +68,7 @@ pub(super) fn remove_stale_temp_files(dir: &Path, age: Duration) -> io::Result<(
         .unwrap_or(SystemTime::UNIX_EPOCH);
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
-        if original_from_hidden_name(&entry.file_name(), TEMP_SUFFIX).is_none() {
+        if strip_hidden_suffix(&entry.file_name(), TEMP_SUFFIX).is_none() {
             continue;
         }
         let modified = match entry.metadata().and_then(|metadata| metadata.modified()) {
@@ -85,7 +85,7 @@ pub(super) fn remove_stale_temp_files(dir: &Path, age: Duration) -> io::Result<(
 
 pub(super) fn remove_settling_files(dir: &Path) -> io::Result<usize> {
     let mut removed = 0;
-    for name in list_settling(dir)? {
+    for name in unfinished_settles(dir)? {
         if remove_if_present(&dir.join(settling_name(&name)))? {
             removed += 1;
         }
@@ -120,7 +120,7 @@ fn hidden_name(name: &OsStr, suffix: &str) -> OsString {
     hidden
 }
 
-fn original_from_hidden_name(name: &OsStr, suffix: &str) -> Option<OsString> {
+fn strip_hidden_suffix(name: &OsStr, suffix: &str) -> Option<OsString> {
     let name = name.to_str()?;
     let original = name.strip_prefix('.')?.strip_suffix(suffix)?;
     (!original.is_empty()).then(|| OsString::from(original))
@@ -154,16 +154,13 @@ mod tests {
 
         // Assert
         assert_eq!(settling, OsString::from(".0193abc.settling"));
+        assert_eq!(strip_hidden_suffix(&settling, SETTLING_SUFFIX), Some(name));
         assert_eq!(
-            original_from_hidden_name(&settling, SETTLING_SUFFIX),
-            Some(name)
-        );
-        assert_eq!(
-            original_from_hidden_name(OsStr::new(".settling"), SETTLING_SUFFIX),
+            strip_hidden_suffix(OsStr::new(".settling"), SETTLING_SUFFIX),
             None
         );
         assert_eq!(
-            original_from_hidden_name(OsStr::new("plain"), SETTLING_SUFFIX),
+            strip_hidden_suffix(OsStr::new("plain"), SETTLING_SUFFIX),
             None
         );
     }

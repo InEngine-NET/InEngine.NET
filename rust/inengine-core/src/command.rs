@@ -28,7 +28,7 @@ mod tests {
         }
 
         fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-            ctx.output.info("test ran");
+            ctx.output.info_line("test ran");
             Ok(())
         }
     }
@@ -52,16 +52,14 @@ mod tests {
         // Assert
         assert!(result.is_ok());
         assert_eq!(cmd.name(), "test");
-        let buf = ctx.output.flush_buffer();
+        let buf = ctx.output.take_buffer();
         assert!(buf.contains("test ran"));
     }
 
     #[test]
     fn command_error_failed_carries_message() {
         // Arrange
-        let error = CommandError::Failed {
-            message: "something broke".to_string(),
-        };
+        let error = CommandError::failed("something broke");
 
         // Act
         let display = format!("{error}");

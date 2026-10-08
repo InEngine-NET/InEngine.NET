@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use crate::command::{Command, CommandContext, CommandResult};
 use crate::config::MailSettings;
@@ -7,14 +8,14 @@ use crate::output::Output;
 
 #[derive(Default)]
 pub struct CommandLifecycle {
-    pub before_action: Option<Box<dyn Fn() + Send + Sync>>,
-    pub after_action: Option<Box<dyn Fn() + Send + Sync>>,
+    pub before_run: Option<Box<dyn Fn() + Send + Sync>>,
+    pub after_run: Option<Box<dyn Fn() + Send + Sync>>,
     pub ping_before_url: Option<String>,
     pub ping_after_url: Option<String>,
     pub write_output_to: Option<String>,
     pub append_output_to: Option<String>,
     pub email_output_to: Option<String>,
-    pub timeout_seconds: u64,
+    pub timeout: Option<Duration>,
 }
 
 pub async fn run_with_lifecycle(
@@ -26,12 +27,11 @@ pub async fn run_with_lifecycle(
         ping(url).await?;
     }
 
-    if let Some(ref action) = lifecycle.before_action {
+    if let Some(ref action) = lifecycle.before_run {
         action();
     }
 
-    let result = if lifecycle.timeout_seconds > 0 {
-        let timeout_duration = std::time::Duration::from_secs(lifecycle.timeout_seconds);
+    let result = if let Some(timeout) = lifecycle.timeout {
         let settings_clone = settings.clone();
         let cmd_clone = cmd.clone();
 
@@ -41,20 +41,17 @@ pub async fn run_with_lifecycle(
                 settings: settings_clone,
             };
             let res = cmd_clone.run(&mut ctx);
-            (res, ctx.output.flush_buffer())
+            (res, ctx.output.take_buffer())
         });
 
-        match tokio::time::timeout(timeout_duration, task).await {
+        match tokio::time::timeout(timeout, task).await {
             Ok(Ok((res, output_text))) => (res, output_text),
             Ok(Err(e)) => {
-                return Err(CommandError::FailedWithSource {
-                    message: "command task panicked".to_string(),
-                    source: Box::new(e),
-                });
+                return Err(CommandError::failed_with("command task panicked", e));
             }
             Err(_elapsed) => {
                 return Err(CommandError::Timeout {
-                    seconds: lifecycle.timeout_seconds,
+                    seconds: timeout.as_secs(),
                 });
             }
         }
@@ -67,15 +64,12 @@ pub async fn run_with_lifecycle(
                 settings: settings_clone,
             };
             let res = cmd_clone.run(&mut ctx);
-            (res, ctx.output.flush_buffer())
+            (res, ctx.output.take_buffer())
         });
         match task.await {
             Ok(pair) => pair,
             Err(e) => {
-                return Err(CommandError::FailedWithSource {
-                    message: "command task panicked".to_string(),
-                    source: Box::new(e),
-                });
+                return Err(CommandError::failed_with("command task panicked", e));
             }
         }
     };
@@ -83,7 +77,7 @@ pub async fn run_with_lifecycle(
     let (cmd_result, output_text) = result;
     cmd_result?;
 
-    if let Some(ref action) = lifecycle.after_action {
+    if let Some(ref action) = lifecycle.after_run {
         action();
     }
 
@@ -92,9 +86,8 @@ pub async fn run_with_lifecycle(
     }
 
     if let Some(ref path) = lifecycle.write_output_to {
-        std::fs::write(path, &output_text).map_err(|e| CommandError::FailedWithSource {
-            message: format!("failed to write output to {path}"),
-            source: Box::new(e),
+        std::fs::write(path, &output_text).map_err(|e| {
+            CommandError::failed_with(format!("failed to write output to {path}"), e)
         })?;
     }
 
@@ -104,14 +97,12 @@ pub async fn run_with_lifecycle(
             .create(true)
             .append(true)
             .open(path)
-            .map_err(|e| CommandError::FailedWithSource {
-                message: format!("failed to open {path} for append"),
-                source: Box::new(e),
+            .map_err(|e| {
+                CommandError::failed_with(format!("failed to open {path} for append"), e)
             })?;
         file.write_all(output_text.as_bytes())
-            .map_err(|e| CommandError::FailedWithSource {
-                message: format!("failed to append output to {path}"),
-                source: Box::new(e),
+            .map_err(|e| {
+                CommandError::failed_with(format!("failed to append output to {path}"), e)
             })?;
     }
 
@@ -132,19 +123,13 @@ pub async fn ping(url: &str) -> Result<(), CommandError> {
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
         .build()
-        .map_err(|e| CommandError::FailedWithSource {
-            message: "failed to create HTTP client".to_string(),
-            source: Box::new(e),
-        })?;
+        .map_err(|e| CommandError::failed_with("failed to create HTTP client", e))?;
 
     client
         .get(url)
         .send()
         .await
-        .map_err(|e| CommandError::FailedWithSource {
-            message: format!("ping to {url} failed"),
-            source: Box::new(e),
-        })?;
+        .map_err(|e| CommandError::failed_with(format!("ping to {url} failed"), e))?;
 
     Ok(())
 }
@@ -164,24 +149,22 @@ pub async fn send_email(
             mail_settings
                 .from
                 .parse()
-                .map_err(|e: lettre::address::AddressError| CommandError::FailedWithSource {
-                    message: format!("invalid from address: {}", mail_settings.from),
-                    source: Box::new(e),
+                .map_err(|e: lettre::address::AddressError| {
+                    CommandError::failed_with(
+                        format!("invalid from address: {}", mail_settings.from),
+                        e,
+                    )
                 })?,
         )
         .to(to
             .parse()
-            .map_err(|e: lettre::address::AddressError| CommandError::FailedWithSource {
-                message: format!("invalid to address: {to}"),
-                source: Box::new(e),
+            .map_err(|e: lettre::address::AddressError| {
+                CommandError::failed_with(format!("invalid to address: {to}"), e)
             })?)
         .subject(subject)
         .header(ContentType::TEXT_PLAIN)
         .body(body.to_string())
-        .map_err(|e| CommandError::FailedWithSource {
-            message: "failed to build email message".to_string(),
-            source: Box::new(e),
-        })?;
+        .map_err(|e| CommandError::failed_with("failed to build email message", e))?;
 
     let mut transport_builder = AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&mail_settings.host)
         .port(mail_settings.port);
@@ -198,10 +181,7 @@ pub async fn send_email(
     transport
         .send(email)
         .await
-        .map_err(|e| CommandError::FailedWithSource {
-            message: "failed to send email".to_string(),
-            source: Box::new(e),
-        })?;
+        .map_err(|e| CommandError::failed_with("failed to send email", e))?;
 
     Ok(())
 }
@@ -230,9 +210,7 @@ mod tests {
             "fail"
         }
         fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
-            Err(CommandError::Failed {
-                message: "intentional".to_string(),
-            })
+            Err(CommandError::failed("intentional"))
         }
     }
 
@@ -282,7 +260,7 @@ mod tests {
         // Arrange
         let ctx = make_ctx();
         let lifecycle = CommandLifecycle {
-            timeout_seconds: 1,
+            timeout: Some(Duration::from_secs(1)),
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(SlowCommand);
@@ -343,7 +321,7 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn before_action_called_before_command() {
+    async fn before_run_called_before_command() {
         // Arrange
         let ctx = make_ctx();
         let counter = Arc::new(AtomicUsize::new(0));
@@ -352,7 +330,7 @@ mod tests {
         let before_counter = counter.clone();
         let before_order = order.clone();
         let lifecycle = CommandLifecycle {
-            before_action: Some(Box::new(move || {
+            before_run: Some(Box::new(move || {
                 let n = before_counter.fetch_add(1, Ordering::SeqCst);
                 before_order.lock().unwrap().push(("before".to_string(), n));
             })),
@@ -377,7 +355,7 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn after_action_called_after_command() {
+    async fn after_run_called_after_command() {
         // Arrange
         let ctx = make_ctx();
         let counter = Arc::new(AtomicUsize::new(0));
@@ -386,7 +364,7 @@ mod tests {
         let after_counter = counter.clone();
         let after_order = order.clone();
         let lifecycle = CommandLifecycle {
-            after_action: Some(Box::new(move || {
+            after_run: Some(Box::new(move || {
                 let n = after_counter.fetch_add(1, Ordering::SeqCst);
                 after_order.lock().unwrap().push(("after".to_string(), n));
             })),
@@ -410,13 +388,13 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn after_action_skipped_on_failure() {
+    async fn after_run_skipped_on_failure() {
         // Arrange
         let ctx = make_ctx();
         let after_called = Arc::new(AtomicUsize::new(0));
         let after_ref = after_called.clone();
         let lifecycle = CommandLifecycle {
-            after_action: Some(Box::new(move || {
+            after_run: Some(Box::new(move || {
                 after_ref.fetch_add(1, Ordering::SeqCst);
             })),
             ..Default::default()

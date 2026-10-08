@@ -94,10 +94,10 @@ macro_rules! queue_contract_tests {
         queue_contract_tests!(@cases $open;
             acknowledge_empties_in_progress,
             retry_returns_the_message_to_the_back_of_pending_with_the_attempt_counted,
-            fail_moves_the_message_to_failed_with_the_attempt_counted,
+            move_to_failed_keeps_the_attempt_count,
             acknowledge_after_a_clear_reports_lost,
             retry_after_a_clear_reports_lost_and_writes_nothing,
-            fail_after_a_clear_reports_lost_and_writes_nothing,
+            move_to_failed_after_a_clear_reports_lost_and_writes_nothing,
             a_delivery_from_the_other_lane_is_rejected_and_changes_nothing,
             a_malformed_message_moves_to_failed_and_dequeue_returns_the_next_one,
             an_unreadable_message_moves_to_failed_and_dequeue_returns_the_next_one,

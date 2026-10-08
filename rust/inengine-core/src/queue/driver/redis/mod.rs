@@ -10,14 +10,14 @@ use crate::config::RedisSettings;
 use crate::error::QueueError;
 use crate::queue::delivery::{Delivery, Receipt};
 use crate::queue::envelope::CommandEnvelope;
-use crate::queue::handle::{PeekedMessage, QueueLane, QueueLengths, Stage};
+use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const CONNECTION_TIMEOUT: Duration = Duration::from_secs(5);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(30);
 /// Shorter than the response timeout, so that the reply arrives before the client stops
 /// waiting. A later reply leaves the claimed element in progress until a recovery.
 const MAX_BLOCKING_WAIT: Duration = RESPONSE_TIMEOUT.saturating_sub(Duration::from_secs(5));
-const BULK_MOVE_BATCH: usize = 1000;
+const BULK_MOVE_BATCH_SIZE: usize = 1000;
 
 /// Pending messages are pushed on the left and claimed from the right, so the right end
 /// holds the oldest message.
@@ -73,7 +73,7 @@ impl RedisDriver {
             };
             match serde_json::from_slice::<CommandEnvelope>(&element) {
                 Ok(mut envelope) => {
-                    envelope.current_try += 1;
+                    envelope.attempts += 1;
                     return Ok(Some(Delivery::new(
                         envelope,
                         self.lane,
@@ -214,7 +214,7 @@ impl RedisDriver {
     ) -> Result<usize, QueueError> {
         let mut moved = 0;
         while moved < limit {
-            let batch = (limit - moved).min(BULK_MOVE_BATCH);
+            let batch = (limit - moved).min(BULK_MOVE_BATCH_SIZE);
             let count: usize = scripts::BULK_MOVE
                 .key(source)
                 .key(destination)

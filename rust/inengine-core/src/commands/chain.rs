@@ -46,9 +46,7 @@ mod tests {
         }
 
         fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
-            Err(CommandError::Failed {
-                message: "intentional failure".to_string(),
-            })
+            Err(CommandError::failed("intentional failure"))
         }
     }
 
@@ -72,7 +70,7 @@ mod tests {
 
         // Assert
         assert!(result.is_ok());
-        let buf = ctx.output.flush_buffer();
+        let buf = ctx.output.take_buffer();
         assert!(buf.contains("first"));
         assert!(buf.contains("second"));
     }
@@ -98,7 +96,7 @@ mod tests {
 
         // Assert
         assert!(result.is_err());
-        let buf = ctx.output.flush_buffer();
+        let buf = ctx.output.take_buffer();
         assert!(buf.contains("first"));
         assert!(!buf.contains("third"));
     }
