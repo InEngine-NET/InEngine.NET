@@ -1,13 +1,14 @@
-pub mod client;
 pub mod compression;
-pub mod dequeue;
+mod delivery;
+mod driver;
 pub mod envelope;
-pub mod file_client;
-pub mod redis_client;
+mod handle;
+mod processing;
 pub mod registry;
 
-pub use client::{make_queue_client, QueueClient, QueueLengths};
 pub use compression::{compress, decompress};
-pub use dequeue::Dequeue;
+pub use delivery::{decide, settle, Attempt, Delivery, SettleAction, SettleError, SettleOutcome};
 pub use envelope::CommandEnvelope;
+pub use handle::{PeekedMessage, Queue, QueueLane, QueueLengths, Stage};
+pub use processing::{process_delivery, AttemptReport, ProcessedDelivery};
 pub use registry::CommandRegistry;

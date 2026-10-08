@@ -116,3 +116,12 @@ impl Settings {
         }
     }
 }
+
+#[cfg(test)]
+pub(crate) fn settings_with_queue_base(base: &Path) -> Settings {
+    let mut settings = from_spec(&SettingsSpec::default())
+        .settings
+        .expect("the default settings are valid");
+    settings.queue.file.base_path = base.to_str().expect("utf-8 path").to_string();
+    settings
+}

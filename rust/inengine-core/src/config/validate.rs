@@ -103,7 +103,10 @@ fn check_path_entry(report: &mut Report, what: &str, path: &Located<String>, con
             .emit();
     } else if !Path::new(&path.value).exists() {
         report
-            .warning(format!("{what} points to \"{}\", which does not exist", path.value))
+            .warning(format!(
+                "{what} points to \"{}\", which does not exist",
+                path.value
+            ))
             .at(path.span)
             .help(format!(
                 "A relative path resolves against the working directory. {consequence}"

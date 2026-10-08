@@ -9,13 +9,16 @@ use clap::{CommandFactory, Parser};
 use tracing_subscriber::EnvFilter;
 
 use inengine_core::command::{Command, CommandContext};
-use inengine_core::error::CommandError;
 use inengine_core::commands::echo::Echo;
 use inengine_core::commands::exec::Exec;
 use inengine_core::config;
+use inengine_core::error::CommandError;
 use inengine_core::output::Output;
 use inengine_core::queue::registry::CommandRegistry;
-use inengine_core::queue_commands::management::{Flush, Length, Peek, RepublishFailed, Status};
+use inengine_core::queue::QueueLane;
+use inengine_core::queue_commands::management::{
+    Flush, Length, Peek, Recover, RepublishFailed, Status,
+};
 use inengine_core::queue_commands::messaging::{Consume, Publish};
 use inengine_core::server::host::ServerHost;
 
@@ -30,6 +33,7 @@ async fn main() -> ExitCode {
         .with_env_filter(
             EnvFilter::try_from_env("INENGINE_LOG").unwrap_or_else(|_| EnvFilter::new("warn")),
         )
+        .with_ansi(std::io::stdout().is_terminal())
         .init();
 
     let cli = Cli::parse();
@@ -93,10 +97,9 @@ async fn main() -> ExitCode {
         {
             let cancel_term = cancel.clone();
             tokio::spawn(async move {
-                let mut sig = tokio::signal::unix::signal(
-                    tokio::signal::unix::SignalKind::terminate(),
-                )
-                .expect("failed to register SIGTERM handler");
+                let mut sig =
+                    tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                        .expect("failed to register SIGTERM handler");
                 sig.recv().await;
                 cancel_term.cancel();
             });
@@ -141,7 +144,9 @@ async fn main() -> ExitCode {
                     command_class: args.class,
                     command_verb: args.command,
                     args: args.args,
-                    use_secondary: args.secondary,
+                    json: args.json,
+                    max_retries: args.max_retries,
+                    lane: lane_from_secondary_flag(args.secondary),
                 };
                 cmd.run(&mut ctx)
             }
@@ -149,7 +154,8 @@ async fn main() -> ExitCode {
                 let cmd = Consume {
                     consume_all: args.all,
                     count: args.count,
-                    use_secondary: args.secondary,
+                    lane: lane_from_secondary_flag(args.secondary),
+                    registry: Arc::new(CommandRegistry::new()),
                 };
                 cmd.run(&mut ctx)
             }
@@ -158,25 +164,22 @@ async fn main() -> ExitCode {
                     pending: args.pending,
                     failed: args.failed,
                     in_progress: args.in_progress,
-                    use_secondary: args.secondary,
+                    lane: lane_from_secondary_flag(args.secondary),
                 };
                 cmd.run(&mut ctx)
             }
             QueueSubcommand::Length => {
-                let cmd = Length {
-                    use_secondary: false,
-                };
+                let cmd = Length;
                 cmd.run(&mut ctx)
             }
             QueueSubcommand::Peek(args) => {
                 let cmd = Peek {
-                    from: args.from,
-                    to: args.to,
+                    range: args.from..=args.to,
                     json_format: args.json,
                     pending: args.pending,
                     failed: args.failed,
                     in_progress: args.in_progress,
-                    use_secondary: args.secondary,
+                    lane: lane_from_secondary_flag(args.secondary),
                 };
                 cmd.run(&mut ctx)
             }
@@ -187,7 +190,13 @@ async fn main() -> ExitCode {
             QueueSubcommand::Republish(args) => {
                 let cmd = RepublishFailed {
                     limit: args.limit,
-                    use_secondary: args.secondary,
+                    lane: lane_from_secondary_flag(args.secondary),
+                };
+                cmd.run(&mut ctx)
+            }
+            QueueSubcommand::Recover(args) => {
+                let cmd = Recover {
+                    lane: lane_from_secondary_flag(args.secondary),
                 };
                 cmd.run(&mut ctx)
             }
@@ -239,15 +248,15 @@ async fn main() -> ExitCode {
             let mut fields = serde_json::Map::new();
             for arg in &args.args {
                 if let Some((key, value)) = arg.split_once('=') {
-                    fields.insert(key.to_string(), serde_json::Value::String(value.to_string()));
+                    fields.insert(
+                        key.to_string(),
+                        serde_json::Value::String(value.to_string()),
+                    );
                 }
             }
             let args_json = serde_json::to_string(&fields).unwrap_or_else(|_| "{}".to_string());
 
-            let plugin = plugin_loader
-                .plugins
-                .iter()
-                .find(|p| p.name == args.name);
+            let plugin = plugin_loader.plugins.iter().find(|p| p.name == args.name);
 
             match plugin {
                 Some(p) => {
@@ -273,7 +282,20 @@ async fn main() -> ExitCode {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             eprintln!("Error: {e}");
+            let mut source = std::error::Error::source(&e);
+            while let Some(cause) = source {
+                eprintln!("  caused by: {cause}");
+                source = cause.source();
+            }
             ExitCode::FAILURE
         }
+    }
+}
+
+fn lane_from_secondary_flag(secondary: bool) -> QueueLane {
+    if secondary {
+        QueueLane::Secondary
+    } else {
+        QueueLane::Primary
     }
 }

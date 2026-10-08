@@ -2,7 +2,9 @@ use std::collections::BTreeMap;
 
 use confval::prelude::*;
 
-use super::constraints::{QueueName, CONSUMERS, HOSTNAME_LEN, PATH_LEN, PORT, REDIS_DATABASE};
+use super::constraints::{
+    QueueName, CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PORT, REDIS_DATABASE,
+};
 use super::vocabulary::QueueDriver;
 
 #[derive(confval::Spec)]
@@ -61,7 +63,17 @@ pub struct QueueSpec {
     /// The base name of the queue. It becomes part of file names and Redis keys.
     #[confval(default = "InEngineQueue".to_string(), format = QueueName)]
     pub queue_name: Located<String>,
-    /// The Redis server. Used only when queue_driver is "redis".
+    /// The number of attempts after the first one for a failed message. A message runs at
+    /// most this many times plus one before it moves to the failed stage.
+    #[confval(default = 0, range = MAX_RETRIES)]
+    pub max_retries: Located<i64>,
+    /// Move in-progress messages back to pending when the server starts. Enable this only
+    /// when this server is the only consumer of the queue. Recovery cannot tell a message left
+    /// by a crash from one that another consumer is still processing, so that message would
+    /// run twice.
+    #[confval(default = false)]
+    pub recover_on_start: Located<bool>,
+    /// The Redis server, version 6.2 or later. Used only when queue_driver is "redis".
     #[confval(nested, default)]
     pub redis: Located<RedisSpec>,
     /// The file queue. Used only when queue_driver is "file".

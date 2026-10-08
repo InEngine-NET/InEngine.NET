@@ -38,6 +38,9 @@ pub struct QueueSettings {
     #[confval(lower(from = queue_driver, with = narrow::keyword::<QueueDriver>))]
     pub queue_driver: QueueDriver,
     pub queue_name: String,
+    #[confval(lower(from = max_retries, with = narrow::i64_to_u32))]
+    pub max_retries: u32,
+    pub recover_on_start: bool,
     #[confval(nested)]
     pub redis: RedisSettings,
     #[confval(nested)]

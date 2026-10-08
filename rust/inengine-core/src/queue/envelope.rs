@@ -24,6 +24,7 @@ impl CommandEnvelope {
         plugin_name: &str,
         json: &str,
         use_compression: bool,
+        max_retries: u32,
     ) -> Result<Self, QueueError> {
         let serialized = if use_compression {
             compress(json)?
@@ -31,43 +32,33 @@ impl CommandEnvelope {
             json.to_string()
         };
         Ok(Self {
-            id: uuid::Uuid::new_v4().to_string(),
+            id: uuid::Uuid::now_v7().to_string(),
             plugin_name: plugin_name.to_string(),
             command_class_name: command_class_name.to_string(),
             serialized_command: serialized,
             queued_at: Utc::now(),
             is_compressed: use_compression,
             current_try: 0,
-            max_retries: 0,
+            max_retries,
         })
     }
 
     pub fn from_command<T: Command + Serialize>(
         cmd: &T,
         use_compression: bool,
+        max_retries: u32,
     ) -> Result<Self, QueueError> {
         let json = serde_json::to_string(cmd)?;
-        let serialized = if use_compression {
-            compress(&json)?
-        } else {
-            json
-        };
-        Ok(Self {
-            id: uuid::Uuid::new_v4().to_string(),
-            plugin_name: "inengine-core".to_string(),
-            command_class_name: std::any::type_name::<T>().to_string(),
-            serialized_command: serialized,
-            queued_at: Utc::now(),
-            is_compressed: use_compression,
-            current_try: 0,
-            max_retries: 0,
-        })
+        Self::from_fields(
+            std::any::type_name::<T>(),
+            "inengine-core",
+            &json,
+            use_compression,
+            max_retries,
+        )
     }
 
-    pub fn to_command(
-        &self,
-        registry: &CommandRegistry,
-    ) -> Result<Box<dyn Command>, QueueError> {
+    pub fn to_command(&self, registry: &CommandRegistry) -> Result<Box<dyn Command>, QueueError> {
         let json = if self.is_compressed {
             decompress(&self.serialized_command)?
         } else {
@@ -97,7 +88,7 @@ mod tests {
         let registry = CommandRegistry::new();
 
         // Act
-        let envelope = CommandEnvelope::from_command(&echo, false).unwrap();
+        let envelope = CommandEnvelope::from_command(&echo, false, 0).unwrap();
         let cmd = envelope.to_command(&registry).unwrap();
         let mut ctx = make_ctx();
         let result = cmd.run(&mut ctx);
@@ -116,11 +107,14 @@ mod tests {
         let registry = CommandRegistry::new();
 
         // Act
-        let envelope = CommandEnvelope::from_command(&echo, true).unwrap();
+        let envelope = CommandEnvelope::from_command(&echo, true, 0).unwrap();
 
         // Assert
         assert!(envelope.is_compressed);
-        assert_ne!(envelope.serialized_command, r#"{"text":"compressed payload"}"#);
+        assert_ne!(
+            envelope.serialized_command,
+            r#"{"text":"compressed payload"}"#
+        );
 
         // Act
         let cmd = envelope.to_command(&registry).unwrap();
@@ -137,13 +131,13 @@ mod tests {
         // Arrange
         let exec = Exec {
             executable: "test".to_string(),
-            arguments: Some("--help".to_string()),
+            arguments: vec!["--help".to_string()],
             timeout: 30,
         };
         let registry = CommandRegistry::new();
 
         // Act
-        let envelope = CommandEnvelope::from_command(&exec, false).unwrap();
+        let envelope = CommandEnvelope::from_command(&exec, false, 0).unwrap();
         let cmd = envelope.to_command(&registry).unwrap();
 
         // Assert

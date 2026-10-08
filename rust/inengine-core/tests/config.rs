@@ -42,6 +42,8 @@ fn assert_default_settings(settings: &Settings) {
     assert_eq!(settings.queue.secondary_queue_consumers, 8);
     assert_eq!(settings.queue.queue_driver, QueueDriver::File);
     assert_eq!(settings.queue.queue_name, "InEngineQueue");
+    assert_eq!(settings.queue.max_retries, 0);
+    assert!(!settings.queue.recover_on_start);
     assert_eq!(settings.queue.redis.host, "127.0.0.1");
     assert_eq!(settings.queue.redis.port, 6379);
     assert_eq!(settings.queue.redis.database, 0);
@@ -122,6 +124,8 @@ primary_queue_consumers = 4
 secondary_queue_consumers = 2
 queue_driver = "redis"
 queue_name = "MyQueue"
+max_retries = 2
+recover_on_start = true
 
 [queue.redis]
 host = "redis.internal"
@@ -159,6 +163,8 @@ base_path = "/var/lib/inengine"
     assert_eq!(settings.queue.secondary_queue_consumers, 2);
     assert_eq!(settings.queue.queue_driver, QueueDriver::Redis);
     assert_eq!(settings.queue.queue_name, "MyQueue");
+    assert_eq!(settings.queue.max_retries, 2);
+    assert!(settings.queue.recover_on_start);
     assert_eq!(settings.queue.redis.host, "redis.internal");
     assert_eq!(settings.queue.redis.port, 6380);
     assert_eq!(settings.queue.redis.database, 3);
@@ -326,7 +332,8 @@ fn zero_consumers_on_both_queues_warns_with_both_locations() {
 #[test]
 fn a_missing_path_entry_warns_and_an_empty_one_fails() {
     // Arrange
-    let text = "[plugins]\ngone = \"/nonexistent/inengine/plugin\"\n\n[exec_whitelist]\nblank = \" \"\n";
+    let text =
+        "[plugins]\ngone = \"/nonexistent/inengine/plugin\"\n\n[exec_whitelist]\nblank = \" \"\n";
 
     // Act
     let loaded = config::from_text("inengine.toml", text);
@@ -356,8 +363,14 @@ fn settings_load_returns_the_rendered_diagnostics_for_an_invalid_file() {
     // Assert
     match result {
         Err(ConfigError::Invalid { diagnostics }) => {
-            assert!(diagnostics.contains("inengine.toml:2:8: error"), "{diagnostics}");
-            assert!(diagnostics.contains("port must be at most 65535"), "{diagnostics}");
+            assert!(
+                diagnostics.contains("inengine.toml:2:8: error"),
+                "{diagnostics}"
+            );
+            assert!(
+                diagnostics.contains("port must be at most 65535"),
+                "{diagnostics}"
+            );
         }
         other => panic!("expected Invalid, got {other:?}"),
     }
@@ -375,7 +388,10 @@ fn settings_load_reads_a_valid_file() {
 
     // Assert
     assert_eq!(settings.queue.queue_driver, QueueDriver::Redis);
-    assert_eq!(settings.queue.primary_queue_consumers, defaults().queue.primary_queue_consumers);
+    assert_eq!(
+        settings.queue.primary_queue_consumers,
+        defaults().queue.primary_queue_consumers
+    );
 }
 
 #[test]
@@ -408,4 +424,29 @@ fn load_of_a_directory_returns_an_io_error() {
         "expected Io, got: {:?}",
         result.err()
     );
+}
+
+#[test]
+fn an_out_of_range_retry_count_is_rejected_at_its_line() {
+    // Arrange
+    let cases = [
+        ("too_many.toml", "[queue]\nmax_retries = 101\n", 2),
+        ("negative.toml", "[queue]\n\nmax_retries = -1\n", 3),
+    ];
+
+    // Act
+    let loaded: Vec<_> = cases
+        .iter()
+        .map(|(name, text, _)| config::from_text(name, text))
+        .collect();
+
+    // Assert
+    for (loaded, (_, _, line)) in loaded.iter().zip(cases) {
+        assert!(loaded.settings.is_none());
+        let found = issues(loaded);
+        assert_eq!(found.len(), 1, "{found:#?}");
+        assert_eq!(found[0].0, Severity::Error);
+        assert_eq!(found[0].1, Some(line));
+        assert!(found[0].2.contains("max_retries"), "{}", found[0].2);
+    }
 }

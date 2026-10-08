@@ -1,12 +1,26 @@
+use std::ops::RangeInclusive;
+
+use super::{block_on, command_failed, open_queue};
 use crate::command::{Command, CommandContext, CommandResult};
 use crate::error::CommandError;
-use crate::queue::client::make_queue_client;
+use crate::queue::{PeekedMessage, QueueLane, Stage};
+
+fn selected_stages(pending: bool, in_progress: bool, failed: bool) -> Vec<Stage> {
+    [
+        (pending, Stage::Pending),
+        (in_progress, Stage::InProgress),
+        (failed, Stage::Failed),
+    ]
+    .into_iter()
+    .filter_map(|(selected, stage)| selected.then_some(stage))
+    .collect()
+}
 
 pub struct Flush {
     pub pending: bool,
     pub failed: bool,
     pub in_progress: bool,
-    pub use_secondary: bool,
+    pub lane: QueueLane,
 }
 
 impl Command for Flush {
@@ -15,77 +29,31 @@ impl Command for Flush {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        if !self.pending && !self.failed && !self.in_progress {
+        let stages = selected_stages(self.pending, self.in_progress, self.failed);
+        if stages.is_empty() {
             return Err(CommandError::Failed {
-                message: "specify at least one queue to clear: --pending, --failed, or --in-progress".to_string(),
+                message:
+                    "specify at least one stage to clear: --pending, --failed, or --in-progress"
+                        .to_string(),
             });
         }
-        let client =
-            make_queue_client(self.use_secondary, &ctx.settings.queue).map_err(|e| {
-                CommandError::Failed {
-                    message: format!("failed to create queue client: {e}"),
-                }
-            })?;
-
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                if self.pending {
-                    let result = client.clear_pending_dyn().await.map_err(|e| CommandError::Failed {
-                        message: format!("failed to clear pending: {e}"),
-                    })?;
-                    ctx.output.info(&format!("pending: {result}"));
-                }
-                if self.in_progress {
-                    let result = client.clear_in_progress_dyn().await.map_err(|e| CommandError::Failed {
-                        message: format!("failed to clear in-progress: {e}"),
-                    })?;
-                    ctx.output.info(&format!("in-progress: {result}"));
-                }
-                if self.failed {
-                    let result = client.clear_failed_dyn().await.map_err(|e| CommandError::Failed {
-                        message: format!("failed to clear failed: {e}"),
-                    })?;
-                    ctx.output.info(&format!("failed: {result}"));
-                }
-                Ok(())
-            })
-        })
-    }
-}
-
-pub struct Length {
-    pub use_secondary: bool,
-}
-
-impl Length {
-    fn print_lengths(ctx: &mut CommandContext, label: &str, use_secondary: bool) -> CommandResult {
-        let client = make_queue_client(use_secondary, &ctx.settings.queue).map_err(|e| {
-            CommandError::Failed {
-                message: format!("failed to create queue client: {e}"),
-            }
-        })?;
-
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                let lengths = client.queue_lengths_dyn().await.map_err(|e| CommandError::Failed {
-                    message: format!("failed to get queue lengths: {e}"),
+        let settings = ctx.settings.clone();
+        block_on(async {
+            let queue = open_queue(self.lane, &settings.queue).await?;
+            for stage in stages {
+                let removed = queue.clear(stage).await.map_err(|error| {
+                    command_failed(&format!("could not clear {}", stage.label()), error)
                 })?;
-                ctx.output.warning(label);
                 ctx.output
-                    .info_text("       pending")
-                    .line(&format!("{:>10}", lengths.pending));
-                ctx.output
-                    .info_text("   in-progress")
-                    .line(&format!("{:>10}", lengths.in_progress));
-                ctx.output
-                    .info_text("        failed")
-                    .line(&format!("{:>10}", lengths.failed));
-                ctx.output.newline(1);
-                Ok(())
-            })
+                    .info(&format!("{}: removed {removed}", stage.label()));
+            }
+            Ok(())
         })
     }
 }
+
+/// Prints the stage lengths of both lanes.
+pub struct Length;
 
 impl Command for Length {
     fn name(&self) -> &str {
@@ -93,12 +61,11 @@ impl Command for Length {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        Length::print_lengths(ctx, "Primary Queue:", false)?;
-        Length::print_lengths(ctx, "Secondary Queue:", true)?;
-        Ok(())
+        print_lengths(ctx)
     }
 }
 
+/// Prints the stage lengths of both lanes, the same as [`Length`].
 pub struct Status;
 
 impl Command for Status {
@@ -107,20 +74,42 @@ impl Command for Status {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        Length::print_lengths(ctx, "Primary Queue:", false)?;
-        Length::print_lengths(ctx, "Secondary Queue:", true)?;
-        Ok(())
+        print_lengths(ctx)
     }
 }
 
+fn print_lengths(ctx: &mut CommandContext) -> CommandResult {
+    let settings = ctx.settings.clone();
+    block_on(async {
+        for lane in QueueLane::ALL {
+            let queue = open_queue(lane, &settings.queue).await?;
+            let lengths = queue
+                .lengths()
+                .await
+                .map_err(|error| command_failed("could not read the queue lengths", error))?;
+            ctx.output.warning(&format!("{} Queue:", lane.as_str()));
+            for (stage, length) in [
+                (Stage::Pending, lengths.pending),
+                (Stage::InProgress, lengths.in_progress),
+                (Stage::Failed, lengths.failed),
+            ] {
+                ctx.output
+                    .info_text(&format!("{:>14}", stage.label()))
+                    .line(&format!("{length:>10}"));
+            }
+            ctx.output.newline(1);
+        }
+        Ok(())
+    })
+}
+
 pub struct Peek {
-    pub from: usize,
-    pub to: usize,
+    pub range: RangeInclusive<usize>,
     pub json_format: bool,
     pub pending: bool,
     pub failed: bool,
     pub in_progress: bool,
-    pub use_secondary: bool,
+    pub lane: QueueLane,
 }
 
 impl Command for Peek {
@@ -129,90 +118,77 @@ impl Command for Peek {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        if !self.pending && !self.failed && !self.in_progress {
+        let stages = selected_stages(self.pending, self.in_progress, self.failed);
+        if stages.is_empty() {
             return Err(CommandError::Failed {
-                message: "specify at least one queue to peek: --pending, --failed, or --in-progress"
-                    .to_string(),
+                message:
+                    "specify at least one stage to peek: --pending, --failed, or --in-progress"
+                        .to_string(),
             });
         }
-
-        let client =
-            make_queue_client(self.use_secondary, &ctx.settings.queue).map_err(|e| {
-                CommandError::Failed {
-                    message: format!("failed to create queue client: {e}"),
-                }
-            })?;
-
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                if self.pending {
-                    let msgs = client
-                        .peek_pending_dyn(self.from, self.to)
-                        .await
-                        .map_err(|e| CommandError::Failed {
-                            message: format!("failed to peek pending: {e}"),
-                        })?;
-                    print_messages(ctx, "Pending", &msgs, self.json_format);
-                }
-                if self.in_progress {
-                    let msgs = client
-                        .peek_in_progress_dyn(self.from, self.to)
-                        .await
-                        .map_err(|e| CommandError::Failed {
-                            message: format!("failed to peek in-progress: {e}"),
-                        })?;
-                    print_messages(ctx, "In-progress", &msgs, self.json_format);
-                }
-                if self.failed {
-                    let msgs = client
-                        .peek_failed_dyn(self.from, self.to)
-                        .await
-                        .map_err(|e| CommandError::Failed {
-                            message: format!("failed to peek failed: {e}"),
-                        })?;
-                    print_messages(ctx, "Failed", &msgs, self.json_format);
-                }
-                Ok(())
-            })
+        let settings = ctx.settings.clone();
+        block_on(async {
+            let queue = open_queue(self.lane, &settings.queue).await?;
+            for stage in stages {
+                let messages = queue
+                    .peek(stage, self.range.clone())
+                    .await
+                    .map_err(|error| {
+                        command_failed(&format!("could not peek {}", stage.label()), error)
+                    })?;
+                print_messages(ctx, stage, &messages, self.json_format)?;
+            }
+            Ok(())
         })
     }
 }
 
 fn print_messages(
     ctx: &mut CommandContext,
-    label: &str,
-    messages: &[crate::queue::envelope::CommandEnvelope],
-    json_format: bool,
-) {
-    ctx.output.warning_text(label);
+    stage: Stage,
+    messages: &[PeekedMessage],
+    json: bool,
+) -> CommandResult {
+    ctx.output.warning_text(stage.label());
     if messages.is_empty() {
-        ctx.output.line(" no messages available.");
-        return;
+        ctx.output.line(": no messages available.");
+        return Ok(());
     }
     ctx.output.newline(1);
-    for msg in messages {
-        if json_format {
-            if let Ok(json) = serde_json::to_string_pretty(msg) {
-                ctx.output.line(&json);
+    for message in messages {
+        match (message, json) {
+            (PeekedMessage::Envelope(envelope), true) => {
+                let text = serde_json::to_string(envelope)
+                    .map_err(|error| command_failed("could not format a message", error))?;
+                ctx.output.line(&text);
             }
-        } else {
-            ctx.output
-                .info_text("  id: ")
-                .line(&msg.id);
-            ctx.output
-                .info_text("  command: ")
-                .line(&msg.command_class_name);
-            ctx.output
-                .info_text("  queued: ")
-                .line(&msg.queued_at.to_string());
-            ctx.output.newline(1);
+            (PeekedMessage::Malformed { raw, reason }, true) => {
+                let value = serde_json::json!({ "malformed": true, "reason": reason, "raw": raw });
+                ctx.output.line(&value.to_string());
+            }
+            (PeekedMessage::Envelope(envelope), false) => {
+                ctx.output.info_text("  id: ").line(&envelope.id);
+                ctx.output
+                    .info_text("  command: ")
+                    .line(&envelope.command_class_name);
+                ctx.output
+                    .info_text("  queued: ")
+                    .line(&envelope.queued_at.to_string());
+                ctx.output.newline(1);
+            }
+            (PeekedMessage::Malformed { raw, reason }, false) => {
+                ctx.output.error_text("  malformed: ").line(reason);
+                ctx.output.line(raw);
+                ctx.output.newline(1);
+            }
         }
     }
+    Ok(())
 }
 
 pub struct RepublishFailed {
     pub limit: usize,
-    pub use_secondary: bool,
+    pub lane: QueueLane,
 }
 
 impl Command for RepublishFailed {
@@ -221,25 +197,48 @@ impl Command for RepublishFailed {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        let client =
-            make_queue_client(self.use_secondary, &ctx.settings.queue).map_err(|e| {
-                CommandError::Failed {
-                    message: format!("failed to create queue client: {e}"),
-                }
-            })?;
+        let settings = ctx.settings.clone();
+        let count = block_on(async {
+            let queue = open_queue(self.lane, &settings.queue).await?;
+            queue
+                .republish_failed(self.limit)
+                .await
+                .map_err(|error| command_failed("could not republish", error))
+        })?;
+        ctx.output.info(&format!(
+            "failed messages returned to pending in the {} queue: {count}",
+            self.lane.as_str()
+        ));
+        Ok(())
+    }
+}
 
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                let count = client
-                    .republish_failed_dyn(self.limit)
-                    .await
-                    .map_err(|e| CommandError::Failed {
-                        message: format!("failed to republish: {e}"),
-                    })?;
-                ctx.output
-                    .info(&format!("republished {count} failed messages"));
-                Ok(())
-            })
-        })
+/// Returns every in-progress message of one lane to pending.
+///
+/// Stop every other consumer of the queue first. Recovery cannot tell a message left by a
+/// crash from one that another consumer is still processing, so that message would run twice.
+pub struct Recover {
+    pub lane: QueueLane,
+}
+
+impl Command for Recover {
+    fn name(&self) -> &str {
+        "queue:recover"
+    }
+
+    fn run(&self, ctx: &mut CommandContext) -> CommandResult {
+        let settings = ctx.settings.clone();
+        let count = block_on(async {
+            let queue = open_queue(self.lane, &settings.queue).await?;
+            queue
+                .recover()
+                .await
+                .map_err(|error| command_failed("could not recover", error))
+        })?;
+        ctx.output.info(&format!(
+            "in-progress messages returned to pending in the {} queue: {count}",
+            self.lane.as_str()
+        ));
+        Ok(())
     }
 }

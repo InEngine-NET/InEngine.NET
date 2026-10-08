@@ -43,6 +43,11 @@ pub enum QueueSubcommand {
     Peek(QueuePeekArgs),
     Status,
     Republish(QueueRepublishArgs),
+    /// Move in-progress messages back to pending.
+    ///
+    /// Stop every other consumer of the queue first. Recovery cannot tell a message left by a
+    /// crash from one that another consumer is still processing, so that message would run twice.
+    Recover(QueueRecoverArgs),
 }
 
 #[derive(Debug, Args)]
@@ -61,19 +66,15 @@ pub struct ExecArgs {
     pub executable: String,
 
     #[arg(
-        short = 'a',
-        long = "args",
-        help = "Arguments for the executable (a single quoted string)"
-    )]
-    pub arguments: Option<String>,
-
-    #[arg(
         short = 't',
         long = "timeout",
         default_value = "900",
-        help = "Seconds before killing the process"
+        help = "Seconds before killing the process, or 0 for no limit"
     )]
     pub timeout: u64,
+
+    #[arg(last = true, help = "Arguments for the executable, after --")]
+    pub arguments: Vec<String>,
 }
 
 #[derive(Debug, Args)]
@@ -101,6 +102,20 @@ pub struct QueuePublishArgs {
 
     #[arg(long, help = "Command arguments as key=value pairs")]
     pub args: Vec<String>,
+
+    #[arg(
+        long,
+        conflicts_with = "args",
+        help = "The whole command payload as a JSON object"
+    )]
+    pub json: Option<String>,
+
+    #[arg(
+        long,
+        value_parser = clap::value_parser!(u32).range(0..=100),
+        help = "Retries after the first attempt, from 0 to 100, in place of queue.max_retries"
+    )]
+    pub max_retries: Option<u32>,
 
     #[arg(long, help = "Publish to the secondary queue")]
     pub secondary: bool,
@@ -166,6 +181,12 @@ pub struct QueueRepublishArgs {
     pub secondary: bool,
 }
 
+#[derive(Debug, Args)]
+pub struct QueueRecoverArgs {
+    #[arg(long, help = "Recover the secondary queue")]
+    pub secondary: bool,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -216,13 +237,13 @@ mod tests {
     #[test]
     fn exec_subcommand_parses_args() {
         // Arrange / Act
-        let cli = Cli::parse_from(["inengine", "exec", "-e", "foo", "-a", "flag1 flag2"]);
+        let cli = Cli::parse_from(["inengine", "exec", "-e", "foo", "--", "flag1", "two words"]);
 
         // Assert
         match cli.subcommand {
             Some(Subcommand::Exec(args)) => {
                 assert_eq!(args.executable, "foo");
-                assert_eq!(args.arguments.as_deref(), Some("flag1 flag2"));
+                assert_eq!(args.arguments, vec!["flag1", "two words"]);
                 assert_eq!(args.timeout, 900);
             }
             other => panic!("expected Exec, got: {other:?}"),
@@ -287,13 +308,7 @@ mod tests {
     #[test]
     fn queue_flush_parses() {
         // Arrange / Act
-        let cli = Cli::parse_from([
-            "inengine",
-            "queue",
-            "flush",
-            "--pending",
-            "--failed",
-        ]);
+        let cli = Cli::parse_from(["inengine", "queue", "flush", "--pending", "--failed"]);
 
         // Assert
         match cli.subcommand {
@@ -366,5 +381,90 @@ mod tests {
             }
             other => panic!("expected Plugin, got: {other:?}"),
         }
+    }
+
+    #[test]
+    fn queue_recover_parses_the_lane() {
+        // Arrange
+        let argv = ["inengine", "queue", "recover", "--secondary"];
+
+        // Act
+        let cli = Cli::parse_from(argv);
+
+        // Assert
+        match cli.subcommand {
+            Some(Subcommand::Queue(QueueSubcommand::Recover(args))) => assert!(args.secondary),
+            other => panic!("expected Recover, got: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn queue_publish_parses_json_and_max_retries() {
+        // Arrange
+        let argv = [
+            "inengine",
+            "queue",
+            "publish",
+            "--plugin",
+            "p",
+            "--class",
+            "c",
+            "--json",
+            "{}",
+            "--max-retries",
+            "100",
+        ];
+
+        // Act
+        let cli = Cli::parse_from(argv);
+
+        // Assert
+        match cli.subcommand {
+            Some(Subcommand::Queue(QueueSubcommand::Publish(args))) => {
+                assert_eq!(args.json.as_deref(), Some("{}"));
+                assert_eq!(args.max_retries, Some(100));
+                assert!(args.args.is_empty());
+            }
+            other => panic!("expected Publish, got: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn queue_publish_rejects_max_retries_above_one_hundred() {
+        // Arrange
+        let argv = [
+            "inengine",
+            "queue",
+            "publish",
+            "--plugin",
+            "p",
+            "--class",
+            "c",
+            "--max-retries",
+            "101",
+        ];
+
+        // Act
+        let result = Cli::try_parse_from(argv);
+
+        // Assert
+        let error = result.err().expect("101 is out of range");
+        assert_eq!(error.kind(), clap::error::ErrorKind::ValueValidation);
+    }
+
+    #[test]
+    fn queue_publish_rejects_json_with_args() {
+        // Arrange
+        let argv = [
+            "inengine", "queue", "publish", "--plugin", "p", "--class", "c", "--json", "{}",
+            "--args", "a=b",
+        ];
+
+        // Act
+        let result = Cli::try_parse_from(argv);
+
+        // Assert
+        let error = result.err().expect("--json conflicts with --args");
+        assert_eq!(error.kind(), clap::error::ErrorKind::ArgumentConflict);
     }
 }

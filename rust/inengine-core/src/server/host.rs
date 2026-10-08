@@ -4,9 +4,9 @@ use tokio_util::sync::CancellationToken;
 use tracing::info;
 
 use crate::config::Settings;
-use crate::queue::dequeue::Dequeue;
 use crate::queue::registry::CommandRegistry;
 use crate::scheduling::scheduler::Scheduler;
+use crate::server::consumers::QueueConsumers;
 
 pub struct ServerHost {
     pub settings: Arc<Settings>,
@@ -23,18 +23,14 @@ impl ServerHost {
 
         let scheduler = Scheduler::new(self.settings.clone());
 
-        let dequeue = Dequeue {
-            queue_settings: self.settings.queue.clone(),
-            settings: self.settings.clone(),
-            registry: self.registry.clone(),
-        };
+        let consumers = QueueConsumers::new(self.settings.clone(), self.registry.clone());
 
         let scheduler_cancel = cancel.clone();
-        let dequeue_cancel = cancel.clone();
+        let consumers_cancel = cancel.clone();
 
         tokio::join!(
             scheduler.start(scheduler_cancel),
-            dequeue.start(dequeue_cancel),
+            consumers.start(consumers_cancel),
         );
 
         info!("server stopped");
@@ -44,14 +40,17 @@ impl ServerHost {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::commands::test_helpers::make_ctx;
+
+    fn settings_in(dir: &tempfile::TempDir) -> Arc<Settings> {
+        Arc::new(crate::config::settings_with_queue_base(dir.path()))
+    }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn server_starts_and_stops_cleanly() {
         // Arrange
-        let ctx = make_ctx();
+        let dir = tempfile::tempdir().expect("temporary directory");
         let registry = Arc::new(CommandRegistry::new());
-        let host = ServerHost::new(ctx.settings.clone(), registry);
+        let host = ServerHost::new(settings_in(&dir), registry);
         let cancel = CancellationToken::new();
         let cancel_clone = cancel.clone();
 
@@ -70,9 +69,9 @@ mod tests {
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn server_no_panic_with_empty_state() {
         // Arrange
-        let ctx = make_ctx();
+        let dir = tempfile::tempdir().expect("temporary directory");
         let registry = Arc::new(CommandRegistry::new());
-        let host = ServerHost::new(ctx.settings.clone(), registry);
+        let host = ServerHost::new(settings_in(&dir), registry);
         let cancel = CancellationToken::new();
 
         // Act
