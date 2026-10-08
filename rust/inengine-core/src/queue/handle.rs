@@ -69,7 +69,7 @@ pub struct QueueLengths {
 #[derive(Debug, Clone)]
 pub enum PeekedMessage {
     Envelope(CommandEnvelope),
-    /// An entry that does not parse. `raw` is converted with `String::from_utf8_lossy`.
+    /// An entry that does not parse. `raw` holds its text, with invalid UTF-8 replaced.
     Malformed {
         raw: String,
         reason: String,
@@ -90,8 +90,8 @@ impl PeekedMessage {
 
 /// An open connection to one lane of the configured queue.
 ///
-/// Each consumer opens its own `Queue`. A Redis queue holds one connection, and a blocking
-/// dequeue delays every other request on it.
+/// Give each consumer its own `Queue`. A Redis queue has one connection, and a blocking
+/// dequeue delays every other request on that connection.
 pub struct Queue {
     backend: Backend,
 }
@@ -158,12 +158,12 @@ impl Queue {
         finish_settle(delivery, settled)
     }
 
-    /// Moves a message, with its attempt count, to the back of the pending stage.
+    /// Moves a message, with its updated attempt count, to the back of the pending stage.
     pub async fn retry(&self, delivery: Delivery) -> Result<(), SettleError> {
         self.move_claimed(delivery, Stage::Pending).await
     }
 
-    /// Moves a message, with its attempt count, to the failed stage.
+    /// Moves a message, with its updated attempt count, to the failed stage.
     pub async fn fail(&self, delivery: Delivery) -> Result<(), SettleError> {
         self.move_claimed(delivery, Stage::Failed).await
     }

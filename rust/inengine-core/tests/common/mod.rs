@@ -16,10 +16,11 @@ pub trait QueueFixture {
     /// Opens the other lane of the same queue.
     async fn open_other_lane(&self) -> Queue;
 
-    /// Adds an element that is not an envelope ahead of every message published later.
+    /// Adds an element that is not an envelope, so that it is claimed before any later message.
     fn insert_malformed_pending(&self, raw: &[u8]);
 
-    /// Adds an element that the driver cannot read ahead of every message published later.
+    /// Adds an element that the driver cannot read, so that it is claimed before any later
+    /// message.
     fn insert_unreadable_pending(&self);
 }
 

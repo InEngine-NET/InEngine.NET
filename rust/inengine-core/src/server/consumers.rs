@@ -199,8 +199,8 @@ impl Consumer {
             .await;
     }
 
-    /// Reports a settle result, and settles again after an interruption until it completes or
-    /// the server stops.
+    /// Logs the settle result. After an `Interrupted` error, settles again until the settle
+    /// succeeds or the server stops.
     async fn finish_settle(
         &self,
         queue: &Queue,

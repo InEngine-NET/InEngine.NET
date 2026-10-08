@@ -23,7 +23,7 @@ pub use vocabulary::QueueDriver;
 /// The result of a configuration load.
 ///
 /// `settings` is `None` when the report holds an error. The report can hold
-/// warnings either way, so a caller renders it whenever it has issues.
+/// warnings in both cases, so render it whenever it holds any issue.
 pub struct Loaded {
     pub settings: Option<Settings>,
     pub report: Report,
@@ -83,7 +83,7 @@ pub fn from_text(name: &str, text: &str) -> Loaded {
 
 /// Checks a spec built in code and lowers it.
 ///
-/// `SettingsSpec::default()` gives the settings a run with an empty file gets.
+/// `SettingsSpec::default()` gives the same settings as an empty file.
 pub fn from_spec(spec: &SettingsSpec) -> Loaded {
     let mut report = Report::new();
     let settings = check_and_lower(spec, &mut report);

@@ -14,12 +14,11 @@ use crate::queue::handle::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const CONNECTION_TIMEOUT: Duration = Duration::from_secs(5);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(30);
-/// The longest blocking dequeue, kept below the response timeout so that the reply arrives
-/// before the connection gives up on it.
+/// The longest blocking dequeue. It is 5 seconds shorter than the response timeout, so the
+/// reply arrives before the client stops waiting.
 ///
-/// If the server or the network delays the reply by more than the difference, the client
-/// stops waiting while the server can still claim an element. That element stays in
-/// progress until a recovery.
+/// If the reply is more than 5 seconds late, the client stops waiting but the server can
+/// still claim an element. That element stays in progress until a recovery.
 const MAX_BLOCKING_WAIT: Duration = RESPONSE_TIMEOUT.saturating_sub(Duration::from_secs(5));
 const BULK_MOVE_BATCH: usize = 1000;
 
@@ -209,7 +208,7 @@ impl RedisDriver {
         }
     }
 
-    /// Moves elements in batches so that no single script blocks the server for long.
+    /// Redis runs one script at a time, so small batches keep other clients from waiting.
     async fn bulk_move(
         &self,
         source: &str,

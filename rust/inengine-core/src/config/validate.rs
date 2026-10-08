@@ -89,7 +89,6 @@ impl Validate for RedisSpec {
 }
 
 impl Validate for FileSpec {
-    // base_path records its only rule with an attribute.
     fn validate(&self, _report: &mut Report) {}
 }
 

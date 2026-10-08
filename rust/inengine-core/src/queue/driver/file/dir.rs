@@ -32,8 +32,7 @@ pub(super) fn list_messages(dir: &Path) -> io::Result<Vec<OsString>> {
     Ok(names)
 }
 
-/// The original names of the messages whose settle operation claimed them in `dir` and did
-/// not finish.
+/// The original names of the messages that an unfinished settle left in `dir`.
 pub(super) fn list_settling(dir: &Path) -> io::Result<Vec<OsString>> {
     let mut names = Vec::new();
     for entry in fs::read_dir(dir)? {

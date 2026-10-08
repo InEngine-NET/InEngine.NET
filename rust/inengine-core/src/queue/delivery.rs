@@ -4,7 +4,7 @@ use crate::error::QueueError;
 use crate::queue::envelope::CommandEnvelope;
 use crate::queue::handle::{Queue, QueueLane};
 
-/// A message claimed from the pending stage, with what its driver needs to find it again.
+/// A message claimed from the pending stage, with the receipt that its driver uses to settle it.
 ///
 /// Settle every delivery with [`settle`], or with [`Queue::acknowledge`], [`Queue::retry`],
 /// or [`Queue::fail`]. A delivery that is dropped unsettled stays in the in-progress stage.
@@ -44,18 +44,18 @@ impl Delivery {
 
 #[derive(Debug, thiserror::Error)]
 pub enum SettleError {
-    /// The message left the in-progress stage without this delivery, for example through a
-    /// flush or a recovery. Nothing was written.
+    /// Another operation, such as a flush or a recovery, removed the message from the
+    /// in-progress stage before this settle. Nothing was written.
     #[error("the message is no longer in progress")]
     Lost,
 
-    /// The delivery came from a different lane or driver. Nothing was written, and settling
-    /// it on this queue again gives the same result.
+    /// The delivery came from a different lane or driver. Nothing was written, and another
+    /// settle on this queue fails the same way.
     #[error("message {} belongs to a different queue lane or driver", delivery.envelope.id)]
     Rejected { delivery: Box<Delivery> },
 
-    /// The settle operation stopped before it completed. The message is still in progress,
-    /// and you can settle the returned delivery again.
+    /// The settle failed partway, for example on a connection error. The message is still in
+    /// progress, so settle the returned delivery again.
     #[error("could not settle message {}", delivery.envelope.id)]
     Interrupted {
         delivery: Box<Delivery>,
@@ -65,7 +65,7 @@ pub enum SettleError {
 }
 
 impl SettleError {
-    /// Returns the delivery when the error gives it back.
+    /// Returns the delivery from `Rejected` or `Interrupted`, and `None` for `Lost`.
     pub fn into_delivery(self) -> Option<Delivery> {
         match self {
             SettleError::Lost => None,

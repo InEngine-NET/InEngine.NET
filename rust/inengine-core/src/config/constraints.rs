@@ -9,7 +9,7 @@ range_constraint!(
     pub(crate) CONSUMERS, i64, min: 0, max: 1024
 );
 range_constraint!(
-    /// The number of attempts after the first one for a failed message.
+    /// How many times a failed message is retried.
     pub(crate) MAX_RETRIES, i64, min: 0, max: 100
 );
 range_constraint!(

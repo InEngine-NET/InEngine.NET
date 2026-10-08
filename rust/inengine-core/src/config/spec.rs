@@ -63,8 +63,8 @@ pub struct QueueSpec {
     /// The base name of the queue. It becomes part of file names and Redis keys.
     #[confval(default = "InEngineQueue".to_string(), format = QueueName)]
     pub queue_name: Located<String>,
-    /// The number of attempts after the first one for a failed message. A message runs at
-    /// most this many times plus one before it moves to the failed stage.
+    /// How many times a failed message is retried. A message that fails every attempt runs
+    /// this many times plus one, then moves to the failed stage.
     #[confval(default = 0, range = MAX_RETRIES)]
     pub max_retries: Located<i64>,
     /// Move in-progress messages back to pending when the server starts. Enable this only

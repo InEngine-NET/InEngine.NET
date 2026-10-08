@@ -10,7 +10,7 @@ use crate::error::CommandError;
 /// Runs a whitelisted executable.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Exec {
-    /// The whitelist key of the executable.
+    /// The name of the executable in `exec_whitelist`.
     pub executable: String,
     /// Arguments passed to the executable, each as one argument.
     #[serde(default)]

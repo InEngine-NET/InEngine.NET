@@ -18,8 +18,7 @@ const POLL_INTERVAL: Duration = Duration::from_secs(1);
 
 /// A queue lane stored as one file per message in three directories.
 ///
-/// Every call lists the directory it reads, so the cost of a claim grows with the number of
-/// pending messages.
+/// Each claim lists the pending directory, so a claim gets slower as the backlog grows.
 pub(crate) struct FileDriver {
     lane: QueueLane,
     pending: PathBuf,
@@ -85,9 +84,9 @@ impl FileDriver {
     /// Returns false when the message is no longer in progress.
     ///
     /// The in-progress file is first renamed to a hidden settling name, which fails when the
-    /// message is no longer in progress. A settling file left by an earlier attempt is used
-    /// as it is. A crash after the new file is written and before the settling file is
-    /// removed leaves two copies, and `recover` returns the older one.
+    /// message is no longer in progress. When an earlier settle of the same message stopped
+    /// partway, its settling file is reused. A crash after the new file is written and before
+    /// the settling file is removed leaves two copies, and `recover` returns the older one.
     pub(crate) fn move_claimed(
         &self,
         name: &OsStr,
@@ -111,8 +110,7 @@ impl FileDriver {
         match fs::remove_file(&claimed) {
             Ok(()) => Ok(true),
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
-                // A clear removed the message while it was being settled, so the new copy
-                // must not survive.
+                // A flush removed the message during this settle, so remove the new copy too.
                 dir::remove_if_present(&target_dir.join(target_name))?;
                 Ok(false)
             }
@@ -243,8 +241,8 @@ impl FileDriver {
         }
     }
 
-    /// The paths of the messages in `stage`, oldest first. In-progress also includes the
-    /// messages that a settle operation holds.
+    /// The paths of the messages in `stage`, oldest first. The in-progress stage also
+    /// includes the settling files.
     fn stage_entries(&self, stage: Stage) -> Result<Vec<PathBuf>, QueueError> {
         let dir = self.stage_dir(stage);
         let mut entries: Vec<(OsString, PathBuf)> = dir::list_messages(dir)?
