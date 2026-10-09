@@ -9,6 +9,9 @@ Schedule a command to run it many times, on a fixed interval.
 InEngine defines schedules in code, not in a data store.
 This lets the schedule live alongside the command code in version control.
 
+> **Note:** The server does not run jobs from a `Schedule` yet, and `inengine schedule list` prints "No scheduled commands."
+> The API on this page builds and validates jobs, but no job reaches the scheduler.
+
 ## Scheduling a Command
 
 Use the `Schedule` struct to register commands with cron expressions.

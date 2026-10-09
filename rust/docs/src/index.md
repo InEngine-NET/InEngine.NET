@@ -13,18 +13,26 @@ Run the **echo** command:
 inengine echo --text "Hello, world"
 ```
 
-Run an external program with the **exec** command:
+Run an external program with the **exec** command.
+The program must be listed in the `[exec_whitelist]` table of `inengine.toml`:
+
+```toml
+[exec_whitelist]
+ls = "/bin/ls"
+```
 
 ```bash
 inengine exec -e ls -- -lhp
 ```
+
+See [Exec](commands.md#exec) for the timeout and argument options.
 
 ## Quick Start: Queuing
 
 Publish a command to the queue:
 
 ```bash
-inengine queue publish --plugin inengine-core --command echo --args "text=Hello, world"
+inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello, world"
 ```
 
 Consume the next message from the queue:
@@ -43,8 +51,15 @@ inengine -s
 
 ## Quick Start: Plugins
 
-Run a command from a WASM plugin:
+Add the plugin directory to the `[plugins]` table of `inengine.toml`:
+
+```toml
+[plugins]
+sample = "target/plugins/sample"
+```
+
+Run a command from the plugin:
 
 ```bash
-inengine plugin --name sample-plugin --command greet --args name=Ethan
+inengine plugin --name sample --command greet --args name=Ethan
 ```

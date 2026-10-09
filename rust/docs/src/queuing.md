@@ -41,13 +41,7 @@ password = ""
 
 ## Publishing Commands
 
-Publish a command to the queue from the command line:
-
-```bash
-inengine queue publish --plugin inengine-core --command echo --args "text=Hello"
-```
-
-Publish by class name:
+Publish a command to the queue by its class name:
 
 ```bash
 inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello"
@@ -56,19 +50,20 @@ inengine queue publish --plugin inengine-core --class "inengine_core::commands::
 Publish with a JSON payload:
 
 ```bash
-inengine queue publish --plugin inengine-core --command echo --json '{"text":"Hello"}'
+inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --json '{"text":"Hello"}'
 ```
 
 Publish to the secondary queue:
 
 ```bash
-inengine queue publish --plugin inengine-core --command echo --args "text=Hello" --secondary
+inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello" --secondary
 ```
 
-Set the maximum number of retries (0 to 100):
+Set the maximum number of retries.
+The value must be from 0 to 100:
 
 ```bash
-inengine queue publish --plugin inengine-core --command echo --args "text=Hello" --max-retries 3
+inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello" --max-retries 3
 ```
 
 ## Consuming Commands
@@ -99,17 +94,13 @@ inengine queue consume --secondary
 
 ## Viewing Queue Lengths
 
-The `queue length` command shows a count of pending, in-progress, and failed messages:
+The `queue length` command shows a count of pending, in-progress, and failed messages for each queue:
 
 ```bash
 inengine queue length
 ```
 
-## Viewing Queue Status
-
-```bash
-inengine queue status
-```
+The `queue status` command prints the same counts.
 
 ## Peeking at Queued Commands
 
@@ -172,15 +163,21 @@ inengine queue republish --secondary
 
 ## Recovering In-Progress Messages
 
+> **Warning:** Stop every other consumer of the queue first.
+> Recovery cannot tell a message left by a crash from one that another consumer is still processing.
+> That message would run twice.
+
 Move in-progress messages back to the pending queue:
 
 ```bash
 inengine queue recover
 ```
 
-> **Warning:** Stop every other consumer of the queue first.
-> Recovery cannot tell a message left by a crash from one that another consumer is still processing.
-> That message would run twice.
+Recover the secondary queue:
+
+```bash
+inengine queue recover --secondary
+```
 
 ## Flushing the Queue
 

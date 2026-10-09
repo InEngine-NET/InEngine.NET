@@ -1,12 +1,12 @@
 # Plugins
 
 InEngine loads plugins as WASM components built with the WebAssembly Component Model.
-A plugin can register commands and schedules.
+A plugin provides commands that `inengine plugin` runs.
 
 ## Running a Plugin Command
 
 ```bash
-inengine plugin --name sample-plugin --command greet --args name=Ethan
+inengine plugin --name sample --command greet --args name=Ethan
 ```
 
 ## Deploying a Plugin
@@ -17,8 +17,12 @@ inengine plugin --name sample-plugin --command greet --args name=Ethan
 
 ```toml
 [plugins]
-sample-plugin = "/path/to/plugin/directory"
+sample = "/path/to/plugin/directory"
 ```
+
+The key is the plugin name.
+InEngine loads every `.wasm` file in the directory.
+A relative path resolves against the working directory.
 
 ## WIT Interface
 
@@ -53,21 +57,21 @@ world plugin {
 }
 ```
 
+InEngine does not run plugin schedules yet.
+Return an empty list from `list-schedules`.
+
 ## Writing a Plugin
 
 ### Prerequisites
 
-Install `cargo-component`:
+Install `cargo-component` and the `wasm32-unknown-unknown` target:
 
 ```bash
-cargo install cargo-component
+cargo install cargo-component --locked
+rustup target add wasm32-unknown-unknown
 ```
 
-Install the `wasm32-wasip2` target:
-
-```bash
-rustup target add wasm32-wasip2
-```
+From the `rust` directory, `just install-tools` installs both.
 
 ### Create the Crate
 
@@ -87,7 +91,7 @@ wit_bindgen::generate!({
 
 struct MyPlugin;
 
-export_plugin!(MyPlugin);
+export!(MyPlugin);
 
 impl exports::inengine::plugin::commands::Guest for MyPlugin {
     fn list_commands() -> Vec<exports::inengine::plugin::commands::CommandDescriptor> {
@@ -125,30 +129,17 @@ impl exports::inengine::plugin::scheduling::Guest for MyPlugin {
 From the plugin directory:
 
 ```bash
-cargo component build --release
+cargo component build --release --target wasm32-unknown-unknown
 ```
 
-The compiled component is written to `target/wasm32-wasip2/release/<crate_name>.wasm`.
+The compiled component is written to `target/wasm32-unknown-unknown/release/<crate_name>.wasm`.
+
+Build for `wasm32-unknown-unknown` rather than a WASI target.
+The host provides no WASI imports, so a component built for `wasm32-wasip1` or `wasm32-wasip2` fails to load with an error about a missing `wasi:cli` implementation.
+
+From the `rust` directory, `just build-sample-plugin` builds the sample plugin and copies it to `target/plugins/sample/`.
 
 ### Command Arguments
 
 The `args_json` parameter is a JSON object.
 When a user passes `--args key=value` pairs, they arrive as `{"key": "value"}`.
-When a user passes `--json '{"key": "value"}'`, the JSON is forwarded as is.
-
-### Scheduling from a Plugin
-
-Return `ScheduleEntry` records from `list_schedules` to register cron jobs:
-
-```rust
-fn list_schedules() -> Vec<exports::inengine::plugin::scheduling::ScheduleEntry> {
-    vec![
-        exports::inengine::plugin::scheduling::ScheduleEntry {
-            command_name: "greet".to_string(),
-            cron_expression: "0 */5 * * * *".to_string(),
-        },
-    ]
-}
-```
-
-The server calls `list_schedules` at startup and runs each entry on its cron schedule.

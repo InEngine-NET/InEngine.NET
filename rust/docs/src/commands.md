@@ -35,7 +35,9 @@ Pass arguments after `--`:
 inengine exec -e hello -- --verbose --count 5
 ```
 
-Set a timeout in seconds (default is 900). Use 0 for no limit:
+Set a timeout in seconds.
+The default is 900 seconds.
+Use 0 for no limit:
 
 ```bash
 inengine exec -e hello -t 60
@@ -45,6 +47,8 @@ inengine exec -e hello -t 60
 
 Multiple commands can run in sequence as a chain.
 If one command in the chain fails, the rest do not run.
+A chain is built in Rust code.
+See [Scheduling a Chain](scheduling.md#scheduling-a-chain) for an example.
 
 ## Output
 
@@ -54,15 +58,15 @@ The available output methods are:
 | Method           | Color   | Newline |
 | ---------------- | ------- | ------- |
 | `line`           | white   | yes     |
-| `info`           | green   | yes     |
-| `warning`        | yellow  | yes     |
-| `error`          | red     | yes     |
+| `info_line`      | green   | yes     |
+| `warning_line`   | yellow  | yes     |
+| `error_line`     | red     | yes     |
 | `text`           | white   | no      |
-| `info_text`      | green   | no      |
-| `warning_text`   | yellow  | no      |
-| `error_text`     | red     | no      |
+| `info`           | green   | no      |
+| `warning`        | yellow  | no      |
+| `error`          | red     | no      |
 
-Display blank lines with `newline`.
+Write line breaks with `newlines`, which takes the number of newline characters to write.
 
 ## Progress Bar
 

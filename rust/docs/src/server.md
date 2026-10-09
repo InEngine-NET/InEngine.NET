@@ -72,18 +72,6 @@ sudo supervisorctl update
 sudo supervisorctl start inengine:*
 ```
 
-## Running with Docker
-
-```bash
-docker run --rm inengine -s
-```
-
-Mount a configuration file:
-
-```bash
-docker run --rm -v /path/to/inengine.toml:/app/inengine.toml inengine -s
-```
-
 ## Logging
 
 Set the `INENGINE_LOG` environment variable to control log output:

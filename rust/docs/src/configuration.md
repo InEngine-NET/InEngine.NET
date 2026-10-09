@@ -91,7 +91,8 @@ base_path = "../"
 
 ### Redis
 
-Used when `queue_driver` is `"redis"`. Requires Redis 6.2 or later.
+Used when `queue_driver` is `"redis"`.
+Requires Redis 6.2 or later.
 
 | Setting    | Type    | Default       | Description                         |
 | ---------- | ------- | ------------- | ----------------------------------- |
