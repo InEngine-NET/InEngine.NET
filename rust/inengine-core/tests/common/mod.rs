@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-pub mod contract;
-pub mod http;
-pub mod smtp;
+pub(crate) mod contract;
+pub(crate) mod http;
+pub(crate) mod smtp;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -13,8 +13,9 @@ use inengine_core::commands::echo::Echo;
 use inengine_core::config::{self, Loaded, PluginLimitsSettings, Settings, SettingsSpec};
 use inengine_core::plugin::{PluginLoader, PluginRuntime};
 use inengine_core::queue::{CommandEnvelope, Delivery, PeekedMessage, Queue, QueueLengths};
+use uuid::Uuid;
 
-pub trait QueueFixture {
+pub(crate) trait QueueFixture {
     fn queue(&self) -> &Queue;
 
     async fn open_other_lane(&self) -> Queue;
@@ -28,7 +29,7 @@ pub trait QueueFixture {
 }
 
 /// Each issue as its severity, its line, and its message.
-pub fn config_issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
+pub(crate) fn config_issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
     loaded
         .report
         .issues()
@@ -45,35 +46,32 @@ pub fn config_issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> 
         .collect()
 }
 
-pub fn default_settings() -> Settings {
+pub(crate) fn default_settings() -> Settings {
     config::from_spec(&SettingsSpec::default())
         .settings
         .expect("the default settings are valid")
 }
 
-pub fn settings_with_queue_base(base: &Path) -> Settings {
+pub(crate) fn settings_with_queue_base(base: &Path) -> Settings {
     let mut settings = default_settings();
-    settings.queue.file.base_path = base.to_str().expect("utf-8 path").to_string();
+    settings.queue.file.base_path = base.to_path_buf();
     settings
 }
 
 /// A directory under `tests/fixtures` that holds one plugin component.
-pub fn fixture_directory(name: &str) -> PathBuf {
+pub(crate) fn fixture_directory(name: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures")
         .join(name)
 }
 
 /// The `[plugins]` map with one entry.
-pub fn plugin_directories(plugin_name: &str, directory: &Path) -> HashMap<String, String> {
-    HashMap::from([(
-        plugin_name.to_string(),
-        directory.to_string_lossy().into_owned(),
-    )])
+pub(crate) fn plugin_directories(plugin_name: &str, directory: &Path) -> HashMap<String, PathBuf> {
+    HashMap::from([(plugin_name.to_string(), directory.to_path_buf())])
 }
 
 /// Loads the fixture plugin under the name `fixture`.
-pub fn load_fixture_plugin(limits: PluginLimitsSettings) -> PluginLoader {
+pub(crate) fn load_fixture_plugin(limits: PluginLimitsSettings) -> PluginLoader {
     let runtime = PluginRuntime::new(limits).expect("runtime");
     let directories = plugin_directories("fixture", &fixture_directory("plugin"));
     let (loader, errors) = PluginLoader::load(&directories, runtime);
@@ -81,7 +79,7 @@ pub fn load_fixture_plugin(limits: PluginLimitsSettings) -> PluginLoader {
     loader
 }
 
-pub fn expected_lengths(pending: usize, in_progress: usize, failed: usize) -> QueueLengths {
+pub(crate) fn expected_lengths(pending: usize, in_progress: usize, failed: usize) -> QueueLengths {
     QueueLengths {
         pending,
         in_progress,
@@ -89,7 +87,7 @@ pub fn expected_lengths(pending: usize, in_progress: usize, failed: usize) -> Qu
     }
 }
 
-pub fn echo_envelope(text: &str, max_retries: u32) -> CommandEnvelope {
+pub(crate) fn echo_envelope(text: &str, max_retries: u32) -> CommandEnvelope {
     CommandEnvelope::from_command(
         &Echo {
             text: text.to_string(),
@@ -100,13 +98,13 @@ pub fn echo_envelope(text: &str, max_retries: u32) -> CommandEnvelope {
     .expect("envelope")
 }
 
-pub async fn publish_echo(queue: &Queue, text: &str, max_retries: u32) -> String {
+pub(crate) async fn publish_echo(queue: &Queue, text: &str, max_retries: u32) -> Uuid {
     let envelope = echo_envelope(text, max_retries);
     queue.publish(&envelope).await.expect("publish");
     envelope.id
 }
 
-pub async fn claim(queue: &Queue) -> Delivery {
+pub(crate) async fn claim(queue: &Queue) -> Delivery {
     queue
         .dequeue(Duration::ZERO)
         .await
@@ -114,21 +112,22 @@ pub async fn claim(queue: &Queue) -> Delivery {
         .expect("a pending message")
 }
 
-pub async fn drain_ids(queue: &Queue) -> Vec<String> {
+pub(crate) async fn drain_ids(queue: &Queue) -> Vec<Uuid> {
     let mut ids = Vec::new();
     while let Some(delivery) = queue.dequeue(Duration::ZERO).await.expect("dequeue") {
-        ids.push(delivery.envelope.id.clone());
+        ids.push(delivery.envelope.id);
         queue.acknowledge(delivery).await.expect("acknowledge");
     }
     ids
 }
 
-pub fn peeked_ids(messages: &[PeekedMessage]) -> Vec<String> {
+/// The id of each peeked envelope. Panics on a malformed entry.
+pub(crate) fn peeked_ids(messages: &[PeekedMessage]) -> Vec<Uuid> {
     messages
         .iter()
         .map(|message| match message {
-            PeekedMessage::Envelope(envelope) => envelope.id.clone(),
-            PeekedMessage::Malformed { reason, .. } => format!("malformed: {reason}"),
+            PeekedMessage::Envelope(envelope) => envelope.id,
+            PeekedMessage::Malformed { reason, .. } => panic!("malformed entry: {reason}"),
         })
         .collect()
 }
@@ -149,6 +148,7 @@ macro_rules! queue_contract_tests {
             move_to_failed_after_a_clear_reports_lost_and_writes_nothing,
             a_delivery_from_the_other_lane_is_rejected_and_changes_nothing,
             a_malformed_message_moves_to_failed_and_dequeue_returns_the_next_one,
+            a_message_whose_id_is_not_a_uuid_moves_to_failed,
             an_unreadable_message_moves_to_failed_and_dequeue_returns_the_next_one,
             recover_returns_in_progress_messages_with_the_oldest_claim_first,
             peek_returns_the_requested_range_oldest_first,

@@ -1,3 +1,4 @@
+//! Tests how a command lifecycle writes, appends, mails, and pings after a run.
 mod common;
 
 use std::path::Path;
@@ -10,7 +11,7 @@ use common::smtp::PlainSmtpServer;
 use inengine_core::command::{Command, CommandContext, CommandResult};
 use inengine_core::config::{MailEncryption, Settings};
 use inengine_core::error::CommandError;
-use inengine_core::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
+use inengine_core::server::lifecycle::{CommandLifecycle, LifecycleOptions, run_with_lifecycle};
 use inengine_core::server::notify::{ping, send_email};
 use tokio_util::sync::CancellationToken;
 
@@ -125,14 +126,20 @@ fn settings_with_mail_server(port: u16, encryption: MailEncryption) -> Settings 
 
 fn output_file_lifecycle(path: &Path) -> CommandLifecycle {
     CommandLifecycle {
-        write_output_to: Some(path.to_string_lossy().into_owned()),
+        options: LifecycleOptions {
+            write_output_to: Some(path.to_path_buf()),
+            ..Default::default()
+        },
         ..Default::default()
     }
 }
 
 fn mail_lifecycle() -> CommandLifecycle {
     CommandLifecycle {
-        email_output_to: Some("ops@example.com".to_string()),
+        options: LifecycleOptions {
+            email_output_to: Some("ops@example.com".to_string()),
+            ..Default::default()
+        },
         ..Default::default()
     }
 }
@@ -196,7 +203,10 @@ async fn a_failed_run_appends_its_output() {
     let path = dir.path().join("append.txt");
     std::fs::write(&path, "existing\n").expect("write");
     let lifecycle = CommandLifecycle {
-        append_output_to: Some(path.to_string_lossy().into_owned()),
+        options: LifecycleOptions {
+            append_output_to: Some(path.to_path_buf()),
+            ..Default::default()
+        },
         ..Default::default()
     };
 
@@ -249,14 +259,16 @@ async fn a_failed_run_mails_its_output_and_error_chain() {
         ),
         "{body}"
     );
-    assert!(mail
-        .commands
-        .iter()
-        .any(|c| c == "MAIL FROM:<inengine@example.com>"));
-    assert!(mail
-        .commands
-        .iter()
-        .any(|c| c == "RCPT TO:<ops@example.com>"));
+    assert!(
+        mail.commands
+            .iter()
+            .any(|c| c == "MAIL FROM:<inengine@example.com>")
+    );
+    assert!(
+        mail.commands
+            .iter()
+            .any(|c| c == "RCPT TO:<ops@example.com>")
+    );
 }
 
 #[tokio::test]
@@ -288,10 +300,8 @@ async fn a_command_timeout_persists_its_output() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
     let path = dir.path().join("output.txt");
-    let lifecycle = CommandLifecycle {
-        timeout: Some(Duration::from_secs(1)),
-        ..output_file_lifecycle(&path)
-    };
+    let mut lifecycle = output_file_lifecycle(&path);
+    lifecycle.options.timeout = Some(Duration::from_secs(1));
 
     // Act
     let result = run_with_lifecycle(

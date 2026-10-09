@@ -1,3 +1,4 @@
+//! Tests the validation of the mail settings in a configuration file.
 mod common;
 
 use common::config_issues as issues;

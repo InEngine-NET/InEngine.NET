@@ -2,12 +2,12 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpListener;
 
 /// An HTTP server that answers every request with `status` and an empty body.
-pub struct StatusServer {
+pub(crate) struct StatusServer {
     pub url: String,
 }
 
 impl StatusServer {
-    pub fn start(status: u16) -> Self {
+    pub(crate) fn start(status: u16) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").expect("bind the HTTP server");
         let url = format!("http://{}/", listener.local_addr().expect("address"));
         std::thread::spawn(move || {

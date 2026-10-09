@@ -1,5 +1,7 @@
+//! Tests that a queued exec command returns to pending when the server stops.
 mod common;
 
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -23,7 +25,7 @@ async fn a_queued_exec_returns_to_pending_when_the_server_stops() {
     settings.queue.secondary_queue_consumers = 0;
     settings
         .exec_whitelist
-        .insert("sleep".to_string(), "/bin/sleep".to_string());
+        .insert("sleep".to_string(), PathBuf::from("/bin/sleep"));
     let queue = Queue::open(QueueLane::Primary, &settings.queue)
         .await
         .expect("open");

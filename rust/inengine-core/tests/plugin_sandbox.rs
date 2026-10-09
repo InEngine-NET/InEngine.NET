@@ -1,7 +1,8 @@
+//! Tests the limits, cancellation, and registration of WebAssembly plugin commands.
 mod common;
 
-use std::sync::mpsc;
 use std::sync::Arc;
+use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 use common::{
@@ -10,9 +11,9 @@ use common::{
 };
 use inengine_core::command::{Command, CommandContext, CommandDeadline};
 use inengine_core::config::PluginLimitsSettings;
-use inengine_core::error::{CommandError, PluginError};
+use inengine_core::error::{CommandError, ErrorChain, PluginError};
 use inengine_core::output::Output;
-use inengine_core::plugin::{PluginLoader, PluginRuntime};
+use inengine_core::plugin::{LoadError, PluginLoader, PluginRuntime};
 use inengine_core::queue::{
     CommandEnvelope, CommandRegistry, PeekedMessage, Queue, QueueLane, Stage,
 };
@@ -83,7 +84,8 @@ fn run_guarded(command: Arc<dyn Command>, setup: CallSetup) -> Option<CallResult
 
 fn failure_message(call: Option<CallResult>) -> String {
     let call = call.expect("the call ends within the wait limit");
-    call.result.expect_err("the call fails").to_string()
+    let error = call.result.expect_err("the call fails");
+    ErrorChain::new(&error).to_string()
 }
 
 #[test]
@@ -197,7 +199,37 @@ fn allocation_past_the_memory_budget_fails() {
     // Assert
     assert_eq!(
         failure_message(call),
-        "command failed: command 'allocate' in plugin 'fixture' exceeded the memory limit of 16 MiB"
+        "command failed: command 'allocate' in plugin 'fixture' ran out of memory: \
+         plugin memory would grow past its limit of 16 MiB"
+    );
+}
+
+#[test]
+fn a_component_past_the_memory_budget_at_load_reports_the_limit() {
+    // Arrange
+    let runtime = PluginRuntime::new(limits(Duration::from_secs(60), 1)).unwrap();
+    let directories = plugin_directories("fixture", &fixture_directory("plugin"));
+
+    // Act
+    let (loader, errors) = PluginLoader::load(&directories, runtime);
+
+    // Assert
+    assert!(loader.plugins().is_empty());
+    let [error] = errors.as_slice() else {
+        panic!("expected one error, got {errors:?}");
+    };
+    assert!(
+        matches!(error, PluginError::Load {
+            name,
+            source: LoadError::MemoryLimit(_),
+            ..
+        } if name == "fixture"),
+        "{error:?}"
+    );
+    assert!(
+        ErrorChain::new(error)
+            .to_string()
+            .ends_with("fixture_plugin.wasm: plugin memory would grow past its limit of 1 MiB")
     );
 }
 
@@ -249,7 +281,10 @@ fn register_schedules_adds_valid_entries_and_reports_invalid_ones() {
         .collect();
     assert_eq!(names, ["fixture::echo-args"]);
     assert_eq!(schedule.jobs()[0].cron_expression, "0 0 0 1 1 *");
-    let messages: Vec<String> = errors.iter().map(ToString::to_string).collect();
+    let messages: Vec<String> = errors
+        .iter()
+        .map(|error| ErrorChain::new(error).to_string())
+        .collect();
     assert_eq!(
         messages,
         [
@@ -316,11 +351,19 @@ fn component_that_spins_while_loading_fails_at_the_load_time_limit() {
     // Assert
     assert!(started.elapsed() < Duration::from_secs(15));
     assert!(loader.plugins().is_empty());
-    let messages: Vec<String> = errors.iter().map(ToString::to_string).collect();
-    assert_eq!(messages.len(), 1, "{messages:?}");
-    assert!(messages[0].starts_with("failed to load plugin 'fixture': "));
-    assert!(messages[0]
-        .ends_with("fixture_plugin_spin_on_load.wasm: the plugin did not load within 10 seconds"));
+    let [error] = errors.as_slice() else {
+        panic!("expected one error, got {errors:?}");
+    };
+    assert!(matches!(error, PluginError::Load {
+        name,
+        path,
+        source: LoadError::TimedOut { seconds: 10 },
+    } if name == "fixture" && path.ends_with("fixture_plugin_spin_on_load.wasm")));
+    assert!(
+        ErrorChain::new(error).to_string().ends_with(
+            "fixture_plugin_spin_on_load.wasm: the plugin did not load within 10 seconds"
+        )
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]

@@ -1,3 +1,4 @@
+//! Tests queue administration on a current-thread runtime.
 mod common;
 
 use common::{expected_lengths, settings_with_queue_base};

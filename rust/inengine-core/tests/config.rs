@@ -1,6 +1,7 @@
+//! Tests how a configuration file loads, validates, and lowers to settings.
 mod common;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use common::config_issues as issues;
@@ -37,7 +38,7 @@ fn assert_default_settings(settings: &Settings) {
     assert_eq!(settings.queue.redis.port, 6379);
     assert_eq!(settings.queue.redis.database, 0);
     assert_eq!(settings.queue.redis.password, "");
-    assert_eq!(settings.queue.file.base_path, "../");
+    assert_eq!(settings.queue.file.base_path, Path::new("../"));
     assert_eq!(settings.plugin_limits.timeout, Duration::from_secs(900));
     assert_eq!(settings.plugin_limits.memory_bytes, 256 * 1024 * 1024);
     assert_eq!(settings.plugin_limits, PluginLimitsSettings::default());
@@ -139,12 +140,12 @@ base_path = "/var/lib/inengine"
     assert!(!loaded.report.has_issues(), "{:#?}", issues(&loaded));
     let settings = loaded.settings.expect("settings lower");
     assert_eq!(
-        settings.plugins.get("sample").map(String::as_str),
-        Some(plugin_dir.to_str().expect("utf-8 path"))
+        settings.plugins.get("sample").map(PathBuf::as_path),
+        Some(plugin_dir.as_path())
     );
     assert_eq!(
-        settings.exec_whitelist.get("shell").map(String::as_str),
-        Some("/bin/sh")
+        settings.exec_whitelist.get("shell").map(PathBuf::as_path),
+        Some(Path::new("/bin/sh"))
     );
     assert_eq!(settings.mail.host, "smtp.example.com");
     assert_eq!(settings.mail.port, 587);
@@ -163,7 +164,10 @@ base_path = "/var/lib/inengine"
     assert_eq!(settings.queue.redis.port, 6380);
     assert_eq!(settings.queue.redis.database, 3);
     assert_eq!(settings.queue.redis.password, "hunter2");
-    assert_eq!(settings.queue.file.base_path, "/var/lib/inengine");
+    assert_eq!(
+        settings.queue.file.base_path,
+        Path::new("/var/lib/inengine")
+    );
 }
 
 #[test]
@@ -327,7 +331,7 @@ fn settings_load_returns_the_rendered_diagnostics_for_an_invalid_file() {
     std::fs::write(&path, "[mail]\nport = 70000\n").expect("write configuration");
 
     // Act
-    let result = Settings::load(path.to_str().expect("utf-8 path"));
+    let result = Settings::load(&path);
 
     // Assert
     match result {
@@ -353,7 +357,7 @@ fn settings_load_reads_a_valid_file() {
     std::fs::write(&path, "[queue]\nqueue_driver = \"redis\"\n").expect("write configuration");
 
     // Act
-    let settings = Settings::load(path.to_str().expect("utf-8 path")).expect("settings load");
+    let settings = Settings::load(&path).expect("settings load");
 
     // Assert
     assert_eq!(settings.queue.queue_driver, QueueDriver::Redis);
@@ -373,7 +377,7 @@ fn load_of_a_missing_file_returns_file_not_found() {
 
     // Assert
     assert!(
-        matches!(result, Err(ConfigError::FileNotFound { ref path }) if path == "/nonexistent/path/inengine.toml"),
+        matches!(result, Err(ConfigError::FileNotFound { ref path }) if path == Path::new("/nonexistent/path/inengine.toml")),
         "expected FileNotFound, got: {:?}",
         result.err()
     );
@@ -389,9 +393,30 @@ fn load_of_a_directory_returns_an_io_error() {
 
     // Assert
     assert!(
-        matches!(result, Err(ConfigError::Io(_))),
+        matches!(result, Err(ConfigError::Io { .. })),
         "expected Io, got: {:?}",
         result.err()
+    );
+}
+
+#[test]
+fn a_configuration_read_error_keeps_its_source() {
+    // Arrange
+    let dir = tempfile::tempdir().expect("temporary directory");
+
+    // Act
+    let Err(error) = config::load(dir.path()) else {
+        panic!("a directory is not a file");
+    };
+
+    // Assert
+    let source = std::error::Error::source(&error).expect("the error keeps its source");
+    assert!(source.is::<std::io::Error>(), "{source:?}");
+    assert!(
+        error
+            .to_string()
+            .contains(&dir.path().display().to_string()),
+        "{error}"
     );
 }
 

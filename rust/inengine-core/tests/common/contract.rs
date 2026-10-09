@@ -2,9 +2,9 @@ use std::time::{Duration, Instant};
 
 use inengine_core::queue::{PeekedMessage, SettleError, Stage};
 
-use super::{claim, expected_lengths, peeked_ids, publish_echo, QueueFixture};
+use super::{QueueFixture, claim, expected_lengths, peeked_ids, publish_echo};
 
-pub async fn acknowledge_empties_in_progress(fixture: &impl QueueFixture) {
+pub(crate) async fn acknowledge_empties_in_progress(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     publish_echo(queue, "one", 0).await;
@@ -21,7 +21,7 @@ pub async fn acknowledge_empties_in_progress(fixture: &impl QueueFixture) {
     );
 }
 
-pub async fn retry_returns_the_message_to_the_back_of_pending_with_the_attempt_counted(
+pub(crate) async fn retry_returns_the_message_to_the_back_of_pending_with_the_attempt_counted(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -43,7 +43,7 @@ pub async fn retry_returns_the_message_to_the_back_of_pending_with_the_attempt_c
     assert_eq!(retried.envelope.attempts, 2);
 }
 
-pub async fn release_returns_the_message_to_pending_without_counting_the_attempt(
+pub(crate) async fn release_returns_the_message_to_pending_without_counting_the_attempt(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -65,7 +65,7 @@ pub async fn release_returns_the_message_to_pending_without_counting_the_attempt
     assert_eq!(reclaimed.envelope.attempts, 1);
 }
 
-pub async fn move_to_failed_keeps_the_attempt_count(fixture: &impl QueueFixture) {
+pub(crate) async fn move_to_failed_keeps_the_attempt_count(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     let id = publish_echo(queue, "one", 0).await;
@@ -94,7 +94,7 @@ pub async fn move_to_failed_keeps_the_attempt_count(fixture: &impl QueueFixture)
     }
 }
 
-pub async fn acknowledge_after_a_clear_reports_lost(fixture: &impl QueueFixture) {
+pub(crate) async fn acknowledge_after_a_clear_reports_lost(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     publish_echo(queue, "one", 0).await;
@@ -112,7 +112,9 @@ pub async fn acknowledge_after_a_clear_reports_lost(fixture: &impl QueueFixture)
     );
 }
 
-pub async fn release_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl QueueFixture) {
+pub(crate) async fn release_after_a_clear_reports_lost_and_writes_nothing(
+    fixture: &impl QueueFixture,
+) {
     // Arrange
     let queue = fixture.queue();
     publish_echo(queue, "one", 0).await;
@@ -130,7 +132,9 @@ pub async fn release_after_a_clear_reports_lost_and_writes_nothing(fixture: &imp
     );
 }
 
-pub async fn retry_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl QueueFixture) {
+pub(crate) async fn retry_after_a_clear_reports_lost_and_writes_nothing(
+    fixture: &impl QueueFixture,
+) {
     // Arrange
     let queue = fixture.queue();
     publish_echo(queue, "one", 5).await;
@@ -148,7 +152,7 @@ pub async fn retry_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl 
     );
 }
 
-pub async fn move_to_failed_after_a_clear_reports_lost_and_writes_nothing(
+pub(crate) async fn move_to_failed_after_a_clear_reports_lost_and_writes_nothing(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -168,7 +172,7 @@ pub async fn move_to_failed_after_a_clear_reports_lost_and_writes_nothing(
     );
 }
 
-pub async fn a_delivery_from_the_other_lane_is_rejected_and_changes_nothing(
+pub(crate) async fn a_delivery_from_the_other_lane_is_rejected_and_changes_nothing(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -192,7 +196,7 @@ pub async fn a_delivery_from_the_other_lane_is_rejected_and_changes_nothing(
     assert_ne!(other_lane.lane(), queue.lane());
 }
 
-pub async fn a_malformed_message_moves_to_failed_and_dequeue_returns_the_next_one(
+pub(crate) async fn a_malformed_message_moves_to_failed_and_dequeue_returns_the_next_one(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -223,7 +227,36 @@ pub async fn a_malformed_message_moves_to_failed_and_dequeue_returns_the_next_on
     }
 }
 
-pub async fn an_unreadable_message_moves_to_failed_and_dequeue_returns_the_next_one(
+pub(crate) async fn a_message_whose_id_is_not_a_uuid_moves_to_failed(fixture: &impl QueueFixture) {
+    // Arrange
+    let queue = fixture.queue();
+    let raw = br#"{"id":"test-id","plugin_name":"inengine-core","command_name":"echo","payload":"{}","queued_at":"2026-10-09T12:00:00Z","is_compressed":false,"attempts":0,"max_retries":0}"#;
+    fixture.insert_malformed_pending(raw);
+    let id = publish_echo(queue, "valid", 0).await;
+
+    // Act
+    let delivery = claim(queue).await;
+
+    // Assert
+    assert_eq!(delivery.envelope.id, id);
+    assert_eq!(
+        queue.lengths().await.expect("lengths"),
+        expected_lengths(0, 1, 1)
+    );
+    match queue
+        .peek(Stage::Failed, 0..=9)
+        .await
+        .expect("peek")
+        .as_slice()
+    {
+        [PeekedMessage::Malformed { raw: kept, .. }] => {
+            assert!(kept.contains(r#""id":"test-id""#), "{kept}");
+        }
+        other => panic!("expected one malformed entry, got {other:?}"),
+    }
+}
+
+pub(crate) async fn an_unreadable_message_moves_to_failed_and_dequeue_returns_the_next_one(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -242,7 +275,7 @@ pub async fn an_unreadable_message_moves_to_failed_and_dequeue_returns_the_next_
     );
 }
 
-pub async fn recover_returns_in_progress_messages_with_the_oldest_claim_first(
+pub(crate) async fn recover_returns_in_progress_messages_with_the_oldest_claim_first(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -265,7 +298,7 @@ pub async fn recover_returns_in_progress_messages_with_the_oldest_claim_first(
     assert_eq!(peeked_ids(&pending), vec![first, second]);
 }
 
-pub async fn peek_returns_the_requested_range_oldest_first(fixture: &impl QueueFixture) {
+pub(crate) async fn peek_returns_the_requested_range_oldest_first(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     let mut ids = Vec::new();
@@ -280,7 +313,7 @@ pub async fn peek_returns_the_requested_range_oldest_first(fixture: &impl QueueF
     assert_eq!(peeked_ids(&peeked), ids[1..=2].to_vec());
 }
 
-pub async fn peek_of_a_reversed_range_returns_nothing(fixture: &impl QueueFixture) {
+pub(crate) async fn peek_of_a_reversed_range_returns_nothing(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     for text in ["a", "b", "c", "d"] {
@@ -295,7 +328,7 @@ pub async fn peek_of_a_reversed_range_returns_nothing(fixture: &impl QueueFixtur
     assert!(peeked.is_empty(), "{peeked:?}");
 }
 
-pub async fn peek_of_the_largest_range_returns_every_message(fixture: &impl QueueFixture) {
+pub(crate) async fn peek_of_the_largest_range_returns_every_message(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     let first = publish_echo(queue, "first", 0).await;
@@ -311,7 +344,9 @@ pub async fn peek_of_the_largest_range_returns_every_message(fixture: &impl Queu
     assert_eq!(peeked_ids(&peeked), vec![first, second]);
 }
 
-pub async fn republish_moves_the_first_failed_messages_to_pending(fixture: &impl QueueFixture) {
+pub(crate) async fn republish_moves_the_first_failed_messages_to_pending(
+    fixture: &impl QueueFixture,
+) {
     // Arrange
     let queue = fixture.queue();
     let first = publish_echo(queue, "first", 0).await;
@@ -332,7 +367,7 @@ pub async fn republish_moves_the_first_failed_messages_to_pending(fixture: &impl
     assert_eq!(peeked_ids(&failed), vec![second]);
 }
 
-pub async fn clear_removes_every_message_in_the_stage_and_reports_the_count(
+pub(crate) async fn clear_removes_every_message_in_the_stage_and_reports_the_count(
     fixture: &impl QueueFixture,
 ) {
     // Arrange
@@ -354,7 +389,7 @@ pub async fn clear_removes_every_message_in_the_stage_and_reports_the_count(
     );
 }
 
-pub async fn dequeue_with_a_wait_returns_none_after_the_wait(fixture: &impl QueueFixture) {
+pub(crate) async fn dequeue_with_a_wait_returns_none_after_the_wait(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
     let started = Instant::now();
@@ -378,7 +413,7 @@ pub async fn dequeue_with_a_wait_returns_none_after_the_wait(fixture: &impl Queu
     );
 }
 
-pub async fn dequeue_with_the_largest_wait_returns_an_available_message(
+pub(crate) async fn dequeue_with_the_largest_wait_returns_an_available_message(
     fixture: &impl QueueFixture,
 ) {
     // Arrange

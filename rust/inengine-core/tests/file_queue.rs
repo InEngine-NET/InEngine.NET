@@ -1,3 +1,4 @@
+//! Tests the file queue driver against the shared queue contract and its file handling.
 #[macro_use]
 mod common;
 
@@ -6,13 +7,13 @@ use std::ffi::OsString;
 use std::fs::{self, File};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, SystemTime};
 
 use common::{
-    claim, drain_ids, echo_envelope, expected_lengths, publish_echo, settings_with_queue_base,
-    QueueFixture,
+    QueueFixture, claim, drain_ids, echo_envelope, expected_lengths, publish_echo,
+    settings_with_queue_base,
 };
 use inengine_core::queue::{Delivery, Queue, QueueLane, Stage};
 use tempfile::TempDir;

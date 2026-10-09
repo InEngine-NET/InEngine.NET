@@ -1,3 +1,4 @@
+//! Tests the publish, consume, and recover commands against a file queue.
 mod common;
 
 use std::path::Path;
@@ -370,11 +371,14 @@ async fn consume_of_a_panicking_command_moves_it_to_failed() {
         queue.lengths().await.expect("lengths"),
         expected_lengths(0, 0, 1)
     );
-    assert_eq!(
-        ctx.output.take_buffer(),
-        format!(
-            "message {id}: command failed: the command panicked\n{id}: moved to failed\n",
-            id = envelope.id
-        )
+    let printed = ctx.output.take_buffer();
+    let lines: Vec<&str> = printed.lines().collect();
+    assert_eq!(lines.len(), 2, "{printed}");
+    let failure = format!(
+        "message {}: command failed: the command panicked: ",
+        envelope.id
     );
+    assert!(lines[0].starts_with(&failure), "{printed}");
+    assert!(lines[0].ends_with("\"intentional panic\""), "{printed}");
+    assert_eq!(lines[1], format!("{}: moved to failed", envelope.id));
 }

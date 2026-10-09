@@ -1,3 +1,5 @@
+//! Tests the Redis queue driver against the shared queue contract.
+//!
 //! These tests need a Redis server, version 6.2 or later. Run them with
 //! `INENGINE_TEST_REDIS_PORT=<port> cargo test --workspace --features inengine-core/integration`.
 #![cfg(feature = "integration")]
@@ -5,7 +7,7 @@
 #[macro_use]
 mod common;
 
-use common::{claim, expected_lengths, publish_echo, settings_with_queue_base, QueueFixture};
+use common::{QueueFixture, claim, expected_lengths, publish_echo, settings_with_queue_base};
 use inengine_core::config::{QueueDriver, QueueSettings};
 use inengine_core::queue::{Queue, QueueLane, SettleError, Stage};
 

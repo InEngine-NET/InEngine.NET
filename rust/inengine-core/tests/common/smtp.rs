@@ -7,7 +7,7 @@ const RECEIVE_LIMIT: Duration = Duration::from_secs(5);
 
 /// One message as the server received it.
 #[derive(Debug)]
-pub struct ReceivedMail {
+pub(crate) struct ReceivedMail {
     /// Every command of the session before the message text, such as `EHLO` and `MAIL FROM`.
     pub commands: Vec<String>,
     pub text: String,
@@ -15,13 +15,13 @@ pub struct ReceivedMail {
 
 /// An SMTP server that offers no extensions, so no STARTTLS and no AUTH, and accepts every
 /// message. Its thread runs until the test process ends.
-pub struct PlainSmtpServer {
+pub(crate) struct PlainSmtpServer {
     pub port: u16,
     receiver: mpsc::Receiver<ReceivedMail>,
 }
 
 impl PlainSmtpServer {
-    pub fn start() -> Self {
+    pub(crate) fn start() -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").expect("bind the SMTP server");
         let port = listener.local_addr().expect("address").port();
         let (sender, receiver) = mpsc::channel();
@@ -35,7 +35,7 @@ impl PlainSmtpServer {
     }
 
     /// The next message, or `None` when none arrives within five seconds.
-    pub fn next_mail(&self) -> Option<ReceivedMail> {
+    pub(crate) fn next_mail(&self) -> Option<ReceivedMail> {
         self.receiver.recv_timeout(RECEIVE_LIMIT).ok()
     }
 }
