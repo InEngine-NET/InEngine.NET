@@ -2,7 +2,7 @@
 
 This crate is an example InEngine plugin.
 A plugin is a WebAssembly component that implements the WIT interface in `wit/plugin.wit`.
-InEngine loads the component with Wasmtime and runs its commands with `inengine plugin`.
+InEngine loads the component with Wasmtime and runs its commands from the command line, the queue, or a schedule.
 
 ## Prerequisites
 
@@ -59,6 +59,13 @@ inengine plugin --name sample --command greet --args name=Ethan
 
 This prints `Hello, Ethan!`.
 
+Queue the same command with the plugin name and the command name:
+
+```bash
+inengine queue publish --plugin sample --command greet --args name=Ethan
+inengine queue consume
+```
+
 ## Commands
 
 | Command   | Arguments                                | Output                  |
@@ -67,6 +74,8 @@ This prints `Hello, Ethan!`.
 | `version` | none                                     | `sample-plugin 0.1.0`   |
 
 The plugin also implements `list-schedules`, and it returns an empty list.
+The server runs each schedule entry that a plugin returns.
+`inengine schedule list` shows these entries.
 
 ## Writing your own plugin
 
