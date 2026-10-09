@@ -46,6 +46,13 @@ inengine exec -e hello -t 60
 The program also stops at the timeout of a scheduled job and when the server stops.
 Exec kills only the program it started, so a process that the program starts in the background keeps running.
 
+Exec prints the standard output of the program, then its standard error.
+When a stream is larger than 1 MiB, Exec keeps its first 512 KiB and its last 512 KiB, and prints a line between them that says how many bytes it did not keep:
+
+```text
+[1048584 bytes not kept]
+```
+
 ## Chain
 
 Multiple commands can run in sequence as a chain.

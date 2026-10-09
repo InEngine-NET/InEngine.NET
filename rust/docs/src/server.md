@@ -22,6 +22,8 @@ The server stops on `SIGINT` (Ctrl+C) or `SIGTERM`.
 It stops each running plugin call and each program that the exec command started within about 10 milliseconds.
 A queued message whose command was stopped returns to pending, and the attempt does not count.
 The server waits for every other running command to finish.
+A consumer that waits for a message finishes that wait first, so the server can take up to 5 seconds to stop.
+A message that such a consumer claims after the stop signal returns to pending without a run.
 A scheduled command that ran past its timeout is not waited for, and the process exits at most 10 seconds after the server stops.
 
 ## Running with systemd

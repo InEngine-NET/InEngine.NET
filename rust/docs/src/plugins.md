@@ -120,7 +120,9 @@ From the `rust` directory, `just install-tools` installs both.
 
 Create a new Rust library crate with `crate-type = ["cdylib"]`.
 Add `wit-bindgen` and `serde_json` as dependencies.
-Copy the `wit/plugin.wit` file into your crate.
+Copy the `rust/inengine-core/wit/plugin.wit` file from the InEngine repository into a `wit` folder in your crate.
+cargo-component then writes `src/bindings.rs` on each build.
+Your crate does not use that file, because `wit_bindgen::generate!` generates the bindings, so add it to `.gitignore`.
 
 ### Implement the Interfaces
 

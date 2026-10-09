@@ -112,7 +112,8 @@ schedule.add(job);
 The output is written, appended, and mailed when the command succeeds and when it fails.
 The mail subject is `Command completed: <name>` or `Command failed: <name>`.
 A failure mail ends with the error and each of its causes.
-Nothing is written or mailed for a command that the server stopped, a command that ignored its timeout, or a command that panicked.
+Nothing is written or mailed for a command that the server stopped, a command that ignored its deadline, or a command that panicked.
+Nothing is written or mailed for a successful run whose `ping_after` request fails, because that run fails.
 
 A ping fails when the server answers with an error status, and the job fails with it.
 
