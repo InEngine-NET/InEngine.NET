@@ -1,4 +1,4 @@
 [workspace]
 members = ["inengine", "inengine-core"]
-exclude = ["sample-plugin"]
+exclude = ["sample-plugin", "fixture-plugin"]
 resolver = "2"
