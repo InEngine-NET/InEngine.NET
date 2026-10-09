@@ -2,7 +2,7 @@
 //! failures, and schedule entries that the host must reject.
 
 wit_bindgen::generate!({
-    path: "../sample-plugin/wit",
+    path: "../inengine-core/wit",
     world: "plugin",
 });
 
