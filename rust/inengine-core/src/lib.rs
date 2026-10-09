@@ -1,3 +1,7 @@
+/// The plugin name under which the built-in commands are queued. Configuration rejects a
+/// plugin with this name.
+pub const BUILTIN_PLUGIN_NAME: &str = "inengine-core";
+
 pub mod command;
 pub mod commands;
 pub mod config;

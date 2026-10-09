@@ -1,15 +1,20 @@
 use serde::{Deserialize, Serialize};
 
-use crate::command::{Command, CommandContext, CommandResult};
+use crate::command::{Command, CommandContext, CommandResult, QueueableCommand};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Echo {
     pub text: String,
 }
 
+impl QueueableCommand for Echo {
+    const PLUGIN_NAME: &'static str = crate::BUILTIN_PLUGIN_NAME;
+    const COMMAND_NAME: &'static str = "echo";
+}
+
 impl Command for Echo {
     fn name(&self) -> &str {
-        "echo"
+        Self::COMMAND_NAME
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {

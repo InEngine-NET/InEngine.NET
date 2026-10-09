@@ -11,6 +11,10 @@ pub enum CommandError {
 
     #[error("command timed out after {seconds} seconds")]
     Timeout { seconds: u64 },
+
+    /// The server stopped while the command ran, so the command did not finish or fail.
+    #[error("command stopped because the server is stopping")]
+    Interrupted,
 }
 
 impl CommandError {
@@ -55,8 +59,16 @@ pub enum QueueError {
     #[error("redis error: {0}")]
     Redis(#[from] redis::RedisError),
 
-    #[error("command not found in registry: {name}")]
-    UnknownCommand { name: String },
+    #[error("command not found in plugin '{plugin}': {command}")]
+    UnknownCommand { plugin: String, command: String },
+}
+
+/// A second registration of a plugin name and command name pair.
+#[derive(Debug, thiserror::Error)]
+#[error("duplicate command in plugin '{plugin}': {command}")]
+pub struct DuplicateCommand {
+    pub plugin: String,
+    pub command: String,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -64,9 +76,16 @@ pub enum PluginError {
     #[error("failed to load plugin '{name}': {reason}")]
     Load { name: String, reason: String },
 
-    #[error("command not found in plugin '{plugin}': {command}")]
-    CommandNotFound { plugin: String, command: String },
+    #[error(transparent)]
+    DuplicateCommand(#[from] DuplicateCommand),
 
-    #[error("plugin runtime error in '{plugin}': {message}")]
-    Runtime { plugin: String, message: String },
+    #[error("invalid schedule entry for command '{command}' in plugin '{plugin}': {reason}")]
+    InvalidScheduleEntry {
+        plugin: String,
+        command: String,
+        reason: String,
+    },
+
+    #[error("could not start the plugin runtime: {message}")]
+    Engine { message: String },
 }

@@ -11,8 +11,7 @@ use crate::queue::{
 
 pub struct Publish {
     pub plugin_name: String,
-    pub command_class: Option<String>,
-    pub command_verb: Option<String>,
+    pub command_name: String,
     /// Payload fields as `key=value` pairs. Each value is sent as a string.
     pub args: Vec<String>,
     /// The whole payload as a JSON object, used in place of `args`.
@@ -52,14 +51,9 @@ impl Command for Publish {
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        let class_name = self
-            .command_class
-            .as_deref()
-            .or(self.command_verb.as_deref())
-            .ok_or_else(|| CommandError::failed("specify --class or --command"))?;
         let settings = &ctx.settings.queue;
         let envelope = CommandEnvelope::new(
-            class_name,
+            &self.command_name,
             &self.plugin_name,
             &self.payload()?,
             settings.use_compression,
@@ -74,7 +68,9 @@ impl Command for Publish {
                 .map_err(|error| CommandError::failed_with("could not publish", error))
         })?;
         ctx.output.info_line(&format!(
-            "published {class_name} to the {} queue",
+            "published {} from {} to the {} queue",
+            self.command_name,
+            self.plugin_name,
             self.lane.as_str()
         ));
         Ok(())
@@ -93,6 +89,7 @@ struct ConsumeTally {
     acknowledged: usize,
     retried: usize,
     moved_to_failed: usize,
+    released: usize,
 }
 
 impl ConsumeTally {
@@ -101,11 +98,12 @@ impl ConsumeTally {
             SettleOutcome::Acknowledged => self.acknowledged += 1,
             SettleOutcome::Retried => self.retried += 1,
             SettleOutcome::MovedToFailed => self.moved_to_failed += 1,
+            SettleOutcome::Released => self.released += 1,
         }
     }
 
     fn incomplete(&self) -> usize {
-        self.retried + self.moved_to_failed
+        self.retried + self.moved_to_failed + self.released
     }
 }
 
@@ -115,7 +113,15 @@ impl fmt::Display for ConsumeTally {
             f,
             "completed: {}, returned for a retry: {}, moved to failed: {}",
             self.acknowledged, self.retried, self.moved_to_failed
-        )
+        )?;
+        if self.released > 0 {
+            write!(
+                f,
+                ", returned because the server stopped: {}",
+                self.released
+            )?;
+        }
+        Ok(())
     }
 }
 
@@ -137,9 +143,13 @@ impl Command for Consume {
                 let Some(delivery) = dequeued else {
                     break;
                 };
-                let processed = process_delivery(&queue, delivery, &self.registry, |command| {
-                    std::future::ready(command.run(ctx))
-                })
+                let processed = process_delivery(
+                    &queue,
+                    delivery,
+                    &self.registry,
+                    &ctx.cancel.clone(),
+                    |command| std::future::ready(command.run(ctx)),
+                )
                 .await;
                 let id = &processed.message_id;
                 match &processed.attempt {
@@ -151,6 +161,10 @@ impl Command for Consume {
                         ctx.output.error_line(&format!(
                             "could not build the command for message {id}: {error}"
                         ));
+                    }
+                    Attempt::Interrupted => {
+                        ctx.output
+                            .error_line(&format!("message {id}: {}", CommandError::Interrupted));
                     }
                 }
                 let outcome = processed.settled.map_err(|error| {
@@ -166,5 +180,33 @@ impl Command for Consume {
             }
             Ok(())
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tally_names_released_messages_only_when_there_are_some() {
+        // Arrange
+        let mut tally = ConsumeTally::default();
+        tally.record(SettleOutcome::Acknowledged);
+        let without_released = tally.to_string();
+        tally.record(SettleOutcome::Released);
+
+        // Act
+        let with_released = tally.to_string();
+
+        // Assert
+        assert_eq!(
+            without_released,
+            "completed: 1, returned for a retry: 0, moved to failed: 0"
+        );
+        assert_eq!(
+            with_released,
+            "completed: 1, returned for a retry: 0, moved to failed: 0, returned because the server stopped: 1"
+        );
+        assert_eq!(tally.incomplete(), 1);
     }
 }

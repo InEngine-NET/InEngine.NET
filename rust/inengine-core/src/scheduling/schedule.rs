@@ -4,7 +4,6 @@ use std::time::Duration;
 
 use crate::command::Command;
 use crate::commands::chain::Chain;
-use crate::config::Settings;
 use crate::server::lifecycle::CommandLifecycle;
 
 #[derive(Debug, thiserror::Error)]
@@ -15,7 +14,8 @@ pub enum ScheduleError {
 
 pub struct ScheduledJob {
     pub command: Arc<dyn Command>,
-    pub command_name: String,
+    /// The command name, `chain` for a chain, or `<plugin>::<command>` for a plugin schedule.
+    pub name: String,
     pub cron_expression: String,
     pub cron_schedule: cron::Schedule,
     pub lifecycle: CommandLifecycle,
@@ -24,7 +24,7 @@ pub struct ScheduledJob {
 impl std::fmt::Debug for ScheduledJob {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ScheduledJob")
-            .field("command_name", &self.command_name)
+            .field("name", &self.name)
             .field("cron_expression", &self.cron_expression)
             .finish()
     }
@@ -72,42 +72,50 @@ impl ScheduledJob {
     }
 }
 
+#[derive(Default)]
 pub struct Schedule {
-    pub jobs: Vec<ScheduledJob>,
-    pub settings: Arc<Settings>,
+    jobs: Vec<ScheduledJob>,
 }
 
 impl Schedule {
-    pub fn new(settings: Arc<Settings>) -> Self {
-        Self {
-            jobs: Vec::new(),
-            settings,
-        }
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub fn command(&self, cmd: impl Command + 'static) -> UnscheduledJob {
         let name = cmd.name().to_string();
-        UnscheduledJob {
-            command: Arc::new(cmd),
-            command_name: name,
-        }
+        self.command_with_name(name, Arc::new(cmd))
     }
 
     pub fn commands(&self, cmds: Vec<Box<dyn Command>>) -> UnscheduledJob {
-        UnscheduledJob {
-            command: Arc::new(Chain { commands: cmds }),
-            command_name: "chain".to_string(),
-        }
+        self.command_with_name("chain".to_string(), Arc::new(Chain { commands: cmds }))
+    }
+
+    pub(crate) fn command_with_name(
+        &self,
+        name: String,
+        command: Arc<dyn Command>,
+    ) -> UnscheduledJob {
+        UnscheduledJob { command, name }
     }
 
     pub fn add(&mut self, job: ScheduledJob) {
         self.jobs.push(job);
     }
+
+    /// The jobs in the order they were added.
+    pub fn jobs(&self) -> &[ScheduledJob] {
+        &self.jobs
+    }
+
+    pub(crate) fn into_jobs(self) -> Vec<ScheduledJob> {
+        self.jobs
+    }
 }
 
 pub struct UnscheduledJob {
     command: Arc<dyn Command>,
-    command_name: String,
+    name: String,
 }
 
 impl UnscheduledJob {
@@ -115,11 +123,11 @@ impl UnscheduledJob {
         let cron_schedule =
             cron::Schedule::from_str(expression).map_err(|e| ScheduleError::InvalidCron {
                 expression: expression.to_string(),
-                reason: e.to_string(),
+                reason: last_line(&e.to_string()),
             })?;
         Ok(ScheduledJob {
             command: self.command,
-            command_name: self.command_name,
+            name: self.name,
             cron_expression: expression.to_string(),
             cron_schedule,
             lifecycle: CommandLifecycle::default(),
@@ -167,11 +175,16 @@ impl UnscheduledJob {
     }
 }
 
+/// The cron crate formats a parse error as the expression, a caret under the fault, and the
+/// explanation, each on its own line. Only the explanation reads well inside a one-line message.
+fn last_line(message: &str) -> String {
+    message.lines().last().unwrap_or(message).trim().to_string()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::command::{CommandContext, CommandResult};
-    use crate::commands::test_helpers::make_ctx;
 
     pub(crate) struct TestCmd {
         pub label: String,
@@ -191,7 +204,7 @@ mod tests {
     fn make_unscheduled_job() -> UnscheduledJob {
         UnscheduledJob {
             command: Arc::new(TestCmd { label: "t".into() }),
-            command_name: "t".into(),
+            name: "t".into(),
         }
     }
 
@@ -262,6 +275,22 @@ mod tests {
     }
 
     #[test]
+    fn invalid_cron_error_is_one_line_with_the_expression_and_the_reason() {
+        // Arrange
+        let job = make_unscheduled_job();
+
+        // Act
+        let result = job.cron("not a cron");
+
+        // Assert
+        let message = result.expect_err("the expression is invalid").to_string();
+        assert_eq!(
+            message,
+            "invalid cron expression 'not a cron': The 'Seconds' field does not support using names. 'not' specified."
+        );
+    }
+
+    #[test]
     fn invalid_cron_returns_error() {
         let result = make_unscheduled_job().cron("not a cron");
         assert!(result.is_err());
@@ -274,8 +303,7 @@ mod tests {
     #[test]
     fn register_single_command() {
         // Arrange
-        let ctx = make_ctx();
-        let mut schedule = Schedule::new(ctx.settings.clone());
+        let mut schedule = Schedule::new();
 
         // Act
         let job = schedule
@@ -287,16 +315,15 @@ mod tests {
         schedule.add(job);
 
         // Assert
-        assert_eq!(schedule.jobs.len(), 1);
-        assert_eq!(schedule.jobs[0].command_name, "hello");
-        assert_eq!(schedule.jobs[0].cron_expression, "0 */5 * * * *");
+        assert_eq!(schedule.jobs().len(), 1);
+        assert_eq!(schedule.jobs()[0].name, "hello");
+        assert_eq!(schedule.jobs()[0].cron_expression, "0 */5 * * * *");
     }
 
     #[test]
     fn register_two_commands() {
         // Arrange
-        let ctx = make_ctx();
-        let mut schedule = Schedule::new(ctx.settings.clone());
+        let mut schedule = Schedule::new();
 
         // Act
         let job1 = schedule
@@ -316,16 +343,15 @@ mod tests {
         schedule.add(job2);
 
         // Assert
-        assert_eq!(schedule.jobs.len(), 2);
-        assert_eq!(schedule.jobs[0].command_name, "first");
-        assert_eq!(schedule.jobs[1].command_name, "second");
+        assert_eq!(schedule.jobs().len(), 2);
+        assert_eq!(schedule.jobs()[0].name, "first");
+        assert_eq!(schedule.jobs()[1].name, "second");
     }
 
     #[test]
     fn register_chain_of_commands() {
         // Arrange
-        let ctx = make_ctx();
-        let mut schedule = Schedule::new(ctx.settings.clone());
+        let mut schedule = Schedule::new();
         let cmds: Vec<Box<dyn Command>> = vec![
             Box::new(TestCmd { label: "a".into() }),
             Box::new(TestCmd { label: "b".into() }),
@@ -336,7 +362,7 @@ mod tests {
         schedule.add(job);
 
         // Assert
-        assert_eq!(schedule.jobs.len(), 1);
-        assert_eq!(schedule.jobs[0].command_name, "chain");
+        assert_eq!(schedule.jobs().len(), 1);
+        assert_eq!(schedule.jobs()[0].name, "chain");
     }
 }

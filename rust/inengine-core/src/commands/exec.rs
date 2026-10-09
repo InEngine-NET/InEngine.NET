@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
-use crate::command::{Command, CommandContext, CommandResult};
+use crate::command::{Command, CommandContext, CommandResult, QueueableCommand};
 use crate::error::CommandError;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,9 +17,14 @@ pub struct Exec {
     pub timeout: u64,
 }
 
+impl QueueableCommand for Exec {
+    const PLUGIN_NAME: &'static str = crate::BUILTIN_PLUGIN_NAME;
+    const COMMAND_NAME: &'static str = "exec";
+}
+
 impl Command for Exec {
     fn name(&self) -> &str {
-        "exec"
+        Self::COMMAND_NAME
     }
 
     fn run(&self, ctx: &mut CommandContext) -> CommandResult {

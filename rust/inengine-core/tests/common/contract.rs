@@ -43,6 +43,28 @@ pub async fn retry_returns_the_message_to_the_back_of_pending_with_the_attempt_c
     assert_eq!(retried.envelope.attempts, 2);
 }
 
+pub async fn release_returns_the_message_to_pending_without_counting_the_attempt(
+    fixture: &impl QueueFixture,
+) {
+    // Arrange
+    let queue = fixture.queue();
+    let id = publish_echo(queue, "one", 0).await;
+    let delivery = claim(queue).await;
+
+    // Act
+    let result = queue.release(delivery).await;
+
+    // Assert
+    assert!(result.is_ok(), "{result:?}");
+    assert_eq!(
+        queue.lengths().await.expect("lengths"),
+        expected_lengths(1, 0, 0)
+    );
+    let reclaimed = claim(queue).await;
+    assert_eq!(reclaimed.envelope.id, id);
+    assert_eq!(reclaimed.envelope.attempts, 1);
+}
+
 pub async fn move_to_failed_keeps_the_attempt_count(fixture: &impl QueueFixture) {
     // Arrange
     let queue = fixture.queue();
@@ -81,6 +103,24 @@ pub async fn acknowledge_after_a_clear_reports_lost(fixture: &impl QueueFixture)
 
     // Act
     let result = queue.acknowledge(delivery).await;
+
+    // Assert
+    assert!(matches!(result, Err(SettleError::Lost)), "{result:?}");
+    assert_eq!(
+        queue.lengths().await.expect("lengths"),
+        expected_lengths(0, 0, 0)
+    );
+}
+
+pub async fn release_after_a_clear_reports_lost_and_writes_nothing(fixture: &impl QueueFixture) {
+    // Arrange
+    let queue = fixture.queue();
+    publish_echo(queue, "one", 0).await;
+    let delivery = claim(queue).await;
+    queue.clear(Stage::InProgress).await.expect("clear");
+
+    // Act
+    let result = queue.release(delivery).await;
 
     // Assert
     assert!(matches!(result, Err(SettleError::Lost)), "{result:?}");

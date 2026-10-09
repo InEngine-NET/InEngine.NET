@@ -13,6 +13,10 @@ use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
 
 const DEQUEUE_WAIT: Duration = Duration::from_secs(5);
 const RETRY_DELAY: Duration = Duration::from_secs(5);
+/// A settle after a shutdown cannot wait for the token, which has already fired, so it
+/// retries a few times on a short delay before it leaves the message in progress.
+const SHUTDOWN_SETTLE_RETRIES: u32 = 3;
+const SHUTDOWN_SETTLE_DELAY: Duration = Duration::from_millis(500);
 
 pub struct QueueConsumers {
     settings: Arc<Settings>,
@@ -181,10 +185,18 @@ impl Consumer {
 
     async fn process(&self, queue: &Queue, delivery: Delivery) {
         let settings = self.settings.clone();
-        let processed = process_delivery(queue, delivery, &self.registry, |command| async move {
-            info!("running {}", command.name());
-            run_with_lifecycle(Arc::from(command), settings, &CommandLifecycle::default()).await
-        })
+        let cancel = self.cancel.clone();
+        let processed = process_delivery(
+            queue,
+            delivery,
+            &self.registry,
+            &self.cancel,
+            |command| async move {
+                info!("running {}", command.name());
+                let lifecycle = CommandLifecycle::default();
+                run_with_lifecycle(Arc::from(command), settings, &lifecycle, &cancel).await
+            },
+        )
         .await;
         let id = &processed.message_id;
         match &processed.attempt {
@@ -193,13 +205,14 @@ impl Consumer {
             Attempt::Unrunnable(error) => {
                 error!("could not build the command for message {id}: {error}")
             }
+            Attempt::Interrupted => info!("message {id} stopped because the server is stopping"),
         }
         self.settle_until_done(queue, id, processed.attempt.kind(), processed.settled)
             .await;
     }
 
     /// Logs the settle result. After an `Interrupted` error, settles again until the settle
-    /// succeeds or the server stops.
+    /// succeeds or the server stops. A message stopped by the shutdown gets a few more tries.
     async fn settle_until_done(
         &self,
         queue: &Queue,
@@ -207,6 +220,7 @@ impl Consumer {
         attempt: AttemptKind,
         mut settled: Result<SettleOutcome, SettleError>,
     ) {
+        let mut shutdown_retries = 0;
         loop {
             match settled {
                 Ok(outcome) => return log_outcome(id, outcome),
@@ -216,9 +230,21 @@ impl Consumer {
                 Err(error @ SettleError::Rejected { .. }) => return error!("{error}"),
                 Err(SettleError::Interrupted { delivery, source }) => {
                     error!("could not settle message {id}: {source}");
-                    if sleep_or_cancel(&self.cancel, self.timing.retry_delay).await {
+                    let give_up = if attempt == AttemptKind::Interrupted {
+                        shutdown_retries += 1;
+                        let exhausted = shutdown_retries > SHUTDOWN_SETTLE_RETRIES;
+                        if !exhausted {
+                            tokio::time::sleep(SHUTDOWN_SETTLE_DELAY).await;
+                        }
+                        exhausted
+                    } else {
+                        sleep_or_cancel(&self.cancel, self.timing.retry_delay).await
+                    };
+                    if give_up {
                         return warn!(
-                            "message {id} stays in progress because the server is stopping"
+                            "message {id} stays in progress because the server is stopping. Run \
+                             `inengine queue recover` after the server stops, or set \
+                             queue.recover_on_start."
                         );
                     }
                     settled = settle(queue, *delivery, attempt).await;
@@ -233,6 +259,9 @@ fn log_outcome(id: &str, outcome: SettleOutcome) {
         SettleOutcome::Acknowledged => debug!("completed message {id}"),
         SettleOutcome::Retried => info!("returned message {id} to pending for a retry"),
         SettleOutcome::MovedToFailed => warn!("moved message {id} to failed"),
+        SettleOutcome::Released => {
+            info!("returned message {id} to pending because the server is stopping")
+        }
     }
 }
 
@@ -300,7 +329,7 @@ mod tests {
         stopped_at.duration_since(cancelled_at.await.expect("stopper"))
     }
 
-    const ECHO: &str = "inengine_core::commands::echo::Echo";
+    const ECHO: &str = "echo";
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn recover_on_start_processes_a_message_left_in_progress() {
@@ -382,7 +411,7 @@ mod tests {
         // Arrange
         let dir = tempfile::tempdir().expect("temporary directory");
         let settings = file_settings(dir.path(), true);
-        let queue = leave_message_in_progress(&settings, QueueLane::Primary, "no::Such").await;
+        let queue = leave_message_in_progress(&settings, QueueLane::Primary, "missing").await;
         let failed = dir.path().join("InEngineQueue_Primary_Failed");
         std::fs::set_permissions(&failed, std::fs::Permissions::from_mode(0o555)).expect("chmod");
 

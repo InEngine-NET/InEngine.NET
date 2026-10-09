@@ -4,6 +4,12 @@ range_constraint!(pub(crate) PORT, i64, min: 1, max: 65535);
 range_constraint!(pub(crate) CONSUMERS, i64, min: 0, max: 1024);
 range_constraint!(pub(crate) MAX_RETRIES, i64, min: 0, max: 100);
 range_constraint!(pub(crate) REDIS_DATABASE, i64, min: 0, max: 255);
+range_constraint!(pub(crate) PLUGIN_TIMEOUT_SECONDS, i64, min: 1, max: 86400);
+range_constraint!(
+    /// A Rust component starts with about 1.1 MiB of memory and grows while it runs. The
+    /// minimum leaves room for that growth.
+    pub(crate) PLUGIN_MEMORY_MIB, i64, min: 16, max: 4096
+);
 length_constraint!(
     pub(crate) HOSTNAME_LEN, min: 1, max: 253
 );

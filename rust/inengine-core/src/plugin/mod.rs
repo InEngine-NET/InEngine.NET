@@ -1,2 +1,10 @@
-pub mod loader;
-pub mod wasm_command;
+mod limiter;
+mod loader;
+mod runtime;
+mod wasm_command;
+
+pub use limiter::MemoryLimitExceeded;
+pub use loader::{
+    CommandDescriptor, LoadedPlugin, PluginLoader, ScheduleEntry, PLUGIN_LOAD_TIMEOUT,
+};
+pub use runtime::PluginRuntime;

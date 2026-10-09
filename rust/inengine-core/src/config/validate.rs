@@ -2,13 +2,23 @@ use std::path::Path;
 
 use confval::prelude::*;
 
-use super::spec::{FileSpec, MailSpec, QueueSpec, RedisSpec, SettingsSpec};
+use super::spec::{FileSpec, MailSpec, PluginLimitsSpec, QueueSpec, RedisSpec, SettingsSpec};
+use crate::BUILTIN_PLUGIN_NAME;
 
 const REDIS_DEFAULT_DATABASES: i64 = 16;
 
 impl Validate for SettingsSpec {
     fn validate(&self, report: &mut Report) {
         for (name, dir) in &self.plugins {
+            if name == BUILTIN_PLUGIN_NAME {
+                report
+                    .error(format!(
+                        "the plugin name '{BUILTIN_PLUGIN_NAME}' is reserved for built-in commands"
+                    ))
+                    .at(dir.span)
+                    .help("Choose another name for this plugin.")
+                    .emit();
+            }
             check_path_entry(
                 report,
                 &format!("plugin \"{name}\""),
@@ -89,6 +99,10 @@ impl Validate for RedisSpec {
 }
 
 impl Validate for FileSpec {
+    fn validate(&self, _report: &mut Report) {}
+}
+
+impl Validate for PluginLimitsSpec {
     fn validate(&self, _report: &mut Report) {}
 }
 

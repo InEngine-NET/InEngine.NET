@@ -4,10 +4,10 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
-use common::{echo_envelope, expected_lengths, settings_with_queue_base};
+use common::{echo_envelope, expected_lengths, load_fixture_plugin, settings_with_queue_base};
 use inengine_core::command::{Command, CommandContext};
 use inengine_core::commands::exec::Exec;
-use inengine_core::config::Settings;
+use inengine_core::config::{PluginLimitsSettings, Settings};
 use inengine_core::output::Output;
 use inengine_core::queue::{
     CommandEnvelope, CommandRegistry, PeekedMessage, Queue, QueueLane, Stage,
@@ -16,10 +16,7 @@ use inengine_core::queue_commands::management::Recover;
 use inengine_core::queue_commands::messaging::{Consume, Publish};
 
 fn context(settings: Settings) -> CommandContext {
-    CommandContext {
-        output: Output::new(false),
-        settings: Arc::new(settings),
-    }
+    CommandContext::new(Output::new(false), Arc::new(settings))
 }
 
 async fn open_primary(settings: &Settings) -> Queue {
@@ -39,8 +36,7 @@ fn consume_one() -> Consume {
 fn publish_echo_command(max_retries: Option<u32>) -> Publish {
     Publish {
         plugin_name: "inengine-core".into(),
-        command_class: Some("inengine_core::commands::echo::Echo".into()),
-        command_verb: None,
+        command_name: "echo".into(),
         args: vec!["text=hello".into()],
         json: None,
         max_retries,
@@ -140,7 +136,7 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
     let dir = tempfile::tempdir().expect("temporary directory");
     let settings = settings_with_queue_base(dir.path());
     let queue = open_primary(&settings).await;
-    let envelope = CommandEnvelope::new("no::Such", "nowhere", "{}", false, 3).expect("envelope");
+    let envelope = CommandEnvelope::new("missing", "nowhere", "{}", false, 3).expect("envelope");
     queue.publish(&envelope).await.expect("publish");
     let mut ctx = context(settings);
 
@@ -157,7 +153,7 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
         ctx.output.take_buffer(),
         format!(
             "could not build the command for message {id}: \
-             command not found in registry: no::Such\n{id}: moved to failed\n",
+             command not found in plugin 'nowhere': missing\n{id}: moved to failed\n",
             id = envelope.id
         )
     );
@@ -207,7 +203,7 @@ async fn a_message_published_with_json_runs_with_that_payload() {
     let mut ctx = context(settings);
     let publish = Publish {
         json: Some(r#"{"executable":"echo","arguments":["from", "json"],"timeout":5}"#.into()),
-        command_class: Some("inengine_core::commands::exec::Exec".into()),
+        command_name: "exec".into(),
         args: Vec::new(),
         ..publish_echo_command(None)
     };
@@ -254,5 +250,38 @@ async fn the_recover_command_returns_in_progress_messages_to_pending() {
     assert_eq!(
         ctx.output.take_buffer(),
         "in-progress messages returned to pending in the Primary queue: 1\n"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn consume_runs_a_queued_plugin_command() {
+    // Arrange
+    let dir = tempfile::tempdir().expect("temporary directory");
+    let settings = settings_with_queue_base(dir.path());
+    let queue = open_primary(&settings).await;
+    let loader = load_fixture_plugin(PluginLimitsSettings::default());
+    let mut registry = CommandRegistry::new();
+    assert!(loader.register_commands(&mut registry).is_empty());
+    let envelope =
+        CommandEnvelope::new("echo-args", "fixture", r#"{"a":"b"}"#, false, 0).expect("envelope");
+    queue.publish(&envelope).await.expect("publish");
+    let consume = Consume {
+        registry: Arc::new(registry),
+        ..consume_one()
+    };
+    let mut ctx = context(settings);
+
+    // Act
+    let result = consume.run(&mut ctx);
+
+    // Assert
+    assert!(result.is_ok(), "{result:?}");
+    assert_eq!(
+        ctx.output.take_buffer(),
+        format!("{{\"a\":\"b\"}}\n{}: completed\n", envelope.id)
+    );
+    assert_eq!(
+        queue.lengths().await.expect("lengths"),
+        expected_lengths(0, 0, 0)
     );
 }

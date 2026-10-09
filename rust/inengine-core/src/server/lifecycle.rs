@@ -1,7 +1,9 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::command::{Command, CommandContext, CommandResult};
+use tokio_util::sync::CancellationToken;
+
+use crate::command::{Command, CommandContext, CommandDeadline, CommandResult};
 use crate::config::MailSettings;
 use crate::error::CommandError;
 use crate::output::Output;
@@ -18,10 +20,12 @@ pub struct CommandLifecycle {
     pub timeout: Option<Duration>,
 }
 
+/// `cancel` reaches the command through its context, so a plugin call stops when it fires.
 pub async fn run_with_lifecycle(
     cmd: Arc<dyn Command>,
     settings: Arc<crate::config::Settings>,
     lifecycle: &CommandLifecycle,
+    cancel: &CancellationToken,
 ) -> CommandResult {
     if let Some(ref url) = lifecycle.ping_before_url {
         ping(url).await?;
@@ -34,12 +38,13 @@ pub async fn run_with_lifecycle(
     let result = if let Some(timeout) = lifecycle.timeout {
         let settings_clone = settings.clone();
         let cmd_clone = cmd.clone();
+        let cancel = cancel.clone();
+        let deadline = CommandDeadline::after(timeout);
 
         let task = tokio::task::spawn_blocking(move || {
-            let mut ctx = CommandContext {
-                output: Output::new(false),
-                settings: settings_clone,
-            };
+            let mut ctx = CommandContext::new(Output::new(false), settings_clone)
+                .with_deadline(deadline)
+                .with_cancel(cancel);
             let res = cmd_clone.run(&mut ctx);
             (res, ctx.output.take_buffer())
         });
@@ -58,11 +63,10 @@ pub async fn run_with_lifecycle(
     } else {
         let settings_clone = settings.clone();
         let cmd_clone = cmd.clone();
+        let cancel = cancel.clone();
         let task = tokio::task::spawn_blocking(move || {
-            let mut ctx = CommandContext {
-                output: Output::new(false),
-                settings: settings_clone,
-            };
+            let mut ctx =
+                CommandContext::new(Output::new(false), settings_clone).with_cancel(cancel);
             let res = cmd_clone.run(&mut ctx);
             (res, ctx.output.take_buffer())
         });
@@ -187,7 +191,6 @@ pub async fn send_email(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::command::{Command, CommandContext, CommandResult};
     use crate::commands::test_helpers::make_ctx;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -250,7 +253,13 @@ mod tests {
         let cmd: Arc<dyn Command> = Arc::new(OkCommand);
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_ok());
@@ -267,7 +276,13 @@ mod tests {
         let cmd: Arc<dyn Command> = Arc::new(SlowCommand);
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_err());
@@ -290,7 +305,13 @@ mod tests {
         let cmd: Arc<dyn Command> = Arc::new(OkCommand);
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_ok());
@@ -312,7 +333,13 @@ mod tests {
         let cmd: Arc<dyn Command> = Arc::new(OkCommand);
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_ok());
@@ -345,7 +372,13 @@ mod tests {
         });
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_ok());
@@ -379,7 +412,13 @@ mod tests {
         });
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_ok());
@@ -403,7 +442,13 @@ mod tests {
         let cmd: Arc<dyn Command> = Arc::new(FailCommand);
 
         // Act
-        let result = run_with_lifecycle(cmd, ctx.settings.clone(), &lifecycle).await;
+        let result = run_with_lifecycle(
+            cmd,
+            ctx.settings.clone(),
+            &lifecycle,
+            &CancellationToken::new(),
+        )
+        .await;
 
         // Assert
         assert!(result.is_err());

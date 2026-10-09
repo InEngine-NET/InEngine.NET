@@ -10,8 +10,11 @@ use confval::prelude::*;
 
 use crate::error::ConfigError;
 
-pub use runtime::{FileSettings, MailSettings, QueueSettings, RedisSettings, Settings};
-pub use spec::{FileSpec, MailSpec, QueueSpec, RedisSpec, SettingsSpec};
+pub(crate) use runtime::BYTES_PER_MIB;
+pub use runtime::{
+    FileSettings, MailSettings, PluginLimitsSettings, QueueSettings, RedisSettings, Settings,
+};
+pub use spec::{FileSpec, MailSpec, PluginLimitsSpec, QueueSpec, RedisSpec, SettingsSpec};
 pub use vocabulary::QueueDriver;
 
 /// `settings` is `None` when the report holds an error. The report can hold

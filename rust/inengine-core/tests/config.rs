@@ -1,8 +1,11 @@
 use std::path::Path;
+use std::time::Duration;
 
 use confval::diagnostic::Severity;
 use confval::prelude::*;
-use inengine_core::config::{self, Loaded, QueueDriver, Settings, SettingsSpec};
+use inengine_core::config::{
+    self, Loaded, PluginLimitsSettings, QueueDriver, Settings, SettingsSpec,
+};
 use inengine_core::error::ConfigError;
 
 fn issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
@@ -48,6 +51,9 @@ fn assert_default_settings(settings: &Settings) {
     assert_eq!(settings.queue.redis.database, 0);
     assert_eq!(settings.queue.redis.password, "");
     assert_eq!(settings.queue.file.base_path, "../");
+    assert_eq!(settings.plugin_limits.timeout, Duration::from_secs(900));
+    assert_eq!(settings.plugin_limits.memory_bytes, 256 * 1024 * 1024);
+    assert_eq!(settings.plugin_limits, PluginLimitsSettings::default());
 }
 
 #[test]
@@ -448,4 +454,61 @@ fn an_out_of_range_retry_count_is_rejected_at_its_line() {
         assert_eq!(found[0].1, Some(line));
         assert!(found[0].2.contains("max_retries"), "{}", found[0].2);
     }
+}
+
+#[test]
+fn plugin_limits_lower_to_a_duration_and_bytes() {
+    // Arrange
+    let text = "[plugin_limits]\ntimeout_seconds = 30\nmemory_mib = 64\n";
+
+    // Act
+    let loaded = config::from_text("inengine.toml", text);
+
+    // Assert
+    let settings = loaded.settings.expect("settings lower");
+    assert_eq!(settings.plugin_limits.timeout, Duration::from_secs(30));
+    assert_eq!(settings.plugin_limits.memory_bytes, 64 * 1024 * 1024);
+}
+
+#[test]
+fn out_of_range_plugin_limits_report_at_their_lines() {
+    // Arrange
+    let text = "[plugin_limits]\ntimeout_seconds = 0\nmemory_mib = 8\n";
+
+    // Act
+    let loaded = config::from_text("inengine.toml", text);
+
+    // Assert
+    assert!(loaded.settings.is_none());
+    let lines: Vec<_> = issues(&loaded)
+        .into_iter()
+        .filter(|(severity, _, _)| *severity == Severity::Error)
+        .map(|(_, line, _)| line)
+        .collect();
+    assert_eq!(lines, vec![Some(2), Some(3)]);
+}
+
+#[test]
+fn the_builtin_plugin_name_is_reserved() {
+    // Arrange
+    let directory = tempfile::tempdir().expect("temporary directory");
+    let text = format!(
+        "[plugins]\ninengine-core = \"{}\"\n",
+        directory.path().display()
+    );
+
+    // Act
+    let loaded = config::from_text("inengine.toml", &text);
+
+    // Assert
+    assert!(loaded.settings.is_none());
+    let found = issues(&loaded);
+    assert_eq!(
+        found,
+        vec![(
+            Severity::Error,
+            Some(2),
+            "the plugin name 'inengine-core' is reserved for built-in commands".to_string()
+        )]
+    );
 }

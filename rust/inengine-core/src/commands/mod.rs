@@ -19,18 +19,12 @@ pub(crate) mod test_helpers {
 
     pub fn make_ctx() -> CommandContext {
         let settings = default_settings();
-        CommandContext {
-            output: Output::new(false),
-            settings: Arc::new(settings),
-        }
+        CommandContext::new(Output::new(false), Arc::new(settings))
     }
 
     pub fn make_ctx_with_whitelist(whitelist: HashMap<String, String>) -> CommandContext {
         let mut settings = default_settings();
         settings.exec_whitelist = whitelist;
-        CommandContext {
-            output: Output::new(false),
-            settings: Arc::new(settings),
-        }
+        CommandContext::new(Output::new(false), Arc::new(settings))
     }
 }

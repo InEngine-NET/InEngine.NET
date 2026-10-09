@@ -94,11 +94,8 @@ pub struct QueuePublishArgs {
     #[arg(long, help = "Plugin name")]
     pub plugin: String,
 
-    #[arg(long, help = "Command class name")]
-    pub class: Option<String>,
-
-    #[arg(long, help = "Command verb name")]
-    pub command: Option<String>,
+    #[arg(long, help = "Command name within the plugin")]
+    pub command: String,
 
     #[arg(long, help = "Command arguments as key=value pairs")]
     pub args: Vec<String>,
@@ -269,8 +266,8 @@ mod tests {
             "publish",
             "--plugin",
             "inengine-core",
-            "--class",
-            "inengine_core::commands::echo::Echo",
+            "--command",
+            "echo",
             "--args",
             "text=hello",
             "--secondary",
@@ -280,10 +277,7 @@ mod tests {
         match cli.subcommand {
             Some(CliCommand::Queue(QueueSubcommand::Publish(args))) => {
                 assert_eq!(args.plugin, "inengine-core");
-                assert_eq!(
-                    args.class.as_deref(),
-                    Some("inengine_core::commands::echo::Echo")
-                );
+                assert_eq!(args.command, "echo");
                 assert_eq!(args.args, vec!["text=hello"]);
                 assert!(args.secondary);
             }
@@ -407,7 +401,7 @@ mod tests {
             "publish",
             "--plugin",
             "p",
-            "--class",
+            "--command",
             "c",
             "--json",
             "{}",
@@ -438,7 +432,7 @@ mod tests {
             "publish",
             "--plugin",
             "p",
-            "--class",
+            "--command",
             "c",
             "--max-retries",
             "101",
@@ -456,8 +450,17 @@ mod tests {
     fn queue_publish_rejects_json_with_args() {
         // Arrange
         let argv = [
-            "inengine", "queue", "publish", "--plugin", "p", "--class", "c", "--json", "{}",
-            "--args", "a=b",
+            "inengine",
+            "queue",
+            "publish",
+            "--plugin",
+            "p",
+            "--command",
+            "c",
+            "--json",
+            "{}",
+            "--args",
+            "a=b",
         ];
 
         // Act
@@ -466,5 +469,44 @@ mod tests {
         // Assert
         let error = result.err().expect("--json conflicts with --args");
         assert_eq!(error.kind(), clap::error::ErrorKind::ArgumentConflict);
+    }
+
+    #[test]
+    fn queue_publish_requires_command() {
+        // Arrange
+        let argv = ["inengine", "queue", "publish", "--plugin", "p"];
+
+        // Act
+        let result = Cli::try_parse_from(argv);
+
+        // Assert
+        let error = result.err().expect("--command is required");
+        assert_eq!(
+            error.kind(),
+            clap::error::ErrorKind::MissingRequiredArgument
+        );
+    }
+
+    #[test]
+    fn queue_publish_rejects_class() {
+        // Arrange
+        let argv = [
+            "inengine",
+            "queue",
+            "publish",
+            "--plugin",
+            "p",
+            "--command",
+            "c",
+            "--class",
+            "c",
+        ];
+
+        // Act
+        let result = Cli::try_parse_from(argv);
+
+        // Assert
+        let error = result.err().expect("--class is not an option");
+        assert_eq!(error.kind(), clap::error::ErrorKind::UnknownArgument);
     }
 }

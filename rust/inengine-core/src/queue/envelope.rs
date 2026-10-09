@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::command::Command;
+use crate::command::{Command, QueueableCommand};
 use crate::error::QueueError;
 use crate::queue::compression::{compress, decompress};
 use crate::queue::registry::CommandRegistry;
@@ -43,15 +43,15 @@ impl CommandEnvelope {
         })
     }
 
-    pub fn from_command<T: Command + Serialize>(
+    pub fn from_command<T: QueueableCommand>(
         cmd: &T,
         use_compression: bool,
         max_retries: u32,
     ) -> Result<Self, QueueError> {
         let json = serde_json::to_string(cmd)?;
         Self::new(
-            std::any::type_name::<T>(),
-            "inengine-core",
+            T::COMMAND_NAME,
+            T::PLUGIN_NAME,
             &json,
             use_compression,
             max_retries,
@@ -64,7 +64,7 @@ impl CommandEnvelope {
         } else {
             self.payload.clone()
         };
-        registry.build(&self.command_name, &json)
+        registry.build(&self.plugin_name, &self.command_name, &json)
     }
 
     pub fn has_retries_left(&self) -> bool {
@@ -96,6 +96,22 @@ mod tests {
         // Assert
         assert!(result.is_ok());
         assert_eq!(ctx.output.take_buffer(), "hello\n");
+    }
+
+    #[test]
+    fn from_command_writes_the_declared_plugin_and_command_names() {
+        // Arrange
+        let echo = Echo {
+            text: "hello".to_string(),
+        };
+
+        // Act
+        let envelope = CommandEnvelope::from_command(&echo, false, 0).unwrap();
+
+        // Assert
+        assert_eq!(envelope.plugin_name, "inengine-core");
+        assert_eq!(envelope.command_name, "echo");
+        assert_eq!(envelope.payload, r#"{"text":"hello"}"#);
     }
 
     #[test]
@@ -147,7 +163,7 @@ mod tests {
         let envelope = CommandEnvelope {
             id: "test-id".to_string(),
             plugin_name: "unknown".to_string(),
-            command_name: "unknown::Command".to_string(),
+            command_name: "missing".to_string(),
             payload: "{}".to_string(),
             queued_at: Utc::now(),
             is_compressed: false,
@@ -161,7 +177,11 @@ mod tests {
 
         // Assert
         let err = result.err().expect("expected an error");
-        assert!(matches!(err, QueueError::UnknownCommand { .. }));
+        assert!(matches!(
+            err,
+            QueueError::UnknownCommand { ref plugin, ref command }
+                if plugin == "unknown" && command == "missing"
+        ));
     }
 
     #[test]

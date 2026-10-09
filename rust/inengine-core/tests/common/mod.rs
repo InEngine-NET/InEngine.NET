@@ -2,11 +2,13 @@
 
 pub mod contract;
 
-use std::path::Path;
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use inengine_core::commands::echo::Echo;
-use inengine_core::config::{self, Settings, SettingsSpec};
+use inengine_core::config::{self, PluginLimitsSettings, Settings, SettingsSpec};
+use inengine_core::plugin::{PluginLoader, PluginRuntime};
 use inengine_core::queue::{CommandEnvelope, Delivery, PeekedMessage, Queue, QueueLengths};
 
 pub trait QueueFixture {
@@ -32,6 +34,30 @@ pub fn settings_with_queue_base(base: &Path) -> Settings {
     let mut settings = default_settings();
     settings.queue.file.base_path = base.to_str().expect("utf-8 path").to_string();
     settings
+}
+
+/// A directory under `tests/fixtures` that holds one plugin component.
+pub fn fixture_directory(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(name)
+}
+
+/// The `[plugins]` map with one entry.
+pub fn plugin_directories(plugin_name: &str, directory: &Path) -> HashMap<String, String> {
+    HashMap::from([(
+        plugin_name.to_string(),
+        directory.to_string_lossy().into_owned(),
+    )])
+}
+
+/// Loads the fixture plugin under the name `fixture`.
+pub fn load_fixture_plugin(limits: PluginLimitsSettings) -> PluginLoader {
+    let runtime = PluginRuntime::new(limits).expect("runtime");
+    let directories = plugin_directories("fixture", &fixture_directory("plugin"));
+    let (loader, errors) = PluginLoader::load(&directories, runtime);
+    assert!(errors.is_empty(), "{errors:?}");
+    loader
 }
 
 pub fn expected_lengths(pending: usize, in_progress: usize, failed: usize) -> QueueLengths {
@@ -95,6 +121,8 @@ macro_rules! queue_contract_tests {
             acknowledge_empties_in_progress,
             retry_returns_the_message_to_the_back_of_pending_with_the_attempt_counted,
             move_to_failed_keeps_the_attempt_count,
+            release_returns_the_message_to_pending_without_counting_the_attempt,
+            release_after_a_clear_reports_lost_and_writes_nothing,
             acknowledge_after_a_clear_reports_lost,
             retry_after_a_clear_reports_lost_and_writes_nothing,
             move_to_failed_after_a_clear_reports_lost_and_writes_nothing,

@@ -76,6 +76,8 @@ pub enum AttemptKind {
     CommandFailed,
     /// The command could not be built from the registry, so a retry would fail the same way.
     Unrunnable,
+    /// The server stopped the command before it finished, so the attempt does not count.
+    Interrupted,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -83,6 +85,8 @@ pub enum SettleAction {
     Acknowledge,
     Retry,
     MoveToFailed,
+    /// Return the message to pending without counting the attempt.
+    Release,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -90,6 +94,7 @@ pub enum SettleOutcome {
     Acknowledged,
     Retried,
     MovedToFailed,
+    Released,
 }
 
 impl SettleAction {
@@ -98,6 +103,7 @@ impl SettleAction {
             AttemptKind::Succeeded => Self::Acknowledge,
             AttemptKind::CommandFailed if envelope.has_retries_left() => Self::Retry,
             AttemptKind::CommandFailed | AttemptKind::Unrunnable => Self::MoveToFailed,
+            AttemptKind::Interrupted => Self::Release,
         }
     }
 }
@@ -108,6 +114,7 @@ impl SettleOutcome {
             SettleOutcome::Acknowledged => "completed",
             SettleOutcome::Retried => "returned to pending for a retry",
             SettleOutcome::MovedToFailed => "moved to failed",
+            SettleOutcome::Released => "returned to pending because the server is stopping",
         }
     }
 }
@@ -127,6 +134,10 @@ pub async fn settle(
             .move_to_failed(delivery)
             .await
             .map(|()| SettleOutcome::MovedToFailed),
+        SettleAction::Release => queue
+            .release(delivery)
+            .await
+            .map(|()| SettleOutcome::Released),
     }
 }
 
@@ -179,6 +190,16 @@ mod tests {
                 AttemptKind::Unrunnable,
                 envelope(1, 5),
                 SettleAction::MoveToFailed,
+            ),
+            (
+                AttemptKind::Interrupted,
+                envelope(1, 0),
+                SettleAction::Release,
+            ),
+            (
+                AttemptKind::Interrupted,
+                envelope(3, 2),
+                SettleAction::Release,
             ),
         ];
 

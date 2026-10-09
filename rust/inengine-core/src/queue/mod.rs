@@ -168,6 +168,12 @@ impl Queue {
         self.move_claimed(delivery, Stage::Failed).await
     }
 
+    /// Returns the message to pending and takes back the attempt that the claim counted.
+    pub async fn release(&self, mut delivery: Delivery) -> Result<(), SettleError> {
+        delivery.envelope.attempts = delivery.envelope.attempts.saturating_sub(1);
+        self.move_claimed(delivery, Stage::Pending).await
+    }
+
     /// Stop every other consumer of the queue first. Recovery cannot tell a message left by a
     /// crash from one that another consumer is still processing, so that message would run
     /// twice.

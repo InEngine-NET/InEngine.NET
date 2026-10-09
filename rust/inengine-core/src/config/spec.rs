@@ -3,7 +3,8 @@ use std::collections::BTreeMap;
 use confval::prelude::*;
 
 use super::constraints::{
-    QueueName, CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PORT, REDIS_DATABASE,
+    QueueName, CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PLUGIN_MEMORY_MIB,
+    PLUGIN_TIMEOUT_SECONDS, PORT, REDIS_DATABASE,
 };
 use super::vocabulary::QueueDriver;
 
@@ -22,6 +23,9 @@ pub struct SettingsSpec {
     pub mail: Located<MailSpec>,
     #[confval(nested, default)]
     pub queue: Located<QueueSpec>,
+    /// Limits that apply to every plugin call.
+    #[confval(nested, default)]
+    pub plugin_limits: Located<PluginLimitsSpec>,
 }
 
 #[derive(confval::Spec)]
@@ -95,4 +99,15 @@ pub struct FileSpec {
     /// A relative path resolves against the working directory.
     #[confval(default = "../".to_string(), length = PATH_LEN)]
     pub base_path: Located<String>,
+}
+
+#[derive(confval::Spec)]
+#[confval(derive_default)]
+pub struct PluginLimitsSpec {
+    /// The longest time one plugin call may run. A call that runs longer is stopped and fails.
+    #[confval(default = 900, range = PLUGIN_TIMEOUT_SECONDS)]
+    pub timeout_seconds: Located<i64>,
+    /// The memory budget of one plugin instance, in MiB. A call that needs more fails.
+    #[confval(default = 256, range = PLUGIN_MEMORY_MIB)]
+    pub memory_mib: Located<i64>,
 }

@@ -4,97 +4,64 @@ use chrono::Utc;
 use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info};
 
+use crate::command::Command;
 use crate::config::Settings;
-use crate::scheduling::schedule::Schedule;
-use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
+use crate::error::CommandError;
+use crate::scheduling::schedule::{Schedule, ScheduledJob};
+use crate::server::lifecycle::run_with_lifecycle;
 
 pub struct Scheduler {
-    pub schedule: Schedule,
+    settings: Arc<Settings>,
+    schedule: Schedule,
 }
 
 impl Scheduler {
-    pub fn new(settings: Arc<Settings>) -> Self {
-        Self {
-            schedule: Schedule::new(settings),
-        }
+    pub fn new(settings: Arc<Settings>, schedule: Schedule) -> Self {
+        Self { settings, schedule }
     }
 
-    pub async fn run(&self, cancel: CancellationToken) {
-        let mut handles = Vec::new();
-
-        for job in &self.schedule.jobs {
-            let command = job.command.clone();
-            let command_name = job.command_name.clone();
-            let cron_schedule = job.cron_schedule.clone();
-            let settings = self.schedule.settings.clone();
-            let token = cancel.clone();
-            let lifecycle = CommandLifecycle {
-                ping_before_url: job.lifecycle.ping_before_url.clone(),
-                ping_after_url: job.lifecycle.ping_after_url.clone(),
-                write_output_to: job.lifecycle.write_output_to.clone(),
-                append_output_to: job.lifecycle.append_output_to.clone(),
-                email_output_to: job.lifecycle.email_output_to.clone(),
-                timeout: job.lifecycle.timeout,
-                ..Default::default()
-            };
-
-            handles.push(tokio::spawn(async move {
-                run_job(
-                    command,
-                    &command_name,
-                    cron_schedule,
-                    settings,
-                    lifecycle,
-                    token,
-                )
-                .await;
-            }));
-        }
-
+    /// Runs every job until `cancel` fires. Each job moves into its own task with its whole
+    /// lifecycle, including its hooks.
+    pub async fn run(self, cancel: CancellationToken) {
+        let handles: Vec<_> = self
+            .schedule
+            .into_jobs()
+            .into_iter()
+            .map(|job| tokio::spawn(run_job(job, self.settings.clone(), cancel.clone())))
+            .collect();
         for handle in handles {
-            let _ = handle.await;
+            if let Err(error) = handle.await {
+                error!("a scheduled job task ended abnormally: {error}");
+            }
         }
     }
 }
 
-async fn run_job(
-    command: Arc<dyn crate::command::Command>,
-    command_name: &str,
-    cron_schedule: cron::Schedule,
-    settings: Arc<Settings>,
-    lifecycle: CommandLifecycle,
-    cancel: CancellationToken,
-) {
+async fn run_job(job: ScheduledJob, settings: Arc<Settings>, cancel: CancellationToken) {
+    let name = &job.name;
     loop {
-        let next = cron_schedule.upcoming(Utc).next();
-        let next_time = match next {
-            Some(t) => t,
-            None => {
-                debug!("no upcoming fire time for {command_name}, stopping");
-                return;
-            }
+        let Some(next_time) = job.cron_schedule.upcoming(Utc).next() else {
+            debug!("no upcoming fire time for {name}, stopping");
+            return;
         };
-
-        let now = Utc::now();
-        let duration = (next_time - now).to_std().unwrap_or_default();
+        let duration = (next_time - Utc::now()).to_std().unwrap_or_default();
 
         tokio::select! {
             _ = cancel.cancelled() => {
-                debug!("scheduled job {command_name} cancelled");
+                debug!("scheduled job {name} cancelled");
                 return;
             }
             _ = tokio::time::sleep(duration) => {}
         }
 
-        if cancel.is_cancelled() {
-            return;
-        }
-
-        info!("running scheduled command: {command_name}");
-
-        match run_with_lifecycle(command.clone(), settings.clone(), &lifecycle).await {
-            Ok(()) => debug!("scheduled command {command_name} completed"),
-            Err(e) => error!("scheduled command {command_name} failed: {e}"),
+        info!("running scheduled command: {name}");
+        let command: Arc<dyn Command> = job.command.clone();
+        match run_with_lifecycle(command, settings.clone(), &job.lifecycle, &cancel).await {
+            Ok(()) => debug!("scheduled command {name} completed"),
+            Err(CommandError::Interrupted) => {
+                info!("scheduled command {name} stopped because the server is stopping");
+            }
+            Err(e) => error!("scheduled command {name} failed: {e}"),
         }
     }
 }
@@ -139,15 +106,15 @@ mod tests {
         // Arrange
         let ctx = make_ctx();
         let count = Arc::new(AtomicUsize::new(0));
-        let mut scheduler = Scheduler::new(ctx.settings.clone());
-        let job = scheduler
-            .schedule
+        let mut schedule = Schedule::new();
+        let job = schedule
             .command(CountingCommand {
                 count: count.clone(),
             })
             .every_second()
             .unwrap();
-        scheduler.schedule.add(job);
+        schedule.add(job);
+        let scheduler = Scheduler::new(ctx.settings.clone(), schedule);
         let cancel = CancellationToken::new();
         let cancel_clone = cancel.clone();
 
@@ -168,23 +135,17 @@ mod tests {
         // Arrange
         let ctx = make_ctx();
         let count = Arc::new(AtomicUsize::new(0));
-        let mut scheduler = Scheduler::new(ctx.settings.clone());
-
-        let reg_fail = scheduler
-            .schedule
-            .command(FailingCommand)
-            .every_second()
-            .unwrap();
-        scheduler.schedule.add(reg_fail);
-
-        let reg_count = scheduler
-            .schedule
+        let mut schedule = Schedule::new();
+        let failing_job = schedule.command(FailingCommand).every_second().unwrap();
+        schedule.add(failing_job);
+        let counting_job = schedule
             .command(CountingCommand {
                 count: count.clone(),
             })
             .every_second()
             .unwrap();
-        scheduler.schedule.add(reg_count);
+        schedule.add(counting_job);
+        let scheduler = Scheduler::new(ctx.settings.clone(), schedule);
 
         let cancel = CancellationToken::new();
         let cancel_clone = cancel.clone();
@@ -199,5 +160,41 @@ mod tests {
 
         // Assert
         assert!(count.load(Ordering::SeqCst) >= 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn scheduled_job_runs_its_before_and_after_hooks() {
+        // Arrange
+        let ctx = make_ctx();
+        let before = Arc::new(AtomicUsize::new(0));
+        let after = Arc::new(AtomicUsize::new(0));
+        let mut schedule = Schedule::new();
+        let (before_hook, after_hook) = (before.clone(), after.clone());
+        let job = schedule
+            .command(CountingCommand {
+                count: Arc::new(AtomicUsize::new(0)),
+            })
+            .every_second()
+            .unwrap()
+            .before_run(move || {
+                before_hook.fetch_add(1, Ordering::SeqCst);
+            })
+            .after_run(move || {
+                after_hook.fetch_add(1, Ordering::SeqCst);
+            });
+        schedule.add(job);
+        let scheduler = Scheduler::new(ctx.settings.clone(), schedule);
+        let cancel = CancellationToken::new();
+        let cancel_clone = cancel.clone();
+        let handle = tokio::spawn(async move { scheduler.run(cancel_clone).await });
+
+        // Act
+        tokio::time::sleep(std::time::Duration::from_millis(2500)).await;
+
+        // Assert
+        cancel.cancel();
+        let _ = handle.await;
+        assert!(before.load(Ordering::SeqCst) >= 1);
+        assert!(after.load(Ordering::SeqCst) >= 1);
     }
 }
