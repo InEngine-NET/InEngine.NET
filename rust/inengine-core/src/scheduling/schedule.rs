@@ -61,11 +61,13 @@ impl ScheduledJob {
         self
     }
 
+    /// `f` runs on an async worker thread before the command, so it must not block.
     pub fn before_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
         self.lifecycle.before_run = Some(Box::new(f));
         self
     }
 
+    /// `f` runs on an async worker thread after the command succeeds, so it must not block.
     pub fn after_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
         self.lifecycle.after_run = Some(Box::new(f));
         self

@@ -19,9 +19,10 @@ inengine -c /etc/inengine/production.toml -s
 ## Stopping the Server
 
 The server stops on `SIGINT` (Ctrl+C) or `SIGTERM`.
-It stops each running plugin call within about 10 milliseconds.
-A queued message whose plugin call was stopped returns to pending, and the attempt does not count.
-The server waits for other running commands to finish.
+It stops each running plugin call and each program that the exec command started within about 10 milliseconds.
+A queued message whose command was stopped returns to pending, and the attempt does not count.
+The server waits for every other running command to finish.
+A scheduled command that ran past its timeout is not waited for, and the process exits at most 10 seconds after the server stops.
 
 ## Running with systemd
 

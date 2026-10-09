@@ -1,13 +1,21 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use tokio::io::AsyncWriteExt;
 use tokio_util::sync::CancellationToken;
+use tracing::warn;
 
-use crate::command::{Command, CommandContext, CommandDeadline, CommandResult};
-use crate::config::MailSettings;
-use crate::error::CommandError;
+use crate::command::{run_blocking, Command, CommandContext, CommandDeadline, CommandResult};
+use crate::config::Settings;
+use crate::error::{describe_error_chain, CommandError};
 use crate::output::Output;
+use crate::server::notify::{ping, send_email};
 
+/// How long past the deadline the lifecycle waits before it gives up on a command. A command
+/// that honors its deadline returns its own timeout within this time, with its output.
+const ENFORCEMENT_GRACE: Duration = Duration::from_secs(1);
+
+/// The hooks run on an async worker thread, so they must not block.
 #[derive(Default)]
 pub struct CommandLifecycle {
     pub before_run: Option<Box<dyn Fn() + Send + Sync>>,
@@ -20,10 +28,14 @@ pub struct CommandLifecycle {
     pub timeout: Option<Duration>,
 }
 
-/// `cancel` reaches the command through its context, so a plugin call stops when it fires.
+/// `cancel` reaches the command through its context, so a plugin call or a process stops when
+/// it fires.
+///
+/// The output is written, appended, and mailed when the command succeeds or fails. A command
+/// that the server stopped, that ignored its timeout, or that panicked persists nothing.
 pub async fn run_with_lifecycle(
     cmd: Arc<dyn Command>,
-    settings: Arc<crate::config::Settings>,
+    settings: Arc<Settings>,
     lifecycle: &CommandLifecycle,
     cancel: &CancellationToken,
 ) -> CommandResult {
@@ -35,155 +47,90 @@ pub async fn run_with_lifecycle(
         action();
     }
 
-    let result = if let Some(timeout) = lifecycle.timeout {
-        let settings_clone = settings.clone();
-        let cmd_clone = cmd.clone();
-        let cancel = cancel.clone();
-        let deadline = CommandDeadline::after(timeout);
-
-        let task = tokio::task::spawn_blocking(move || {
-            let mut ctx = CommandContext::new(Output::new(false), settings_clone)
-                .with_deadline(deadline)
-                .with_cancel(cancel);
-            let res = cmd_clone.run(&mut ctx);
-            (res, ctx.output.take_buffer())
-        });
-
-        match tokio::time::timeout(timeout, task).await {
-            Ok(Ok((res, output_text))) => (res, output_text),
-            Ok(Err(e)) => {
-                return Err(CommandError::failed_with("command task panicked", e));
-            }
-            Err(_elapsed) => {
-                return Err(CommandError::Timeout {
-                    seconds: timeout.as_secs(),
-                });
-            }
+    let ctx = CommandContext::new(Output::new(false), settings.clone()).with_cancel(cancel.clone());
+    let returned = match lifecycle.timeout {
+        Some(timeout) => {
+            let ctx = ctx.with_deadline(CommandDeadline::after(timeout));
+            tokio::time::timeout(
+                timeout.saturating_add(ENFORCEMENT_GRACE),
+                run_blocking(cmd.clone(), ctx),
+            )
+            .await
+            .map_err(|_elapsed| CommandError::Timeout {
+                seconds: timeout.as_secs(),
+            })?
         }
-    } else {
-        let settings_clone = settings.clone();
-        let cmd_clone = cmd.clone();
-        let cancel = cancel.clone();
-        let task = tokio::task::spawn_blocking(move || {
-            let mut ctx =
-                CommandContext::new(Output::new(false), settings_clone).with_cancel(cancel);
-            let res = cmd_clone.run(&mut ctx);
-            (res, ctx.output.take_buffer())
-        });
-        match task.await {
-            Ok(pair) => pair,
-            Err(e) => {
-                return Err(CommandError::failed_with("command task panicked", e));
-            }
-        }
+        None => run_blocking(cmd.clone(), ctx).await,
     };
+    let (cmd_result, output_text) = returned?;
 
-    let (cmd_result, output_text) = result;
-    cmd_result?;
-
-    if let Some(ref action) = lifecycle.after_run {
-        action();
+    match cmd_result {
+        Ok(()) => {
+            if let Some(ref action) = lifecycle.after_run {
+                action();
+            }
+            if let Some(ref url) = lifecycle.ping_after_url {
+                ping(url).await?;
+            }
+            let subject = format!("Command completed: {}", cmd.name());
+            persist_output(lifecycle, &settings, &output_text, &subject, &output_text).await
+        }
+        Err(CommandError::Interrupted) => Err(CommandError::Interrupted),
+        Err(error) => {
+            let subject = format!("Command failed: {}", cmd.name());
+            let mut mail_body = output_text.clone();
+            if !mail_body.is_empty() && !mail_body.ends_with('\n') {
+                mail_body.push('\n');
+            }
+            mail_body.push_str(&describe_error_chain(&error));
+            if let Err(persist_error) =
+                persist_output(lifecycle, &settings, &output_text, &subject, &mail_body).await
+            {
+                warn!(
+                    "could not save the output of {}: {persist_error}",
+                    cmd.name()
+                );
+            }
+            Err(error)
+        }
     }
+}
 
-    if let Some(ref url) = lifecycle.ping_after_url {
-        ping(url).await?;
-    }
-
+/// Writes and appends `text`, and mails `mail_body`, as the lifecycle asks.
+async fn persist_output(
+    lifecycle: &CommandLifecycle,
+    settings: &Settings,
+    text: &str,
+    mail_subject: &str,
+    mail_body: &str,
+) -> CommandResult {
     if let Some(ref path) = lifecycle.write_output_to {
-        std::fs::write(path, &output_text).map_err(|e| {
+        tokio::fs::write(path, text).await.map_err(|e| {
             CommandError::failed_with(format!("failed to write output to {path}"), e)
         })?;
     }
 
     if let Some(ref path) = lifecycle.append_output_to {
-        use std::io::Write;
-        let mut file = std::fs::OpenOptions::new()
+        let mut file = tokio::fs::OpenOptions::new()
             .create(true)
             .append(true)
             .open(path)
+            .await
             .map_err(|e| {
                 CommandError::failed_with(format!("failed to open {path} for append"), e)
             })?;
-        file.write_all(output_text.as_bytes()).map_err(|e| {
+        let appended = match file.write_all(text.as_bytes()).await {
+            Ok(()) => file.flush().await,
+            Err(error) => Err(error),
+        };
+        appended.map_err(|e| {
             CommandError::failed_with(format!("failed to append output to {path}"), e)
         })?;
     }
 
     if let Some(ref address) = lifecycle.email_output_to {
-        send_email(
-            &settings.mail,
-            address,
-            &format!("Command completed: {}", cmd.name()),
-            &output_text,
-        )
-        .await?;
+        send_email(&settings.mail, address, mail_subject, mail_body).await?;
     }
-
-    Ok(())
-}
-
-pub async fn ping(url: &str) -> Result<(), CommandError> {
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(30))
-        .build()
-        .map_err(|e| CommandError::failed_with("failed to create HTTP client", e))?;
-
-    client
-        .get(url)
-        .send()
-        .await
-        .map_err(|e| CommandError::failed_with(format!("ping to {url} failed"), e))?;
-
-    Ok(())
-}
-
-pub async fn send_email(
-    mail_settings: &MailSettings,
-    to: &str,
-    subject: &str,
-    body: &str,
-) -> Result<(), CommandError> {
-    use lettre::message::header::ContentType;
-    use lettre::transport::smtp::authentication::Credentials;
-    use lettre::{AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor};
-
-    let email = Message::builder()
-        .from(
-            mail_settings
-                .from
-                .parse()
-                .map_err(|e: lettre::address::AddressError| {
-                    CommandError::failed_with(
-                        format!("invalid from address: {}", mail_settings.from),
-                        e,
-                    )
-                })?,
-        )
-        .to(to.parse().map_err(|e: lettre::address::AddressError| {
-            CommandError::failed_with(format!("invalid to address: {to}"), e)
-        })?)
-        .subject(subject)
-        .header(ContentType::TEXT_PLAIN)
-        .body(body.to_string())
-        .map_err(|e| CommandError::failed_with("failed to build email message", e))?;
-
-    let mut transport_builder =
-        AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&mail_settings.host)
-            .port(mail_settings.port);
-
-    if !mail_settings.username.is_empty() {
-        transport_builder = transport_builder.credentials(Credentials::new(
-            mail_settings.username.clone(),
-            mail_settings.password.clone(),
-        ));
-    }
-
-    let transport = transport_builder.build();
-
-    transport
-        .send(email)
-        .await
-        .map_err(|e| CommandError::failed_with("failed to send email", e))?;
 
     Ok(())
 }
@@ -221,7 +168,7 @@ mod tests {
             "slow"
         }
         fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
-            std::thread::sleep(std::time::Duration::from_secs(10));
+            std::thread::sleep(std::time::Duration::from_secs(3));
             Ok(())
         }
     }
@@ -245,7 +192,7 @@ mod tests {
         }
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn default_lifecycle_runs_command_ok() {
         // Arrange
         let ctx = make_ctx();
@@ -265,12 +212,15 @@ mod tests {
         assert!(result.is_ok());
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn timeout_expires_returns_timeout_error() {
+    #[tokio::test]
+    async fn the_outer_timer_returns_a_timeout_and_persists_nothing() {
         // Arrange
         let ctx = make_ctx();
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("output.txt");
         let lifecycle = CommandLifecycle {
             timeout: Some(Duration::from_secs(1)),
+            write_output_to: Some(path.to_string_lossy().to_string()),
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(SlowCommand);
@@ -285,14 +235,14 @@ mod tests {
         .await;
 
         // Assert
-        assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
             CommandError::Timeout { seconds: 1 }
         ));
+        assert!(!path.exists());
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn write_output_to_writes_file() {
         // Arrange
         let ctx = make_ctx();
@@ -319,7 +269,7 @@ mod tests {
         assert!(content.contains("ok output"));
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn append_output_to_appends_file() {
         // Arrange
         let ctx = make_ctx();
@@ -348,7 +298,7 @@ mod tests {
         assert!(content.contains("ok output"));
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn before_run_called_before_command() {
         // Arrange
         let ctx = make_ctx();
@@ -388,7 +338,7 @@ mod tests {
         assert!(recorded[0].1 < recorded[1].1);
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn after_run_called_after_command() {
         // Arrange
         let ctx = make_ctx();
@@ -427,7 +377,7 @@ mod tests {
         assert_eq!(recorded[1].0, "after");
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn after_run_skipped_on_failure() {
         // Arrange
         let ctx = make_ctx();
@@ -453,31 +403,5 @@ mod tests {
         // Assert
         assert!(result.is_err());
         assert_eq!(after_called.load(Ordering::SeqCst), 0);
-    }
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn ping_to_unreachable_returns_error() {
-        // Arrange / Act
-        let result = ping("http://192.0.2.1:1").await;
-
-        // Assert
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn email_message_construction() {
-        use lettre::message::header::ContentType;
-        use lettre::Message;
-
-        // Arrange / Act
-        let email = Message::builder()
-            .from("test@example.com".parse().unwrap())
-            .to("dest@example.com".parse().unwrap())
-            .subject("Test Subject")
-            .header(ContentType::TEXT_PLAIN)
-            .body("Test body".to_string());
-
-        // Assert
-        assert!(email.is_ok());
     }
 }

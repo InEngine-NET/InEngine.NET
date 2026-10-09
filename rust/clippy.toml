@@ -1,0 +1,4 @@
+disallowed-methods = [
+    { path = "tokio::task::block_in_place", reason = "run blocking work through spawn_blocking" },
+    { path = "tokio::runtime::Handle::block_on", reason = "run blocking work through spawn_blocking" },
+]

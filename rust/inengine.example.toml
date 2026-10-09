@@ -24,6 +24,10 @@ from = ""
 username = ""
 # Used only when a user name is set.
 password = ""
+# "none" sends in plain text, "starttls" upgrades the connection and refuses a server that
+# cannot (usually port 587), and "tls" uses TLS from the first byte (usually port 465). A user
+# name with "none" is an error unless the host is localhost or a loopback address.
+encryption = "none"
 
 [queue]
 use_compression = false

@@ -111,11 +111,9 @@ enum Backend {
 impl Queue {
     pub async fn open(lane: QueueLane, settings: &QueueSettings) -> Result<Queue, QueueError> {
         let backend = match settings.queue_driver {
-            QueueDriver::File => Backend::File(FileDriver::open(
-                &settings.queue_name,
-                lane,
-                &settings.file.base_path,
-            )?),
+            QueueDriver::File => Backend::File(
+                FileDriver::open(&settings.queue_name, lane, &settings.file.base_path).await?,
+            ),
             QueueDriver::Redis => Backend::Redis(
                 RedisDriver::open(&settings.queue_name, lane, &settings.redis).await?,
             ),
@@ -132,7 +130,7 @@ impl Queue {
 
     pub async fn publish(&self, envelope: &CommandEnvelope) -> Result<(), QueueError> {
         match &self.backend {
-            Backend::File(driver) => driver.publish(envelope),
+            Backend::File(driver) => driver.publish(envelope).await,
             Backend::Redis(driver) => driver.publish(envelope).await,
         }
     }
@@ -150,7 +148,7 @@ impl Queue {
     pub async fn acknowledge(&self, delivery: Delivery) -> Result<(), SettleError> {
         let settled = match (&self.backend, delivery.receipt()) {
             (Backend::File(driver), Receipt::File(name)) if self.owns(&delivery) => {
-                driver.acknowledge(name)
+                driver.acknowledge(name).await
             }
             (Backend::Redis(driver), Receipt::Redis(element)) if self.owns(&delivery) => {
                 driver.acknowledge(element).await
@@ -179,21 +177,21 @@ impl Queue {
     /// twice.
     pub async fn recover(&self) -> Result<usize, QueueError> {
         match &self.backend {
-            Backend::File(driver) => driver.recover(),
+            Backend::File(driver) => driver.recover().await,
             Backend::Redis(driver) => driver.recover().await,
         }
     }
 
     pub async fn lengths(&self) -> Result<QueueLengths, QueueError> {
         match &self.backend {
-            Backend::File(driver) => driver.lengths(),
+            Backend::File(driver) => driver.lengths().await,
             Backend::Redis(driver) => driver.lengths().await,
         }
     }
 
     pub async fn clear(&self, stage: Stage) -> Result<usize, QueueError> {
         match &self.backend {
-            Backend::File(driver) => driver.clear(stage),
+            Backend::File(driver) => driver.clear(stage).await,
             Backend::Redis(driver) => driver.clear(stage).await,
         }
     }
@@ -210,14 +208,14 @@ impl Queue {
         }
         let (first, last) = range.into_inner();
         match &self.backend {
-            Backend::File(driver) => driver.peek(stage, first, last),
+            Backend::File(driver) => driver.peek(stage, first, last).await,
             Backend::Redis(driver) => driver.peek(stage, first, last).await,
         }
     }
 
     pub async fn republish_failed(&self, limit: usize) -> Result<usize, QueueError> {
         match &self.backend {
-            Backend::File(driver) => driver.republish_failed(limit),
+            Backend::File(driver) => driver.republish_failed(limit).await,
             Backend::Redis(driver) => driver.republish_failed(limit).await,
         }
     }
@@ -225,7 +223,7 @@ impl Queue {
     async fn move_claimed(&self, delivery: Delivery, target: Stage) -> Result<(), SettleError> {
         let settled = match (&self.backend, delivery.receipt()) {
             (Backend::File(driver), Receipt::File(name)) if self.owns(&delivery) => {
-                driver.move_claimed(name, &delivery.envelope, target)
+                driver.move_claimed(name, &delivery.envelope, target).await
             }
             (Backend::Redis(driver), Receipt::Redis(element)) if self.owns(&delivery) => {
                 driver

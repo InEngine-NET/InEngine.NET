@@ -15,7 +15,7 @@ pub use runtime::{
     FileSettings, MailSettings, PluginLimitsSettings, QueueSettings, RedisSettings, Settings,
 };
 pub use spec::{FileSpec, MailSpec, PluginLimitsSpec, QueueSpec, RedisSpec, SettingsSpec};
-pub use vocabulary::QueueDriver;
+pub use vocabulary::{MailEncryption, QueueDriver};
 
 /// `settings` is `None` when the report holds an error. The report can hold
 /// warnings in both cases, so render it whenever it holds any issue.

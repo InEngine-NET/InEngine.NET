@@ -13,13 +13,13 @@ cron = "0.17"
 crossterm = "0.29"
 flate2 = "1"
 indicatif = "0.18"
-lettre = { version = "0.11", features = ["tokio1-native-tls"] }
+lettre = { version = "0.11", default-features = false, features = ["builder", "hostname", "smtp-transport", "native-tls", "tokio1-native-tls"] }
 reqwest = { version = "0.13", default-features = false, features = ["rustls"] }
 redis = { version = "1.7", features = ["tokio-comp", "connection-manager", "script"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
-tokio = { version = "1", features = ["process", "time", "rt", "rt-multi-thread", "macros", "sync"] }
+tokio = { version = "1", features = ["fs", "io-util", "time", "rt", "rt-multi-thread", "macros", "sync"] }
 tokio-util = "0.7"
 tracing = "0.1"
 uuid = { version = "1", features = ["v4", "v7"] }
@@ -28,4 +28,4 @@ confval = { version = "0.12.0", features = ["derive", "toml", "color"] }
 
 [dev-dependencies]
 tempfile = "3"
-tokio = { version = "1", features = ["process", "time", "rt", "macros", "sync"] }
+tokio = { version = "1", features = ["time", "rt", "macros", "sync"] }

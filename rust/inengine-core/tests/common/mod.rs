@@ -1,13 +1,16 @@
 #![allow(dead_code)]
 
 pub mod contract;
+pub mod http;
+pub mod smtp;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use confval::diagnostic::Severity;
 use inengine_core::commands::echo::Echo;
-use inengine_core::config::{self, PluginLimitsSettings, Settings, SettingsSpec};
+use inengine_core::config::{self, Loaded, PluginLimitsSettings, Settings, SettingsSpec};
 use inengine_core::plugin::{PluginLoader, PluginRuntime};
 use inengine_core::queue::{CommandEnvelope, Delivery, PeekedMessage, Queue, QueueLengths};
 
@@ -22,6 +25,24 @@ pub trait QueueFixture {
     /// Adds an element that the driver cannot read, so that it is claimed before any later
     /// message.
     fn insert_unreadable_pending(&self);
+}
+
+/// Each issue as its severity, its line, and its message.
+pub fn config_issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
+    loaded
+        .report
+        .issues()
+        .iter()
+        .map(|issue| {
+            let line = issue.span.and_then(|span| {
+                loaded
+                    .sources
+                    .get(span.source)
+                    .map(|source| source.line_column(span.start).0)
+            });
+            (issue.severity.clone(), line, issue.message.clone())
+        })
+        .collect()
 }
 
 pub fn default_settings() -> Settings {

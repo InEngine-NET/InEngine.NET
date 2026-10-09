@@ -2,9 +2,13 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use super::{block_on, open_queue};
-use crate::command::{Command, CommandContext, CommandResult};
+use tokio_util::sync::CancellationToken;
+
+use super::open_queue;
+use crate::command::{run_blocking, CommandContext, CommandResult};
+use crate::config::{QueueSettings, Settings};
 use crate::error::CommandError;
+use crate::output::Output;
 use crate::queue::{
     process_delivery, Attempt, CommandEnvelope, CommandRegistry, QueueLane, SettleOutcome,
 };
@@ -43,15 +47,9 @@ impl Publish {
         serde_json::to_string(&fields)
             .map_err(|error| CommandError::failed_with("could not serialize args", error))
     }
-}
 
-impl Command for Publish {
-    fn name(&self) -> &str {
-        "queue:publish"
-    }
-
-    fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        let settings = &ctx.settings.queue;
+    /// Publishes one message and writes a confirmation line to `output`.
+    pub async fn run(&self, settings: &QueueSettings, output: &mut Output) -> CommandResult {
         let envelope = CommandEnvelope::new(
             &self.command_name,
             &self.plugin_name,
@@ -60,14 +58,12 @@ impl Command for Publish {
             self.max_retries.unwrap_or(settings.max_retries),
         )
         .map_err(|error| CommandError::failed_with("could not create the envelope", error))?;
-        block_on(async {
-            let queue = open_queue(self.lane, settings).await?;
-            queue
-                .publish(&envelope)
-                .await
-                .map_err(|error| CommandError::failed_with("could not publish", error))
-        })?;
-        ctx.output.info_line(&format!(
+        let queue = open_queue(self.lane, settings).await?;
+        queue
+            .publish(&envelope)
+            .await
+            .map_err(|error| CommandError::failed_with("could not publish", error))?;
+        output.info_line(&format!(
             "published {} from {} to the {} queue",
             self.command_name,
             self.plugin_name,
@@ -125,61 +121,62 @@ impl fmt::Display for ConsumeTally {
     }
 }
 
-impl Command for Consume {
-    fn name(&self) -> &str {
-        "queue:consume"
-    }
-
-    fn run(&self, ctx: &mut CommandContext) -> CommandResult {
-        let settings = ctx.settings.clone();
+impl Consume {
+    /// Runs messages until the limit or until pending is empty. Each message runs on the
+    /// blocking thread pool, and its output comes before its status line in `output`.
+    pub async fn run(&self, settings: Arc<Settings>, output: &mut Output) -> CommandResult {
         let limit = self.limit.unwrap_or(usize::MAX);
-        block_on(async {
-            let queue = open_queue(self.lane, &settings.queue).await?;
-            let mut tally = ConsumeTally::default();
-            for _ in 0..limit {
-                let dequeued = queue.dequeue(Duration::ZERO).await.map_err(|error| {
-                    CommandError::failed_with(format!("could not dequeue ({tally})"), error)
-                })?;
-                let Some(delivery) = dequeued else {
-                    break;
-                };
-                let processed = process_delivery(
-                    &queue,
-                    delivery,
-                    &self.registry,
-                    &ctx.cancel.clone(),
-                    |command| std::future::ready(command.run(ctx)),
-                )
-                .await;
-                let id = &processed.message_id;
-                match &processed.attempt {
-                    Attempt::Succeeded => {}
-                    Attempt::CommandFailed(error) => {
-                        ctx.output.error_line(&format!("message {id}: {error}"));
-                    }
-                    Attempt::Unrunnable(error) => {
-                        ctx.output.error_line(&format!(
-                            "could not build the command for message {id}: {error}"
-                        ));
-                    }
-                    Attempt::Interrupted => {
-                        ctx.output
-                            .error_line(&format!("message {id}: {}", CommandError::Interrupted));
-                    }
+        let queue = open_queue(self.lane, &settings.queue).await?;
+        let never_cancelled = CancellationToken::new();
+        let mut tally = ConsumeTally::default();
+        for _ in 0..limit {
+            let dequeued = queue.dequeue(Duration::ZERO).await.map_err(|error| {
+                CommandError::failed_with(format!("could not dequeue ({tally})"), error)
+            })?;
+            let Some(delivery) = dequeued else {
+                break;
+            };
+            let ctx = CommandContext::new(Output::new(output.uses_color()), settings.clone());
+            let command_output = &mut *output;
+            let processed = process_delivery(
+                &queue,
+                delivery,
+                &self.registry,
+                &never_cancelled,
+                |command| async move {
+                    let (result, text) = run_blocking(Arc::from(command), ctx).await?;
+                    command_output.text(&text);
+                    result
+                },
+            )
+            .await;
+            let id = &processed.message_id;
+            match &processed.attempt {
+                Attempt::Succeeded => {}
+                Attempt::CommandFailed(error) => {
+                    output.error_line(&format!("message {id}: {error}"));
                 }
-                let outcome = processed.settled.map_err(|error| {
-                    CommandError::failed_with(format!("stopped at message {id} ({tally})"), error)
-                })?;
-                tally.record(outcome);
-                ctx.output.line(&format!("{id}: {}", outcome.label()));
+                Attempt::Unrunnable(error) => {
+                    output.error_line(&format!(
+                        "could not build the command for message {id}: {error}"
+                    ));
+                }
+                Attempt::Interrupted => {
+                    output.error_line(&format!("message {id}: {}", CommandError::Interrupted));
+                }
             }
-            if tally.incomplete() > 0 {
-                return Err(CommandError::failed(format!(
-                    "some messages did not complete ({tally})"
-                )));
-            }
-            Ok(())
-        })
+            let outcome = processed.settled.map_err(|error| {
+                CommandError::failed_with(format!("stopped at message {id} ({tally})"), error)
+            })?;
+            tally.record(outcome);
+            output.line(&format!("{id}: {}", outcome.label()));
+        }
+        if tally.incomplete() > 0 {
+            return Err(CommandError::failed(format!(
+                "some messages did not complete ({tally})"
+            )));
+        }
+        Ok(())
     }
 }
 

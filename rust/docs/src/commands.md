@@ -43,6 +43,9 @@ Use 0 for no limit:
 inengine exec -e hello -t 60
 ```
 
+The program also stops at the timeout of a scheduled job and when the server stops.
+Exec kills only the program it started, so a process that the program starts in the background keeps running.
+
 ## Chain
 
 Multiple commands can run in sequence as a chain.

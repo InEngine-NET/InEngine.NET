@@ -16,6 +16,11 @@ impl Output {
         }
     }
 
+    /// The flag given to [`Output::new`].
+    pub fn uses_color(&self) -> bool {
+        self.use_color
+    }
+
     pub fn line(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, None, true)
     }

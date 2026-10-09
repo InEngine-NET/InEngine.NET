@@ -5,15 +5,15 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use common::{echo_envelope, expected_lengths, load_fixture_plugin, settings_with_queue_base};
-use inengine_core::command::{Command, CommandContext};
+use inengine_core::command::{Command, CommandContext, CommandResult};
 use inengine_core::commands::exec::Exec;
 use inengine_core::config::{PluginLimitsSettings, Settings};
 use inengine_core::output::Output;
 use inengine_core::queue::{
     CommandEnvelope, CommandRegistry, PeekedMessage, Queue, QueueLane, Stage,
 };
-use inengine_core::queue_commands::management::Recover;
-use inengine_core::queue_commands::messaging::{Consume, Publish};
+use inengine_core::queue_admin::management::Recover;
+use inengine_core::queue_admin::messaging::{Consume, Publish};
 
 fn context(settings: Settings) -> CommandContext {
     CommandContext::new(Output::new(false), Arc::new(settings))
@@ -63,7 +63,7 @@ fn settings_with_retries(base: &Path, max_retries: u32) -> Settings {
     settings
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn consume_acknowledges_a_successful_message() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -74,7 +74,9 @@ async fn consume_acknowledges_a_successful_message() {
     let mut ctx = context(settings);
 
     // Act
-    let result = consume_one().run(&mut ctx);
+    let result = consume_one()
+        .run(ctx.settings.clone(), &mut ctx.output)
+        .await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
@@ -88,7 +90,7 @@ async fn consume_acknowledges_a_successful_message() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn consume_of_a_failing_exec_message_moves_it_to_failed_and_returns_an_error() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -107,7 +109,9 @@ async fn consume_of_a_failing_exec_message_moves_it_to_failed_and_returns_an_err
     let mut ctx = context(settings);
 
     // Act
-    let result = consume_one().run(&mut ctx);
+    let result = consume_one()
+        .run(ctx.settings.clone(), &mut ctx.output)
+        .await;
 
     // Assert
     let error = result.expect_err("a failed command fails the consume");
@@ -130,7 +134,7 @@ async fn consume_of_a_failing_exec_message_moves_it_to_failed_and_returns_an_err
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn consume_of_an_unknown_command_moves_it_to_failed() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -141,7 +145,9 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
     let mut ctx = context(settings);
 
     // Act
-    let result = consume_one().run(&mut ctx);
+    let result = consume_one()
+        .run(ctx.settings.clone(), &mut ctx.output)
+        .await;
 
     // Assert
     assert!(result.is_err());
@@ -159,7 +165,7 @@ async fn consume_of_an_unknown_command_moves_it_to_failed() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn publish_stores_max_retries_from_the_settings() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -168,14 +174,16 @@ async fn publish_stores_max_retries_from_the_settings() {
     let mut ctx = context(settings);
 
     // Act
-    let result = publish_echo_command(None).run(&mut ctx);
+    let result = publish_echo_command(None)
+        .run(&ctx.settings.queue, &mut ctx.output)
+        .await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
     assert_eq!(published_max_retries(&queue).await, vec![4]);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn publish_with_max_retries_overrides_the_setting() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -184,14 +192,16 @@ async fn publish_with_max_retries_overrides_the_setting() {
     let mut ctx = context(settings);
 
     // Act
-    let result = publish_echo_command(Some(1)).run(&mut ctx);
+    let result = publish_echo_command(Some(1))
+        .run(&ctx.settings.queue, &mut ctx.output)
+        .await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
     assert_eq!(published_max_retries(&queue).await, vec![1]);
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn a_message_published_with_json_runs_with_that_payload() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -207,11 +217,16 @@ async fn a_message_published_with_json_runs_with_that_payload() {
         args: Vec::new(),
         ..publish_echo_command(None)
     };
-    publish.run(&mut ctx).expect("publish");
+    publish
+        .run(&ctx.settings.queue, &mut ctx.output)
+        .await
+        .expect("publish");
     ctx.output.take_buffer();
 
     // Act
-    let result = consume_one().run(&mut ctx);
+    let result = consume_one()
+        .run(ctx.settings.clone(), &mut ctx.output)
+        .await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
@@ -222,7 +237,7 @@ async fn a_message_published_with_json_runs_with_that_payload() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn the_recover_command_returns_in_progress_messages_to_pending() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -239,7 +254,7 @@ async fn the_recover_command_returns_in_progress_messages_to_pending() {
     };
 
     // Act
-    let result = recover.run(&mut ctx);
+    let result = recover.run(&ctx.settings.queue, &mut ctx.output).await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
@@ -253,7 +268,7 @@ async fn the_recover_command_returns_in_progress_messages_to_pending() {
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test]
 async fn consume_runs_a_queued_plugin_command() {
     // Arrange
     let dir = tempfile::tempdir().expect("temporary directory");
@@ -272,7 +287,7 @@ async fn consume_runs_a_queued_plugin_command() {
     let mut ctx = context(settings);
 
     // Act
-    let result = consume.run(&mut ctx);
+    let result = consume.run(ctx.settings.clone(), &mut ctx.output).await;
 
     // Assert
     assert!(result.is_ok(), "{result:?}");
@@ -283,5 +298,83 @@ async fn consume_runs_a_queued_plugin_command() {
     assert_eq!(
         queue.lengths().await.expect("lengths"),
         expected_lengths(0, 0, 0)
+    );
+}
+
+#[tokio::test]
+async fn consume_writes_each_command_output_in_order() {
+    // Arrange
+    let dir = tempfile::tempdir().expect("temporary directory");
+    let settings = settings_with_queue_base(dir.path());
+    let queue = open_primary(&settings).await;
+    let first = echo_envelope("first", 0);
+    let second = echo_envelope("second", 0);
+    queue.publish(&first).await.expect("publish");
+    queue.publish(&second).await.expect("publish");
+    let consume = Consume {
+        limit: Some(2),
+        ..consume_one()
+    };
+    let mut ctx = context(settings);
+
+    // Act
+    let result = consume.run(ctx.settings.clone(), &mut ctx.output).await;
+
+    // Assert
+    assert!(result.is_ok(), "{result:?}");
+    assert_eq!(
+        ctx.output.take_buffer(),
+        format!(
+            "first\n{}: completed\nsecond\n{}: completed\n",
+            first.id, second.id
+        )
+    );
+}
+
+struct Panics;
+
+impl Command for Panics {
+    fn name(&self) -> &str {
+        "panics"
+    }
+
+    fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
+        panic!("intentional panic");
+    }
+}
+
+#[tokio::test]
+async fn consume_of_a_panicking_command_moves_it_to_failed() {
+    // Arrange
+    let dir = tempfile::tempdir().expect("temporary directory");
+    let settings = settings_with_queue_base(dir.path());
+    let queue = open_primary(&settings).await;
+    let mut registry = CommandRegistry::new();
+    registry
+        .register("test", "panics", |_json| Ok(Box::new(Panics)))
+        .expect("register");
+    let envelope = CommandEnvelope::new("panics", "test", "{}", false, 0).expect("envelope");
+    queue.publish(&envelope).await.expect("publish");
+    let consume = Consume {
+        registry: Arc::new(registry),
+        ..consume_one()
+    };
+    let mut ctx = context(settings);
+
+    // Act
+    let result = consume.run(ctx.settings.clone(), &mut ctx.output).await;
+
+    // Assert
+    assert!(result.is_err());
+    assert_eq!(
+        queue.lengths().await.expect("lengths"),
+        expected_lengths(0, 0, 1)
+    );
+    assert_eq!(
+        ctx.output.take_buffer(),
+        format!(
+            "message {id}: command failed: the command panicked\n{id}: moved to failed\n",
+            id = envelope.id
+        )
     );
 }

@@ -6,7 +6,7 @@ use super::constraints::{
     QueueName, CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PLUGIN_MEMORY_MIB,
     PLUGIN_TIMEOUT_SECONDS, PORT, REDIS_DATABASE,
 };
-use super::vocabulary::QueueDriver;
+use super::vocabulary::{MailEncryption, QueueDriver};
 
 #[derive(confval::Spec)]
 #[confval(derive_default)]
@@ -44,6 +44,10 @@ pub struct MailSpec {
     /// Used only when a user name is set.
     #[confval(default = String::new())]
     pub password: Located<String>,
+    /// "none" sends in plain text, "starttls" upgrades the connection and refuses a server that
+    /// cannot, and "tls" uses TLS from the first byte.
+    #[confval(default = "none".to_string(), keywords = MailEncryption)]
+    pub encryption: Located<String>,
 }
 
 #[derive(confval::Spec)]

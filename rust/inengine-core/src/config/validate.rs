@@ -1,8 +1,10 @@
+use std::net::IpAddr;
 use std::path::Path;
 
 use confval::prelude::*;
 
 use super::spec::{FileSpec, MailSpec, PluginLimitsSpec, QueueSpec, RedisSpec, SettingsSpec};
+use super::vocabulary::MailEncryption;
 use crate::BUILTIN_PLUGIN_NAME;
 
 const REDIS_DEFAULT_DATABASES: i64 = 16;
@@ -64,7 +66,52 @@ impl Validate for MailSpec {
                 .help("Set the user name, or remove the password.")
                 .emit();
         }
+        self.check_encryption(report, has_username);
     }
+}
+
+impl MailSpec {
+    fn check_encryption(&self, report: &mut Report, has_username: bool) {
+        let port = &self.port;
+        let Ok(encryption) = MailEncryption::try_from(self.encryption.value.as_str()) else {
+            return;
+        };
+        match encryption {
+            MailEncryption::Plain if has_username && !is_loopback_host(&self.host.value) => {
+                report
+                    .error("the mail password would cross the network in plain text")
+                    .at(self.username.span)
+                    .related(self.host.span, "the mail server")
+                    .help("Set encryption to \"starttls\" or \"tls\".")
+                    .emit();
+            }
+            MailEncryption::Tls if port.value == 25 || port.value == 587 => {
+                report
+                    .warning(format!(
+                        "mail port {} usually expects \"starttls\" or \"none\", not \"tls\"",
+                        port.value
+                    ))
+                    .at(port.span)
+                    .help("Use port 465 for \"tls\".")
+                    .emit();
+            }
+            MailEncryption::StartTls if port.value == 465 => {
+                report
+                    .warning("mail port 465 usually expects \"tls\", not \"starttls\"")
+                    .at(port.span)
+                    .help("Use port 587 for \"starttls\".")
+                    .emit();
+            }
+            _ => {}
+        }
+    }
+}
+
+fn is_loopback_host(host: &str) -> bool {
+    host.eq_ignore_ascii_case("localhost")
+        || host
+            .parse::<IpAddr>()
+            .is_ok_and(|address| address.is_loopback())
 }
 
 impl Validate for QueueSpec {

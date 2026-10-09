@@ -1,66 +1,76 @@
 mod dir;
+mod store;
 
-use std::ffi::{OsStr, OsString};
-use std::fs;
+use std::ffi::OsStr;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use tracing::warn;
-
 use crate::error::QueueError;
-use crate::queue::delivery::{Delivery, Receipt};
+use crate::queue::delivery::Delivery;
 use crate::queue::envelope::CommandEnvelope;
 use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
+use store::FileStore;
 
-const STALE_TEMP_AGE: Duration = Duration::from_secs(60 * 60);
 const POLL_INTERVAL: Duration = Duration::from_secs(1);
 
-/// Each claim lists the pending directory, so a claim gets slower as the backlog grows.
+/// The file queue. Each call runs its file operations on the blocking thread pool, so no file
+/// I/O runs on an async worker thread.
 pub(crate) struct FileDriver {
     lane: QueueLane,
-    pending: PathBuf,
-    in_progress: PathBuf,
-    failed: PathBuf,
+    store: Arc<FileStore>,
+}
+
+/// Runs one store call on the blocking thread pool.
+async fn call_store<T, F>(store: &Arc<FileStore>, call: F) -> Result<T, QueueError>
+where
+    F: FnOnce(&FileStore) -> Result<T, QueueError> + Send + 'static,
+    T: Send + 'static,
+{
+    let store = Arc::clone(store);
+    on_blocking_pool(move || call(&store)).await
+}
+
+/// Runs `task` on the blocking thread pool, and turns a panic into an IO error.
+async fn on_blocking_pool<T, F>(task: F) -> Result<T, QueueError>
+where
+    F: FnOnce() -> Result<T, QueueError> + Send + 'static,
+    T: Send + 'static,
+{
+    tokio::task::spawn_blocking(task)
+        .await
+        .map_err(|join_error| QueueError::Io(io::Error::other(join_error)))?
 }
 
 impl FileDriver {
-    pub(crate) fn open(
+    pub(crate) async fn open(
         queue_name: &str,
         lane: QueueLane,
         base_path: &str,
     ) -> Result<Self, QueueError> {
-        let base = Path::new(base_path);
-        let stage_path =
-            |stage: Stage| base.join(format!("{queue_name}_{}_{}", lane.as_str(), stage.as_str()));
-        let driver = Self {
+        let queue_name = queue_name.to_string();
+        let base_path = base_path.to_string();
+        let store =
+            on_blocking_pool(move || FileStore::open(&queue_name, lane, &base_path)).await?;
+        Ok(Self {
             lane,
-            pending: stage_path(Stage::Pending),
-            in_progress: stage_path(Stage::InProgress),
-            failed: stage_path(Stage::Failed),
-        };
-        for stage in Stage::ALL {
-            let dir = driver.stage_dir(stage);
-            fs::create_dir_all(dir)?;
-            dir::remove_stale_temp_files(dir, STALE_TEMP_AGE)?;
-        }
-        Ok(driver)
+            store: Arc::new(store),
+        })
     }
 
     pub(crate) fn lane(&self) -> QueueLane {
         self.lane
     }
 
-    pub(crate) fn publish(&self, envelope: &CommandEnvelope) -> Result<(), QueueError> {
-        let json = serde_json::to_vec_pretty(envelope)?;
-        dir::write_atomic(&self.pending, &dir::new_message_name(), &json)?;
-        Ok(())
+    pub(crate) async fn publish(&self, envelope: &CommandEnvelope) -> Result<(), QueueError> {
+        let envelope = envelope.clone();
+        call_store(&self.store, move |store| store.publish(&envelope)).await
     }
 
     pub(crate) async fn dequeue(&self, wait: Duration) -> Result<Option<Delivery>, QueueError> {
         let deadline = Instant::now().checked_add(wait);
         loop {
-            if let Some(delivery) = self.claim_oldest()? {
+            if let Some(delivery) = call_store(&self.store, FileStore::claim_oldest).await? {
                 return Ok(Some(delivery));
             }
             let remaining = match deadline {
@@ -75,187 +85,97 @@ impl FileDriver {
     }
 
     /// Returns false when the message is no longer in progress.
-    pub(crate) fn acknowledge(&self, name: &OsStr) -> Result<bool, QueueError> {
-        Ok(dir::remove_if_present(&self.in_progress.join(name))?)
+    pub(crate) async fn acknowledge(&self, name: &OsStr) -> Result<bool, QueueError> {
+        let name = name.to_os_string();
+        call_store(&self.store, move |store| store.acknowledge(&name)).await
     }
 
     /// Returns false when the message is no longer in progress.
-    ///
-    /// The in-progress file is first renamed to a hidden settling name, which fails when the
-    /// message is no longer in progress. When an earlier settle of the same message stopped
-    /// partway, its settling file is reused. A crash after the new file is written and before
-    /// the settling file is removed leaves two copies, and `recover` returns the older one.
-    pub(crate) fn move_claimed(
+    pub(crate) async fn move_claimed(
         &self,
         name: &OsStr,
         envelope: &CommandEnvelope,
         target: Stage,
     ) -> Result<bool, QueueError> {
-        let current = self.in_progress.join(name);
-        let claimed = self.in_progress.join(dir::settling_name(name));
-        if !dir::rename_if_present(&current, &claimed)? && !claimed.exists() {
-            return Ok(false);
-        }
-        let json = serde_json::to_vec_pretty(envelope)?;
-        let target_dir = self.stage_dir(target);
-        let target_name = dir::new_message_name();
-        if let Err(error) = dir::write_atomic(target_dir, &target_name, &json) {
-            if let Err(restore_error) = fs::rename(&claimed, &current) {
-                warn!("could not restore {}: {restore_error}", claimed.display());
-            }
-            return Err(error.into());
-        }
-        match fs::remove_file(&claimed) {
-            Ok(()) => Ok(true),
-            Err(error) if error.kind() == io::ErrorKind::NotFound => {
-                // A flush removed the message during this settle, so remove the new copy too.
-                dir::remove_if_present(&target_dir.join(target_name))?;
-                Ok(false)
-            }
-            Err(error) => {
-                warn!(
-                    "message {} was moved, but {} could not be removed: {error}",
-                    envelope.id,
-                    claimed.display()
-                );
-                Ok(true)
-            }
-        }
-    }
-
-    pub(crate) fn recover(&self) -> Result<usize, QueueError> {
-        let mut moved = 0;
-        for name in dir::list_messages(&self.in_progress)? {
-            if dir::rename_if_present(&self.in_progress.join(&name), &self.pending.join(&name))? {
-                moved += 1;
-            }
-        }
-        for name in dir::unfinished_settles(&self.in_progress)? {
-            let claimed = self.in_progress.join(dir::settling_name(&name));
-            if dir::rename_if_present(&claimed, &self.pending.join(&name))? {
-                moved += 1;
-            }
-        }
-        Ok(moved)
-    }
-
-    pub(crate) fn lengths(&self) -> Result<QueueLengths, QueueError> {
-        Ok(QueueLengths {
-            pending: self.stage_paths(Stage::Pending)?.len(),
-            in_progress: self.stage_paths(Stage::InProgress)?.len(),
-            failed: self.stage_paths(Stage::Failed)?.len(),
+        let name = name.to_os_string();
+        let envelope = envelope.clone();
+        call_store(&self.store, move |store| {
+            store.move_claimed(&name, &envelope, target)
         })
+        .await
     }
 
-    pub(crate) fn clear(&self, stage: Stage) -> Result<usize, QueueError> {
-        let dir = self.stage_dir(stage);
-        let mut removed = 0;
-        for name in dir::list_messages(dir)? {
-            if dir::remove_if_present(&dir.join(name))? {
-                removed += 1;
-            }
-        }
-        if stage == Stage::InProgress {
-            removed += dir::remove_settling_files(dir)?;
-        }
-        dir::remove_stale_temp_files(dir, STALE_TEMP_AGE)?;
-        Ok(removed)
+    pub(crate) async fn recover(&self) -> Result<usize, QueueError> {
+        call_store(&self.store, FileStore::recover).await
     }
 
-    pub(crate) fn peek(
+    pub(crate) async fn lengths(&self) -> Result<QueueLengths, QueueError> {
+        call_store(&self.store, FileStore::lengths).await
+    }
+
+    pub(crate) async fn clear(&self, stage: Stage) -> Result<usize, QueueError> {
+        call_store(&self.store, move |store| store.clear(stage)).await
+    }
+
+    pub(crate) async fn peek(
         &self,
         stage: Stage,
         first: usize,
         last: usize,
     ) -> Result<Vec<PeekedMessage>, QueueError> {
-        let mut messages = Vec::new();
-        let count = last.saturating_sub(first).saturating_add(1);
-        for path in self.stage_paths(stage)?.into_iter().skip(first).take(count) {
-            match fs::read(path) {
-                Ok(raw) => messages.push(PeekedMessage::parse(&raw)),
-                Err(error) if error.kind() == io::ErrorKind::NotFound => {}
-                Err(error) => return Err(error.into()),
-            }
-        }
-        Ok(messages)
+        call_store(&self.store, move |store| store.peek(stage, first, last)).await
     }
 
-    pub(crate) fn republish_failed(&self, limit: usize) -> Result<usize, QueueError> {
-        let mut moved = 0;
-        for name in dir::list_messages(&self.failed)?.into_iter().take(limit) {
-            let to = self.pending.join(dir::new_message_name());
-            if dir::rename_if_present(&self.failed.join(name), &to)? {
-                moved += 1;
-            }
-        }
-        Ok(moved)
+    pub(crate) async fn republish_failed(&self, limit: usize) -> Result<usize, QueueError> {
+        call_store(&self.store, move |store| store.republish_failed(limit)).await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    async fn open_store() -> (tempfile::TempDir, FileDriver) {
+        let dir = tempfile::tempdir().expect("temporary directory");
+        let driver = FileDriver::open(
+            "TestQueue",
+            QueueLane::Primary,
+            dir.path().to_str().expect("utf-8 path"),
+        )
+        .await
+        .expect("open");
+        (dir, driver)
     }
 
-    fn claim_oldest(&self) -> Result<Option<Delivery>, QueueError> {
-        for name in dir::list_messages(&self.pending)? {
-            let claimed = self.in_progress.join(&name);
-            if !dir::rename_if_present(&self.pending.join(&name), &claimed)? {
-                continue;
-            }
-            let parsed = match fs::read(&claimed) {
-                Ok(raw) => {
-                    serde_json::from_slice::<CommandEnvelope>(&raw).map_err(QueueError::from)
-                }
-                Err(error) if error.kind() == io::ErrorKind::NotFound => continue,
-                Err(error) => Err(error.into()),
-            };
-            match parsed {
-                Ok(mut envelope) => {
-                    envelope.attempts += 1;
-                    return Ok(Some(Delivery::new(
-                        envelope,
-                        self.lane,
-                        Receipt::File(name),
-                    )));
-                }
-                Err(error) => self.move_unreadable_to_failed(&claimed, &error),
-            }
-        }
-        Ok(None)
+    #[tokio::test]
+    async fn a_store_call_runs_off_the_calling_thread() {
+        // Arrange
+        let (_dir, driver) = open_store().await;
+        let caller = std::thread::current().id();
+
+        // Act
+        let store_thread = call_store(&driver.store, |_store| Ok(std::thread::current().id()))
+            .await
+            .expect("the call succeeds");
+
+        // Assert
+        assert_ne!(store_thread, caller);
     }
 
-    fn move_unreadable_to_failed(&self, claimed: &Path, error: &QueueError) {
-        warn!(
-            "moving unreadable message {} to failed: {error}",
-            claimed.display()
-        );
-        if let Err(move_error) =
-            dir::rename_if_present(claimed, &self.failed.join(dir::new_message_name()))
-        {
-            warn!(
-                "could not move {} to failed: {move_error}",
-                claimed.display()
-            );
-        }
-    }
+    #[tokio::test]
+    async fn a_panicking_store_call_becomes_an_io_error() {
+        // Arrange
+        let (_dir, driver) = open_store().await;
 
-    fn stage_paths(&self, stage: Stage) -> Result<Vec<PathBuf>, QueueError> {
-        let dir = self.stage_dir(stage);
-        let mut entries: Vec<(OsString, PathBuf)> = dir::list_messages(dir)?
-            .into_iter()
-            .map(|name| (name.clone(), dir.join(name)))
-            .collect();
-        if stage == Stage::InProgress {
-            entries.extend(
-                dir::unfinished_settles(dir)?
-                    .into_iter()
-                    .map(|name| (name.clone(), dir.join(dir::settling_name(&name)))),
-            );
-            entries.sort();
-        }
-        Ok(entries.into_iter().map(|(_, path)| path).collect())
-    }
+        // Act
+        let result: Result<(), QueueError> =
+            call_store(&driver.store, |_store| panic!("intentional panic")).await;
 
-    fn stage_dir(&self, stage: Stage) -> &Path {
-        match stage {
-            Stage::Pending => &self.pending,
-            Stage::InProgress => &self.in_progress,
-            Stage::Failed => &self.failed,
-        }
+        // Assert
+        let error = result.expect_err("the call panics");
+        assert!(matches!(error, QueueError::Io(_)), "{error:?}");
+        let message = error.to_string();
+        assert!(message.starts_with("queue IO error: task "), "{message}");
+        assert!(message.contains("intentional panic"), "{message}");
     }
 }

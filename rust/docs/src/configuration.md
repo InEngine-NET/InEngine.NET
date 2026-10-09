@@ -28,6 +28,7 @@ port = 25
 from = "no-reply@example.com"
 username = ""
 password = ""
+encryption = "none"
 
 [queue]
 use_compression = false
@@ -73,8 +74,15 @@ memory_mib = 256
 | host       | string  | `localhost`   | The SMTP server hostname.          |
 | port       | integer | `25`          | The SMTP server port (1 to 65535). |
 | from       | string  | `""`          | The sender email address.          |
-| username   | string  | `""`          | The SMTP username.                 |
+| username   | string  | `""`          | The SMTP user name.                |
 | password   | string  | `""`          | The SMTP password.                 |
+| encryption | string  | `none`        | `none`, `starttls`, or `tls`.      |
+
+`none` sends mail in plain text.
+`starttls`, usually on port 587, upgrades the connection to TLS and refuses a server that cannot.
+`tls`, usually on port 465, uses TLS from the first byte.
+A user name with `none` is an error unless the host is `localhost` or a loopback address, so a password never crosses the network in plain text.
+A port that does not match the encryption is a warning.
 
 ## Queue
 

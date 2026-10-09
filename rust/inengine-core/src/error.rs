@@ -1,5 +1,18 @@
 type BoxedError = Box<dyn std::error::Error + Send + Sync>;
 
+/// `error` on a line that starts with "Error: ", then one "  caused by: " line for each source.
+pub fn describe_error_chain(error: &dyn std::error::Error) -> String {
+    use std::fmt::Write;
+
+    let mut text = format!("Error: {error}\n");
+    let mut source = error.source();
+    while let Some(cause) = source {
+        let _ = writeln!(text, "  caused by: {cause}");
+        source = cause.source();
+    }
+    text
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
     #[error("command failed: {message}")]

@@ -4,7 +4,7 @@ use std::time::Duration;
 use confval::prelude::*;
 
 use super::spec::{FileSpec, MailSpec, PluginLimitsSpec, QueueSpec, RedisSpec, SettingsSpec};
-use super::vocabulary::QueueDriver;
+use super::vocabulary::{MailEncryption, QueueDriver};
 
 #[derive(Debug, Clone, confval::Config)]
 #[confval(lower_from = SettingsSpec)]
@@ -28,6 +28,8 @@ pub struct MailSettings {
     pub from: String,
     pub username: String,
     pub password: String,
+    #[confval(lower(from = encryption, with = narrow::keyword::<MailEncryption>))]
+    pub encryption: MailEncryption,
 }
 
 #[derive(Debug, Clone, confval::Config)]

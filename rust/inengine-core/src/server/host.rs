@@ -29,8 +29,8 @@ impl Server {
         }
     }
 
-    /// Runs until `cancel` fires. Running plugin calls stop at once, and other running
-    /// commands finish first.
+    /// Runs until `cancel` fires. Running plugin calls and exec processes stop at once, and
+    /// the server waits for every other running command to finish.
     pub async fn run(self, cancel: CancellationToken) {
         info!("starting server");
 

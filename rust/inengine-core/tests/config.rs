@@ -1,29 +1,15 @@
+mod common;
+
 use std::path::Path;
 use std::time::Duration;
 
+use common::config_issues as issues;
 use confval::diagnostic::Severity;
 use confval::prelude::*;
 use inengine_core::config::{
-    self, Loaded, PluginLimitsSettings, QueueDriver, Settings, SettingsSpec,
+    self, MailEncryption, PluginLimitsSettings, QueueDriver, Settings, SettingsSpec,
 };
 use inengine_core::error::ConfigError;
-
-fn issues(loaded: &Loaded) -> Vec<(Severity, Option<usize>, String)> {
-    loaded
-        .report
-        .issues()
-        .iter()
-        .map(|issue| {
-            let line = issue.span.and_then(|span| {
-                loaded
-                    .sources
-                    .get(span.source)
-                    .map(|source| source.line_column(span.start).0)
-            });
-            (issue.severity.clone(), line, issue.message.clone())
-        })
-        .collect()
-}
 
 fn defaults() -> Settings {
     config::from_spec(&SettingsSpec::default())
@@ -39,6 +25,7 @@ fn assert_default_settings(settings: &Settings) {
     assert_eq!(settings.mail.from, "");
     assert_eq!(settings.mail.username, "");
     assert_eq!(settings.mail.password, "");
+    assert_eq!(settings.mail.encryption, MailEncryption::Plain);
     assert!(!settings.queue.use_compression);
     assert_eq!(settings.queue.primary_queue_consumers, 8);
     assert_eq!(settings.queue.secondary_queue_consumers, 8);
@@ -122,6 +109,7 @@ port = 587
 from = "no-reply@example.com"
 username = "mailer"
 password = "secret"
+encryption = "starttls"
 
 [queue]
 use_compression = true
@@ -163,6 +151,7 @@ base_path = "/var/lib/inengine"
     assert_eq!(settings.mail.from, "no-reply@example.com");
     assert_eq!(settings.mail.username, "mailer");
     assert_eq!(settings.mail.password, "secret");
+    assert_eq!(settings.mail.encryption, MailEncryption::StartTls);
     assert!(settings.queue.use_compression);
     assert_eq!(settings.queue.primary_queue_consumers, 4);
     assert_eq!(settings.queue.secondary_queue_consumers, 2);
@@ -281,31 +270,6 @@ fn an_unknown_queue_driver_is_rejected_at_its_line() {
     assert_eq!(found.len(), 1);
     assert_eq!(found[0].0, Severity::Error);
     assert_eq!(found[0].1, Some(2));
-}
-
-#[test]
-fn credentials_without_a_partner_warn_at_the_set_field() {
-    // Arrange
-    let only_user = "[mail]\nusername = \"mailer\"\n";
-    let only_password = "[mail]\npassword = \"secret\"\n";
-
-    // Act
-    let user_loaded = config::from_text("user.toml", only_user);
-    let password_loaded = config::from_text("password.toml", only_password);
-
-    // Assert
-    let user_issues = issues(&user_loaded);
-    assert_eq!(user_issues.len(), 1);
-    assert_eq!(user_issues[0].0, Severity::Warning);
-    assert_eq!(user_issues[0].1, Some(2));
-    assert!(user_issues[0].2.contains("without a password"));
-    let password_issues = issues(&password_loaded);
-    assert_eq!(password_issues.len(), 1);
-    assert_eq!(password_issues[0].0, Severity::Warning);
-    assert_eq!(password_issues[0].1, Some(2));
-    assert!(password_issues[0].2.contains("ignored"));
-    assert!(user_loaded.settings.is_some());
-    assert!(password_loaded.settings.is_some());
 }
 
 #[test]

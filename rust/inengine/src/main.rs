@@ -1,38 +1,53 @@
 mod cli;
+mod plugins;
 
+use std::future::Future;
 use std::io::IsTerminal;
 use std::path::Path;
 use std::process::ExitCode;
 use std::sync::Arc;
+use std::time::Duration;
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use clap::{CommandFactory, Parser};
-use tracing::warn;
 use tracing_subscriber::EnvFilter;
 
 use inengine_core::command::{Command, CommandContext, CommandResult};
 use inengine_core::commands::echo::Echo;
 use inengine_core::commands::exec::Exec;
 use inengine_core::config;
-use inengine_core::error::CommandError;
+use inengine_core::error::describe_error_chain;
 use inengine_core::output::Output;
-use inengine_core::queue::registry::CommandRegistry;
 use inengine_core::queue::QueueLane;
-use inengine_core::queue_commands::management::{
-    Clear, Length, Peek, Recover, RepublishFailed, Status,
+use inengine_core::queue_admin::management::{
+    write_lengths, Clear, Peek, Recover, RepublishFailed,
 };
-use inengine_core::queue_commands::messaging::{Consume, Publish};
+use inengine_core::queue_admin::messaging::{Consume, Publish};
 use inengine_core::server::host::Server;
 
-use inengine_core::config::Settings;
-use inengine_core::error::PluginError;
-use inengine_core::plugin::PluginLoader;
-use inengine_core::scheduling::schedule::Schedule;
-
 use cli::{Cli, CliCommand, QueueSubcommand, ScheduleSubcommand};
+use plugins::{
+    load_plugins, log_plugin_errors, registry_with_plugins, render_schedule, run_plugin_command,
+    schedule_with_plugins,
+};
 
-#[tokio::main]
-async fn main() -> ExitCode {
+/// How long the runtime waits at shutdown for blocking tasks that are still running, such as
+/// a command that ignores its deadline.
+const RUNTIME_SHUTDOWN_LIMIT: Duration = Duration::from_secs(10);
+
+const RUNTIME_START_FAILURE: &str = "could not start the async runtime";
+
+/// Runs `future` on a new multi-thread runtime and shuts the runtime down when it ends.
+fn run_async<F: Future>(future: F) -> std::io::Result<F::Output> {
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?;
+    let output = runtime.block_on(future);
+    runtime.shutdown_timeout(RUNTIME_SHUTDOWN_LIMIT);
+    Ok(output)
+}
+
+fn main() -> ExitCode {
     tracing_subscriber::fmt()
         .with_env_filter(
             EnvFilter::try_from_env("INENGINE_LOG").unwrap_or_else(|_| EnvFilter::new("warn")),
@@ -62,33 +77,7 @@ async fn main() -> ExitCode {
     let settings = Arc::new(settings);
 
     if cli.server {
-        let plugins = load_plugins(&settings);
-        let registry = Arc::new(registry_with_plugins(plugins.as_ref()));
-        let (schedule, schedule_errors) = schedule_with_plugins(plugins.as_ref());
-        log_plugin_errors(&schedule_errors);
-        let cancel = tokio_util::sync::CancellationToken::new();
-
-        let cancel_ctrlc = cancel.clone();
-        tokio::spawn(async move {
-            tokio::signal::ctrl_c().await.ok();
-            cancel_ctrlc.cancel();
-        });
-
-        #[cfg(unix)]
-        {
-            let cancel_term = cancel.clone();
-            tokio::spawn(async move {
-                let mut sig =
-                    tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-                        .expect("failed to register SIGTERM handler");
-                sig.recv().await;
-                cancel_term.cancel();
-            });
-        }
-
-        let server = Server::new(settings, registry, schedule);
-        server.run(cancel).await;
-        return ExitCode::SUCCESS;
+        return run_server(settings);
     }
 
     let subcommand = match cli.subcommand {
@@ -115,66 +104,11 @@ async fn main() -> ExitCode {
             };
             cmd.run(&mut ctx)
         }
-        CliCommand::Queue(queue_cmd) => match queue_cmd {
-            QueueSubcommand::Publish(args) => {
-                let cmd = Publish {
-                    plugin_name: args.plugin,
-                    command_name: args.command,
-                    args: args.args,
-                    json: args.json,
-                    max_retries: args.max_retries,
-                    lane: lane_from_secondary_flag(args.secondary),
-                };
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Consume(args) => {
-                let cmd = Consume {
-                    limit: (!args.all).then_some(args.count),
-                    lane: lane_from_secondary_flag(args.secondary),
-                    registry: Arc::new(registry_with_plugins(load_plugins(&ctx.settings).as_ref())),
-                };
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Flush(args) => {
-                let cmd = Clear {
-                    pending: args.pending,
-                    failed: args.failed,
-                    in_progress: args.in_progress,
-                    lane: lane_from_secondary_flag(args.secondary),
-                };
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Length => {
-                let cmd = Length;
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Peek(args) => {
-                let cmd = Peek {
-                    range: args.from..=args.to,
-                    json_format: args.json,
-                    pending: args.pending,
-                    failed: args.failed,
-                    in_progress: args.in_progress,
-                    lane: lane_from_secondary_flag(args.secondary),
-                };
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Status => {
-                let cmd = Status;
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Republish(args) => {
-                let cmd = RepublishFailed {
-                    limit: args.limit,
-                    lane: lane_from_secondary_flag(args.secondary),
-                };
-                cmd.run(&mut ctx)
-            }
-            QueueSubcommand::Recover(args) => {
-                let cmd = Recover {
-                    lane: lane_from_secondary_flag(args.secondary),
-                };
-                cmd.run(&mut ctx)
+        CliCommand::Queue(queue_cmd) => match run_queue_subcommand(queue_cmd, &mut ctx) {
+            Ok(result) => result,
+            Err(error) => {
+                eprintln!("Error: {RUNTIME_START_FAILURE}: {error}");
+                return ExitCode::FAILURE;
             }
         },
         CliCommand::Schedule(schedule_cmd) => match schedule_cmd {
@@ -202,14 +136,113 @@ async fn main() -> ExitCode {
 
     match result {
         Ok(()) => ExitCode::SUCCESS,
-        Err(e) => {
-            eprintln!("Error: {e}");
-            let mut source = std::error::Error::source(&e);
-            while let Some(cause) = source {
-                eprintln!("  caused by: {cause}");
-                source = cause.source();
-            }
+        Err(error) => {
+            eprint!("{}", describe_error_chain(&error));
             ExitCode::FAILURE
+        }
+    }
+}
+
+fn run_server(settings: Arc<config::Settings>) -> ExitCode {
+    let plugins = load_plugins(&settings);
+    let registry = Arc::new(registry_with_plugins(plugins.as_ref()));
+    let (schedule, schedule_errors) = schedule_with_plugins(plugins.as_ref());
+    log_plugin_errors(&schedule_errors);
+    let served = run_async(async move {
+        let cancel = tokio_util::sync::CancellationToken::new();
+
+        let cancel_ctrlc = cancel.clone();
+        tokio::spawn(async move {
+            tokio::signal::ctrl_c().await.ok();
+            cancel_ctrlc.cancel();
+        });
+
+        #[cfg(unix)]
+        {
+            let cancel_term = cancel.clone();
+            tokio::spawn(async move {
+                let mut sig =
+                    tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                        .expect("failed to register SIGTERM handler");
+                sig.recv().await;
+                cancel_term.cancel();
+            });
+        }
+
+        Server::new(settings, registry, schedule).run(cancel).await;
+    });
+    match served {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            eprintln!("Error: {RUNTIME_START_FAILURE}: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// The outer `Err` means the runtime did not start, and the request did not run.
+fn run_queue_subcommand(
+    queue_cmd: QueueSubcommand,
+    ctx: &mut CommandContext,
+) -> std::io::Result<CommandResult> {
+    let queue_settings = &ctx.settings.queue;
+    let output = &mut ctx.output;
+    match queue_cmd {
+        QueueSubcommand::Publish(args) => {
+            let request = Publish {
+                plugin_name: args.plugin,
+                command_name: args.command,
+                args: args.args,
+                json: args.json,
+                max_retries: args.max_retries,
+                lane: lane_from_secondary_flag(args.secondary),
+            };
+            run_async(request.run(queue_settings, output))
+        }
+        QueueSubcommand::Consume(args) => {
+            let plugins = load_plugins(&ctx.settings);
+            let request = Consume {
+                limit: (!args.all).then_some(args.count),
+                lane: lane_from_secondary_flag(args.secondary),
+                registry: Arc::new(registry_with_plugins(plugins.as_ref())),
+            };
+            run_async(request.run(ctx.settings.clone(), output))
+        }
+        QueueSubcommand::Flush(args) => {
+            let request = Clear {
+                pending: args.pending,
+                failed: args.failed,
+                in_progress: args.in_progress,
+                lane: lane_from_secondary_flag(args.secondary),
+            };
+            run_async(request.run(queue_settings, output))
+        }
+        QueueSubcommand::Length | QueueSubcommand::Status => {
+            run_async(write_lengths(queue_settings, output))
+        }
+        QueueSubcommand::Peek(args) => {
+            let request = Peek {
+                range: args.from..=args.to,
+                json_format: args.json,
+                pending: args.pending,
+                failed: args.failed,
+                in_progress: args.in_progress,
+                lane: lane_from_secondary_flag(args.secondary),
+            };
+            run_async(request.run(queue_settings, output))
+        }
+        QueueSubcommand::Republish(args) => {
+            let request = RepublishFailed {
+                limit: args.limit,
+                lane: lane_from_secondary_flag(args.secondary),
+            };
+            run_async(request.run(queue_settings, output))
+        }
+        QueueSubcommand::Recover(args) => {
+            let request = Recover {
+                lane: lane_from_secondary_flag(args.secondary),
+            };
+            run_async(request.run(queue_settings, output))
         }
     }
 }
@@ -219,268 +252,5 @@ fn lane_from_secondary_flag(secondary: bool) -> QueueLane {
         QueueLane::Secondary
     } else {
         QueueLane::Primary
-    }
-}
-
-/// Loads the plugins that the settings list and logs each failure. A runtime that fails to
-/// start leaves every plugin unloaded, and the built-in commands still run.
-fn load_plugins(settings: &Settings) -> Option<PluginLoader> {
-    let (loader, errors) = PluginLoader::from_settings(settings);
-    log_plugin_errors(&errors);
-    loader
-}
-
-fn run_plugin_command(
-    plugins: Option<&PluginLoader>,
-    plugin_name: &str,
-    command_name: &str,
-    args: &[String],
-    ctx: &mut CommandContext,
-) -> CommandResult {
-    let loaded = plugins.is_some_and(|loader| {
-        loader
-            .plugins()
-            .iter()
-            .any(|plugin| plugin.name == plugin_name)
-    });
-    if !loaded {
-        return Err(CommandError::failed(format!(
-            "plugin '{plugin_name}' is not loaded"
-        )));
-    }
-    registry_with_plugins(plugins)
-        .build(plugin_name, command_name, &args_to_json(args))
-        .map_err(|error| CommandError::failed_with("could not run the plugin command", error))?
-        .run(ctx)
-}
-
-fn log_plugin_errors(errors: &[PluginError]) {
-    for error in errors {
-        warn!("{error}");
-    }
-}
-
-fn registry_with_plugins(plugins: Option<&PluginLoader>) -> CommandRegistry {
-    let mut registry = CommandRegistry::new();
-    if let Some(loader) = plugins {
-        log_plugin_errors(&loader.register_commands(&mut registry));
-    }
-    registry
-}
-
-fn schedule_with_plugins(plugins: Option<&PluginLoader>) -> (Schedule, Vec<PluginError>) {
-    let mut schedule = Schedule::new();
-    let errors = plugins
-        .map(|loader| loader.register_schedules(&mut schedule))
-        .unwrap_or_default();
-    (schedule, errors)
-}
-
-fn args_to_json(args: &[String]) -> String {
-    let fields: serde_json::Map<String, serde_json::Value> = args
-        .iter()
-        .filter_map(|arg| arg.split_once('='))
-        .map(|(key, value)| {
-            (
-                key.to_string(),
-                serde_json::Value::String(value.to_string()),
-            )
-        })
-        .collect();
-    serde_json::Value::Object(fields).to_string()
-}
-
-fn render_schedule(schedule: &Schedule, errors: &[PluginError], now: DateTime<Utc>) -> String {
-    let mut table = String::new();
-    if schedule.jobs().is_empty() {
-        table.push_str("No scheduled commands.\n");
-    } else {
-        table.push_str(&format!(
-            "{:<30}{:<25}{}\n",
-            "Job", "Cron Expression", "Next Fire Time"
-        ));
-        for job in schedule.jobs() {
-            let next = job
-                .cron_schedule
-                .after(&now)
-                .next()
-                .map(|time| time.to_string())
-                .unwrap_or_else(|| "none".to_string());
-            table.push_str(&format!(
-                "{:<30}{:<25}{next}\n",
-                job.name, job.cron_expression
-            ));
-        }
-    }
-    for error in errors {
-        table.push_str(&format!("warning: {error}\n"));
-    }
-    table
-}
-
-#[cfg(test)]
-mod tests {
-    use std::collections::HashMap;
-
-    use chrono::TimeZone;
-    use inengine_core::config::PluginLimitsSettings;
-    use inengine_core::plugin::PluginRuntime;
-
-    use super::*;
-
-    fn fixture_plugins() -> PluginLoader {
-        let fixture =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../inengine-core/tests/fixtures/plugin");
-        let directories = HashMap::from([(
-            "fixture".to_string(),
-            fixture.to_string_lossy().into_owned(),
-        )]);
-        let runtime = PluginRuntime::new(PluginLimitsSettings::default()).unwrap();
-        let (loader, errors) = PluginLoader::load(&directories, runtime);
-        assert!(errors.is_empty(), "{errors:?}");
-        loader
-    }
-
-    fn context() -> CommandContext {
-        let settings = config::from_spec(&config::SettingsSpec::default())
-            .settings
-            .expect("the default settings are valid");
-        CommandContext::new(Output::new(false), Arc::new(settings))
-    }
-
-    struct PluginJobCommand;
-
-    impl Command for PluginJobCommand {
-        fn name(&self) -> &str {
-            "fixture::echo-args"
-        }
-
-        fn run(&self, _ctx: &mut CommandContext) -> CommandResult {
-            Ok(())
-        }
-    }
-
-    #[test]
-    fn schedule_table_lists_each_job_and_each_warning() {
-        // Arrange
-        let mut schedule = Schedule::new();
-        let job = schedule
-            .command(PluginJobCommand)
-            .cron("0 0 0 1 1 *")
-            .unwrap();
-        schedule.add(job);
-        let errors = [PluginError::InvalidScheduleEntry {
-            plugin: "fixture".to_string(),
-            command: "missing".to_string(),
-            reason: "the plugin does not list this command".to_string(),
-        }];
-        let now = Utc.with_ymd_and_hms(2026, 6, 1, 0, 0, 0).unwrap();
-
-        // Act
-        let table = render_schedule(&schedule, &errors, now);
-
-        // Assert
-        let lines: Vec<&str> = table.lines().collect();
-        assert_eq!(lines.len(), 3);
-        assert!(lines[0].starts_with("Job"));
-        assert!(lines[1].starts_with("fixture::echo-args"));
-        assert!(lines[1].contains("0 0 0 1 1 *"));
-        assert!(lines[1].ends_with("2027-01-01 00:00:00 UTC"));
-        assert_eq!(
-            lines[2],
-            "warning: invalid schedule entry for command 'missing' in plugin 'fixture': the plugin does not list this command"
-        );
-    }
-
-    #[test]
-    fn empty_schedule_says_so() {
-        // Arrange
-        let schedule = Schedule::new();
-
-        // Act
-        let table = render_schedule(&schedule, &[], Utc::now());
-
-        // Assert
-        assert_eq!(table, "No scheduled commands.\n");
-    }
-
-    #[test]
-    fn plugin_args_become_one_json_object() {
-        // Arrange
-        let args = ["name=Ethan".to_string(), "count=2".to_string()];
-
-        // Act
-        let json = args_to_json(&args);
-
-        // Assert
-        let value: serde_json::Value = serde_json::from_str(&json).unwrap();
-        assert_eq!(value, serde_json::json!({"name": "Ethan", "count": "2"}));
-    }
-
-    #[test]
-    fn plugin_command_runs_with_its_arguments() {
-        // Arrange
-        let plugins = fixture_plugins();
-        let mut ctx = context();
-        let args = ["name=Ethan".to_string()];
-
-        // Act
-        let result = run_plugin_command(Some(&plugins), "fixture", "echo-args", &args, &mut ctx);
-
-        // Assert
-        assert!(result.is_ok(), "{result:?}");
-        assert_eq!(ctx.output.take_buffer(), "{\"name\":\"Ethan\"}\n");
-    }
-
-    #[test]
-    fn unknown_plugin_command_fails_before_the_plugin_runs() {
-        // Arrange
-        let plugins = fixture_plugins();
-        let mut ctx = context();
-
-        // Act
-        let result = run_plugin_command(Some(&plugins), "fixture", "nope", &[], &mut ctx);
-
-        // Assert
-        let error = result.expect_err("the fixture does not list nope");
-        let cause = std::error::Error::source(&error)
-            .expect("a cause")
-            .to_string();
-        assert_eq!(cause, "command not found in plugin 'fixture': nope");
-    }
-
-    #[test]
-    fn plugin_that_is_not_loaded_is_reported_as_such() {
-        // Arrange
-        let plugins = fixture_plugins();
-        let mut ctx = context();
-
-        // Act
-        let result = run_plugin_command(Some(&plugins), "missing", "run", &[], &mut ctx);
-
-        // Assert
-        let error = result.expect_err("no plugin is named missing");
-        assert_eq!(
-            error.to_string(),
-            "command failed: plugin 'missing' is not loaded"
-        );
-    }
-
-    #[test]
-    fn schedule_table_from_the_fixture_lists_one_job_and_two_warnings() {
-        // Arrange
-        let plugins = fixture_plugins();
-        let (schedule, errors) = schedule_with_plugins(Some(&plugins));
-        let now = Utc.with_ymd_and_hms(2026, 6, 1, 0, 0, 0).unwrap();
-
-        // Act
-        let table = render_schedule(&schedule, &errors, now);
-
-        // Assert
-        let lines: Vec<&str> = table.lines().collect();
-        assert_eq!(lines.len(), 4, "{table}");
-        assert!(lines[1].starts_with("fixture::echo-args"));
-        assert!(lines[2].starts_with("warning: invalid schedule entry for command 'missing'"));
-        assert!(lines[3].starts_with("warning: invalid schedule entry for command 'echo-args'"));
     }
 }

@@ -109,6 +109,13 @@ let job = schedule
 schedule.add(job);
 ```
 
+The output is written, appended, and mailed when the command succeeds and when it fails.
+The mail subject is `Command completed: <name>` or `Command failed: <name>`.
+A failure mail ends with the error and each of its causes.
+Nothing is written or mailed for a command that the server stopped, a command that ignored its timeout, or a command that panicked.
+
+A ping fails when the server answers with an error status, and the job fails with it.
+
 Set a timeout:
 
 ```rust
@@ -121,7 +128,8 @@ let job = schedule
 schedule.add(job);
 ```
 
-Run custom logic before or after:
+Run custom logic before or after.
+The hooks run on the server's async threads, so they must not block:
 
 ```rust
 let job = schedule

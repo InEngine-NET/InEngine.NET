@@ -9,6 +9,6 @@ pub mod error;
 pub mod output;
 pub mod plugin;
 pub mod queue;
-pub mod queue_commands;
+pub mod queue_admin;
 pub mod scheduling;
 pub mod server;
