@@ -1,8 +1,10 @@
+use std::path::PathBuf;
+
 use clap::{Args, Parser};
 
 #[derive(Parser)]
 #[command(name = "inengine", about = "A command queuing and scheduling server")]
-pub struct Cli {
+pub(crate) struct Cli {
     #[arg(short = 's', long = "server", help = "Run InEngine server")]
     pub server: bool,
 
@@ -12,14 +14,14 @@ pub struct Cli {
         default_value = "./inengine.toml",
         help = "Path to the configuration file"
     )]
-    pub config: String,
+    pub config: PathBuf,
 
     #[command(subcommand)]
     pub subcommand: Option<CliCommand>,
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum CliCommand {
+pub(crate) enum CliCommand {
     Echo(EchoArgs),
     Exec(ExecArgs),
     #[command(subcommand)]
@@ -30,12 +32,12 @@ pub enum CliCommand {
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum ScheduleSubcommand {
+pub(crate) enum ScheduleSubcommand {
     List,
 }
 
 #[derive(Debug, clap::Subcommand)]
-pub enum QueueSubcommand {
+pub(crate) enum QueueSubcommand {
     Publish(QueuePublishArgs),
     Consume(QueueConsumeArgs),
     Flush(QueueFlushArgs),
@@ -51,13 +53,13 @@ pub enum QueueSubcommand {
 }
 
 #[derive(Debug, Args)]
-pub struct EchoArgs {
+pub(crate) struct EchoArgs {
     #[arg(long = "text", default_value = "", help = "The text to echo")]
     pub text: String,
 }
 
 #[derive(Debug, Args)]
-pub struct ExecArgs {
+pub(crate) struct ExecArgs {
     #[arg(
         short = 'e',
         long = "executable",
@@ -78,7 +80,7 @@ pub struct ExecArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct PluginArgs {
+pub(crate) struct PluginArgs {
     #[arg(long, help = "Plugin name")]
     pub name: String,
 
@@ -90,7 +92,7 @@ pub struct PluginArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueuePublishArgs {
+pub(crate) struct QueuePublishArgs {
     #[arg(long, help = "Plugin name")]
     pub plugin: String,
 
@@ -119,7 +121,7 @@ pub struct QueuePublishArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueueConsumeArgs {
+pub(crate) struct QueueConsumeArgs {
     #[arg(long, help = "Consume all messages")]
     pub all: bool,
 
@@ -131,7 +133,7 @@ pub struct QueueConsumeArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueueFlushArgs {
+pub(crate) struct QueueFlushArgs {
     #[arg(long, help = "Clear the pending queue")]
     pub pending: bool,
 
@@ -146,7 +148,7 @@ pub struct QueueFlushArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueuePeekArgs {
+pub(crate) struct QueuePeekArgs {
     #[arg(long, default_value = "0", help = "First message index")]
     pub from: usize,
 
@@ -170,7 +172,7 @@ pub struct QueuePeekArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueueRepublishArgs {
+pub(crate) struct QueueRepublishArgs {
     #[arg(long, default_value = "100", help = "Maximum messages to republish")]
     pub limit: usize,
 
@@ -179,7 +181,7 @@ pub struct QueueRepublishArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct QueueRecoverArgs {
+pub(crate) struct QueueRecoverArgs {
     #[arg(long, help = "Recover the secondary queue")]
     pub secondary: bool,
 }
@@ -187,6 +189,8 @@ pub struct QueueRecoverArgs {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
+
     use clap::Parser;
 
     #[test]
@@ -204,7 +208,7 @@ mod tests {
         let cli = Cli::parse_from(["inengine", "-c", "/custom/config.json"]);
 
         // Assert
-        assert_eq!(cli.config, "/custom/config.json");
+        assert_eq!(cli.config, Path::new("/custom/config.json"));
     }
 
     #[test]

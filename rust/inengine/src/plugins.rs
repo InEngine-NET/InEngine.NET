@@ -1,14 +1,16 @@
 //! Plugin loading, the `plugin` subcommand, and the `schedule list` table. Each function runs
 //! on the main thread, before or without the tokio runtime.
 
+use std::fmt::Write;
+
 use chrono::{DateTime, Utc};
 use tracing::warn;
 
 use inengine_core::command::{CommandContext, CommandResult};
 use inengine_core::config::Settings;
-use inengine_core::error::{CommandError, PluginError};
+use inengine_core::error::{CommandError, ErrorChain, PluginError};
 use inengine_core::plugin::PluginLoader;
-use inengine_core::queue::registry::CommandRegistry;
+use inengine_core::queue::CommandRegistry;
 use inengine_core::scheduling::schedule::Schedule;
 
 /// Loads the plugins that the settings list and logs each failure. A plugin runtime that
@@ -45,7 +47,7 @@ pub(crate) fn run_plugin_command(
 
 pub(crate) fn log_plugin_errors(errors: &[PluginError]) {
     for error in errors {
-        warn!("{error}");
+        warn!("{}", ErrorChain::new(error));
     }
 }
 
@@ -90,10 +92,11 @@ pub(crate) fn render_schedule(
     if schedule.jobs().is_empty() {
         table.push_str("No scheduled commands.\n");
     } else {
-        table.push_str(&format!(
-            "{:<30}{:<25}{}\n",
-            "Job", "Cron Expression", "Next Fire Time"
-        ));
+        let _ = writeln!(
+            table,
+            "{:<30}{:<25}Next Fire Time",
+            "Job", "Cron Expression"
+        );
         for job in schedule.jobs() {
             let next = job
                 .cron_schedule
@@ -101,14 +104,11 @@ pub(crate) fn render_schedule(
                 .next()
                 .map(|time| time.to_string())
                 .unwrap_or_else(|| "none".to_string());
-            table.push_str(&format!(
-                "{:<30}{:<25}{next}\n",
-                job.name, job.cron_expression
-            ));
+            let _ = writeln!(table, "{:<30}{:<25}{next}", job.name, job.cron_expression);
         }
     }
     for error in errors {
-        table.push_str(&format!("warning: {error}\n"));
+        let _ = writeln!(table, "warning: {}", ErrorChain::new(error));
     }
     table
 }
@@ -124,17 +124,14 @@ mod tests {
     use inengine_core::command::Command;
     use inengine_core::config::{self, PluginLimitsSettings};
     use inengine_core::output::Output;
-    use inengine_core::plugin::PluginRuntime;
+    use inengine_core::plugin::{PluginRuntime, ScheduleEntryError};
 
     use super::*;
 
     fn fixture_plugins() -> PluginLoader {
         let fixture =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../inengine-core/tests/fixtures/plugin");
-        let directories = HashMap::from([(
-            "fixture".to_string(),
-            fixture.to_string_lossy().into_owned(),
-        )]);
+        let directories = HashMap::from([("fixture".to_string(), fixture)]);
         let runtime = PluginRuntime::new(PluginLimitsSettings::default()).unwrap();
         let (loader, errors) = PluginLoader::load(&directories, runtime);
         assert!(errors.is_empty(), "{errors:?}");
@@ -172,7 +169,7 @@ mod tests {
         let errors = [PluginError::InvalidScheduleEntry {
             plugin: "fixture".to_string(),
             command: "missing".to_string(),
-            reason: "the plugin does not list this command".to_string(),
+            source: ScheduleEntryError::NotListed,
         }];
         let now = Utc.with_ymd_and_hms(2026, 6, 1, 0, 0, 0).unwrap();
 
@@ -280,7 +277,18 @@ mod tests {
         let lines: Vec<&str> = table.lines().collect();
         assert_eq!(lines.len(), 4, "{table}");
         assert!(lines[1].starts_with("fixture::echo-args"));
-        assert!(lines[2].starts_with("warning: invalid schedule entry for command 'missing'"));
-        assert!(lines[3].starts_with("warning: invalid schedule entry for command 'echo-args'"));
+        assert_eq!(
+            lines[2],
+            "warning: invalid schedule entry for command 'missing' in plugin 'fixture': \
+             the plugin does not list this command"
+        );
+        assert!(
+            lines[3].starts_with(
+                "warning: invalid schedule entry for command 'echo-args' in plugin 'fixture': \
+                 invalid cron expression 'not a cron': "
+            ),
+            "{}",
+            lines[3]
+        );
     }
 }

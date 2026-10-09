@@ -1,9 +1,10 @@
+//! The `inengine` program. It runs the queue and scheduling server, publishes and manages
+//! queued commands, and runs commands directly from the command line.
 mod cli;
 mod plugins;
 
 use std::future::Future;
 use std::io::IsTerminal;
-use std::path::Path;
 use std::process::ExitCode;
 use std::sync::Arc;
 use std::time::Duration;
@@ -16,11 +17,11 @@ use inengine_core::command::{Command, CommandContext, CommandResult};
 use inengine_core::commands::echo::Echo;
 use inengine_core::commands::exec::Exec;
 use inengine_core::config;
-use inengine_core::error::describe_error_chain;
+use inengine_core::error::{ErrorChain, describe_error_chain};
 use inengine_core::output::Output;
 use inengine_core::queue::QueueLane;
 use inengine_core::queue_admin::management::{
-    write_lengths, Clear, Peek, Recover, RepublishFailed,
+    Clear, Peek, Recover, RepublishFailed, write_lengths,
 };
 use inengine_core::queue_admin::messaging::{Consume, Publish};
 use inengine_core::server::host::Server;
@@ -57,10 +58,10 @@ fn main() -> ExitCode {
 
     let cli = Cli::parse();
 
-    let loaded = match config::load(Path::new(&cli.config)) {
+    let loaded = match config::load(&cli.config) {
         Ok(loaded) => loaded,
-        Err(e) => {
-            eprintln!("Error: {e}");
+        Err(error) => {
+            eprint!("{}", describe_error_chain(&error));
             return ExitCode::FAILURE;
         }
     };
@@ -107,7 +108,10 @@ fn main() -> ExitCode {
         CliCommand::Queue(queue_cmd) => match run_queue_subcommand(queue_cmd, &mut ctx) {
             Ok(result) => result,
             Err(error) => {
-                eprintln!("Error: {RUNTIME_START_FAILURE}: {error}");
+                eprintln!(
+                    "Error: {RUNTIME_START_FAILURE}: {}",
+                    ErrorChain::new(&error)
+                );
                 return ExitCode::FAILURE;
             }
         },
@@ -174,7 +178,10 @@ fn run_server(settings: Arc<config::Settings>) -> ExitCode {
     match served {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("Error: {RUNTIME_START_FAILURE}: {error}");
+            eprintln!(
+                "Error: {RUNTIME_START_FAILURE}: {}",
+                ErrorChain::new(&error)
+            );
             ExitCode::FAILURE
         }
     }
