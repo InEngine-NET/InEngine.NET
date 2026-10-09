@@ -32,7 +32,7 @@ See [Exec](commands.md#exec) for the timeout and argument options.
 Publish a command to the queue:
 
 ```bash
-inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello, world"
+inengine queue publish --plugin inengine-core --command echo --args "text=Hello, world"
 ```
 
 Consume the next message from the queue:

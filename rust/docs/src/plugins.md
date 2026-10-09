@@ -1,7 +1,8 @@
 # Plugins
 
 InEngine loads plugins as WASM components built with the WebAssembly Component Model.
-A plugin provides commands that `inengine plugin` runs.
+A plugin provides commands and schedules.
+A plugin command can run from the command line, from the queue, or on a schedule.
 
 ## Running a Plugin Command
 
@@ -23,6 +24,17 @@ sample = "/path/to/plugin/directory"
 The key is the plugin name.
 InEngine loads every `.wasm` file in the directory.
 A relative path resolves against the working directory.
+The name `inengine-core` is reserved for the built-in commands.
+
+## Queuing a Plugin Command
+
+Publish a plugin command with the plugin name and the command name:
+
+```bash
+inengine queue publish --plugin sample --command greet --args name=Ethan
+```
+
+The server and `inengine queue consume` both load the plugins in `inengine.toml`, so either one can run the message.
 
 ## WIT Interface
 
@@ -57,8 +69,39 @@ world plugin {
 }
 ```
 
-InEngine does not run plugin schedules yet.
-Return an empty list from `list-schedules`.
+## Scheduling from a Plugin
+
+Return `ScheduleEntry` records from `list_schedules` to schedule a plugin command:
+
+```rust
+fn list_schedules() -> Vec<exports::inengine::plugin::scheduling::ScheduleEntry> {
+    vec![
+        exports::inengine::plugin::scheduling::ScheduleEntry {
+            command_name: "greet".to_string(),
+            cron_expression: "0 */5 * * * *".to_string(),
+        },
+    ]
+}
+```
+
+The server runs each entry on its cron schedule, with the arguments `{}`.
+`inengine schedule list` shows each entry as a job named `<plugin>::<command>`.
+An entry for a command that the plugin does not list, or with a cron expression that does not parse, is skipped with a warning.
+
+## Limits
+
+Each plugin call runs in a sandbox with two limits from the `[plugin_limits]` table of `inengine.toml`:
+
+```toml
+[plugin_limits]
+timeout_seconds = 900
+memory_mib = 256
+```
+
+A call that runs longer than `timeout_seconds` is stopped and fails.
+A scheduled job with a shorter timeout stops the call at that timeout.
+A call that needs more memory than `memory_mib` fails.
+Loading a plugin has a fixed limit of 10 seconds.
 
 ## Writing a Plugin
 

@@ -46,13 +46,17 @@ password = ""
 
 [queue.file]
 base_path = "../"
+
+[plugin_limits]
+timeout_seconds = 900
+memory_mib = 256
 ```
 
 ## Plugins
 
 | Setting   | Type   | Description                                        |
 | --------- | ------ | -------------------------------------------------- |
-| *key*     | string | The plugin name.                                   |
+| *key*     | string | The plugin name. `inengine-core` is reserved.      |
 | *value*   | string | The directory that contains the `.wasm` file.      |
 
 ## Exec Whitelist
@@ -108,6 +112,13 @@ Used when `queue_driver` is `"file"`.
 | Setting    | Type   | Default  | Description                                          |
 | ---------- | ------ | -------- | ---------------------------------------------------- |
 | base_path  | string | `"../"` | The directory where queue subdirectories are created. |
+
+## Plugin Limits
+
+| Setting         | Type    | Default | Description                                                              |
+| --------------- | ------- | ------- | ------------------------------------------------------------------------ |
+| timeout_seconds | integer | `900`   | The longest time one plugin call may run, in seconds (1 to 86400).       |
+| memory_mib      | integer | `256`   | The memory budget of one plugin instance, in MiB (16 to 4096).           |
 
 ## Logging
 

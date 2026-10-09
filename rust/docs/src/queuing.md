@@ -41,29 +41,39 @@ password = ""
 
 ## Publishing Commands
 
-Publish a command to the queue by its class name:
+Publish a command to the queue by its plugin name and command name.
+The built-in commands use the plugin name `inengine-core`:
 
 ```bash
-inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello"
+inengine queue publish --plugin inengine-core --command echo --args "text=Hello"
 ```
+
+Publish a command from a [plugin](plugins.md) by the plugin name in `inengine.toml`:
+
+```bash
+inengine queue publish --plugin sample --command greet --args name=Ethan
+```
+
+The publisher does not check that the command exists.
+A consumer that cannot find the command moves the message to the failed stage.
 
 Publish with a JSON payload:
 
 ```bash
-inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --json '{"text":"Hello"}'
+inengine queue publish --plugin inengine-core --command echo --json '{"text":"Hello"}'
 ```
 
 Publish to the secondary queue:
 
 ```bash
-inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello" --secondary
+inengine queue publish --plugin inengine-core --command echo --args "text=Hello" --secondary
 ```
 
 Set the maximum number of retries.
 The value must be from 0 to 100:
 
 ```bash
-inengine queue publish --plugin inengine-core --class "inengine_core::commands::echo::Echo" --args "text=Hello" --max-retries 3
+inengine queue publish --plugin inengine-core --command echo --args "text=Hello" --max-retries 3
 ```
 
 ## Consuming Commands

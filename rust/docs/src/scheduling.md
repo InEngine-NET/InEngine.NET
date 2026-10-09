@@ -9,9 +9,6 @@ Schedule a command to run it many times, on a fixed interval.
 InEngine defines schedules in code, not in a data store.
 This lets the schedule live alongside the command code in version control.
 
-> **Note:** The server does not run jobs from a `Schedule` yet, and `inengine schedule list` prints "No scheduled commands."
-> The API on this page builds and validates jobs, but no job reaches the scheduler.
-
 ## Scheduling a Command
 
 Use the `Schedule` struct to register commands with cron expressions.
@@ -19,7 +16,7 @@ Use the `Schedule` struct to register commands with cron expressions.
 ```rust
 use inengine_core::scheduling::schedule::Schedule;
 
-let mut schedule = Schedule::new(settings.clone());
+let mut schedule = Schedule::new();
 
 let job = schedule
     .command(MyCommand { /* ... */ })
@@ -135,9 +132,26 @@ let job = schedule
 schedule.add(job);
 ```
 
+## Running a Schedule
+
+Give the schedule to the server:
+
+```rust
+use std::sync::Arc;
+
+use inengine_core::queue::CommandRegistry;
+use inengine_core::server::host::Server;
+
+let server = Server::new(settings, Arc::new(CommandRegistry::new()), schedule);
+server.run(cancel).await;
+```
+
+A plugin can also add schedules.
+See [Plugins](plugins.md#scheduling-from-a-plugin).
+
 ## Viewing Scheduled Commands
 
-List all scheduled commands and their next fire time:
+List the plugin schedules and their next fire time:
 
 ```bash
 inengine schedule list
@@ -145,8 +159,10 @@ inengine schedule list
 
 ## Running the Scheduler
 
-Start the [server](server.md) to run scheduled commands:
+The [server](server.md) runs the plugin schedules:
 
 ```bash
 inengine -s
 ```
+
+A schedule built in Rust code runs only in a server that your program starts with `Server::new`.
