@@ -56,3 +56,12 @@ password = ""
 [queue.file]
 # A relative path resolves against the working directory.
 base_path = "../"
+
+# Limits that apply to every plugin call.
+[plugin_limits]
+# The longest time one plugin call may run, from 1 to 86400. A call that runs longer is
+# stopped and fails. A scheduled job with a shorter timeout stops the call at that timeout.
+timeout_seconds = 900
+# The memory budget of one plugin instance in MiB, from 16 to 4096. A call that needs more
+# fails.
+memory_mib = 256
