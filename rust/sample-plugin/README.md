@@ -1,7 +1,7 @@
 # Sample Plugin
 
 This crate is an example InEngine plugin.
-A plugin is a WebAssembly component that implements the WIT interface in `wit/plugin.wit`.
+A plugin is a WebAssembly component that implements the WIT interface in `rust/inengine-core/wit/plugin.wit` in the InEngine repository.
 InEngine loads the component with Wasmtime and runs its commands from the command line, the queue, or a schedule.
 
 ## Prerequisites
@@ -34,8 +34,8 @@ The component is written to `target/wasm32-unknown-unknown/release/sample_plugin
 Build for `wasm32-unknown-unknown` rather than a WASI target.
 The host provides no WASI imports, so a component built for `wasm32-wasip1` or `wasm32-wasip2` fails to load with an error about a missing `wasi:cli` implementation.
 
-Each build also writes `src/bindings.rs`.
-The crate generates its bindings with `wit_bindgen::generate!` instead, so the file is unused and git ignores it.
+This crate reads the WIT file from `../inengine-core/wit` through the `path` option of `wit_bindgen::generate!`.
+Because the crate has no `wit` folder, cargo-component does not write `src/bindings.rs`.
 
 ## Running a command
 
@@ -81,7 +81,9 @@ The server runs each schedule entry that a plugin returns.
 
 1. Create a Rust library crate with `crate-type = ["cdylib"]`.
 2. Add `wit-bindgen` as a dependency, and add `serde_json` if your commands read arguments.
-3. Copy `wit/plugin.wit` into your crate.
+3. Copy `rust/inengine-core/wit/plugin.wit` from the InEngine repository into a `wit` folder in your crate.
+   cargo-component then writes `src/bindings.rs` on each build.
+   Your crate does not use that file, because `wit_bindgen::generate!` generates the bindings, so add it to `.gitignore`.
 4. Call `wit_bindgen::generate!` with `world: "plugin"`, and pass your type to `export!`.
 5. Implement `exports::inengine::plugin::commands::Guest` and `exports::inengine::plugin::scheduling::Guest`.
 6. Build with `cargo component build --release --target wasm32-unknown-unknown`.

@@ -1,5 +1,5 @@
 wit_bindgen::generate!({
-    path: "wit",
+    path: "../inengine-core/wit",
     world: "plugin",
 });
 

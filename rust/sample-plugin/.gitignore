@@ -1,2 +1,0 @@
-# cargo component writes this on each build. The crate uses wit_bindgen::generate! instead.
-/src/bindings.rs
