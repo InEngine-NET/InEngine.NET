@@ -1,3 +1,4 @@
+//! Tests the log output of the `inengine` program.
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
