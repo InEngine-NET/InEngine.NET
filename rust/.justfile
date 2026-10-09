@@ -37,7 +37,7 @@ doc:
 # List files with 300 or more lines of code, excluding tests
 list-lines:
     #!/usr/bin/env bash
-    find inengine-core/src inengine/src sample-plugin/src -name "*.rs" -not -name bindings.rs -type f | while read -r file; do
+    find inengine-core/src inengine/src sample-plugin/src fixture-plugin/src -name "*.rs" -not -name bindings.rs -type f | while read -r file; do
         lines=$(sed '/#\[cfg(test)\]/,$d' "$file" | sed '/^[[:space:]]*$/d' | wc -l)
         echo "$lines $file"
     done | sort -nr | awk '$1 >= 300'
@@ -89,6 +89,30 @@ build-sample-plugin:
     mkdir -p target/plugins/sample
     cp sample-plugin/target/wasm32-unknown-unknown/release/sample_plugin.wasm target/plugins/sample/
 
+_fixture_dir := "inengine-core/tests/fixtures"
+_fixture_wasm := "fixture-plugin/target/wasm32-unknown-unknown/release/fixture_plugin.wasm"
+
+# Rebuild the plugin fixtures that the inengine-core tests load
+build-fixture-plugin:
+    cd fixture-plugin && cargo component build --release --target wasm32-unknown-unknown --features spin-on-load
+    cp {{ _fixture_wasm }} {{ _fixture_dir }}/spin-on-load/fixture_plugin_spin_on_load.wasm
+    cd fixture-plugin && cargo component build --release --target wasm32-unknown-unknown
+    cp {{ _fixture_wasm }} {{ _fixture_dir }}/plugin/fixture_plugin.wasm
+
+# Fail when a checked-in plugin fixture differs from a fresh build of its source
+check-fixture-plugin:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    target_dir=$(mktemp -d)
+    trap 'rm -rf "$target_dir"' EXIT
+    built="$target_dir/wasm32-unknown-unknown/release/fixture_plugin.wasm"
+    cd fixture-plugin
+    cargo component build -q --release --target wasm32-unknown-unknown --target-dir "$target_dir" --features spin-on-load
+    cmp "$built" ../{{ _fixture_dir }}/spin-on-load/fixture_plugin_spin_on_load.wasm
+    cargo component build -q --release --target wasm32-unknown-unknown --target-dir "$target_dir"
+    cmp "$built" ../{{ _fixture_dir }}/plugin/fixture_plugin.wasm
+    echo "The plugin fixtures match their source."
+
 # Run
 
 # Run the CLI with ARGS, for example: just run queue length
@@ -109,6 +133,6 @@ install-tools:
     cargo install cargo-nextest cargo-llvm-cov cargo-machete cargo-component --locked
     rustup target add wasm32-unknown-unknown
 
-# Holistically validate: unused dependencies, lint, docs, all tests, and the sample plugin
-validate: machete lint doc integration-test build-sample-plugin
+# Holistically validate: unused dependencies, lint, docs, all tests, the sample plugin, and the plugin fixtures
+validate: machete lint doc integration-test build-sample-plugin check-fixture-plugin
     @echo "All good."
