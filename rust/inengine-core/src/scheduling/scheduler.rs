@@ -6,23 +6,23 @@ use tracing::{debug, error, info};
 
 use crate::command::Command;
 use crate::config::Settings;
-use crate::error::CommandError;
+use crate::error::{CommandError, ErrorChain};
 use crate::scheduling::schedule::{Schedule, ScheduledJob};
 use crate::server::lifecycle::run_with_lifecycle;
 
-pub struct Scheduler {
+pub(crate) struct Scheduler {
     settings: Arc<Settings>,
     schedule: Schedule,
 }
 
 impl Scheduler {
-    pub fn new(settings: Arc<Settings>, schedule: Schedule) -> Self {
+    pub(crate) fn new(settings: Arc<Settings>, schedule: Schedule) -> Self {
         Self { settings, schedule }
     }
 
     /// Runs every job until `cancel` fires. Each job moves into its own task with its whole
     /// lifecycle, including its hooks.
-    pub async fn run(self, cancel: CancellationToken) {
+    pub(crate) async fn run(self, cancel: CancellationToken) {
         let handles: Vec<_> = self
             .schedule
             .into_jobs()
@@ -31,7 +31,10 @@ impl Scheduler {
             .collect();
         for handle in handles {
             if let Err(error) = handle.await {
-                error!("a scheduled job task ended abnormally: {error}");
+                error!(
+                    "a scheduled job task ended abnormally: {}",
+                    ErrorChain::new(&error)
+                );
             }
         }
     }
@@ -61,7 +64,10 @@ async fn run_job(job: ScheduledJob, settings: Arc<Settings>, cancel: Cancellatio
             Err(CommandError::Interrupted) => {
                 info!("scheduled command {name} stopped because the server is stopping");
             }
-            Err(e) => error!("scheduled command {name} failed: {e}"),
+            Err(error) => error!(
+                "scheduled command {name} failed: {}",
+                ErrorChain::new(&error)
+            ),
         }
     }
 }

@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
@@ -6,18 +7,33 @@ use crate::command::Command;
 use crate::commands::chain::Chain;
 use crate::server::lifecycle::CommandLifecycle;
 
+/// An error that occurs while you build a schedule.
 #[derive(Debug, thiserror::Error)]
 pub enum ScheduleError {
+    /// The cron expression did not parse.
     #[error("invalid cron expression '{expression}': {reason}")]
-    InvalidCron { expression: String, reason: String },
+    InvalidCron {
+        /// The expression as given.
+        expression: String,
+        /// Why the cron parser rejected the expression.
+        reason: String,
+    },
 }
 
+/// A command with a cron schedule and the actions that run around it.
+///
+/// Get one from an [`UnscheduledJob`] method, set the actions with the builder methods, and pass it
+/// to [`Schedule::add`].
 pub struct ScheduledJob {
+    /// The command that runs each time the schedule fires.
     pub command: Arc<dyn Command>,
     /// The command name, `chain` for a chain, or `<plugin>::<command>` for a plugin schedule.
     pub name: String,
+    /// The cron expression as given, with six fields that start with seconds.
     pub cron_expression: String,
+    /// The parsed form of `cron_expression`. Fire times are computed in UTC.
     pub cron_schedule: cron::Schedule,
+    /// The pings, output targets, time limit, and hooks that the builder methods set.
     pub lifecycle: CommandLifecycle,
 }
 
@@ -26,69 +42,92 @@ impl std::fmt::Debug for ScheduledJob {
         f.debug_struct("ScheduledJob")
             .field("name", &self.name)
             .field("cron_expression", &self.cron_expression)
+            .field("lifecycle", &self.lifecycle)
             .finish()
     }
 }
 
 impl ScheduledJob {
-    pub fn ping_before(mut self, url: &str) -> Self {
-        self.lifecycle.ping_before_url = Some(url.to_string());
+    /// Sends a GET request to `url` before each run. When the request fails, the command does not
+    /// run and the run fails.
+    pub fn ping_before(mut self, url: impl Into<String>) -> Self {
+        self.lifecycle.options.ping_before_url = Some(url.into());
         self
     }
 
-    pub fn ping_after(mut self, url: &str) -> Self {
-        self.lifecycle.ping_after_url = Some(url.to_string());
+    /// Sends a GET request to `url` after each successful run. A failed run sends no request.
+    /// When the request fails, the run fails, and its output is not written, appended, or mailed.
+    pub fn ping_after(mut self, url: impl Into<String>) -> Self {
+        self.lifecycle.options.ping_after_url = Some(url.into());
         self
     }
 
-    pub fn write_output_to(mut self, path: &str) -> Self {
-        self.lifecycle.write_output_to = Some(path.to_string());
+    /// Replaces the file at `path` with the output of each run. A failed run also writes its
+    /// output.
+    pub fn write_output_to(mut self, path: impl Into<PathBuf>) -> Self {
+        self.lifecycle.options.write_output_to = Some(path.into());
         self
     }
 
-    pub fn append_output_to(mut self, path: &str) -> Self {
-        self.lifecycle.append_output_to = Some(path.to_string());
+    /// Adds the output of each run to the end of the file at `path`, and creates the file when it
+    /// is missing. A failed run also adds its output.
+    pub fn append_output_to(mut self, path: impl Into<PathBuf>) -> Self {
+        self.lifecycle.options.append_output_to = Some(path.into());
         self
     }
 
-    pub fn email_output_to(mut self, address: &str) -> Self {
-        self.lifecycle.email_output_to = Some(address.to_string());
+    /// Mails the output of each run to `address` through the `[mail]` server. A failed run also
+    /// sends mail, with the error added to the body.
+    pub fn email_output_to(mut self, address: impl Into<String>) -> Self {
+        self.lifecycle.options.email_output_to = Some(address.into());
         self
     }
 
+    /// Gives each run a deadline `timeout` after it starts. A command that stops at the deadline
+    /// fails and its output is saved. When the command is still running one second later, the
+    /// server stops waiting for it and saves no output. That command keeps its thread until it
+    /// returns, so the next run of the job can start while it still runs.
     pub fn timeout(mut self, timeout: Duration) -> Self {
-        self.lifecycle.timeout = Some(timeout);
+        self.lifecycle.options.timeout = Some(timeout);
         self
     }
 
     /// `f` runs on an async worker thread before the command, so it must not block.
     pub fn before_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
-        self.lifecycle.before_run = Some(Box::new(f));
+        self.lifecycle.hooks.before_run = Some(Box::new(f));
         self
     }
 
     /// `f` runs on an async worker thread after the command succeeds, so it must not block.
     pub fn after_run<F: Fn() + Send + Sync + 'static>(mut self, f: F) -> Self {
-        self.lifecycle.after_run = Some(Box::new(f));
+        self.lifecycle.hooks.after_run = Some(Box::new(f));
         self
     }
 }
 
+/// The jobs that the scheduler runs while the server is up.
+///
+/// Start each job with [`Schedule::command`] or [`Schedule::commands`], then add it with
+/// [`Schedule::add`].
 #[derive(Default)]
 pub struct Schedule {
     jobs: Vec<ScheduledJob>,
 }
 
 impl Schedule {
+    /// Creates a schedule with no jobs.
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Starts a job that runs `cmd`. Call a method on the result to set when it runs.
     pub fn command(&self, cmd: impl Command + 'static) -> UnscheduledJob {
         let name = cmd.name().to_string();
         self.command_with_name(name, Arc::new(cmd))
     }
 
+    /// Starts a job that runs `cmds` in order as one chain. The chain stops at the first command
+    /// that fails.
     pub fn commands(&self, cmds: Vec<Box<dyn Command>>) -> UnscheduledJob {
         self.command_with_name("chain".to_string(), Arc::new(Chain { commands: cmds }))
     }
@@ -101,6 +140,7 @@ impl Schedule {
         UnscheduledJob { command, name }
     }
 
+    /// Adds `job` to the schedule. The scheduler runs it when the server starts.
     pub fn add(&mut self, job: ScheduledJob) {
         self.jobs.push(job);
     }
@@ -115,12 +155,17 @@ impl Schedule {
     }
 }
 
+/// A command that does not have a schedule yet. Call one of its methods to get a [`ScheduledJob`].
 pub struct UnscheduledJob {
     command: Arc<dyn Command>,
     name: String,
 }
 
 impl UnscheduledJob {
+    /// Runs the job on a cron expression with six fields: second, minute, hour, day of month,
+    /// month, and day of week. Fire times are in UTC.
+    ///
+    /// Returns an error when the expression does not parse.
     pub fn cron(self, expression: &str) -> Result<ScheduledJob, ScheduleError> {
         let cron_schedule =
             cron::Schedule::from_str(expression).map_err(|e| ScheduleError::InvalidCron {
@@ -136,42 +181,53 @@ impl UnscheduledJob {
         })
     }
 
+    /// Runs the job at the start of every second.
     pub fn every_second(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("* * * * * *")
     }
 
+    /// Runs the job at second 0 of every minute.
     pub fn every_minute(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 * * * * *")
     }
 
+    /// Runs the job at minutes 0, 5, 10, and so on, of every hour.
     pub fn every_five_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */5 * * * *")
     }
 
+    /// Runs the job at minutes 0, 10, 20, and so on, of every hour.
     pub fn every_ten_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */10 * * * *")
     }
 
+    /// Runs the job at minutes 0, 15, 30, and 45 of every hour.
     pub fn every_fifteen_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */15 * * * *")
     }
 
+    /// Runs the job at minutes 0 and 30 of every hour.
     pub fn every_thirty_minutes(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 */30 * * * *")
     }
 
+    /// Runs the job at minute 0 of every hour.
     pub fn hourly(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 0 * * * *")
     }
 
+    /// Runs the job at `minutes` past every hour, in UTC. A value above 59 returns an error.
     pub fn hourly_at(self, minutes: u32) -> Result<ScheduledJob, ScheduleError> {
         self.cron(&format!("0 {minutes} * * * *"))
     }
 
+    /// Runs the job at midnight UTC every day.
     pub fn daily(self) -> Result<ScheduledJob, ScheduleError> {
         self.cron("0 0 0 * * *")
     }
 
+    /// Runs the job every day at `hours`:`minutes` UTC. An hour above 23 or a minute above 59
+    /// returns an error.
     pub fn daily_at(self, hours: u32, minutes: u32) -> Result<ScheduledJob, ScheduleError> {
         self.cron(&format!("0 {minutes} {hours} * * *"))
     }

@@ -1,4 +1,4 @@
-use confval::{length_constraint, range_constraint, Format};
+use confval::{Format, length_constraint, range_constraint};
 
 range_constraint!(pub(crate) PORT, i64, min: 1, max: 65535);
 range_constraint!(pub(crate) CONSUMERS, i64, min: 0, max: 1024);
@@ -19,7 +19,7 @@ length_constraint!(
 );
 
 /// A queue name that is safe to use as part of a file name and a Redis key.
-pub struct QueueName;
+pub(super) struct QueueName;
 
 impl Format for QueueName {
     const NAME: &'static str = "queue name of letters, digits, '_', or '-'";

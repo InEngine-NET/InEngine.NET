@@ -1,3 +1,5 @@
+use std::fmt;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -5,75 +7,95 @@ use tokio::io::AsyncWriteExt;
 use tokio_util::sync::CancellationToken;
 use tracing::warn;
 
-use crate::command::{run_blocking, Command, CommandContext, CommandDeadline, CommandResult};
+use crate::command::{Command, CommandContext, CommandDeadline, CommandResult, run_blocking};
 use crate::config::Settings;
-use crate::error::{describe_error_chain, CommandError};
+use crate::error::{CommandError, ErrorChain, describe_error_chain};
 use crate::output::Output;
 use crate::server::notify::{ping, send_email};
 
-/// How long past the deadline the lifecycle waits before it gives up on a command. A command
-/// that honors its deadline returns its own timeout within this time, with its output.
-const ENFORCEMENT_GRACE: Duration = Duration::from_secs(1);
-
-/// The hooks run on an async worker thread, so they must not block.
-#[derive(Default)]
+/// What runs around a scheduled command, and how long it may take.
+#[derive(Debug, Default)]
 pub struct CommandLifecycle {
-    pub before_run: Option<Box<dyn Fn() + Send + Sync>>,
-    pub after_run: Option<Box<dyn Fn() + Send + Sync>>,
+    /// Pings, output targets, and the time limit.
+    pub options: LifecycleOptions,
+    /// Closures that the embedding program supplies.
+    pub hooks: LifecycleHooks,
+}
+
+/// Pings, output targets, and the time limit of a scheduled command.
+#[derive(Debug, Clone, Default)]
+pub struct LifecycleOptions {
+    /// A URL that receives a GET request before the run.
     pub ping_before_url: Option<String>,
+    /// A URL that receives a GET request after a successful run.
     pub ping_after_url: Option<String>,
-    pub write_output_to: Option<String>,
-    pub append_output_to: Option<String>,
+    /// A file that the output replaces.
+    pub write_output_to: Option<PathBuf>,
+    /// A file that the output is added to.
+    pub append_output_to: Option<PathBuf>,
+    /// An address that receives the output by mail.
     pub email_output_to: Option<String>,
+    /// How long the command may run.
     pub timeout: Option<Duration>,
 }
 
-/// `cancel` reaches the command through its context, so a plugin call or a process stops when
-/// it fires.
+/// Closures that run around a scheduled command. Both run on an async worker thread, so they
+/// must not block.
+#[derive(Default)]
+pub struct LifecycleHooks {
+    /// Runs before each run.
+    pub before_run: Option<Box<dyn Fn() + Send + Sync>>,
+    /// Runs after a successful run.
+    pub after_run: Option<Box<dyn Fn() + Send + Sync>>,
+}
+
+impl fmt::Debug for LifecycleHooks {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("LifecycleHooks")
+            .field("before_run", &self.before_run.is_some())
+            .field("after_run", &self.after_run.is_some())
+            .finish()
+    }
+}
+
+/// Runs `cmd` with the pings, hooks, output targets, and time limit of `lifecycle`. When `cancel`
+/// fires, a plugin call or a process that the command runs stops.
 ///
 /// The output is written, appended, and mailed when the command succeeds or fails. A command
-/// that the server stopped, that ignored its timeout, or that panicked persists nothing.
+/// that the server stopped, that ignored its deadline, or that panicked persists nothing, and so
+/// does a successful run whose after ping fails.
 pub async fn run_with_lifecycle(
     cmd: Arc<dyn Command>,
     settings: Arc<Settings>,
     lifecycle: &CommandLifecycle,
     cancel: &CancellationToken,
 ) -> CommandResult {
-    if let Some(ref url) = lifecycle.ping_before_url {
+    let options = &lifecycle.options;
+    if let Some(ref url) = options.ping_before_url {
         ping(url).await?;
     }
 
-    if let Some(ref action) = lifecycle.before_run {
+    if let Some(ref action) = lifecycle.hooks.before_run {
         action();
     }
 
-    let ctx = CommandContext::new(Output::new(false), settings.clone()).with_cancel(cancel.clone());
-    let returned = match lifecycle.timeout {
-        Some(timeout) => {
-            let ctx = ctx.with_deadline(CommandDeadline::after(timeout));
-            tokio::time::timeout(
-                timeout.saturating_add(ENFORCEMENT_GRACE),
-                run_blocking(cmd.clone(), ctx),
-            )
-            .await
-            .map_err(|_elapsed| CommandError::Timeout {
-                seconds: timeout.as_secs(),
-            })?
-        }
-        None => run_blocking(cmd.clone(), ctx).await,
-    };
-    let (cmd_result, output_text) = returned?;
+    let mut ctx =
+        CommandContext::new(Output::new(false), settings.clone()).with_cancel(cancel.clone());
+    if let Some(timeout) = options.timeout {
+        ctx = ctx.with_deadline(CommandDeadline::after(timeout));
+    }
+    let (cmd_result, output_text) = run_blocking(cmd.clone(), ctx).await?;
 
     match cmd_result {
         Ok(()) => {
-            if let Some(ref action) = lifecycle.after_run {
+            if let Some(ref action) = lifecycle.hooks.after_run {
                 action();
             }
-            if let Some(ref url) = lifecycle.ping_after_url {
+            if let Some(ref url) = options.ping_after_url {
                 ping(url).await?;
             }
             let subject = format!("Command completed: {}", cmd.name());
-            persist_output(lifecycle, &settings, &output_text, &subject, &output_text).await
+            persist_output(options, &settings, &output_text, &subject, &output_text).await
         }
         Err(CommandError::Interrupted) => Err(CommandError::Interrupted),
         Err(error) => {
@@ -84,11 +106,12 @@ pub async fn run_with_lifecycle(
             }
             mail_body.push_str(&describe_error_chain(&error));
             if let Err(persist_error) =
-                persist_output(lifecycle, &settings, &output_text, &subject, &mail_body).await
+                persist_output(options, &settings, &output_text, &subject, &mail_body).await
             {
                 warn!(
-                    "could not save the output of {}: {persist_error}",
-                    cmd.name()
+                    "could not save the output of {}: {}",
+                    cmd.name(),
+                    ErrorChain::new(&persist_error)
                 );
             }
             Err(error)
@@ -98,37 +121,46 @@ pub async fn run_with_lifecycle(
 
 /// Writes and appends `text`, and mails `mail_body`, as the lifecycle asks.
 async fn persist_output(
-    lifecycle: &CommandLifecycle,
+    options: &LifecycleOptions,
     settings: &Settings,
     text: &str,
     mail_subject: &str,
     mail_body: &str,
 ) -> CommandResult {
-    if let Some(ref path) = lifecycle.write_output_to {
+    if let Some(ref path) = options.write_output_to {
         tokio::fs::write(path, text).await.map_err(|e| {
-            CommandError::failed_with(format!("failed to write output to {path}"), e)
+            CommandError::failed_with(
+                format!("could not write the output to {}", path.display()),
+                e,
+            )
         })?;
     }
 
-    if let Some(ref path) = lifecycle.append_output_to {
+    if let Some(ref path) = options.append_output_to {
         let mut file = tokio::fs::OpenOptions::new()
             .create(true)
             .append(true)
             .open(path)
             .await
             .map_err(|e| {
-                CommandError::failed_with(format!("failed to open {path} for append"), e)
+                CommandError::failed_with(
+                    format!("could not open {} to append the output", path.display()),
+                    e,
+                )
             })?;
         let appended = match file.write_all(text.as_bytes()).await {
             Ok(()) => file.flush().await,
             Err(error) => Err(error),
         };
         appended.map_err(|e| {
-            CommandError::failed_with(format!("failed to append output to {path}"), e)
+            CommandError::failed_with(
+                format!("could not append the output to {}", path.display()),
+                e,
+            )
         })?;
     }
 
-    if let Some(ref address) = lifecycle.email_output_to {
+    if let Some(ref address) = options.email_output_to {
         send_email(&settings.mail, address, mail_subject, mail_body).await?;
     }
 
@@ -213,14 +245,17 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn the_outer_timer_returns_a_timeout_and_persists_nothing() {
+    async fn a_command_that_ignores_its_deadline_times_out_and_persists_nothing() {
         // Arrange
         let ctx = make_ctx();
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("output.txt");
         let lifecycle = CommandLifecycle {
-            timeout: Some(Duration::from_secs(1)),
-            write_output_to: Some(path.to_string_lossy().to_string()),
+            options: LifecycleOptions {
+                timeout: Some(Duration::from_secs(1)),
+                write_output_to: Some(path.to_path_buf()),
+                ..Default::default()
+            },
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(SlowCommand);
@@ -249,7 +284,10 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("output.txt");
         let lifecycle = CommandLifecycle {
-            write_output_to: Some(path.to_string_lossy().to_string()),
+            options: LifecycleOptions {
+                write_output_to: Some(path.to_path_buf()),
+                ..Default::default()
+            },
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(OkCommand);
@@ -277,7 +315,10 @@ mod tests {
         let path = dir.path().join("append.txt");
         std::fs::write(&path, "existing\n").unwrap();
         let lifecycle = CommandLifecycle {
-            append_output_to: Some(path.to_string_lossy().to_string()),
+            options: LifecycleOptions {
+                append_output_to: Some(path.to_path_buf()),
+                ..Default::default()
+            },
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(OkCommand);
@@ -308,10 +349,13 @@ mod tests {
         let before_counter = counter.clone();
         let before_order = order.clone();
         let lifecycle = CommandLifecycle {
-            before_run: Some(Box::new(move || {
-                let n = before_counter.fetch_add(1, Ordering::SeqCst);
-                before_order.lock().unwrap().push(("before".to_string(), n));
-            })),
+            hooks: LifecycleHooks {
+                before_run: Some(Box::new(move || {
+                    let n = before_counter.fetch_add(1, Ordering::SeqCst);
+                    before_order.lock().unwrap().push(("before".to_string(), n));
+                })),
+                ..Default::default()
+            },
             ..Default::default()
         };
 
@@ -348,10 +392,13 @@ mod tests {
         let after_counter = counter.clone();
         let after_order = order.clone();
         let lifecycle = CommandLifecycle {
-            after_run: Some(Box::new(move || {
-                let n = after_counter.fetch_add(1, Ordering::SeqCst);
-                after_order.lock().unwrap().push(("after".to_string(), n));
-            })),
+            hooks: LifecycleHooks {
+                after_run: Some(Box::new(move || {
+                    let n = after_counter.fetch_add(1, Ordering::SeqCst);
+                    after_order.lock().unwrap().push(("after".to_string(), n));
+                })),
+                ..Default::default()
+            },
             ..Default::default()
         };
 
@@ -384,9 +431,12 @@ mod tests {
         let after_called = Arc::new(AtomicUsize::new(0));
         let after_ref = after_called.clone();
         let lifecycle = CommandLifecycle {
-            after_run: Some(Box::new(move || {
-                after_ref.fetch_add(1, Ordering::SeqCst);
-            })),
+            hooks: LifecycleHooks {
+                after_run: Some(Box::new(move || {
+                    after_ref.fetch_add(1, Ordering::SeqCst);
+                })),
+                ..Default::default()
+            },
             ..Default::default()
         };
         let cmd: Arc<dyn Command> = Arc::new(FailCommand);
@@ -403,5 +453,23 @@ mod tests {
         // Assert
         assert!(result.is_err());
         assert_eq!(after_called.load(Ordering::SeqCst), 0);
+    }
+
+    #[test]
+    fn lifecycle_hooks_debug_shows_which_hooks_are_set() {
+        // Arrange
+        let hooks = LifecycleHooks {
+            before_run: Some(Box::new(|| {})),
+            after_run: None,
+        };
+
+        // Act
+        let text = format!("{hooks:?}");
+
+        // Assert
+        assert_eq!(
+            text,
+            "LifecycleHooks { before_run: true, after_run: false }"
+        );
     }
 }

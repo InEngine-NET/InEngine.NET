@@ -1,24 +1,31 @@
-use std::io::{self, Read};
+mod pipe;
+
+use std::io;
+use std::path::Path;
 use std::process::{Child, ExitStatus, Stdio};
-use std::sync::mpsc::{self, Receiver, TryRecvError};
-use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
 use tracing::warn;
 
-use crate::command::{instant_after, Command, CommandContext, CommandResult, QueueableCommand};
-use crate::error::CommandError;
+use crate::command::{Command, CommandContext, CommandResult, QueueableCommand, instant_after};
+use crate::error::{CommandError, ErrorChain};
+use pipe::{KeptOutput, PipeReader};
 
 const WAIT_POLL_INTERVAL: Duration = Duration::from_millis(10);
 /// How long Exec keeps reading after the child exits. A process that the child started in the
 /// background can hold a pipe open, and Exec does not wait for that process.
 const PIPE_DRAIN_LIMIT: Duration = Duration::from_secs(1);
 
+/// Runs an executable from `exec_whitelist` and writes its standard output, then its standard
+/// error, to the command output. Exec keeps the first 512 KiB and the last 512 KiB of each
+/// stream, and writes a line between them that says how many bytes it did not keep. A nonzero
+/// exit code or a stop by a signal fails the command.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Exec {
     /// The name of the executable in `exec_whitelist`.
     pub executable: String,
+    /// The arguments given to the process, in order. A missing value means no arguments.
     #[serde(default)]
     pub arguments: Vec<String>,
     /// Seconds before the process is killed. Zero means no limit.
@@ -51,32 +58,34 @@ impl Command for Exec {
             })?
             .clone();
 
-        let output = self.run_process(&path, ctx)?;
+        let run = self.run_process(&path, ctx)?;
 
-        ctx.output.text(&String::from_utf8_lossy(&output.stdout));
-        ctx.output.text(&String::from_utf8_lossy(&output.stderr));
-        if output.status.success() {
+        ctx.output.text(&run.stdout.into_text());
+        ctx.output.text(&run.stderr.into_text());
+        let status = run.status?;
+        if status.success() {
             Ok(())
         } else {
-            Err(CommandError::failed(describe_failure(&path, output.status)))
+            Err(CommandError::failed(describe_failure(&path, status)))
         }
     }
 }
 
-fn describe_failure(path: &str, status: ExitStatus) -> String {
+fn describe_failure(path: &Path, status: ExitStatus) -> String {
     use std::os::unix::process::ExitStatusExt;
 
     match (status.code(), status.signal()) {
-        (Some(code), _) => format!("{path} exited with code {code}"),
-        (None, Some(signal)) => format!("{path} was stopped by signal {signal}"),
-        (None, None) => format!("{path} ended with {status}"),
+        (Some(code), _) => format!("{} exited with code {code}", path.display()),
+        (None, Some(signal)) => format!("{} was stopped by signal {signal}", path.display()),
+        (None, None) => format!("{} ended with {status}", path.display()),
     }
 }
 
-struct ProcessOutput {
-    status: ExitStatus,
-    stdout: Vec<u8>,
-    stderr: Vec<u8>,
+/// How the process ended, and the output that Exec kept, which it writes even after an error.
+struct ProcessRun {
+    status: Result<ExitStatus, CommandError>,
+    stdout: KeptOutput,
+    stderr: KeptOutput,
 }
 
 /// The earlier of the process timeout and the context deadline.
@@ -84,64 +93,6 @@ struct WaitLimit {
     at: Instant,
     /// The timeout reported when the limit passes.
     seconds: u64,
-}
-
-/// One output pipe, read on its own thread into a buffer that the caller can take at any time.
-struct PipeReader {
-    bytes: Arc<Mutex<Vec<u8>>>,
-    finished: Receiver<io::Result<()>>,
-    done: bool,
-}
-
-impl PipeReader {
-    fn spawn(mut pipe: impl Read + Send + 'static) -> Self {
-        let bytes = Arc::new(Mutex::new(Vec::new()));
-        let (sender, finished) = mpsc::channel();
-        let buffer = Arc::clone(&bytes);
-        std::thread::spawn(move || {
-            let mut chunk = [0u8; 8192];
-            let read = loop {
-                match pipe.read(&mut chunk) {
-                    Ok(0) => break Ok(()),
-                    Ok(count) => lock(&buffer).extend_from_slice(&chunk[..count]),
-                    Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
-                    Err(error) => break Err(error),
-                }
-            };
-            let _ = sender.send(read);
-        });
-        Self {
-            bytes,
-            finished,
-            done: false,
-        }
-    }
-
-    /// Returns true once the pipe has been read to the end.
-    fn poll(&mut self) -> io::Result<bool> {
-        if self.done {
-            return Ok(true);
-        }
-        match self.finished.try_recv() {
-            Ok(read) => {
-                read?;
-                self.done = true;
-                Ok(true)
-            }
-            Err(TryRecvError::Empty) => Ok(false),
-            Err(TryRecvError::Disconnected) => Err(io::Error::other("the reader thread stopped")),
-        }
-    }
-
-    /// The bytes read so far.
-    fn take_bytes(self) -> Vec<u8> {
-        std::mem::take(&mut *lock(&self.bytes))
-    }
-}
-
-/// A reader thread holds the lock only to append, so a poisoned lock still holds valid bytes.
-fn lock(bytes: &Mutex<Vec<u8>>) -> MutexGuard<'_, Vec<u8>> {
-    bytes.lock().unwrap_or_else(PoisonError::into_inner)
 }
 
 impl Exec {
@@ -161,7 +112,7 @@ impl Exec {
         }
     }
 
-    fn run_process(&self, path: &str, ctx: &CommandContext) -> Result<ProcessOutput, CommandError> {
+    fn run_process(&self, path: &Path, ctx: &CommandContext) -> Result<ProcessRun, CommandError> {
         let mut child = std::process::Command::new(path)
             .args(&self.arguments)
             .stdin(Stdio::null())
@@ -169,24 +120,24 @@ impl Exec {
             .stderr(Stdio::piped())
             .spawn()
             .map_err(|error| match error.kind() {
-                io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied => CommandError::failed(
-                    format!("cannot run {path}: it does not exist or is inaccessible"),
-                ),
-                _ => CommandError::failed_with(format!("failed to spawn {path}"), error),
+                io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied => {
+                    CommandError::failed(format!(
+                        "could not run {}: it does not exist or is not accessible",
+                        path.display()
+                    ))
+                }
+                _ => {
+                    CommandError::failed_with(format!("could not start {}", path.display()), error)
+                }
             })?;
         let mut readers = [
             child.stdout.take().map(PipeReader::spawn),
             child.stderr.take().map(PipeReader::spawn),
         ];
-        let mut exit: Option<(ExitStatus, Instant)> = None;
-        let waited = self.wait_for_exit(&mut child, &mut readers, &mut exit, path, ctx);
-        if waited.is_err() {
-            stop_child(&mut child, exit.is_some(), path);
-        }
-        let status = waited?;
+        let status = self.wait_for_exit(&mut child, &mut readers, path, ctx);
         let [stdout, stderr] =
-            readers.map(|reader| reader.map(PipeReader::take_bytes).unwrap_or_default());
-        Ok(ProcessOutput {
+            readers.map(|reader| reader.map(PipeReader::take).unwrap_or_default());
+        Ok(ProcessRun {
             status,
             stdout,
             stderr,
@@ -194,56 +145,73 @@ impl Exec {
     }
 
     /// Waits until the child has exited and its pipes are read, or until a background process
-    /// has held a pipe open for `PIPE_DRAIN_LIMIT` after the exit.
+    /// has held a pipe open for `PIPE_DRAIN_LIMIT` after the exit. On an error, the child is
+    /// stopped unless it has already exited.
     fn wait_for_exit(
         &self,
         child: &mut Child,
         readers: &mut [Option<PipeReader>; 2],
-        exit: &mut Option<(ExitStatus, Instant)>,
-        path: &str,
+        path: &Path,
         ctx: &CommandContext,
     ) -> Result<ExitStatus, CommandError> {
         let limit = self.wait_limit(ctx);
-        loop {
+        let mut exit: Option<(ExitStatus, Instant)> = None;
+        let waited = loop {
             if exit.is_none() {
-                *exit = child
-                    .try_wait()
-                    .map_err(|error| {
-                        CommandError::failed_with(format!("error waiting for {path}"), error)
-                    })?
-                    .map(|status| (status, Instant::now()));
-            }
-            let mut drained = true;
-            for reader in readers.iter_mut().flatten() {
-                drained &= reader.poll().map_err(|error| {
-                    CommandError::failed_with(format!("could not read the output of {path}"), error)
-                })?;
-            }
-            if let Some((status, exited_at)) = exit {
-                if drained || exited_at.elapsed() >= PIPE_DRAIN_LIMIT {
-                    return Ok(*status);
+                match child.try_wait() {
+                    Ok(status) => exit = status.map(|status| (status, Instant::now())),
+                    Err(error) => {
+                        break Err(CommandError::failed_with(
+                            format!("could not wait for {}", path.display()),
+                            error,
+                        ));
+                    }
                 }
             }
+            let polled: io::Result<Vec<bool>> =
+                readers.iter_mut().flatten().map(PipeReader::poll).collect();
+            let drained = match polled {
+                Ok(polled) => polled.into_iter().all(|done| done),
+                Err(error) => {
+                    break Err(CommandError::failed_with(
+                        format!("could not read the output of {}", path.display()),
+                        error,
+                    ));
+                }
+            };
+            if let Some((status, exited_at)) = exit
+                && (drained || exited_at.elapsed() >= PIPE_DRAIN_LIMIT)
+            {
+                break Ok(status);
+            }
             if ctx.cancel.is_cancelled() {
-                return Err(CommandError::Interrupted);
+                break Err(CommandError::Interrupted);
             }
             if let Some(limit) = limit.as_ref().filter(|limit| Instant::now() >= limit.at) {
-                return Err(CommandError::Timeout {
+                break Err(CommandError::Timeout {
                     seconds: limit.seconds,
                 });
             }
             std::thread::sleep(WAIT_POLL_INTERVAL);
+        };
+        if waited.is_err() {
+            stop_child(child, exit.is_some(), path);
         }
+        waited
     }
 }
 
 /// Kills and reaps the child unless it has already exited.
-fn stop_child(child: &mut Child, exited: bool, path: &str) {
+fn stop_child(child: &mut Child, exited: bool, path: &Path) {
     if exited {
         return;
     }
     if let Err(error) = child.kill() {
-        warn!("could not stop {path}: {error}");
+        warn!(
+            "could not stop {}: {}",
+            path.display(),
+            ErrorChain::new(&error)
+        );
     }
     let _ = child.wait();
 }
@@ -254,12 +222,13 @@ mod tests {
     use crate::command::CommandDeadline;
     use crate::commands::test_helpers::make_ctx_with_whitelist;
     use std::collections::HashMap;
+    use std::path::PathBuf;
 
     #[test]
     fn exec_whitelisted_existing_executable_runs_ok() {
         // Arrange
         let mut whitelist = HashMap::new();
-        whitelist.insert("truecmd".to_string(), "/usr/bin/true".to_string());
+        whitelist.insert("truecmd".to_string(), PathBuf::from("/usr/bin/true"));
         let mut ctx = make_ctx_with_whitelist(whitelist);
         let cmd = Exec {
             executable: "truecmd".to_string(),
@@ -303,7 +272,7 @@ mod tests {
         let mut whitelist = HashMap::new();
         whitelist.insert(
             "missing".to_string(),
-            "/nonexistent/path/to/binary".to_string(),
+            PathBuf::from("/nonexistent/path/to/binary"),
         );
         let mut ctx = make_ctx_with_whitelist(whitelist);
         let cmd = Exec {
@@ -329,7 +298,7 @@ mod tests {
     fn exec_timeout_returns_timeout_error() {
         // Arrange
         let mut whitelist = HashMap::new();
-        whitelist.insert("sleeper".to_string(), "/bin/sleep".to_string());
+        whitelist.insert("sleeper".to_string(), PathBuf::from("/bin/sleep"));
         let mut ctx = make_ctx_with_whitelist(whitelist);
         let cmd = Exec {
             executable: "sleeper".to_string(),
@@ -351,7 +320,7 @@ mod tests {
 
     fn shell(arguments: &[&str], timeout: u64) -> (Exec, CommandContext) {
         let mut whitelist = HashMap::new();
-        whitelist.insert("sh".to_string(), "/bin/sh".to_string());
+        whitelist.insert("sh".to_string(), PathBuf::from("/bin/sh"));
         let exec = Exec {
             executable: "sh".to_string(),
             arguments: arguments
@@ -361,6 +330,77 @@ mod tests {
             timeout,
         };
         (exec, make_ctx_with_whitelist(whitelist))
+    }
+
+    #[test]
+    fn exec_keeps_the_head_and_tail_of_a_large_output() {
+        // Arrange
+        let script = "printf start; head -c 2097152 /dev/zero | tr '\\0' a; printf end";
+        let (cmd, mut ctx) = shell(&["-c", script], 30);
+
+        // Act
+        let result = cmd.run(&mut ctx);
+
+        // Assert
+        assert!(result.is_ok(), "{result:?}");
+        let output = ctx.output.take_buffer();
+        assert!(output.len() <= 1024 * 1024 + 64, "{} bytes", output.len());
+        assert!(output.starts_with("start"));
+        assert!(output.ends_with("end"));
+    }
+
+    #[test]
+    fn exec_limits_standard_error_the_same_way() {
+        // Arrange
+        let script = "head -c 2097152 /dev/zero | tr '\\0' b >&2";
+        let (cmd, mut ctx) = shell(&["-c", script], 30);
+
+        // Act
+        let result = cmd.run(&mut ctx);
+
+        // Assert
+        assert!(result.is_ok(), "{result:?}");
+        let output = ctx.output.take_buffer();
+        let lines: Vec<&str> = output.lines().collect();
+        assert_eq!(lines.len(), 3);
+        assert_eq!(lines[0].len(), 512 * 1024);
+        assert_eq!(lines[1], "[1048576 bytes not kept]");
+        assert_eq!(lines[2].len(), 512 * 1024);
+    }
+
+    #[test]
+    fn exec_that_times_out_keeps_the_output_it_read() {
+        // Arrange
+        let (cmd, mut ctx) = shell(&["-c", "echo partial; sleep 10"], 1);
+
+        // Act
+        let result = cmd.run(&mut ctx);
+
+        // Assert
+        assert!(
+            matches!(result, Err(CommandError::Timeout { seconds: 1 })),
+            "{result:?}"
+        );
+        assert_eq!(ctx.output.take_buffer(), "partial\n");
+    }
+
+    #[test]
+    fn exec_reports_how_many_bytes_it_dropped() {
+        // Arrange
+        let script = "printf start; head -c 2097152 /dev/zero | tr '\\0' a; printf end";
+        let (cmd, mut ctx) = shell(&["-c", script], 30);
+
+        // Act
+        let result = cmd.run(&mut ctx);
+
+        // Assert
+        assert!(result.is_ok(), "{result:?}");
+        let output = ctx.output.take_buffer();
+        let lines: Vec<&str> = output.lines().collect();
+        assert_eq!(lines.len(), 3);
+        assert_eq!(lines[0].len(), 512 * 1024);
+        assert_eq!(lines[1], "[1048584 bytes not kept]");
+        assert_eq!(lines[2].len(), 512 * 1024);
     }
 
     #[test]
@@ -411,7 +451,7 @@ mod tests {
     fn exec_stops_when_the_server_stops() {
         // Arrange
         let mut whitelist = HashMap::new();
-        whitelist.insert("sleeper".to_string(), "/bin/sleep".to_string());
+        whitelist.insert("sleeper".to_string(), PathBuf::from("/bin/sleep"));
         let cancel = tokio_util::sync::CancellationToken::new();
         cancel.cancel();
         let mut ctx = make_ctx_with_whitelist(whitelist).with_cancel(cancel);
@@ -464,28 +504,6 @@ mod tests {
         assert!(started.elapsed() < Duration::from_secs(3));
         assert!(result.is_ok(), "{result:?}");
         assert_eq!(ctx.output.take_buffer(), "started\n");
-    }
-
-    struct FailingPipe;
-
-    impl Read for FailingPipe {
-        fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
-            Err(io::Error::other("broken pipe"))
-        }
-    }
-
-    #[test]
-    fn a_pipe_read_error_reaches_the_wait_loop() {
-        // Arrange
-        let mut reader = PipeReader::spawn(FailingPipe);
-        std::thread::sleep(Duration::from_millis(100));
-
-        // Act
-        let polled = reader.poll();
-
-        // Assert
-        let error = polled.expect_err("the read fails");
-        assert_eq!(error.to_string(), "broken pipe");
     }
 
     #[test]

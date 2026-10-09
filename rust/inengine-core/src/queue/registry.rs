@@ -83,9 +83,9 @@ impl Default for CommandRegistry {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::BUILTIN_PLUGIN_NAME;
     use crate::commands::test_helpers::make_ctx;
     use crate::queue::CommandEnvelope;
-    use crate::BUILTIN_PLUGIN_NAME;
 
     struct NamedCommand(&'static str);
 

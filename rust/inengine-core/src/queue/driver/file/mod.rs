@@ -3,12 +3,13 @@ mod store;
 
 use std::ffi::OsStr;
 use std::io;
+use std::path::Path;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use crate::error::QueueError;
+use crate::queue::CommandEnvelope;
 use crate::queue::delivery::Delivery;
-use crate::queue::envelope::CommandEnvelope;
 use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
 use store::FileStore;
 
@@ -46,10 +47,10 @@ impl FileDriver {
     pub(crate) async fn open(
         queue_name: &str,
         lane: QueueLane,
-        base_path: &str,
+        base_path: &Path,
     ) -> Result<Self, QueueError> {
         let queue_name = queue_name.to_string();
-        let base_path = base_path.to_string();
+        let base_path = base_path.to_path_buf();
         let store =
             on_blocking_pool(move || FileStore::open(&queue_name, lane, &base_path)).await?;
         Ok(Self {
@@ -134,16 +135,13 @@ impl FileDriver {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::ErrorChain;
 
     async fn open_store() -> (tempfile::TempDir, FileDriver) {
         let dir = tempfile::tempdir().expect("temporary directory");
-        let driver = FileDriver::open(
-            "TestQueue",
-            QueueLane::Primary,
-            dir.path().to_str().expect("utf-8 path"),
-        )
-        .await
-        .expect("open");
+        let driver = FileDriver::open("TestQueue", QueueLane::Primary, dir.path())
+            .await
+            .expect("open");
         (dir, driver)
     }
 
@@ -174,8 +172,11 @@ mod tests {
         // Assert
         let error = result.expect_err("the call panics");
         assert!(matches!(error, QueueError::Io(_)), "{error:?}");
-        let message = error.to_string();
-        assert!(message.starts_with("queue IO error: task "), "{message}");
+        let message = ErrorChain::new(&error).to_string();
+        assert!(
+            message.starts_with("could not read or write the queue files: task "),
+            "{message}"
+        );
         assert!(message.contains("intentional panic"), "{message}");
     }
 }

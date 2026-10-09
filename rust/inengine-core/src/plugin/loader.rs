@@ -5,18 +5,17 @@ use std::time::{Duration, Instant};
 
 use tokio_util::sync::CancellationToken;
 use wasmtime::component::{Component, Linker};
-use wasmtime::Trap;
 
 use crate::config::Settings;
 use crate::error::PluginError;
-use crate::plugin::limiter::MemoryLimitExceeded;
+use crate::plugin::load_error::{LoadError, ScheduleEntryError};
 use crate::plugin::runtime::PluginRuntime;
 use crate::plugin::wasm_command::WasmCommand;
-use crate::queue::registry::CommandRegistry;
+use crate::queue::CommandRegistry;
 use crate::scheduling::schedule::Schedule;
 
 wasmtime::component::bindgen!({
-    path: "../sample-plugin/wit",
+    path: "wit",
     world: "plugin",
 });
 
@@ -25,22 +24,32 @@ pub const PLUGIN_LOAD_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// A command that a plugin lists.
 pub struct CommandDescriptor {
+    /// The command name that a queued message or a schedule entry uses to select the command.
     pub name: String,
+    /// A description of the command that the plugin supplies for people.
     pub help_text: String,
 }
 
 /// A schedule entry that a plugin lists.
 pub struct ScheduleEntry {
+    /// The command to run, which must be one that the same component lists.
     pub command_name: String,
+    /// When to run the command, in the format of the `cron` crate, which starts with a seconds
+    /// field.
     pub cron_expression: String,
 }
 
 /// One component that loaded, with what it lists.
 pub struct LoadedPlugin {
+    /// The plugin name from the configuration, which every command of the component uses.
     pub name: String,
+    /// The path of the `.wasm` file the component was loaded from.
     pub path: PathBuf,
     pub(crate) component: Component,
+    /// The commands that the component lists, in the order it lists them.
     pub command_descriptors: Vec<CommandDescriptor>,
+    /// The schedule entries that the component lists. Entries are checked only when they are
+    /// registered.
     pub schedule_entries: Vec<ScheduleEntry>,
 }
 
@@ -77,7 +86,7 @@ impl PluginLoader {
     /// Loads every `.wasm` file in each directory under the directory's plugin name. A
     /// failure skips that directory or component and is returned with the others.
     pub fn load(
-        directories: &HashMap<String, String>,
+        directories: &HashMap<String, PathBuf>,
         runtime: PluginRuntime,
     ) -> (PluginLoader, Vec<PluginError>) {
         let mut loader = PluginLoader {
@@ -86,7 +95,7 @@ impl PluginLoader {
         };
         let mut errors = Vec::new();
         for (plugin_name, directory) in directories {
-            loader.load_directory(plugin_name, Path::new(directory), &mut errors);
+            loader.load_directory(plugin_name, directory, &mut errors);
         }
         (loader, errors)
     }
@@ -134,15 +143,14 @@ impl PluginLoader {
         let mut errors = Vec::new();
         for plugin in &self.plugins {
             for entry in &plugin.schedule_entries {
-                let invalid_entry = |reason: String| PluginError::InvalidScheduleEntry {
-                    plugin: plugin.name.clone(),
-                    command: entry.command_name.clone(),
-                    reason,
-                };
+                let invalid_entry =
+                    |source: ScheduleEntryError| PluginError::InvalidScheduleEntry {
+                        plugin: plugin.name.clone(),
+                        command: entry.command_name.clone(),
+                        source,
+                    };
                 if !plugin.lists_command(&entry.command_name) {
-                    errors.push(invalid_entry(
-                        "the plugin does not list this command".to_string(),
-                    ));
+                    errors.push(invalid_entry(ScheduleEntryError::NotListed));
                     continue;
                 }
                 let command = WasmCommand::new(
@@ -160,7 +168,7 @@ impl PluginLoader {
                     .cron(&entry.cron_expression);
                 match job {
                     Ok(job) => schedule.add(job),
-                    Err(error) => errors.push(invalid_entry(error.to_string())),
+                    Err(error) => errors.push(invalid_entry(error.into())),
                 }
             }
         }
@@ -178,7 +186,8 @@ impl PluginLoader {
             Err(error) => {
                 errors.push(load_error(
                     plugin_name,
-                    format!("cannot read {}: {error}", directory.display()),
+                    directory,
+                    LoadError::ReadDirectory(error),
                 ));
                 return;
             }
@@ -201,21 +210,22 @@ impl PluginLoader {
     }
 
     fn load_component(&self, plugin_name: &str, path: &Path) -> Result<LoadedPlugin, PluginError> {
-        let load_failure =
-            |reason: String| load_error(plugin_name, format!("{}: {reason}", path.display()));
-        let component = Component::from_file(self.runtime.engine(), path)
-            .map_err(|error| load_failure(error.to_string()))?;
+        let load_failure = |source: LoadError| load_error(plugin_name, path, source);
+        let bytes =
+            std::fs::read(path).map_err(|error| load_failure(LoadError::ReadComponent(error)))?;
+        let component = Component::new(self.runtime.engine(), &bytes)
+            .map_err(|error| load_failure(LoadError::Compile(error)))?;
         let mut store = self.runtime.new_store(
             Instant::now() + PLUGIN_LOAD_TIMEOUT,
             CancellationToken::new(),
         );
         let linker = Linker::new(self.runtime.engine());
         let instance = Plugin::instantiate(&mut store, &component, &linker)
-            .map_err(|error| load_failure(describe_load_failure(&error)))?;
+            .map_err(|error| load_failure(LoadError::from_load_call(error)))?;
         let command_descriptors = instance
             .inengine_plugin_commands()
             .call_list_commands(&mut store)
-            .map_err(|error| load_failure(describe_load_failure(&error)))?
+            .map_err(|error| load_failure(LoadError::from_load_call(error)))?
             .into_iter()
             .map(|descriptor| CommandDescriptor {
                 name: descriptor.name,
@@ -225,7 +235,7 @@ impl PluginLoader {
         let schedule_entries = instance
             .inengine_plugin_scheduling()
             .call_list_schedules(&mut store)
-            .map_err(|error| load_failure(describe_load_failure(&error)))?
+            .map_err(|error| load_failure(LoadError::from_load_call(error)))?
             .into_iter()
             .map(|entry| ScheduleEntry {
                 command_name: entry.command_name,
@@ -242,23 +252,11 @@ impl PluginLoader {
     }
 }
 
-fn describe_load_failure(error: &wasmtime::Error) -> String {
-    if error.downcast_ref::<Trap>() == Some(&Trap::Interrupt) {
-        return format!(
-            "the plugin did not load within {} seconds",
-            PLUGIN_LOAD_TIMEOUT.as_secs()
-        );
-    }
-    if let Some(exceeded) = error.downcast_ref::<MemoryLimitExceeded>() {
-        return exceeded.to_string();
-    }
-    error.to_string()
-}
-
-fn load_error(plugin_name: &str, reason: String) -> PluginError {
+fn load_error(plugin_name: &str, path: &Path, source: LoadError) -> PluginError {
     PluginError::Load {
         name: plugin_name.to_string(),
-        reason,
+        path: path.to_path_buf(),
+        source,
     }
 }
 
@@ -266,13 +264,15 @@ fn load_error(plugin_name: &str, reason: String) -> PluginError {
 mod tests {
     use super::*;
     use crate::config::PluginLimitsSettings;
+    use crate::error::ErrorChain;
+    use crate::scheduling::schedule::ScheduleError;
 
     fn runtime() -> PluginRuntime {
         PluginRuntime::new(PluginLimitsSettings::default()).unwrap()
     }
 
-    fn directories(name: &str, path: &Path) -> HashMap<String, String> {
-        HashMap::from([(name.to_string(), path.to_string_lossy().into_owned())])
+    fn directories(name: &str, path: &Path) -> HashMap<String, PathBuf> {
+        HashMap::from([(name.to_string(), path.to_path_buf())])
     }
 
     #[test]
@@ -299,8 +299,30 @@ mod tests {
         // Assert
         assert!(loader.plugins().is_empty());
         assert_eq!(errors.len(), 1);
-        assert!(matches!(&errors[0], PluginError::Load { name, reason }
-            if name == "test" && reason.contains("/nonexistent/path")));
+        assert!(matches!(&errors[0], PluginError::Load {
+            name,
+            path,
+            source: LoadError::ReadDirectory(_),
+        } if name == "test" && path == missing));
+    }
+
+    #[test]
+    fn a_plugin_load_error_keeps_its_source() {
+        // Arrange
+        let missing = Path::new("/nonexistent/path");
+
+        // Act
+        let (_loader, errors) = PluginLoader::load(&directories("test", missing), runtime());
+
+        // Assert
+        let source = std::error::Error::source(&errors[0]).expect("the error keeps its source");
+        let load_error = source
+            .downcast_ref::<LoadError>()
+            .expect("the source is a LoadError");
+        assert!(
+            matches!(load_error, LoadError::ReadDirectory(io) if io.kind() == std::io::ErrorKind::NotFound),
+            "{load_error:?}"
+        );
     }
 
     #[test]
@@ -315,26 +337,54 @@ mod tests {
         // Assert
         assert!(loader.plugins().is_empty());
         assert_eq!(errors.len(), 1);
-        assert!(matches!(&errors[0], PluginError::Load { name, reason }
-            if name == "test" && reason.contains("invalid.wasm")));
+        assert!(matches!(&errors[0], PluginError::Load {
+            name,
+            path,
+            source: LoadError::Compile(_),
+        } if name == "test" && path == &temp_dir.path().join("invalid.wasm")));
+    }
+
+    fn fixture_schedule_errors() -> Vec<PluginError> {
+        let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/plugin");
+        let (loader, errors) = PluginLoader::load(&directories("fixture", &fixture), runtime());
+        assert!(errors.is_empty(), "{errors:?}");
+        loader.register_schedules(&mut Schedule::new())
     }
 
     #[test]
-    fn invalid_schedule_entry_message_includes_the_plugin_the_command_and_the_reason() {
+    fn an_unlisted_schedule_entry_reports_not_listed() {
         // Arrange
-        let error = PluginError::InvalidScheduleEntry {
-            plugin: "my-plugin".to_string(),
-            command: "run".to_string(),
-            reason: "the plugin does not list this command".to_string(),
-        };
+        let expected = "invalid schedule entry for command 'missing' in plugin 'fixture': \
+                        the plugin does not list this command";
 
         // Act
-        let display = error.to_string();
+        let errors = fixture_schedule_errors();
 
         // Assert
-        assert_eq!(
-            display,
-            "invalid schedule entry for command 'run' in plugin 'my-plugin': the plugin does not list this command"
-        );
+        assert!(matches!(&errors[0], PluginError::InvalidScheduleEntry {
+            plugin,
+            command,
+            source: ScheduleEntryError::NotListed,
+        } if plugin == "fixture" && command == "missing"));
+        assert_eq!(ErrorChain::new(&errors[0]).to_string(), expected);
+    }
+
+    #[test]
+    fn an_invalid_cron_entry_keeps_the_schedule_error() {
+        // Arrange
+        let expected_prefix = "invalid schedule entry for command 'echo-args' in plugin 'fixture': \
+                               invalid cron expression 'not a cron'";
+
+        // Act
+        let errors = fixture_schedule_errors();
+
+        // Assert
+        assert_eq!(errors.len(), 2);
+        assert!(matches!(&errors[1], PluginError::InvalidScheduleEntry {
+            source: ScheduleEntryError::InvalidCron(ScheduleError::InvalidCron { expression, .. }),
+            ..
+        } if expression == "not a cron"));
+        let chain = ErrorChain::new(&errors[1]).to_string();
+        assert!(chain.starts_with(expected_prefix), "{chain}");
     }
 }

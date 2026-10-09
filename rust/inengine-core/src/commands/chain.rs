@@ -1,6 +1,9 @@
 use crate::command::{Command, CommandContext, CommandResult};
 
+/// Runs each command in order with one shared context. The first error stops the chain and is
+/// returned, so the later commands do not run.
 pub struct Chain {
+    /// The commands to run, first to last.
     pub commands: Vec<Box<dyn Command>>,
 }
 

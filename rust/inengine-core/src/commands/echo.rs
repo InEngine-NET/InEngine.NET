@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::command::{Command, CommandContext, CommandResult, QueueableCommand};
 
+/// Writes `text` and a newline to the command output.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Echo {
+    /// The text to write. An empty value writes only a newline.
     pub text: String,
 }
 

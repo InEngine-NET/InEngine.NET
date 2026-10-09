@@ -1,10 +1,9 @@
 use std::time::Instant;
 
-use wasmtime::component::{Component, Linker};
 use wasmtime::Trap;
+use wasmtime::component::{Component, Linker};
 
-use crate::command::{instant_after, Command, CommandContext, CommandDeadline, CommandResult};
-use crate::config::BYTES_PER_MIB;
+use crate::command::{Command, CommandContext, CommandDeadline, CommandResult, instant_after};
 use crate::error::CommandError;
 use crate::plugin::limiter::MemoryLimitExceeded;
 use crate::plugin::loader::Plugin;
@@ -83,16 +82,16 @@ impl WasmCommand {
                 (None, _) => {}
             }
         }
-        if let Some(exceeded) = error.downcast_ref::<MemoryLimitExceeded>() {
-            return CommandError::failed(format!(
-                "command '{command}' in plugin '{plugin}' exceeded the memory limit of {} MiB",
-                exceeded.limit_bytes / BYTES_PER_MIB
-            ));
+        match error.downcast::<MemoryLimitExceeded>() {
+            Ok(exceeded) => CommandError::failed_with(
+                format!("command '{command}' in plugin '{plugin}' ran out of memory"),
+                exceeded,
+            ),
+            Err(error) => CommandError::failed_with(
+                format!("runtime error in command '{command}' in plugin '{plugin}'"),
+                error,
+            ),
         }
-        CommandError::failed_with(
-            format!("runtime error in command '{command}' in plugin '{plugin}'"),
-            error,
-        )
     }
 }
 

@@ -2,14 +2,16 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use tokio_util::sync::CancellationToken;
-use tracing::{debug, error, info, info_span, warn, Instrument};
+use tracing::{Instrument, debug, error, info, info_span, warn};
+use uuid::Uuid;
 
 use crate::config::{QueueSettings, Settings};
+use crate::error::ErrorChain;
 use crate::queue::{
-    process_delivery, settle, Attempt, AttemptKind, CommandRegistry, Delivery, Queue, QueueLane,
-    SettleError, SettleOutcome,
+    Attempt, AttemptKind, CommandRegistry, Delivery, Queue, QueueLane, SettleError, SettleOutcome,
+    process_delivery, settle,
 };
-use crate::server::lifecycle::{run_with_lifecycle, CommandLifecycle};
+use crate::server::lifecycle::{CommandLifecycle, run_with_lifecycle};
 
 const DEQUEUE_WAIT: Duration = Duration::from_secs(5);
 const RETRY_DELAY: Duration = Duration::from_secs(5);
@@ -18,7 +20,7 @@ const RETRY_DELAY: Duration = Duration::from_secs(5);
 const SHUTDOWN_SETTLE_RETRIES: u32 = 3;
 const SHUTDOWN_SETTLE_DELAY: Duration = Duration::from_millis(500);
 
-pub struct QueueConsumers {
+pub(crate) struct QueueConsumers {
     settings: Arc<Settings>,
     registry: Arc<CommandRegistry>,
     timing: ConsumerTiming,
@@ -31,7 +33,7 @@ struct ConsumerTiming {
 }
 
 impl QueueConsumers {
-    pub fn new(settings: Arc<Settings>, registry: Arc<CommandRegistry>) -> Self {
+    pub(crate) fn new(settings: Arc<Settings>, registry: Arc<CommandRegistry>) -> Self {
         Self {
             settings,
             registry,
@@ -52,7 +54,7 @@ impl QueueConsumers {
     }
 
     /// Runs the consumers until `cancel` fires and every running command has finished.
-    pub async fn run(&self, cancel: CancellationToken) {
+    pub(crate) async fn run(&self, cancel: CancellationToken) {
         let mut handles = Vec::new();
         for lane in QueueLane::ALL {
             let count = consumer_count(&self.settings.queue, lane);
@@ -74,7 +76,10 @@ impl QueueConsumers {
         }
         for handle in handles {
             if let Err(error) = handle.await {
-                error!("a queue consumer task ended abnormally: {error}");
+                error!(
+                    "a queue consumer task ended abnormally: {}",
+                    ErrorChain::new(&error)
+                );
             }
         }
     }
@@ -102,7 +107,11 @@ async fn recover_or_report_in_progress(
                 "in-progress messages returned to pending in the {} queue: {count}",
                 lane.as_str()
             ),
-            Err(error) => error!("could not recover the {} queue: {error}", lane.as_str()),
+            Err(error) => error!(
+                "could not recover the {} queue: {}",
+                lane.as_str(),
+                ErrorChain::new(&error)
+            ),
         }
         return;
     }
@@ -115,8 +124,9 @@ async fn recover_or_report_in_progress(
         ),
         Ok(_) => {}
         Err(error) => error!(
-            "could not read the {} queue lengths: {error}",
-            lane.as_str()
+            "could not read the {} queue lengths: {}",
+            lane.as_str(),
+            ErrorChain::new(&error)
         ),
     }
 }
@@ -136,7 +146,11 @@ async fn open_with_retry(
         };
         match opened {
             Ok(queue) => return Some(queue),
-            Err(error) => error!("could not open the {} queue: {error}", lane.as_str()),
+            Err(error) => error!(
+                "could not open the {} queue: {}",
+                lane.as_str(),
+                ErrorChain::new(&error)
+            ),
         }
         if sleep_or_cancel(cancel, timing.retry_delay).await {
             return None;
@@ -173,7 +187,7 @@ impl Consumer {
                 Ok(Some(delivery)) => self.process(&queue, delivery).await,
                 Ok(None) => {}
                 Err(error) => {
-                    error!("could not dequeue: {error}");
+                    error!("could not dequeue: {}", ErrorChain::new(&error));
                     if sleep_or_cancel(&self.cancel, self.timing.retry_delay).await {
                         break;
                     }
@@ -198,12 +212,17 @@ impl Consumer {
             },
         )
         .await;
-        let id = &processed.message_id;
+        let id = processed.message_id;
         match &processed.attempt {
             Attempt::Succeeded => {}
-            Attempt::CommandFailed(error) => error!("message {id} failed: {error}"),
+            Attempt::CommandFailed(error) => {
+                error!("message {id} failed: {}", ErrorChain::new(error))
+            }
             Attempt::Unrunnable(error) => {
-                error!("could not build the command for message {id}: {error}")
+                error!(
+                    "could not build the command for message {id}: {}",
+                    ErrorChain::new(error)
+                )
             }
             Attempt::Interrupted => info!("message {id} stopped because the server is stopping"),
         }
@@ -216,7 +235,7 @@ impl Consumer {
     async fn settle_until_done(
         &self,
         queue: &Queue,
-        id: &str,
+        id: Uuid,
         attempt: AttemptKind,
         mut settled: Result<SettleOutcome, SettleError>,
     ) {
@@ -229,7 +248,10 @@ impl Consumer {
                 }
                 Err(error @ SettleError::Rejected { .. }) => return error!("{error}"),
                 Err(SettleError::Interrupted { delivery, source }) => {
-                    error!("could not settle message {id}: {source}");
+                    error!(
+                        "could not settle message {id}: {}",
+                        ErrorChain::new(&source)
+                    );
                     let give_up = if attempt == AttemptKind::Interrupted {
                         shutdown_retries += 1;
                         let exhausted = shutdown_retries > SHUTDOWN_SETTLE_RETRIES;
@@ -254,7 +276,7 @@ impl Consumer {
     }
 }
 
-fn log_outcome(id: &str, outcome: SettleOutcome) {
+fn log_outcome(id: Uuid, outcome: SettleOutcome) {
     match outcome {
         SettleOutcome::Acknowledged => debug!("completed message {id}"),
         SettleOutcome::Retried => info!("returned message {id} to pending for a retry"),

@@ -4,11 +4,12 @@ use tokio_util::sync::CancellationToken;
 use tracing::info;
 
 use crate::config::Settings;
-use crate::queue::registry::CommandRegistry;
+use crate::queue::CommandRegistry;
 use crate::scheduling::schedule::Schedule;
 use crate::scheduling::scheduler::Scheduler;
 use crate::server::consumers::QueueConsumers;
 
+/// Runs the scheduled jobs and consumes both queue lanes at the same time until you cancel it.
 pub struct Server {
     settings: Arc<Settings>,
     registry: Arc<CommandRegistry>,

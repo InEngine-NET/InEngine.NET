@@ -3,15 +3,19 @@ use std::collections::BTreeMap;
 use confval::prelude::*;
 
 use super::constraints::{
-    QueueName, CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PLUGIN_MEMORY_MIB,
-    PLUGIN_TIMEOUT_SECONDS, PORT, REDIS_DATABASE,
+    CONSUMERS, HOSTNAME_LEN, MAX_RETRIES, PATH_LEN, PLUGIN_MEMORY_MIB, PLUGIN_TIMEOUT_SECONDS,
+    PORT, QueueName, REDIS_DATABASE,
 };
 use super::vocabulary::{MailEncryption, QueueDriver};
 
+/// The parsed `inengine.toml` before validation.
+///
+/// Pass it to [`from_spec`](super::from_spec) to validate it and get
+/// [`Settings`](super::Settings).
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct SettingsSpec {
-    /// Plugin directories keyed by plugin name. The server loads every .wasm file in each
+    /// Plugin directories keyed by plugin name. The server loads every `.wasm` file in each
     /// directory. A relative path resolves against the working directory.
     #[confval(map, default)]
     pub plugins: BTreeMap<String, Located<String>>,
@@ -21,6 +25,7 @@ pub struct SettingsSpec {
     /// The SMTP server that sends command notification mail.
     #[confval(nested, default)]
     pub mail: Located<MailSpec>,
+    /// The queue backend, its consumers, and its retry rules.
     #[confval(nested, default)]
     pub queue: Located<QueueSpec>,
     /// Limits that apply to every plugin call.
@@ -28,11 +33,14 @@ pub struct SettingsSpec {
     pub plugin_limits: Located<PluginLimitsSpec>,
 }
 
+/// The `[mail]` section of `inengine.toml`.
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct MailSpec {
+    /// The SMTP server hostname. The default is "localhost".
     #[confval(default = "localhost".to_string(), length = HOSTNAME_LEN)]
     pub host: Located<String>,
+    /// The SMTP server port, from 1 to 65535. The default is 25.
     #[confval(default = 25, range = PORT)]
     pub port: Located<i64>,
     /// Leave empty when no command sends mail.
@@ -50,9 +58,11 @@ pub struct MailSpec {
     pub encryption: Located<String>,
 }
 
+/// The `[queue]` section of `inengine.toml`.
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct QueueSpec {
+    /// Compress the command in each published message with gzip. The default is false.
     #[confval(default = false)]
     pub use_compression: Located<bool>,
     /// Zero turns the queue off.
@@ -61,6 +71,7 @@ pub struct QueueSpec {
     /// Zero turns the queue off.
     #[confval(default = 8, range = CONSUMERS)]
     pub secondary_queue_consumers: Located<i64>,
+    /// The queue backend, "file" or "redis". The default is "file".
     #[confval(default = "file".to_string(), keywords = QueueDriver)]
     pub queue_driver: Located<String>,
     /// Becomes part of file names and Redis keys.
@@ -79,17 +90,22 @@ pub struct QueueSpec {
     /// Needs Redis 6.2 or later.
     #[confval(nested, default)]
     pub redis: Located<RedisSpec>,
+    /// The location of the file queue. It is used only when `queue_driver` is "file".
     #[confval(nested, default)]
     pub file: Located<FileSpec>,
 }
 
+/// The `[queue.redis]` section of `inengine.toml`.
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct RedisSpec {
+    /// The Redis hostname. The default is "127.0.0.1".
     #[confval(default = "127.0.0.1".to_string(), length = HOSTNAME_LEN)]
     pub host: Located<String>,
+    /// The Redis port, from 1 to 65535. The default is 6379.
     #[confval(default = 6379, range = PORT)]
     pub port: Located<i64>,
+    /// The Redis database number, from 0 to 255. The default is 0.
     #[confval(default = 0, range = REDIS_DATABASE)]
     pub database: Located<i64>,
     /// Leave empty when the server has no password.
@@ -97,6 +113,7 @@ pub struct RedisSpec {
     pub password: Located<String>,
 }
 
+/// The `[queue.file]` section of `inengine.toml`.
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct FileSpec {
@@ -105,6 +122,7 @@ pub struct FileSpec {
     pub base_path: Located<String>,
 }
 
+/// The `[plugin_limits]` section of `inengine.toml`.
 #[derive(confval::Spec)]
 #[confval(derive_default)]
 pub struct PluginLimitsSpec {

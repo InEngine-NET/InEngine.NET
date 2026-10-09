@@ -1,12 +1,17 @@
 use std::ffi::OsString;
 
 use crate::error::QueueError;
-use crate::queue::envelope::CommandEnvelope;
+use crate::queue::CommandEnvelope;
 use crate::queue::{Queue, QueueLane};
 
+/// A message that a consumer claimed from a queue. It stays in the in-progress stage until
+/// you settle it with [`Queue::acknowledge`], [`Queue::retry`], [`Queue::move_to_failed`],
+/// or [`Queue::release`] on the queue that returned it.
 #[derive(Debug)]
 #[must_use = "a dropped delivery stays in the in-progress stage"]
 pub struct Delivery {
+    /// The claimed message. Its `attempts` value already includes this claim. A settle that
+    /// moves the message stores the envelope as it is when you settle.
     pub envelope: CommandEnvelope,
     lane: QueueLane,
     receipt: Receipt,
@@ -28,6 +33,7 @@ impl Delivery {
         }
     }
 
+    /// Returns the lane that the message was claimed from.
     pub fn lane(&self) -> QueueLane {
         self.lane
     }
@@ -37,9 +43,10 @@ impl Delivery {
     }
 }
 
+/// Tells why a settle of a [`Delivery`] did not complete.
 #[derive(Debug, thiserror::Error)]
 pub enum SettleError {
-    /// Another operation, such as a flush or a recovery, removed the message from the
+    /// Another operation, such as a clear or a recovery, removed the message from the
     /// in-progress stage before this settle. Nothing was written.
     #[error("the message is no longer in progress")]
     Lost,
@@ -47,19 +54,26 @@ pub enum SettleError {
     /// The delivery came from a different lane or driver. Nothing was written, and another
     /// settle on this queue fails the same way.
     #[error("message {} belongs to a different queue lane or driver", delivery.envelope.id)]
-    Rejected { delivery: Box<Delivery> },
+    Rejected {
+        /// The delivery that you can settle again on the queue it came from.
+        delivery: Box<Delivery>,
+    },
 
     /// The settle failed partway, for example on a connection error. The message is still in
     /// progress, so settle the returned delivery again.
     #[error("could not settle message {}", delivery.envelope.id)]
     Interrupted {
+        /// The delivery that is still in progress. Settle it again to retry.
         delivery: Box<Delivery>,
+        /// The driver error that stopped the settle.
         #[source]
         source: QueueError,
     },
 }
 
 impl SettleError {
+    /// Returns the delivery back to you so that you can settle it again. Returns `None` for
+    /// [`SettleError::Lost`] because there is nothing left to settle.
     pub fn into_delivery(self) -> Option<Delivery> {
         match self {
             SettleError::Lost => None,
@@ -71,7 +85,7 @@ impl SettleError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AttemptKind {
+pub(crate) enum AttemptKind {
     Succeeded,
     CommandFailed,
     /// The command could not be built from the registry, so a retry would fail the same way.
@@ -81,7 +95,7 @@ pub enum AttemptKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SettleAction {
+pub(super) enum SettleAction {
     Acknowledge,
     Retry,
     MoveToFailed,
@@ -90,7 +104,7 @@ pub enum SettleAction {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SettleOutcome {
+pub(crate) enum SettleOutcome {
     Acknowledged,
     Retried,
     MovedToFailed,
@@ -98,7 +112,7 @@ pub enum SettleOutcome {
 }
 
 impl SettleAction {
-    pub fn for_attempt(kind: AttemptKind, envelope: &CommandEnvelope) -> Self {
+    pub(crate) fn for_attempt(kind: AttemptKind, envelope: &CommandEnvelope) -> Self {
         match kind {
             AttemptKind::Succeeded => Self::Acknowledge,
             AttemptKind::CommandFailed if envelope.has_retries_left() => Self::Retry,
@@ -109,7 +123,7 @@ impl SettleAction {
 }
 
 impl SettleOutcome {
-    pub fn label(self) -> &'static str {
+    pub(crate) fn label(self) -> &'static str {
         match self {
             SettleOutcome::Acknowledged => "completed",
             SettleOutcome::Retried => "returned to pending for a retry",
@@ -119,7 +133,7 @@ impl SettleOutcome {
     }
 }
 
-pub async fn settle(
+pub(crate) async fn settle(
     queue: &Queue,
     delivery: Delivery,
     kind: AttemptKind,

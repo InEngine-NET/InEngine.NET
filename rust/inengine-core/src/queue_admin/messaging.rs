@@ -5,16 +5,20 @@ use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
 use super::open_queue;
-use crate::command::{run_blocking, CommandContext, CommandResult};
+use crate::command::{CommandContext, CommandResult, run_blocking};
 use crate::config::{QueueSettings, Settings};
-use crate::error::CommandError;
+use crate::error::{CommandError, ErrorChain};
 use crate::output::Output;
 use crate::queue::{
-    process_delivery, Attempt, CommandEnvelope, CommandRegistry, QueueLane, SettleOutcome,
+    Attempt, CommandEnvelope, CommandRegistry, QueueLane, SettleOutcome, process_delivery,
 };
 
+/// A request to add one command message to the pending stage of a lane.
 pub struct Publish {
+    /// The plugin that provides the command. Use
+    /// [`BUILTIN_PLUGIN_NAME`](crate::BUILTIN_PLUGIN_NAME) for a built-in command.
     pub plugin_name: String,
+    /// The command to run when the message is consumed.
     pub command_name: String,
     /// Payload fields as `key=value` pairs. Each value is sent as a string.
     pub args: Vec<String>,
@@ -22,6 +26,7 @@ pub struct Publish {
     pub json: Option<String>,
     /// Overrides `queue.max_retries` for this message.
     pub max_retries: Option<u32>,
+    /// The lane to publish to.
     pub lane: QueueLane,
 }
 
@@ -73,10 +78,15 @@ impl Publish {
     }
 }
 
+/// A request to run pending messages of one lane in this process, one at a time, and report
+/// how each one settled.
 pub struct Consume {
     /// `None` consumes until the pending stage is empty.
     pub limit: Option<usize>,
+    /// The lane to consume.
     pub lane: QueueLane,
+    /// Builds the command for each message. A message whose command it cannot build moves to
+    /// the failed stage with no retry.
     pub registry: Arc<CommandRegistry>,
 }
 
@@ -150,15 +160,16 @@ impl Consume {
                 },
             )
             .await;
-            let id = &processed.message_id;
+            let id = processed.message_id;
             match &processed.attempt {
                 Attempt::Succeeded => {}
                 Attempt::CommandFailed(error) => {
-                    output.error_line(&format!("message {id}: {error}"));
+                    output.error_line(&format!("message {id}: {}", ErrorChain::new(error)));
                 }
                 Attempt::Unrunnable(error) => {
                     output.error_line(&format!(
-                        "could not build the command for message {id}: {error}"
+                        "could not build the command for message {id}: {}",
+                        ErrorChain::new(error)
                     ));
                 }
                 Attempt::Interrupted => {

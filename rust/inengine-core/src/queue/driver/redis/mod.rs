@@ -7,9 +7,9 @@ use tracing::warn;
 mod scripts;
 
 use crate::config::RedisSettings;
-use crate::error::QueueError;
+use crate::error::{ErrorChain, QueueError};
+use crate::queue::CommandEnvelope;
 use crate::queue::delivery::{Delivery, Receipt};
-use crate::queue::envelope::CommandEnvelope;
 use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const CONNECTION_TIMEOUT: Duration = Duration::from_secs(5);
@@ -192,14 +192,18 @@ impl RedisDriver {
 
     async fn move_unreadable_to_failed(&self, element: &[u8], error: &serde_json::Error) {
         warn!(
-            "moving unreadable message in {} to failed: {error}",
-            self.in_progress_key
+            "moving unreadable message in {} to failed: {}",
+            self.in_progress_key,
+            ErrorChain::new(error)
         );
         if let Err(move_error) = self
             .move_if_present(element, &self.failed_key, element)
             .await
         {
-            warn!("could not move an unreadable message to failed: {move_error}");
+            warn!(
+                "could not move an unreadable message to failed: {}",
+                ErrorChain::new(&move_error)
+            );
         }
     }
 

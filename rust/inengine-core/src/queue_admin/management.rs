@@ -18,10 +18,16 @@ fn selected_stages(pending: bool, in_progress: bool, failed: bool) -> Vec<Stage>
     .collect()
 }
 
+/// A request to remove every message from the selected stages of one lane. You must select at
+/// least one stage.
 pub struct Clear {
+    /// Selects the pending stage.
     pub pending: bool,
+    /// Selects the failed stage.
     pub failed: bool,
+    /// Selects the in-progress stage.
     pub in_progress: bool,
+    /// The lane to clear.
     pub lane: QueueLane,
 }
 
@@ -68,12 +74,21 @@ pub async fn write_lengths(settings: &QueueSettings, output: &mut Output) -> Com
     Ok(())
 }
 
+/// A request to show messages from the selected stages of one lane without removing them. You
+/// must select at least one stage.
 pub struct Peek {
+    /// The positions to show in each stage, counted from zero. Position 0 of the pending stage
+    /// is the next message to be claimed.
     pub range: RangeInclusive<usize>,
+    /// Writes each message as one line of JSON in place of the readable summary.
     pub json_format: bool,
+    /// Selects the pending stage.
     pub pending: bool,
+    /// Selects the failed stage.
     pub failed: bool,
+    /// Selects the in-progress stage.
     pub in_progress: bool,
+    /// The lane to read.
     pub lane: QueueLane,
 }
 
@@ -126,7 +141,7 @@ fn write_messages(
                 output.line(&value.to_string());
             }
             (PeekedMessage::Envelope(envelope), false) => {
-                output.info("  id: ").line(&envelope.id);
+                output.info("  id: ").line(&envelope.id.to_string());
                 output.info("  command: ").line(&envelope.command_name);
                 output
                     .info("  queued: ")
@@ -143,8 +158,11 @@ fn write_messages(
     Ok(())
 }
 
+/// A request to move failed messages of one lane back to pending so they run again.
 pub struct RepublishFailed {
+    /// The largest number of messages to move.
     pub limit: usize,
+    /// The lane whose failed messages move.
     pub lane: QueueLane,
 }
 
@@ -164,7 +182,10 @@ impl RepublishFailed {
     }
 }
 
+/// A request to move every in-progress message of one lane back to pending, for example after
+/// a crash. Stop every consumer of the queue first, or a message can run twice.
 pub struct Recover {
+    /// The lane to recover.
     pub lane: QueueLane,
 }
 

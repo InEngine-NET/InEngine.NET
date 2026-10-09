@@ -45,8 +45,8 @@ impl PluginRuntime {
         let mut config = wasmtime::Config::new();
         config.wasm_component_model(true);
         config.epoch_interruption(true);
-        let engine = Engine::new(&config).map_err(|error| runtime_error(error.to_string()))?;
-        start_epoch_ticker(engine.weak()).map_err(|error| runtime_error(error.to_string()))?;
+        let engine = Engine::new(&config).map_err(PluginError::Engine)?;
+        start_epoch_ticker(engine.weak()).map_err(PluginError::Ticker)?;
         Ok(Self { engine, limits })
     }
 
@@ -95,10 +95,6 @@ impl PluginRuntime {
         });
         store
     }
-}
-
-fn runtime_error(message: String) -> PluginError {
-    PluginError::Engine { message }
 }
 
 /// The thread holds only a weak reference, so it exits once the last engine clone drops.

@@ -1,6 +1,11 @@
 use crossterm::style::{Color, ResetColor, SetForegroundColor};
 use indicatif::ProgressBar;
 
+/// A buffer that a command writes its output to.
+///
+/// Each write method adds to the buffer and returns `&mut Self`, so you can chain calls. Call
+/// [`Output::print`] to send the buffer to standard output, or [`Output::take_buffer`] to get it as
+/// a string.
 pub struct Output {
     buffer: Vec<u8>,
     use_color: bool,
@@ -8,6 +13,8 @@ pub struct Output {
 }
 
 impl Output {
+    /// Creates an empty buffer. When `use_color` is true, colored writes add ANSI color codes and
+    /// the progress bar is drawn.
     pub fn new(use_color: bool) -> Self {
         Self {
             buffer: Vec::new(),
@@ -21,51 +28,63 @@ impl Output {
         self.use_color
     }
 
+    /// Adds `text` and a newline without color.
     pub fn line(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, None, true)
     }
 
+    /// Adds `text` in green and a newline.
     pub fn info_line(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Green), true)
     }
 
+    /// Adds `text` in yellow and a newline.
     pub fn warning_line(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Yellow), true)
     }
 
+    /// Adds `text` in red and a newline.
     pub fn error_line(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Red), true)
     }
 
+    /// Adds `text` without color or a newline.
     pub fn text(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, None, false)
     }
 
+    /// Adds `text` in green without a newline.
     pub fn info(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Green), false)
     }
 
+    /// Adds `text` in yellow without a newline.
     pub fn warning(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Yellow), false)
     }
 
+    /// Adds `text` in red without a newline.
     pub fn error(&mut self, text: &str) -> &mut Self {
         self.write_colored(text, Some(Color::Red), false)
     }
 
+    /// Adds `count` newlines.
     pub fn newlines(&mut self, count: usize) -> &mut Self {
         self.buffer.extend(std::iter::repeat_n(b'\n', count));
         self
     }
 
+    /// Adds `text` in `color` and a newline. The color is left out when color is off.
     pub fn colored_line(&mut self, text: &str, color: Color) -> &mut Self {
         self.write_colored(text, Some(color), true)
     }
 
+    /// Adds `text` in `color` without a newline. The color is left out when color is off.
     pub fn colored_text(&mut self, text: &str, color: Color) -> &mut Self {
         self.write_colored(text, Some(color), false)
     }
 
+    /// Starts a progress bar that counts up to `max`. When color is off, the bar is hidden.
     pub fn set_progress_max(&mut self, max: u64) {
         if self.use_color {
             self.progress_bar = Some(ProgressBar::new(max));
@@ -74,18 +93,22 @@ impl Output {
         }
     }
 
+    /// Moves the progress bar to `current`. Does nothing before [`Output::set_progress_max`].
     pub fn update_progress(&mut self, current: u64) {
         if let Some(ref pb) = self.progress_bar {
             pb.set_position(current);
         }
     }
 
+    /// Returns the buffered text and empties the buffer. Invalid UTF-8 is replaced with U+FFFD.
     pub fn take_buffer(&mut self) -> String {
         let content = String::from_utf8_lossy(&self.buffer).to_string();
         self.buffer.clear();
         content
     }
 
+    /// Writes the buffer to standard output, flushes it, and empties the buffer. Write errors are
+    /// ignored.
     pub fn print(&mut self) {
         use std::io::Write;
         if !self.buffer.is_empty() {

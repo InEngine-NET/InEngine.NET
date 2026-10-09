@@ -1,6 +1,8 @@
 //! Queue administration for the CLI. Each request runs as async code on the caller's runtime.
 
+/// Requests that read, clear, and move messages in the stages of a queue.
 pub mod management;
+/// Requests that publish messages to a queue and run the messages that wait in it.
 pub mod messaging;
 
 use crate::config::QueueSettings;

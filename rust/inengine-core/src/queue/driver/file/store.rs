@@ -7,9 +7,9 @@ use std::time::Duration;
 use tracing::warn;
 
 use super::dir;
-use crate::error::QueueError;
+use crate::error::{ErrorChain, QueueError};
+use crate::queue::CommandEnvelope;
 use crate::queue::delivery::{Delivery, Receipt};
-use crate::queue::envelope::CommandEnvelope;
 use crate::queue::{PeekedMessage, QueueLane, QueueLengths, Stage};
 
 const STALE_TEMP_AGE: Duration = Duration::from_secs(60 * 60);
@@ -24,12 +24,7 @@ pub(super) struct FileStore {
 }
 
 impl FileStore {
-    pub(super) fn open(
-        queue_name: &str,
-        lane: QueueLane,
-        base_path: &str,
-    ) -> Result<Self, QueueError> {
-        let base = Path::new(base_path);
+    pub(super) fn open(queue_name: &str, lane: QueueLane, base: &Path) -> Result<Self, QueueError> {
         let stage_path =
             |stage: Stage| base.join(format!("{queue_name}_{}_{}", lane.as_str(), stage.as_str()));
         let store = Self {
@@ -79,7 +74,11 @@ impl FileStore {
         let target_name = dir::new_message_name();
         if let Err(error) = dir::write_atomic(target_dir, &target_name, &json) {
             if let Err(restore_error) = fs::rename(&claimed, &current) {
-                warn!("could not restore {}: {restore_error}", claimed.display());
+                warn!(
+                    "could not restore {}: {}",
+                    claimed.display(),
+                    ErrorChain::new(&restore_error)
+                );
             }
             return Err(error.into());
         }
@@ -92,9 +91,10 @@ impl FileStore {
             }
             Err(error) => {
                 warn!(
-                    "message {} was moved, but {} could not be removed: {error}",
+                    "message {} was moved, but {} could not be removed: {}",
                     envelope.id,
-                    claimed.display()
+                    claimed.display(),
+                    ErrorChain::new(&error)
                 );
                 Ok(true)
             }
@@ -200,15 +200,17 @@ impl FileStore {
 
     fn move_unreadable_to_failed(&self, claimed: &Path, error: &QueueError) {
         warn!(
-            "moving unreadable message {} to failed: {error}",
-            claimed.display()
+            "moving unreadable message {} to failed: {}",
+            claimed.display(),
+            ErrorChain::new(error)
         );
         if let Err(move_error) =
             dir::rename_if_present(claimed, &self.failed.join(dir::new_message_name()))
         {
             warn!(
-                "could not move {} to failed: {move_error}",
-                claimed.display()
+                "could not move {} to failed: {}",
+                claimed.display(),
+                ErrorChain::new(&move_error)
             );
         }
     }

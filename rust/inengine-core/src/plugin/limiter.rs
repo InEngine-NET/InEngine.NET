@@ -12,6 +12,7 @@ pub(crate) const INSTANCE_COUNT_LIMIT: usize = 32;
 #[derive(Debug, thiserror::Error)]
 #[error("plugin memory would grow past its limit of {} MiB", .limit_bytes / BYTES_PER_MIB)]
 pub struct MemoryLimitExceeded {
+    /// The memory budget of the plugin, in bytes, that the growth would exceed.
     pub limit_bytes: usize,
 }
 

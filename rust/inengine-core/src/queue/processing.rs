@@ -1,22 +1,23 @@
 use std::future::Future;
 
 use tokio_util::sync::CancellationToken;
+use uuid::Uuid;
 
 use crate::command::{Command, CommandResult};
 use crate::error::{CommandError, QueueError};
-use crate::queue::delivery::{settle, AttemptKind, Delivery, SettleError, SettleOutcome};
-use crate::queue::registry::CommandRegistry;
+use crate::queue::CommandRegistry;
 use crate::queue::Queue;
+use crate::queue::delivery::{AttemptKind, Delivery, SettleError, SettleOutcome, settle};
 
 #[derive(Debug)]
-pub struct ProcessedDelivery {
-    pub message_id: String,
+pub(crate) struct ProcessedDelivery {
+    pub message_id: Uuid,
     pub attempt: Attempt,
     pub settled: Result<SettleOutcome, SettleError>,
 }
 
 #[derive(Debug)]
-pub enum Attempt {
+pub(crate) enum Attempt {
     Succeeded,
     CommandFailed(CommandError),
     Unrunnable(QueueError),
@@ -24,7 +25,7 @@ pub enum Attempt {
 }
 
 impl Attempt {
-    pub fn kind(&self) -> AttemptKind {
+    pub(crate) fn kind(&self) -> AttemptKind {
         match self {
             Attempt::Succeeded => AttemptKind::Succeeded,
             Attempt::CommandFailed(_) => AttemptKind::CommandFailed,
@@ -34,10 +35,12 @@ impl Attempt {
     }
 }
 
+/// A delivery that arrives after `cancel` has fired returns to pending without a run.
+///
 /// An `Interrupted` result counts as an interruption only when `cancel` has fired. Otherwise
 /// it is a failure, so a command that reports an interruption on its own cannot return to
 /// pending forever without using its retries.
-pub async fn process_delivery<F, Fut>(
+pub(crate) async fn process_delivery<F, Fut>(
     queue: &Queue,
     delivery: Delivery,
     registry: &CommandRegistry,
@@ -48,8 +51,33 @@ where
     F: FnOnce(Box<dyn Command>) -> Fut,
     Fut: Future<Output = CommandResult>,
 {
-    let message_id = delivery.envelope.id.clone();
-    let attempt = match delivery.envelope.to_command(registry) {
+    let message_id = delivery.envelope.id;
+    // A dequeue must finish once it starts, so a consumer can claim a message after the server
+    // starts to stop. That message returns to pending without a run.
+    let attempt = if cancel.is_cancelled() {
+        Attempt::Interrupted
+    } else {
+        run_attempt(&delivery, registry, cancel, run).await
+    };
+    let settled = settle(queue, delivery, attempt.kind()).await;
+    ProcessedDelivery {
+        message_id,
+        attempt,
+        settled,
+    }
+}
+
+async fn run_attempt<F, Fut>(
+    delivery: &Delivery,
+    registry: &CommandRegistry,
+    cancel: &CancellationToken,
+    run: F,
+) -> Attempt
+where
+    F: FnOnce(Box<dyn Command>) -> Fut,
+    Fut: Future<Output = CommandResult>,
+{
+    match delivery.envelope.to_command(registry) {
         Ok(command) => match run(command).await {
             Ok(()) => Attempt::Succeeded,
             Err(CommandError::Interrupted) if cancel.is_cancelled() => Attempt::Interrupted,
@@ -59,12 +87,6 @@ where
             Err(error) => Attempt::CommandFailed(error),
         },
         Err(error) => Attempt::Unrunnable(error),
-    };
-    let settled = settle(queue, delivery, attempt.kind()).await;
-    ProcessedDelivery {
-        message_id,
-        attempt,
-        settled,
     }
 }
 
@@ -133,6 +155,35 @@ mod tests {
         .await;
 
         // Assert
+        assert!(matches!(processed.attempt, Attempt::Interrupted));
+        assert!(matches!(processed.settled, Ok(SettleOutcome::Released)));
+        let reclaimed = queue
+            .dequeue(Duration::ZERO)
+            .await
+            .expect("dequeue")
+            .expect("the message is pending again");
+        assert_eq!(reclaimed.envelope.attempts, 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn a_delivery_claimed_after_cancel_returns_to_pending_without_running() {
+        // Arrange
+        let dir = tempfile::tempdir().expect("temporary directory");
+        let (queue, delivery) = queue_with_one_claimed_message(dir.path()).await;
+        let registry = CommandRegistry::new();
+        let cancel = CancellationToken::new();
+        cancel.cancel();
+        let ran = std::sync::atomic::AtomicBool::new(false);
+
+        // Act
+        let processed = process_delivery(&queue, delivery, &registry, &cancel, |_| async {
+            ran.store(true, std::sync::atomic::Ordering::SeqCst);
+            Ok(())
+        })
+        .await;
+
+        // Assert
+        assert!(!ran.load(std::sync::atomic::Ordering::SeqCst));
         assert!(matches!(processed.attempt, Attempt::Interrupted));
         assert!(matches!(processed.settled, Ok(SettleOutcome::Released)));
         let reclaimed = queue
