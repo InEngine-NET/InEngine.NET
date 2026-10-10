@@ -16,7 +16,7 @@ cron = "0.17"
 crossterm = "0.29"
 flate2 = "1"
 indicatif = "0.18"
-lettre = { version = "0.11", default-features = false, features = ["builder", "hostname", "smtp-transport", "native-tls", "tokio1-native-tls"] }
+lettre = { version = "0.11", default-features = false, features = ["builder", "hostname", "smtp-transport", "tokio1-rustls", "aws-lc-rs", "rustls-platform-verifier"] }
 reqwest = { version = "0.13", default-features = false, features = ["rustls"] }
 redis = { version = "1.7", features = ["tokio-comp", "connection-manager", "script"] }
 serde = { version = "1", features = ["derive"] }
