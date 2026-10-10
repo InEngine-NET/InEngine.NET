@@ -9,6 +9,17 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Runs weekly without a push, so a new advisory or a new stable toolchain lint shows up.
+    - cron: "0 6 * * 1"
+
+# A new push to a pull request stops its older run. Runs on main all finish, so each one updates the badges.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   validate:
@@ -28,7 +39,6 @@ jobs:
       RUSTFLAGS: "-C link-arg=-fuse-ld=mold"
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: sccache
-      INENGINE_TEST_REDIS_PORT: "6390"
 
     steps:
       - name: Checkout
@@ -50,33 +60,25 @@ jobs:
         with:
           key: validation
 
+      - name: Install just
+        uses: extractions/setup-just@v4
+
       - name: Install tools
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-nextest,cargo-machete
+          tool: cargo-nextest,cargo-machete,cargo-deny
 
-      - name: cargo fmt
-        run: cargo fmt --all --check
+      - name: Lint
+        run: just fmt-check machete deny clippy
 
-      - name: cargo machete
-        run: cargo machete
+      - name: Docs
+        run: just doc
 
-      - name: cargo clippy
-        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
-
-      - name: cargo doc
-        run: cargo doc --locked --workspace --all-features --no-deps
-        env:
-          RUSTDOCFLAGS: "-D warnings"
-
-      # bindgen! in inengine-core reads the WIT file, so a package that leaves it out cannot build.
       - name: Check the inengine-core package
-        run: |
-          cargo check --locked -p inengine-core --all-targets
-          cargo package --locked -q -p inengine-core --list --allow-dirty | grep -qx wit/plugin.wit
+        run: just check-core-package
 
       - name: Run tests
-        run: cargo nextest run --locked --workspace --all-features
+        run: just integration-test-only
 
   plugins:
     name: Plugins (sample, fixture)
@@ -106,20 +108,16 @@ jobs:
             sample-plugin
             fixture-plugin
 
+      - name: Install just
+        uses: extractions/setup-just@v4
+
       - name: Install cargo-component
         run: cargo install cargo-component --locked
 
-      - name: Build the sample plugin
-        working-directory: sample-plugin
-        run: cargo component build --locked --release --target wasm32-unknown-unknown
-
       # The checked-in fixtures embed paths from the machine that built them, so CI checks
       # that the source builds rather than comparing bytes.
-      - name: Build the fixture plugin
-        working-directory: fixture-plugin
-        run: |
-          cargo component build --locked --release --target wasm32-unknown-unknown --features spin-on-load
-          cargo component build --locked --release --target wasm32-unknown-unknown
+      - name: Build the plugins
+        run: just build-sample-plugin build-fixture-plugin
 
   build:
     name: Build (${{ matrix.target }})
@@ -168,3 +166,68 @@ jobs:
         with:
           name: inengine-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/inengine
+
+  badges:
+    name: Badges (tests, coverage)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [ validate ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    services:
+      redis:
+        image: redis:8
+        ports:
+          - 6390:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: coverage
+
+      - name: Install just
+        uses: extractions/setup-just@v4
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest,cargo-llvm-cov
+
+      - name: Measure coverage
+        run: just coverage-percent
+
+      - name: Generate badge JSON
+        run: |
+          mkdir -p badges
+          jq -n --arg count "$(just count-tests)" \
+            '{schemaVersion: 1, label: "tests", message: ($count + " passed"), color: "brightgreen"}' \
+            > badges/tests.json
+          jq -n --arg pct "$(cat target/coverage-percent)" \
+            '{schemaVersion: 1, label: "coverage", message: ($pct + "%"), color: (
+              if ($pct | tonumber) >= 80 then "brightgreen"
+              elif ($pct | tonumber) >= 60 then "yellow"
+              else "red" end)}' \
+            > badges/coverage.json
+
+      # The badges branch holds only these files. The README reads them through shields.io.
+      - name: Deploy badges
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: badges
+          publish_dir: ./badges
+          force_orphan: true

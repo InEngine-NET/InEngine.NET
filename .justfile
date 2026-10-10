@@ -22,22 +22,26 @@ fmt-check:
     cargo fmt --all --check
 
 clippy:
-    cargo clippy --workspace --all-targets --all-features -- -D warnings
+    cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
 
 check:
-    cargo check --workspace --all-targets
+    cargo check --locked --workspace --all-targets
 
 machete:
     cargo machete
 
+# Check dependencies for security advisories, licenses, bans, and sources
+deny:
+    cargo deny check
+
 # Check inengine-core on its own, and fail when its package leaves out the WIT file that bindgen! reads
 check-core-package:
-    cargo check -p inengine-core --all-targets
-    cargo package -q -p inengine-core --list --allow-dirty | grep -qx wit/plugin.wit
+    cargo check --locked -p inengine-core --all-targets
+    cargo package --locked -q -p inengine-core --list --allow-dirty | grep -qx wit/plugin.wit
 
 # Build API docs for every workspace crate, treating rustdoc warnings as errors
 doc:
-    RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps
+    RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --all-features --no-deps
 
 # List files with 300 or more lines of code, excluding the test module and blank lines
 list-lines:
@@ -58,16 +62,16 @@ lint: fmt clippy
 
 # Run unit tests
 test:
-    cargo nextest run --workspace
+    cargo nextest run --locked --workspace
 
 # Run unit tests with coverage, and output HTML
 test-with-coverage:
-    cargo llvm-cov nextest --workspace --html --ignore-filename-regex 'tests/'
+    cargo llvm-cov nextest --locked --workspace --html --ignore-filename-regex 'tests/'
     open target/llvm-cov/html/index.html
 
 # Run unit tests with coverage, and output a summary
 test-with-coverage-summary:
-    cargo llvm-cov nextest --workspace --summary-only --ignore-filename-regex 'tests/'
+    cargo llvm-cov nextest --locked --workspace --summary-only --ignore-filename-regex 'tests/'
 
 # Start a private Redis server for the integration tests
 redis-start:
@@ -89,13 +93,26 @@ redis-stop:
 
 # Run unit and integration tests, including the Redis queue tests
 integration-test *ARGS: redis-start
-    INENGINE_TEST_REDIS_PORT={{ redis_port }} cargo nextest run --workspace --features inengine-core/integration {{ ARGS }}
+    @just integration-test-only {{ ARGS }}
+
+# Run unit and integration tests against a Redis server that already listens on redis_port
+integration-test-only *ARGS:
+    INENGINE_TEST_REDIS_PORT={{ redis_port }} cargo nextest run --locked --workspace --features inengine-core/integration {{ ARGS }}
+
+# Write the line coverage percent of all tests to target/coverage-percent, using a Redis server that already listens on redis_port
+coverage-percent:
+    INENGINE_TEST_REDIS_PORT={{ redis_port }} cargo llvm-cov nextest --locked --workspace --features inengine-core/integration --ignore-filename-regex 'tests/' --json --output-path target/coverage.json
+    jq '.data[0].totals.lines.percent | . * 10 | floor | . / 10' target/coverage.json > target/coverage-percent
+
+# Print the number of tests in the workspace, including the Redis queue tests
+count-tests:
+    @cargo nextest list --locked --workspace --features inengine-core/integration --message-format json | jq '[."rust-suites"[].testcases | length] | add'
 
 # Plugins
 
 # Build the sample plugin and copy it to target/plugins/sample/
 build-sample-plugin:
-    cd sample-plugin && cargo component build --release --target wasm32-unknown-unknown
+    cd sample-plugin && cargo component build --locked --release --target wasm32-unknown-unknown
     mkdir -p target/plugins/sample
     cp sample-plugin/target/wasm32-unknown-unknown/release/sample_plugin.wasm target/plugins/sample/
 
@@ -104,9 +121,9 @@ _fixture_wasm := "fixture-plugin/target/wasm32-unknown-unknown/release/fixture_p
 
 # Rebuild the plugin fixtures that the inengine-core tests load
 build-fixture-plugin:
-    cd fixture-plugin && cargo component build --release --target wasm32-unknown-unknown --features spin-on-load
+    cd fixture-plugin && cargo component build --locked --release --target wasm32-unknown-unknown --features spin-on-load
     cp {{ _fixture_wasm }} {{ _fixture_dir }}/spin-on-load/fixture_plugin_spin_on_load.wasm
-    cd fixture-plugin && cargo component build --release --target wasm32-unknown-unknown
+    cd fixture-plugin && cargo component build --locked --release --target wasm32-unknown-unknown
     cp {{ _fixture_wasm }} {{ _fixture_dir }}/plugin/fixture_plugin.wasm
 
 # Fail when a checked-in plugin fixture differs from a fresh build of its source
@@ -117,9 +134,9 @@ check-fixture-plugin:
     trap 'rm -rf "$target_dir"' EXIT
     built="$target_dir/wasm32-unknown-unknown/release/fixture_plugin.wasm"
     cd fixture-plugin
-    cargo component build -q --release --target wasm32-unknown-unknown --target-dir "$target_dir" --features spin-on-load
+    cargo component build --locked -q --release --target wasm32-unknown-unknown --target-dir "$target_dir" --features spin-on-load
     cmp "$built" ../{{ _fixture_dir }}/spin-on-load/fixture_plugin_spin_on_load.wasm
-    cargo component build -q --release --target wasm32-unknown-unknown --target-dir "$target_dir"
+    cargo component build --locked -q --release --target wasm32-unknown-unknown --target-dir "$target_dir"
     cmp "$built" ../{{ _fixture_dir }}/plugin/fixture_plugin.wasm
     echo "The plugin fixtures match their source."
 
@@ -134,15 +151,15 @@ server:
     cargo run -p inengine -- --server
 
 build-release:
-    cargo build --release -p inengine
+    cargo build --locked --release -p inengine
 
 # Tools
 
 # Install the cargo tools and targets that these recipes use
 install-tools:
-    cargo install cargo-nextest cargo-llvm-cov cargo-machete cargo-component --locked
+    cargo install cargo-nextest cargo-llvm-cov cargo-machete cargo-deny cargo-component --locked
     rustup target add wasm32-unknown-unknown
 
-# Holistically validate: unused dependencies, lint, docs, the inengine-core package, all tests, the sample plugin, and the plugin fixtures
-validate: machete lint doc check-core-package integration-test build-sample-plugin check-fixture-plugin
+# Holistically validate: unused dependencies, dependency policy, lint, docs, the inengine-core package, all tests, the sample plugin, and the plugin fixtures
+validate: machete deny lint doc check-core-package integration-test build-sample-plugin check-fixture-plugin
     @echo "All good."
