@@ -191,3 +191,4 @@ FakesAssemblies/
 .DS_Store
 .idea/
 
+/data
