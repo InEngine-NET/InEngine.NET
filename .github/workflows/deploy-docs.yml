@@ -7,8 +7,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
-      contents: write  # To push a branch
+      contents: read
       pages: write  # To push to a GitHub Pages site
       id-token: write # To update the deployment status
     steps:
@@ -20,8 +23,8 @@ jobs:
           tag=$(curl 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')
           url="https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz"
           mkdir mdbook
-          curl -sSL $url | tar -xz --directory=./mdbook
-          echo `pwd`/mdbook >> $GITHUB_PATH
+          curl -sSL "$url" | tar -xz --directory=./mdbook
+          echo "$PWD/mdbook" >> "$GITHUB_PATH"
       - name: Build Book
         run: |
           cd docs
@@ -31,8 +34,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          # Upload entire repository
-          path: 'book'
+          path: docs/book
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
