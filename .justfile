@@ -91,6 +91,14 @@ redis-start:
 redis-stop:
     redis-cli -p {{ redis_port }} shutdown nosave || true
 
+# Start a Valkey server in Docker on redis_port and wait until it accepts connections
+valkey-up:
+    INENGINE_TEST_REDIS_PORT={{ redis_port }} docker compose up --detach --wait valkey
+
+# Stop and remove the Valkey container that valkey-up started
+valkey-down:
+    docker compose down valkey
+
 # Run unit and integration tests, including the Redis queue tests
 integration-test *ARGS: redis-start
     @just integration-test-only {{ ARGS }}

@@ -66,9 +66,17 @@ You can download them from the artifacts of the run.
 Run `just` to list the recipes.
 Before your first build, run `just install-tools` to install the cargo tools and the WebAssembly target that the recipes use.
 
-The integration tests need a Redis server.
-`just integration-test` starts a private one on port 6390 with `redis-server`, so Redis must be installed.
+The integration tests need a Redis server, and Valkey also works.
+They use port 6390, so they do not touch a Redis server on the default port.
+There are two ways to start one:
+
+- `just integration-test` starts a private server with `redis-server` and runs the tests, so Redis must be installed.
+- `just valkey-up` starts Valkey in Docker from `compose.yaml`. Then run `just integration-test-only`, and run `just valkey-down` when you are done.
+
 If you already run Redis on another port, set `INENGINE_TEST_REDIS_PORT` and run `just integration-test-only`.
+`just valkey-up` also reads that variable and publishes Valkey on that port.
+
+To run the server against the Docker Valkey, set `queue_driver = "redis"` and `port = 6390` under `[queue.redis]` in `inengine.toml`.
 
 Before you open a pull request, run:
 

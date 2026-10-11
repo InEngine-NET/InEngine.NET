@@ -1,0 +1,11 @@
+services:
+  valkey:
+    image: valkey/valkey:9.2-alpine
+    command: ["valkey-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:${INENGINE_TEST_REDIS_PORT:-6390}:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
