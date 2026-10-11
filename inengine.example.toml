@@ -1,0 +1,71 @@
+# InEngine configuration.
+#
+# Every setting below is shown at its default value. A setting that is omitted
+# takes the same default, so copy this file and keep only the lines you change.
+# InEngine reads ./inengine.toml unless the --configuration (-c) flag names
+# another file. No command line flag overrides an individual setting.
+
+# Plugin directories keyed by plugin name. The server loads every .wasm file in each
+# directory. A relative path resolves against the working directory.
+[plugins]
+# sample = "plugins/sample"
+
+# Executables the exec command may run, keyed by the name a caller passes.
+[exec_whitelist]
+# hello = "/usr/bin/hello"
+
+# The SMTP server that sends command notification mail.
+[mail]
+host = "localhost"
+port = 25
+# Leave empty when no command sends mail.
+from = ""
+# Leave empty to send without authentication.
+username = ""
+# Used only when a user name is set.
+password = ""
+# "none" sends in plain text, "starttls" upgrades the connection and refuses a server that
+# cannot (usually port 587), and "tls" uses TLS from the first byte (usually port 465). A user
+# name with "none" is an error unless the host is localhost or a loopback address.
+encryption = "none"
+
+[queue]
+use_compression = false
+# Zero turns the queue off.
+primary_queue_consumers = 8
+# Zero turns the queue off.
+secondary_queue_consumers = 8
+# The queue backend, "file" or "redis".
+queue_driver = "file"
+# Becomes part of file names and Redis keys.
+queue_name = "InEngineQueue"
+# How many times a failed message is retried. A message that fails every attempt runs
+# this many times plus one, then moves to the failed stage.
+max_retries = 0
+# Move in-progress messages back to pending when the server starts. Enable this only
+# when this server is the only consumer of the queue. Recovery cannot tell a message left
+# by a crash from one that another consumer is still processing, so that message would
+# run twice.
+recover_on_start = false
+
+# The Redis server, version 6.2 or later. Used only when queue_driver is "redis".
+[queue.redis]
+host = "127.0.0.1"
+port = 6379
+database = 0
+# Leave empty when the server has no password.
+password = ""
+
+# The file queue. Used only when queue_driver is "file".
+[queue.file]
+# A relative path resolves against the working directory.
+base_path = "../"
+
+# Limits that apply to every plugin call.
+[plugin_limits]
+# The longest time one plugin call may run, from 1 to 86400. A call that runs longer is
+# stopped and fails. A scheduled job with a shorter timeout stops the call at that timeout.
+timeout_seconds = 900
+# The memory budget of one plugin instance in MiB, from 16 to 4096. A call that needs more
+# fails.
+memory_mib = 256

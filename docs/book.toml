@@ -1,0 +1,11 @@
+[book]
+title = "InEngine"
+authors = ["Ethan Hann"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+
+[output.html]
+git-repository-url = "https://github.com/InEngine-NET/InEngine.NET"

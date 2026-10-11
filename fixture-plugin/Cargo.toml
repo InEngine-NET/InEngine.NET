@@ -1,0 +1,17 @@
+[package]
+name = "fixture-plugin"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde_json = "1"
+wit-bindgen = "0.62"
+
+[features]
+# Builds a component whose command list never returns, for the load timeout test.
+spin-on-load = []

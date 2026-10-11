@@ -1,0 +1,25 @@
+package inengine:plugin;
+
+interface commands {
+    record command-descriptor {
+        name: string,
+        help-text: string,
+    }
+
+    list-commands: func() -> list<command-descriptor>;
+    run-command: func(name: string, args-json: string) -> result<string, string>;
+}
+
+interface scheduling {
+    record schedule-entry {
+        command-name: string,
+        cron-expression: string,
+    }
+
+    list-schedules: func() -> list<schedule-entry>;
+}
+
+world plugin {
+    export commands;
+    export scheduling;
+}
