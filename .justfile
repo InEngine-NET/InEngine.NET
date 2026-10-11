@@ -3,9 +3,6 @@
 # The port of the local Redis server that the integration tests use.
 redis_port := env("INENGINE_TEST_REDIS_PORT", "6390")
 
-[private]
-_redis_pid := justfile_directory() / "target/redis-test.pid"
-
 # List recipes
 list:
     just --list
@@ -73,24 +70,6 @@ test-with-coverage:
 test-with-coverage-summary:
     cargo llvm-cov nextest --locked --workspace --summary-only --ignore-filename-regex 'tests/'
 
-# Start a private Redis server for the integration tests
-redis-start:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    if redis-cli -p {{ redis_port }} ping > /dev/null 2>&1; then
-        echo "Redis is already running on port {{ redis_port }}."
-        exit 0
-    fi
-    mkdir -p target
-    redis-server --port {{ redis_port }} --daemonize yes --save "" --appendonly no \
-        --pidfile "{{ _redis_pid }}" --dir "{{ justfile_directory() }}/target"
-    until redis-cli -p {{ redis_port }} ping > /dev/null 2>&1; do sleep 0.1; done
-    echo "Redis is running on port {{ redis_port }}."
-
-# Stop the Redis server that redis-start started
-redis-stop:
-    redis-cli -p {{ redis_port }} shutdown nosave || true
-
 # Start a Valkey server in Docker on redis_port and wait until it accepts connections
 valkey-up:
     INENGINE_TEST_REDIS_PORT={{ redis_port }} docker compose up --detach --wait valkey
@@ -99,8 +78,8 @@ valkey-up:
 valkey-down:
     docker compose down valkey
 
-# Run unit and integration tests, including the Redis queue tests
-integration-test *ARGS: redis-start
+# Start Valkey in Docker, then run unit and integration tests, including the Redis queue tests
+integration-test *ARGS: valkey-up
     @just integration-test-only {{ ARGS }}
 
 # Run unit and integration tests against a Redis server that already listens on redis_port
