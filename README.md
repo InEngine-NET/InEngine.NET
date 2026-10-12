@@ -1,8 +1,8 @@
 # InEngine
 
-[![CI](https://github.com/InEngine-NET/InEngine.NET/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/InEngine-NET/InEngine.NET/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/InEngine-NET/InEngine.NET/badges/tests.json)](https://github.com/InEngine-NET/InEngine.NET/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/InEngine-NET/InEngine.NET/badges/coverage.json)](https://github.com/InEngine-NET/InEngine.NET/actions/workflows/ci.yml)
+[![CI](https://github.com/ethanhann/InEngine/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ethanhann/InEngine/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/ethanhann/InEngine/badges/tests.json)](https://github.com/ethanhann/InEngine/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/ethanhann/InEngine/badges/coverage.json)](https://github.com/ethanhann/InEngine/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 A plugin-based, distributed command queuing and scheduling server.

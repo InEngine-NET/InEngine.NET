@@ -8,4 +8,4 @@ src = "src"
 build-dir = "book"
 
 [output.html]
-git-repository-url = "https://github.com/InEngine-NET/InEngine.NET"
+git-repository-url = "https://github.com/ethanhann/InEngine"
